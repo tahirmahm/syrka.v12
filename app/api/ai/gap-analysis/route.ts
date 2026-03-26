@@ -4,7 +4,9 @@ import { createDeepSeekClient } from '@/lib/deepseek'
 
 export async function POST(req: NextRequest) {
   try {
-    const { visionSlug, sectorId } = await req.json()
+    const body = await req.json()
+    const visionSlug = body.visionSlug || body.vision_slug
+    const sectorId = body.sectorId || body.sector_id
     const cacheKey = `gap-analysis-${visionSlug}-${sectorId}`
     const supabase = createClient()
 

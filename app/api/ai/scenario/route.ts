@@ -3,23 +3,36 @@ import { createDeepSeekClient } from '@/lib/deepseek'
 
 export async function POST(req: NextRequest) {
   try {
-    const { sector, currentGap, intervention } = await req.json()
+    const body = await req.json()
+
+    // Support both nested object format and flat field format from the simulator component
+    const sectorName = body.sector?.name || body.sector_name
+    const targetYear = body.sector?.target_year || body.target_year
+    const currentWorkforce = body.sector?.current_workforce || body.current_workforce
+    const targetWorkforce = body.sector?.target_workforce || body.target_workforce
+    const currentGap = body.currentGap || (targetWorkforce - currentWorkforce)
+
+    const interventionType = body.intervention?.type || body.intervention_type
+    const annualOutput = body.intervention?.annual_output || body.annual_output
+    const startYear = body.intervention?.start_year || body.start_year
+    const durationYears = body.intervention?.duration_years || body.duration
+    const costMillions = body.intervention?.cost_usd_millions || Math.round(annualOutput * durationYears * 0.015)
 
     const deepseek = createDeepSeekClient()
 
     const prompt = `You are a workforce planning economist. Model the impact of this policy intervention.
 
-SECTOR: ${sector.name}
+SECTOR: ${sectorName}
 CURRENT GAP: ${currentGap.toLocaleString()} workers
-VISION TARGET YEAR: ${sector.target_year}
+VISION TARGET YEAR: ${targetYear}
 CURRENT YEAR: ${new Date().getFullYear()}
 
 PROPOSED INTERVENTION:
-Type: ${intervention.type}
-Annual output of trained workers: ${intervention.annual_output}
-Start year: ${intervention.start_year}
-Duration: ${intervention.duration_years} years
-Estimated cost: $${intervention.cost_usd_millions}M
+Type: ${interventionType}
+Annual output of trained workers: ${annualOutput}
+Start year: ${startYear}
+Duration: ${durationYears} years
+Estimated cost: $${costMillions}M
 
 Return JSON with:
 {
