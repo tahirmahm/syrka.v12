@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Syrka — National Human Capital Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy: #0A1628;
+    --gold: #C9A84C;
+    --teal: #1B6B5A;
+    --card: #111f35;
+    --red: #ef4444;
+    --white: #ffffff;
+    --heading: 'Instrument Serif', serif;
+    --body: 'DM Sans', sans-serif;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--navy);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @page {
+    size: 1280px 720px;
+    margin: 0;
+  }
+
+  @media print {
+    .slide { page-break-after: always; }
+    .slide:last-child { page-break-after: auto; }
+  }
+
+  .slide {
+    width: 1280px;
+    height: 720px;
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+
+  .watermark {
+    position: absolute;
+    bottom: 16px;
+    right: 24px;
+    font-family: var(--body);
+    font-size: 11px;
+    color: var(--white);
+    opacity: 0.2;
+  }
+
+  h1 {
+    font-family: var(--heading);
+    font-weight: 400;
+    color: var(--white);
+    font-size: 48px;
+    line-height: 1.15;
+  }
+
+  h2 {
+    font-family: var(--heading);
+    font-weight: 400;
+    color: var(--white);
+  }
+
+  p, li, span, div {
+    font-family: var(--body);
+    color: var(--white);
+  }
+
+  /* ========== SLIDE 1 — COVER ========== */
+  .slide-1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .slide-1 .wordmark {
+    font-family: var(--heading);
+    font-size: 72px;
+    color: var(--white);
+    font-weight: 400;
+    margin-bottom: 20px;
+  }
+  .slide-1 .subtitle {
+    font-family: var(--body);
+    font-size: 18px;
+    color: var(--gold);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .slide-1 .divider {
+    width: 120px;
+    height: 1px;
+    background: var(--gold);
+    margin-bottom: 24px;
+  }
+  .slide-1 .tagline {
+    font-family: var(--body);
+    font-size: 16px;
+    color: var(--white);
+    opacity: 0.7;
+  }
+  .slide-1 .bottom-left {
+    position: absolute;
+    bottom: 24px;
+    left: 40px;
+    font-family: var(--body);
+    font-size: 12px;
+    color: var(--white);
+    opacity: 0.5;
+  }
+
+  /* ========== SLIDE 2 — THE PROBLEM ========== */
+  .slide-2 { padding: 60px 80px 40px; }
+  .slide-2 h1 { margin-bottom: 12px; }
+  .slide-2 .sub {
+    font-size: 20px;
+    opacity: 0.85;
+    max-width: 600px;
+    line-height: 1.5;
+    margin-bottom: 48px;
+  }
+  .stat-cards {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+  .stat-card {
+    background: var(--card);
+    border-top: 3px solid var(--gold);
+    padding: 40px;
+    width: 420px;
+  }
+  .stat-card .number {
+    font-family: var(--heading);
+    font-size: 64px;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat-card .number.teal { color: var(--teal); }
+  .stat-card .label {
+    font-size: 14px;
+    opacity: 0.7;
+    line-height: 1.4;
+  }
+  .stat-card .track {
+    font-size: 13px;
+    color: var(--red);
+    margin-top: 12px;
+  }
+  .slide-2 .bottom-text {
+    text-align: center;
+    font-size: 16px;
+    opacity: 0.6;
+  }
+
+  /* ========== SLIDE 3 — THE GAP ========== */
+  .slide-3 { padding: 60px 80px 40px; }
+  .slide-3 h1 { margin-bottom: 40px; }
+  .columns {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 32px;
+  }
+  .col-item {
+    width: 280px;
+    text-align: center;
+    padding: 0 20px;
+  }
+  .col-item .icon { margin-bottom: 16px; }
+  .col-item .col-title {
+    font-family: var(--body);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .col-item .col-body {
+    font-size: 14px;
+    opacity: 0.7;
+    line-height: 1.5;
+  }
+  .col-arrow {
+    display: flex;
+    align-items: center;
+    padding-top: 24px;
+  }
+  .col-arrow svg { opacity: 0.4; }
+  .slide-3 .bottom-statement {
+    text-align: center;
+    border-top: 1px solid rgba(201,168,76,0.3);
+    padding-top: 24px;
+    font-family: var(--heading);
+    font-size: 28px;
+    color: var(--gold);
+  }
+
+  /* ========== SLIDE 4 — THE SOLUTION ========== */
+  .slide-4 { padding: 60px 80px 40px; }
+  .slide-4 h1 { margin-bottom: 6px; }
+  .slide-4 .sub {
+    font-family: var(--body);
+    font-size: 16px;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 48px;
+  }
+  .flow-boxes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 40px;
+  }
+  .flow-box {
+    background: var(--card);
+    border-left: 3px solid var(--gold);
+    padding: 24px 28px;
+    min-width: 200px;
+  }
+  .flow-box.teal-border { border-left-color: var(--teal); }
+  .flow-box .flow-label {
+    font-family: var(--body);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .flow-arrow {
+    padding: 0 12px;
+  }
+  .slide-4 .description {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 14px;
+    opacity: 0.8;
+    line-height: 1.65;
+  }
+
+  /* ========== SLIDE 5 — THE PRODUCT ========== */
+  .slide-5 { padding: 60px 80px 40px; }
+  .slide-5 h1 { margin-bottom: 6px; }
+  .slide-5 .sub {
+    font-size: 16px;
+    opacity: 0.7;
+    margin-bottom: 40px;
+  }
+  .feature-cards {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+  .feature-card {
+    background: var(--card);
+    border-top: 2px solid rgba(201,168,76,0.3);
+    padding: 28px 24px;
+    width: 340px;
+  }
+  .feature-card .tag {
+    display: inline-block;
+    background: var(--teal);
+    color: var(--white);
+    font-family: var(--body);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.05em;
+  }
+  .feature-card .fc-title {
+    font-family: var(--body);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .feature-card .fc-body {
+    font-size: 13px;
+    opacity: 0.7;
+    line-height: 1.55;
+  }
+  .slide-5 .bottom-text {
+    text-align: center;
+    font-size: 13px;
+    opacity: 0.5;
+  }
+
+  /* ========== SLIDE 6 — TRACTION ========== */
+  .slide-6 { padding: 60px 80px 40px; }
+  .slide-6 h1 { margin-bottom: 40px; }
+  .two-cols {
+    display: flex;
+    gap: 80px;
+    margin-bottom: 32px;
+  }
+  .two-cols .col { flex: 1; }
+  .col-label {
+    font-family: var(--body);
+    font-size: 14px;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  .gold-list {
+    list-style: none;
+    padding: 0;
+  }
+  .gold-list li {
+    font-size: 14px;
+    line-height: 1.6;
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .gold-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+  }
+  .slide-6 .bottom-note {
+    text-align: center;
+    font-size: 13px;
+    opacity: 0.5;
+    font-style: italic;
+  }
+
+  /* ========== SLIDE 7 — MARKET ========== */
+  .slide-7 { padding: 60px 80px 40px; }
+  .slide-7 h1 { margin-bottom: 36px; }
+  .market-cards {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+  .market-card {
+    background: var(--card);
+    padding: 32px 28px;
+    width: 320px;
+    text-align: center;
+    border-top: 2px solid rgba(201,168,76,0.2);
+  }
+  .market-card .mc-number {
+    font-family: var(--heading);
+    font-size: 56px;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .market-card .mc-label {
+    font-size: 13px;
+    opacity: 0.7;
+    line-height: 1.5;
+  }
+  .market-cols {
+    display: flex;
+    gap: 60px;
+  }
+  .market-col {
+    flex: 1;
+  }
+  .market-col .mc-title {
+    font-family: var(--body);
+    font-size: 14px;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .market-col .mc-body {
+    font-size: 14px;
+    opacity: 0.8;
+    line-height: 1.6;
+  }
+
+  /* ========== SLIDE 8 — FOUNDER & ASK ========== */
+  .slide-8 { padding: 60px 80px 40px; }
+  .slide-8 h1 { margin-bottom: 36px; }
+  .ask-cols {
+    display: flex;
+    gap: 80px;
+    margin-bottom: 36px;
+  }
+  .ask-col { flex: 1; }
+  .founder-name {
+    font-family: var(--body);
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .founder-role {
+    font-family: var(--body);
+    font-size: 14px;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .founder-list {
+    list-style: none;
+    padding: 0;
+  }
+  .founder-list li {
+    font-size: 13px;
+    opacity: 0.8;
+    line-height: 1.5;
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  .founder-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 7px;
+    height: 7px;
+    background: var(--gold);
+    border-radius: 50%;
+  }
+  .ask-right .pre-seed {
+    font-family: var(--heading);
+    font-size: 48px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .ask-right .ask-sub {
+    font-size: 16px;
+    opacity: 0.7;
+    margin-bottom: 28px;
+  }
+  .ask-right .funds-title {
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .slide-8 .bottom-contact {
+    text-align: center;
+  }
+  .slide-8 .bottom-contact .bc-site {
+    font-family: var(--heading);
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+  .slide-8 .bottom-contact .bc-email {
+    font-family: var(--body);
+    font-size: 13px;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1 — COVER ============ -->
+<div class="slide slide-1">
+  <div class="wordmark">Syrka</div>
+  <div class="subtitle">National Human Capital Intelligence</div>
+  <div class="divider"></div>
+  <div class="tagline">From National Vision to Human Capital Reality</div>
+  <div class="bottom-left">syrka.co</div>
+  <span class="watermark">syrka.co</span>
+</div>
+
+<!-- ============ SLIDE 2 — THE PROBLEM ============ -->
+<div class="slide slide-2">
+  <h1>The Problem</h1>
+  <p class="sub">Every country has a national vision. Almost none have a system to deliver it through human capital.</p>
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="number">338,000</div>
+      <div class="label">workers Saudi Arabia needs in Tech by 2030</div>
+      <div class="track">Currently on track to deliver: 142,000</div>
+    </div>
+    <div class="stat-card">
+      <div class="number teal">33,600</div>
+      <div class="label">workers Malta needs in Digital Economy by 2050</div>
+      <div class="track">Currently on track to deliver: 18,400</div>
+    </div>
+  </div>
+  <p class="bottom-text">Both off track. No system exists to close the gap.</p>
+  <span class="watermark">syrka.co</span>
+</div>
+
+<!-- ============ SLIDE 3 — THE GAP ============ -->
+<div class="slide slide-3">
+  <h1>The Gap No One Is Closing</h1>
+  <div class="columns">
+    <div class="col-item">
+      <div class="icon">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 4L4 16H10V34H18V26H22V34H30V16H36L20 4Z" fill="#C9A84C"/>
+          <rect x="16" y="18" width="8" height="6" rx="1" fill="#0A1628"/>
+        </svg>
+      </div>
+      <div class="col-title">Governments</div>
+      <div class="col-body">Know where they want to go. Have no system to connect national vision to workforce reality.</div>
+    </div>
+    <div class="col-arrow">
+      <svg width="32" height="24" viewBox="0 0 32 24" fill="none"><path d="M2 12H28M28 12L20 4M28 12L20 20" stroke="#C9A84C" stroke-width="2"/></svg>
+    </div>
+    <div class="col-item">
+      <div class="icon">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 26C12 26 14 24 20 24C26 24 28 26 28 26" stroke="#C9A84C" stroke-width="2" fill="none"/>
+          <rect x="14" y="24" width="12" height="8" fill="#C9A84C"/>
+          <path d="M10 24L20 8L30 24" stroke="#C9A84C" stroke-width="2" fill="none"/>
+          <circle cx="20" cy="8" r="4" fill="#C9A84C"/>
+          <rect x="18" y="2" width="4" height="3" fill="#C9A84C"/>
+        </svg>
+      </div>
+      <div class="col-title">Universities</div>
+      <div class="col-body">Teach what they always taught. No signal telling them which courses to change or why.</div>
+    </div>
+    <div class="col-arrow">
+      <svg width="32" height="24" viewBox="0 0 32 24" fill="none"><path d="M2 12H28M28 12L20 4M28 12L20 20" stroke="#C9A84C" stroke-width="2"/></svg>
+    </div>
+    <div class="col-item">
+      <div class="icon">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="10" width="24" height="20" rx="2" stroke="#C9A84C" stroke-width="2" fill="none"/>
+          <rect x="14" y="4" width="12" height="8" rx="1" stroke="#C9A84C" stroke-width="2" fill="none"/>
+          <line x1="20" y1="20" x2="20" y2="26" stroke="#C9A84C" stroke-width="2"/>
+          <circle cx="20" cy="18" r="2" fill="#C9A84C"/>
+        </svg>
+      </div>
+      <div class="col-title">Employers</div>
+      <div class="col-body">Cannot find the talent Vision requires. Graduate skills mismatch costs billions annually.</div>
+    </div>
+  </div>
+  <div class="bottom-statement">Palantir for government human capital.</div>
+  <span class="watermark">syrka.co</span>
+</div>
+
+<!-- ============ SLIDE 4 — THE SOLUTION ============ -->
+<div class="slide slide-4">
+  <h1>Syrka</h1>
+  <div class="sub">A self-reinforcing national workforce engine</div>
+  <div class="flow-boxes">
+    <div class="flow-box">
+      <div class="flow-label">National Vision</div>
+    </div>
+    <div class="flow-arrow">
+      <svg width="32" height="24" viewBox="0 0 32 24" fill="none"><path d="M2 12H28M28 12L20 4M28 12L20 20" stroke="#C9A84C" stroke-width="2"/></svg>
+    </div>
+    <div class="flow-box">
+      <div class="flow-label">Skill Gap Analysis</div>
+    </div>
+    <div class="flow-arrow">
+      <svg width="32" height="24" viewBox="0 0 32 24" fill="none"><path d="M2 12H28M28 12L20 4M28 12L20 20" stroke="#C9A84C" stroke-width="2"/></svg>
+    </div>
+    <div class="flow-box">
+      <div class="flow-label">Curriculum Optimisation</div>
+    </div>
+    <div class="flow-arrow">
+      <svg width="32" height="24" viewBox="0 0 32 24" fill="none"><path d="M2 12H28M28 12L20 4M28 12L20 20" stroke="#C9A84C" stroke-width="2"/></svg>
+    </div>
+    <div class="flow-box teal-border">
+      <div class="flow-label">Industry Ready Graduates</div>
+    </div>
+  </div>
+  <p class="description">We take a nation's vision — Saudi Vision 2030, Malta Vision 2050 — and map the delta between where they are today and where they need to be. AI against government and OECD data identifies exactly which skills the nation lacks, sector by sector. Those signals flow into universities, optimising curricula so every graduating cohort is calibrated to what the economy actually needs. The placement layer connects high performing students directly to employers in national priority sectors.</p>
+  <span class="watermark">syrka.co</span>
+</div>
+
+<!-- ============ SLIDE 5 — THE PRODUCT ============ -->
+<div class="slide slide-5">
+  <h1>Live at syrka.co</h1>
+  <p class="sub">Two countries. Real data. Real AI analysis.</p>
+  <div class="feature-cards">
+    <div class="feature-card">
+      <div class="tag">LIVE</div>
+      <div class="fc-title">Ministry Dashboard</div>
+      <div class="fc-body">National gap visualisation. Sector by sector workforce delta. Policy intervention simulator with AI-generated cost and feasibility analysis.</div>
+    </div>
+    <div class="feature-card">
+      <div class="tag">LIVE</div>
+      <div class="fc-title">University Intelligence</div>
+      <div class="fc-body">Course-by-course curriculum alignment scores against national vision targets. KAUST BSc Computer Engineering: 54.44%. Specific module recommendations generated by AI.</div>
+    </div>
+    <div class="feature-card">
+      <div class="tag">LIVE</div>
+      <div class="fc-title">Policy Simulator</div>
+      <div class="fc-body">Model any intervention — bootcamp programmes, immigration fast-tracks, curriculum reform. AI returns gap closure percentage, cost estimate, and ministerial summary in seconds.</div>
+    </div>
+  </div>
+  <p class="bottom-text">Built in one week. Seeded with real government data.</p>
+  <span class="watermark">syrka.co</span>
+</div>
+
+<!-- ============ SLIDE 6 — TRACTION ============ -->
+<div class="slide slide-6">
+  <h1>Where We Are</h1>
+  <div class="two-cols">
+    <div class="col">
+      <div class="col-label">Product</div>
+      <ul class="gold-list">
+        <li>Live at syrka.co — two countries fully operational</li>
+        <li>Real Supabase database — 400+ students, 30+ institutions, 26 skills seeded</li>
+        <li>DeepSeek AI generating real policy analysis and curriculum scores</li>
+        <li>Policy intervention simulator running live scenario modelling</li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="col-label">Ministerial Access</div>
+      <ul class="gold-list">
+        <li>Deputy Prime Minister of Malta (LinkedIn network)</li>
+        <li>Minister for Foreign Affairs and Tourism, Malta</li>
+        <li>Public Investment Fund (PIF), Saudi Arabia members</li>
+        <li>NEOM Authority — General Counsel, COO, Legal Director</li>
+        <li>OECD economists, World Bank education specialists</li>
+      </ul>
+    </div>
+  </div>
+  <p class="bottom-note">Network not yet activated. Waiting for product to be demo-ready. That moment is now.</p>
+  <span class="watermark">syrka.co</span>
+</div>
+
+<!-- ============ SLIDE 7 — MARKET ============ -->
+<div class="slide slide-7">
+  <h1>The Market</h1>
+  <div class="market-cards">
+    <div class="market-card">
+      <div class="mc-number">140+</div>
+      <div class="mc-label">Countries with active national development plans</div>
+    </div>
+    <div class="market-card">
+      <div class="mc-number">$47B</div>
+      <div class="mc-label">Global govtech market by 2028</div>
+    </div>
+    <div class="market-card">
+      <div class="mc-number">$700B</div>
+      <div class="mc-label">Saudi PIF mandate — Vision 2030 execution budget</div>
+    </div>
+  </div>
+  <div class="market-cols">
+    <div class="market-col">
+      <div class="mc-title">Go to Market</div>
+      <p class="mc-body">B2G ministerial pilots. One country contract funds the next. Malta as EU reference case opens 26 member states. Saudi as Gulf reference case opens MENA region.</p>
+    </div>
+    <div class="market-col">
+      <div class="mc-title">Business Model</div>
+      <p class="mc-body">Government SaaS — annual platform licence per country. Implementation and data integration fees. Policy advisory layer for ministries. University subscription tier.</p>
+    </div>
+  </div>
+  <span class="watermark">syrka.co</span>
+</div>
+
+<!-- ============ SLIDE 8 — FOUNDER & ASK ============ -->
+<div class="slide slide-8">
+  <h1>The Ask</h1>
+  <div class="ask-cols">
+    <div class="ask-col">
+      <div class="founder-name">Tahir Mahmood Khan</div>
+      <div class="founder-role">Founder &amp; CEO, Syrka</div>
+      <ul class="founder-list">
+        <li>PPE Student, Charles University Prague</li>
+        <li>Founder, DPIIT-recognised startup — India &amp; Dubai</li>
+        <li>Strategy &amp; Policy Advisor, Legislative Assembly of Manipur</li>
+        <li>Intern, EY Sustainability Advisory — carbon credit market design</li>
+        <li>Intern, Supreme Court of India</li>
+        <li>Samvay Mentorship Programme, Embassy of India Prague</li>
+      </ul>
+    </div>
+    <div class="ask-col ask-right">
+      <div class="pre-seed">Pre-Seed</div>
+      <p class="ask-sub">To fund the first government pilot</p>
+      <div class="funds-title">Use of Funds</div>
+      <ul class="founder-list">
+        <li>Malta ministerial pilot — 6 months</li>
+        <li>Methodology validation with academic partner</li>
+        <li>Technical co-founder recruitment</li>
+        <li>Saudi Vision 2030 government outreach</li>
+      </ul>
+    </div>
+  </div>
+  <div class="bottom-contact">
+    <div class="bc-site">syrka.co</div>
+    <div class="bc-email">tahirmahmood439wel@gmail.com</div>
+  </div>
+  <span class="watermark">syrka.co</span>
+</div>
+
+</body>
+</html>
