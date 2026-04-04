@@ -1,5 +1,6 @@
 'use client'
 
+import ReactECharts from 'echarts-for-react'
 import { useMemo } from 'react'
 
 interface HeatmapSkill {
@@ -14,50 +15,154 @@ interface SectorHeatmapProps {
   accentColor: string
 }
 
-function getIntensityColor(gapScore: number, accentColor: string): string {
-  const clamped = Math.max(0, Math.min(100, gapScore))
-  const opacity = Math.round((clamped / 100) * 255)
-    .toString(16)
-    .padStart(2, '0')
-  return `${accentColor}${opacity}`
-}
-
-function getTextColor(gapScore: number): string {
-  return gapScore > 55 ? 'text-white' : 'text-white/80'
-}
-
-function getCriticalityBadge(criticality: HeatmapSkill['criticality']): string | null {
-  switch (criticality) {
-    case 'critical':
-      return 'bg-red-500/20 text-red-300 border-red-500/30'
-    case 'high':
-      return 'bg-amber-500/20 text-amber-300 border-amber-500/30'
-    case 'medium':
-      return 'bg-blue-500/20 text-blue-300 border-blue-500/30'
-    case 'low':
-      return 'bg-slate-500/20 text-slate-300 border-slate-500/30'
-    default:
-      return null
-  }
-}
-
 export default function SectorHeatmap({ skills, accentColor }: SectorHeatmapProps) {
-  const grouped = useMemo(() => {
-    const map = new Map<string, HeatmapSkill[]>()
-    for (const skill of skills) {
-      const sector = skill.sector || 'Other'
-      if (!map.has(sector)) map.set(sector, [])
-      map.get(sector)!.push(skill)
+  const { sectors, skillNames, heatmapData, maxScore } = useMemo(() => {
+    if (skills.length === 0) {
+      return { sectors: [], skillNames: [], heatmapData: [], maxScore: 100 }
     }
-    // Sort sectors by average gap_score descending
-    return Array.from(map.entries())
-      .map(([sector, items]) => ({
-        sector,
-        skills: items.sort((a, b) => b.gap_score - a.gap_score),
-        avgGap: items.reduce((sum, s) => sum + s.gap_score, 0) / items.length,
-      }))
-      .sort((a, b) => b.avgGap - a.avgGap)
+
+    const sectorSet = new Set<string>()
+    const skillNameSet = new Set<string>()
+    for (const s of skills) {
+      sectorSet.add(s.sector || 'Other')
+      skillNameSet.add(s.name)
+    }
+
+    const sectorsList = Array.from(sectorSet).sort()
+    const skillNamesList = Array.from(skillNameSet).sort()
+
+    // Build a lookup map for gap scores
+    const scoreMap = new Map<string, { gap_score: number; criticality: string | null }>()
+    for (const s of skills) {
+      const key = `${s.sector || 'Other'}::${s.name}`
+      scoreMap.set(key, { gap_score: s.gap_score, criticality: s.criticality })
+    }
+
+    const data: Array<[number, number, number, string | null]> = []
+    let max = 0
+    for (let xi = 0; xi < sectorsList.length; xi++) {
+      for (let yi = 0; yi < skillNamesList.length; yi++) {
+        const key = `${sectorsList[xi]}::${skillNamesList[yi]}`
+        const entry = scoreMap.get(key)
+        if (entry) {
+          data.push([xi, yi, entry.gap_score, entry.criticality])
+          if (entry.gap_score > max) max = entry.gap_score
+        }
+      }
+    }
+
+    return {
+      sectors: sectorsList,
+      skillNames: skillNamesList,
+      heatmapData: data,
+      maxScore: max || 100,
+    }
   }, [skills])
+
+  const chartHeight = Math.max(300, skillNames.length * 28 + 80)
+
+  const option = useMemo(
+    () => ({
+      backgroundColor: 'transparent',
+      grid: {
+        top: 10,
+        right: 20,
+        bottom: 60,
+        left: 'auto',
+        containLabel: true,
+      },
+      tooltip: {
+        backgroundColor: '#0A1628',
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 1,
+        padding: [12, 16],
+        textStyle: { color: '#fff', fontSize: 12 },
+        formatter(params: {
+          value: [number, number, number, string | null]
+          name: string
+        }) {
+          const [xi, yi, score, criticality] = params.value
+          const sector = sectors[xi]
+          const skill = skillNames[yi]
+          let html = `<div style="font-weight:500;color:#fff;margin-bottom:4px">${skill}</div>`
+          html += `<div style="color:#94A3B8;font-size:11px">Gap Score: <span style="color:#fff">${score}/100</span></div>`
+          if (criticality) {
+            html += `<div style="color:#94A3B8;font-size:11px">Criticality: <span style="color:#fff;text-transform:capitalize">${criticality}</span></div>`
+          }
+          html += `<div style="color:#94A3B8;font-size:11px">Sector: <span style="color:#fff">${sector}</span></div>`
+          return html
+        },
+      },
+      xAxis: {
+        type: 'category',
+        data: sectors,
+        axisLine: { lineStyle: { color: '#1E293B' } },
+        axisTick: { show: false },
+        axisLabel: {
+          color: '#94A3B8',
+          fontSize: 10,
+          rotate: sectors.length > 5 ? 30 : 0,
+          interval: 0,
+        },
+        position: 'bottom',
+      },
+      yAxis: {
+        type: 'category',
+        data: skillNames,
+        axisLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: {
+          color: '#94A3B8',
+          fontSize: 10,
+          width: 120,
+          overflow: 'truncate',
+        },
+      },
+      visualMap: {
+        min: 0,
+        max: maxScore,
+        calculable: false,
+        orient: 'horizontal',
+        left: 'center',
+        bottom: 0,
+        itemWidth: 14,
+        itemHeight: 120,
+        textStyle: { color: '#64748B', fontSize: 10 },
+        text: ['High gap', 'Low gap'],
+        inRange: {
+          color: [accentColor + '15', accentColor + '40', accentColor + '80', accentColor],
+        },
+      },
+      series: [
+        {
+          type: 'heatmap',
+          data: heatmapData,
+          itemStyle: {
+            borderColor: '#0F1A2E',
+            borderWidth: 2,
+            borderRadius: 3,
+          },
+          emphasis: {
+            itemStyle: {
+              borderColor: '#fff',
+              borderWidth: 1,
+              shadowBlur: 10,
+              shadowColor: 'rgba(0,0,0,0.3)',
+            },
+          },
+          label: {
+            show: heatmapData.length <= 40,
+            formatter(params: { value: [number, number, number] }) {
+              return `${params.value[2]}`
+            },
+            color: '#fff',
+            fontSize: 10,
+          },
+        },
+      ],
+    }),
+    [sectors, skillNames, heatmapData, maxScore, accentColor]
+  )
 
   if (skills.length === 0) {
     return (
@@ -68,83 +173,13 @@ export default function SectorHeatmap({ skills, accentColor }: SectorHeatmapProp
   }
 
   return (
-    <div className="space-y-4">
-      {/* Scale legend */}
-      <div className="flex items-center justify-between text-xs text-slate-500 px-1">
-        <span>Low gap</span>
-        <div className="flex-1 mx-3 h-2 rounded-full overflow-hidden flex">
-          {Array.from({ length: 10 }, (_, i) => (
-            <div
-              key={i}
-              className="flex-1"
-              style={{
-                backgroundColor: getIntensityColor((i + 1) * 10, accentColor),
-              }}
-            />
-          ))}
-        </div>
-        <span>High gap</span>
-      </div>
-
-      {/* Sector rows */}
-      {grouped.map(({ sector, skills: sectorSkills }) => (
-        <div key={sector}>
-          <div className="flex items-center gap-2 mb-2">
-            <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider">
-              {sector}
-            </h4>
-            <div className="flex-1 h-px bg-slate-800" />
-            <span className="text-xs text-slate-600 font-mono">
-              avg {Math.round(sectorSkills.reduce((s, sk) => s + sk.gap_score, 0) / sectorSkills.length)}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1.5">
-            {sectorSkills.map((skill) => {
-              const badgeClass = getCriticalityBadge(skill.criticality)
-              return (
-                <div
-                  key={`${sector}-${skill.name}`}
-                  className="relative rounded-md px-3 py-2.5 group cursor-default transition-transform hover:scale-[1.02]"
-                  style={{ backgroundColor: getIntensityColor(skill.gap_score, accentColor) }}
-                >
-                  <p className={`text-xs font-medium leading-tight truncate ${getTextColor(skill.gap_score)}`}>
-                    {skill.name}
-                  </p>
-                  <div className="flex items-center justify-between mt-1.5">
-                    <span className={`text-[10px] font-mono ${getTextColor(skill.gap_score)} opacity-70`}>
-                      {skill.gap_score}
-                    </span>
-                    {badgeClass && (
-                      <span className={`text-[9px] px-1.5 py-0.5 rounded border ${badgeClass}`}>
-                        {skill.criticality}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Tooltip on hover */}
-                  <div
-                    className="absolute z-10 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-lg shadow-xl border border-white/10 text-xs whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity"
-                    style={{ backgroundColor: '#0A1628' }}
-                  >
-                    <p className="text-white font-medium">{skill.name}</p>
-                    <p className="text-slate-400 mt-0.5">
-                      Gap Score: <span className="text-white">{skill.gap_score}/100</span>
-                    </p>
-                    {skill.criticality && (
-                      <p className="text-slate-400">
-                        Criticality: <span className="text-white capitalize">{skill.criticality}</span>
-                      </p>
-                    )}
-                    <p className="text-slate-400">
-                      Sector: <span className="text-white">{skill.sector}</span>
-                    </p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      ))}
+    <div className="w-full" style={{ height: chartHeight }}>
+      <ReactECharts
+        option={option}
+        style={{ height: '100%', width: '100%' }}
+        opts={{ renderer: 'canvas' }}
+        notMerge
+      />
     </div>
   )
 }

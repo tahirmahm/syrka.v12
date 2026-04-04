@@ -8,6 +8,7 @@ import VisionGapHero from '@/components/ministry/VisionGapHero'
 import PolicyInterventionSimulator from '@/components/ministry/PolicyInterventionSimulator'
 import PolicyBriefGenerator from '@/components/ministry/PolicyBriefGenerator'
 import SectorPanel from '@/components/ministry/SectorPanel'
+import InternationalBenchmarking from '@/components/ministry/InternationalBenchmarking'
 import type { Sector, Skill } from '@/lib/types'
 
 interface SimTrajectoryPoint {
@@ -35,6 +36,7 @@ export default function MinistryDashboard() {
   const [selectedSectorId, setSelectedSectorId] = useState<string>('')
   const [loading, setLoading] = useState(true)
   const [simulationTrajectory, setSimulationTrajectory] = useState<SimTrajectoryPoint[] | null>(null)
+  const [activeTab, setActiveTab] = useState<'overview' | 'benchmarking'>('overview')
 
   useEffect(() => {
     async function loadData() {
@@ -118,48 +120,86 @@ export default function MinistryDashboard() {
         </p>
       </div>
 
-      <div className="mt-8">
-        <VisionGapHero
-          sectors={sectors}
-          trajectoryData={trajectoryData}
-          accentColor={accentColor}
-          country={country}
-          selectedSectorId={selectedSectorId}
-          onSectorChange={setSelectedSectorId}
-          simulationTrajectory={simulationTrajectory}
-        />
+      {/* Tab Navigation */}
+      <div className="mt-6 flex gap-1 border-b border-[#E2E5EB]">
+        <button
+          onClick={() => setActiveTab('overview')}
+          className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
+            activeTab === 'overview'
+              ? 'text-[#0A1628]'
+              : 'text-[#8B95A8] hover:text-[#5A6478]'
+          }`}
+        >
+          Workforce Overview
+          {activeTab === 'overview' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('benchmarking')}
+          className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
+            activeTab === 'benchmarking'
+              ? 'text-[#0A1628]'
+              : 'text-[#8B95A8] hover:text-[#5A6478]'
+          }`}
+        >
+          International Benchmarking
+          {activeTab === 'benchmarking' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
+          )}
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-8">
-        <div className="xl:col-span-2 space-y-6">
-          {selectedSector && (
-            <SectorPanel
-              sector={selectedSector}
-              skills={sectorSkills}
+      {activeTab === 'overview' ? (
+        <>
+          <div className="mt-8">
+            <VisionGapHero
+              sectors={sectors}
+              trajectoryData={trajectoryData}
               accentColor={accentColor}
+              country={country}
+              selectedSectorId={selectedSectorId}
+              onSectorChange={setSelectedSectorId}
+              simulationTrajectory={simulationTrajectory}
             />
-          )}
-          {selectedSector && (
-            <PolicyBriefGenerator
-              visionSlug={country}
-              sectorId={selectedSectorId}
-              sectorName={selectedSector.name}
-              accentColor={accentColor}
-            />
-          )}
-        </div>
+          </div>
 
-        <div>
-          {selectedSector && (
-            <PolicyInterventionSimulator
-              sector={selectedSector}
-              accentColor={accentColor}
-              visionId={visionId}
-              onSimulationResult={(trajectory) => setSimulationTrajectory(trajectory)}
-            />
-          )}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-8">
+            <div className="xl:col-span-2 space-y-6">
+              {selectedSector && (
+                <SectorPanel
+                  sector={selectedSector}
+                  skills={sectorSkills}
+                  accentColor={accentColor}
+                />
+              )}
+              {selectedSector && (
+                <PolicyBriefGenerator
+                  visionSlug={country}
+                  sectorId={selectedSectorId}
+                  sectorName={selectedSector.name}
+                  accentColor={accentColor}
+                />
+              )}
+            </div>
+
+            <div>
+              {selectedSector && (
+                <PolicyInterventionSimulator
+                  sector={selectedSector}
+                  accentColor={accentColor}
+                  visionId={visionId}
+                  onSimulationResult={(trajectory) => setSimulationTrajectory(trajectory)}
+                />
+              )}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="mt-8">
+          <InternationalBenchmarking country={country} accentColor={accentColor} />
         </div>
-      </div>
+      )}
     </div>
   )
 }

@@ -1,16 +1,7 @@
 'use client'
 
-import {
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  ComposedChart,
-  Scatter,
-} from 'recharts'
+import ReactECharts from 'echarts-for-react'
+import { useMemo } from 'react'
 
 interface TrajectoryDataPoint {
   year: number
@@ -32,195 +23,197 @@ function formatYAxisLabel(value: number): string {
   return value.toString()
 }
 
-function formatTooltipValue(value: number | null): string {
-  if (value === null || value === undefined) return '--'
-  return value.toLocaleString()
-}
-
-interface CustomTooltipProps {
-  active?: boolean
-  payload?: Array<{
-    name: string
-    value: number | null
-    color: string
-    dataKey: string
-  }>
-  label?: number
-}
-
-function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
-  if (!active || !payload || payload.length === 0) return null
-
-  return (
-    <div
-      className="rounded-lg px-4 py-3 shadow-xl border border-white/10 text-sm"
-      style={{ backgroundColor: '#0A1628' }}
-    >
-      <p className="text-white/60 font-mono text-xs mb-2">{label}</p>
-      {payload.map((entry) => (
-        <div key={entry.dataKey} className="flex items-center gap-2 py-0.5">
-          <span
-            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-            style={{ backgroundColor: entry.color }}
-          />
-          <span className="text-white/70 text-xs">{entry.name}:</span>
-          <span className="text-white font-medium text-xs ml-auto pl-3">
-            {formatTooltipValue(entry.value)}
-          </span>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-interface CustomLegendProps {
-  payload?: Array<{
-    value: string
-    color: string
-    type: string
-  }>
-}
-
-function CustomLegend({ payload }: CustomLegendProps) {
-  if (!payload) return null
-
-  return (
-    <div className="flex items-center justify-center gap-6 pt-2">
-      {payload.map((entry) => (
-        <div key={entry.value} className="flex items-center gap-2 text-xs text-slate-400">
-          <span
-            className="w-3 h-0.5 rounded"
-            style={{ backgroundColor: entry.color }}
-          />
-          <span>{entry.value}</span>
-        </div>
-      ))}
-    </div>
-  )
-}
-
 export default function GapTrajectoryChart({
   data,
   accentColor,
   targetYear,
 }: GapTrajectoryChartProps) {
-  const sortedData = [...data].sort((a, b) => a.year - b.year)
+  const sortedData = useMemo(() => [...data].sort((a, b) => a.year - b.year), [data])
 
   const hasIntervention = sortedData.some(
     (d) => d.with_intervention !== null && d.with_intervention !== undefined
   )
 
-  const historicalData = sortedData
-    .filter((d) => d.data_type === 'historical')
-    .map((d) => ({
-      year: d.year,
-      historicalDot: d.current_trajectory,
-    }))
+  const historicalPoints = useMemo(
+    () =>
+      sortedData
+        .filter((d) => d.data_type === 'historical' && d.current_trajectory !== null)
+        .map((d) => [d.year, d.current_trajectory]),
+    [sortedData]
+  )
 
-  const chartData = sortedData.map((d) => {
-    const historical = historicalData.find((h) => h.year === d.year)
-    return {
-      ...d,
-      historicalDot: historical?.historicalDot ?? undefined,
-    }
-  })
+  const years = sortedData.map((d) => d.year)
+
+  const option = useMemo(
+    () => ({
+      backgroundColor: 'transparent',
+      grid: {
+        top: 8,
+        right: 16,
+        bottom: 40,
+        left: 52,
+      },
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: '#0A1628',
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 1,
+        padding: [12, 16],
+        textStyle: {
+          color: '#fff',
+          fontSize: 12,
+        },
+        formatter(params: Array<{ seriesName: string; value: number | null; color: string }>) {
+          if (!Array.isArray(params) || params.length === 0) return ''
+          const axisTick = (params[0] as unknown as { axisValue: number }).axisValue
+          let html = `<div style="font-family:monospace;color:rgba(255,255,255,0.6);font-size:11px;margin-bottom:6px">${axisTick}</div>`
+          for (const p of params) {
+            if (p.seriesName === 'Historical Data') continue
+            const val =
+              p.value !== null && p.value !== undefined
+                ? Number(p.value).toLocaleString()
+                : '--'
+            html += `<div style="display:flex;align-items:center;gap:6px;padding:2px 0">
+              <span style="width:8px;height:8px;border-radius:50%;background:${p.color};flex-shrink:0"></span>
+              <span style="color:rgba(255,255,255,0.7);font-size:11px">${p.seriesName}:</span>
+              <span style="color:#fff;font-weight:500;font-size:11px;margin-left:auto;padding-left:12px">${val}</span>
+            </div>`
+          }
+          return html
+        },
+      },
+      legend: {
+        bottom: 0,
+        textStyle: { color: '#94A3B8', fontSize: 11 },
+        icon: 'roundRect',
+        itemWidth: 12,
+        itemHeight: 2,
+        data: [
+          'Current Trajectory',
+          'Vision Target',
+          ...(hasIntervention ? ['With Intervention'] : []),
+        ],
+      },
+      xAxis: {
+        type: 'category',
+        data: years,
+        axisLine: { lineStyle: { color: '#1E293B' } },
+        axisTick: { show: false },
+        axisLabel: { color: '#64748B', fontSize: 11 },
+        max: targetYear,
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          color: '#64748B',
+          fontSize: 11,
+          formatter: formatYAxisLabel,
+        },
+        axisLine: { show: false },
+        axisTick: { show: false },
+        splitLine: {
+          lineStyle: { color: 'rgba(148,163,184,0.08)', type: 'dashed' },
+        },
+      },
+      series: [
+        {
+          name: 'Current Trajectory',
+          type: 'line',
+          data: sortedData.map((d) => d.current_trajectory),
+          smooth: true,
+          connectNulls: true,
+          symbol: 'none',
+          lineStyle: { color: '#EF4444', width: 2, type: 'dashed' },
+          itemStyle: { color: '#EF4444' },
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0, y: 0, x2: 0, y2: 1,
+              colorStops: [
+                { offset: 0, color: 'rgba(239,68,68,0.15)' },
+                { offset: 1, color: 'rgba(239,68,68,0.02)' },
+              ],
+            },
+          },
+          emphasis: {
+            focus: 'series',
+            itemStyle: { borderWidth: 0 },
+          },
+        },
+        {
+          name: 'Vision Target',
+          type: 'line',
+          data: sortedData.map((d) => d.vision_target),
+          smooth: true,
+          connectNulls: true,
+          symbol: 'none',
+          lineStyle: { color: accentColor, width: 2 },
+          itemStyle: { color: accentColor },
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0, y: 0, x2: 0, y2: 1,
+              colorStops: [
+                { offset: 0, color: accentColor + '26' },
+                { offset: 1, color: accentColor + '05' },
+              ],
+            },
+          },
+          emphasis: {
+            focus: 'series',
+            itemStyle: { borderWidth: 0 },
+          },
+        },
+        ...(hasIntervention
+          ? [
+              {
+                name: 'With Intervention',
+                type: 'line',
+                data: sortedData.map((d) => d.with_intervention),
+                smooth: true,
+                connectNulls: true,
+                symbol: 'none',
+                lineStyle: { color: '#16A34A', width: 2, type: 'dashed' },
+                itemStyle: { color: '#16A34A' },
+                areaStyle: {
+                  color: {
+                    type: 'linear',
+                    x: 0, y: 0, x2: 0, y2: 1,
+                    colorStops: [
+                      { offset: 0, color: 'rgba(22,163,74,0.1)' },
+                      { offset: 1, color: 'rgba(22,163,74,0.01)' },
+                    ],
+                  },
+                },
+                emphasis: {
+                  focus: 'series',
+                  itemStyle: { borderWidth: 0 },
+                },
+              },
+            ]
+          : []),
+        {
+          name: 'Historical Data',
+          type: 'scatter',
+          data: historicalPoints,
+          symbol: 'circle',
+          symbolSize: 6,
+          itemStyle: { color: '#94A3B8' },
+          z: 10,
+        },
+      ],
+    }),
+    [sortedData, accentColor, targetYear, hasIntervention, historicalPoints, years]
+  )
 
   return (
     <div className="w-full" style={{ height: 340 }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart
-          data={chartData}
-          margin={{ top: 8, right: 16, left: 0, bottom: 4 }}
-        >
-          <defs>
-            <linearGradient id="gradCurrent" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#EF4444" stopOpacity={0.15} />
-              <stop offset="100%" stopColor="#EF4444" stopOpacity={0.02} />
-            </linearGradient>
-            <linearGradient id="gradVision" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={accentColor} stopOpacity={0.15} />
-              <stop offset="100%" stopColor={accentColor} stopOpacity={0.02} />
-            </linearGradient>
-            <linearGradient id="gradIntervention" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#16A34A" stopOpacity={0.1} />
-              <stop offset="100%" stopColor="#16A34A" stopOpacity={0.01} />
-            </linearGradient>
-          </defs>
-
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="currentColor"
-            className="text-slate-800/40"
-            vertical={false}
-          />
-
-          <XAxis
-            dataKey="year"
-            tick={{ fontSize: 11, fill: '#64748B' }}
-            tickLine={false}
-            axisLine={{ stroke: '#1E293B' }}
-            domain={['dataMin', targetYear]}
-          />
-          <YAxis
-            tickFormatter={formatYAxisLabel}
-            tick={{ fontSize: 11, fill: '#64748B' }}
-            tickLine={false}
-            axisLine={false}
-            width={52}
-          />
-
-          <Tooltip content={<CustomTooltip />} />
-          <Legend content={<CustomLegend />} />
-
-          <Area
-            type="monotone"
-            dataKey="current_trajectory"
-            name="Current Trajectory"
-            stroke="#EF4444"
-            strokeWidth={2}
-            strokeDasharray="6 3"
-            fill="url(#gradCurrent)"
-            dot={false}
-            activeDot={{ r: 4, strokeWidth: 0, fill: '#EF4444' }}
-            connectNulls
-          />
-
-          <Area
-            type="monotone"
-            dataKey="vision_target"
-            name="Vision Target"
-            stroke={accentColor}
-            strokeWidth={2}
-            fill="url(#gradVision)"
-            dot={false}
-            activeDot={{ r: 4, strokeWidth: 0, fill: accentColor }}
-            connectNulls
-          />
-
-          {hasIntervention && (
-            <Area
-              type="monotone"
-              dataKey="with_intervention"
-              name="With Intervention"
-              stroke="#16A34A"
-              strokeWidth={2}
-              strokeDasharray="6 3"
-              fill="url(#gradIntervention)"
-              dot={false}
-              activeDot={{ r: 4, strokeWidth: 0, fill: '#16A34A' }}
-              connectNulls
-            />
-          )}
-
-          <Scatter
-            dataKey="historicalDot"
-            name="Historical Data"
-            fill="#94A3B8"
-            r={3}
-            legendType="none"
-          />
-        </ComposedChart>
-      </ResponsiveContainer>
+      <ReactECharts
+        option={option}
+        style={{ height: '100%', width: '100%' }}
+        opts={{ renderer: 'canvas' }}
+        notMerge
+      />
     </div>
   )
 }
