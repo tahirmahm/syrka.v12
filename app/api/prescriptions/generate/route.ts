@@ -232,7 +232,23 @@ async function generatePrescriptions(
 ): Promise<Partial<PrescriptionState>> {
   const client = createDeepSeekClient()
 
-  const systemPrompt = `You are a national human capital policy advisor with access to OECD, ILO, World Bank, and WEF data. Generate 5 genuinely different policy prescriptions to close ${state.country}'s ${state.sector} workforce gap of ${state.gapWorkers} workers by ${state.targetYear}. Each prescription must address a different lever: (1) curriculum reform, (2) immigration, (3) employer-led training, (4) public-private partnership, (5) regulatory change. Return valid JSON array only. No preamble.`
+  // Fetch uploaded document context from ChromaDB
+  let documentContext = ''
+  try {
+    const chromaRes = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL ? '' : 'http://localhost:3000'}/api/chroma/search?query=${encodeURIComponent(state.sector)}&country=${state.country}`,
+      { signal: AbortSignal.timeout(5000) }
+    )
+    const chromaData = await chromaRes.json()
+    const passages = chromaData.results?.slice(0, 3)?.map((r: { text: string }) => r.text) ?? []
+    if (passages.length > 0) {
+      documentContext = `\n\nAdditional context from ministry's own documents:\n${passages.join('\n\n')}`
+    }
+  } catch {
+    // ChromaDB not available — continue without document context
+  }
+
+  const systemPrompt = `You are a national human capital policy advisor with access to OECD, ILO, World Bank, and WEF data. Generate 5 genuinely different policy prescriptions to close ${state.country}'s ${state.sector} workforce gap of ${state.gapWorkers} workers by ${state.targetYear}. Each prescription must address a different lever: (1) curriculum reform, (2) immigration, (3) employer-led training, (4) public-private partnership, (5) regulatory change. Return valid JSON array only. No preamble.${documentContext}`
 
   const userMessage = `Current workforce: ${state.currentWorkforce}
 Target workforce: ${state.targetWorkforce}

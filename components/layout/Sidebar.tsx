@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Landmark, GraduationCap, Briefcase, User } from 'lucide-react'
 import CountryBadge from './CountryBadge'
+import DocumentUpload from '@/components/ministry/DocumentUpload'
 
 interface SidebarProps {
   country: string
@@ -91,6 +92,10 @@ export default function Sidebar({ country, accentColor, visionName }: SidebarPro
           })}
         </ul>
       </nav>
+
+      {/* Document Upload */}
+      <div className="mx-6 border-t border-white/5" />
+      <DocumentUpload country={country} accentColor={accentColor} />
 
       {/* Divider */}
       <div className="mx-6 border-t border-white/5" />

@@ -7,7 +7,13 @@ import RoleSelector from '@/components/layout/RoleSelector'
 import VisionAlignmentScore from '@/components/student/VisionAlignmentScore'
 import SkillProfileMap from '@/components/student/SkillProfileMap'
 import CareerPathways from '@/components/student/CareerPathways'
+import dynamic from 'next/dynamic'
 import type { Student, Sector } from '@/lib/types'
+
+const ObservablePlotSection = dynamic(
+  () => import('@/components/student/StudentObservableSection'),
+  { ssr: false }
+)
 
 const ACCENT: Record<string, string> = {
   malta: '#1B6B5A',
@@ -124,6 +130,14 @@ export default function StudentDashboard() {
 
       <div className="mt-8">
         <CareerPathways sectors={careerPathways} accentColor={accentColor} />
+      </div>
+
+      <div className="mt-8">
+        <ObservablePlotSection
+          sectors={sectors}
+          skillProfiles={skillProfiles}
+          accentColor={accentColor}
+        />
       </div>
     </div>
   )

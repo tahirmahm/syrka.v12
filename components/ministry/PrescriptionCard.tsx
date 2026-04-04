@@ -27,6 +27,9 @@ interface PrescriptionCardProps {
   accentColor: string
   index: number
   onRunSimulation?: (prescription: Prescription) => void
+  simulationResult?: { expectedValue: number; confidenceLevel: string } | null
+  onViewResults?: () => void
+  isSimulating?: boolean
 }
 
 /* ------------------------------------------------------------------ */
@@ -63,6 +66,9 @@ export default function PrescriptionCard({
   accentColor,
   index,
   onRunSimulation,
+  simulationResult,
+  onViewResults,
+  isSimulating,
 }: PrescriptionCardProps) {
   const [showTooltip, setShowTooltip] = useState(false)
 
@@ -233,33 +239,76 @@ export default function PrescriptionCard({
         </div>
       </div>
 
-      {/* ---- Run Deep Simulation button ---- */}
-      <div className="relative mt-auto pt-2">
-        <button
-          type="button"
-          disabled={prescription.status !== 'not_simulated'}
-          onMouseEnter={() => setShowTooltip(true)}
-          onMouseLeave={() => setShowTooltip(false)}
-          onClick={() => onRunSimulation?.(prescription)}
-          className={`w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
-            prescription.status === 'not_simulated'
-              ? 'text-white hover:opacity-90 cursor-pointer'
-              : 'bg-slate-100 text-slate-400 cursor-not-allowed'
-          }`}
-          style={
-            prescription.status === 'not_simulated'
-              ? { backgroundColor: accentColor }
-              : undefined
-          }
-        >
-          Run Deep Simulation
-        </button>
+      {/* ---- Simulation section ---- */}
+      <div className="relative mt-auto pt-2 space-y-2">
+        {/* Simulating progress */}
+        {isSimulating && (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-100">
+            <div
+              className="h-3.5 w-3.5 rounded-full border-2 border-t-transparent animate-spin"
+              style={{ borderColor: `${accentColor} transparent ${accentColor} ${accentColor}` }}
+            />
+            <span className="text-xs text-amber-700">
+              Simulating 5 scenarios across 27 weighted outcomes...
+            </span>
+          </div>
+        )}
 
-        {showTooltip && prescription.status !== 'not_simulated' && (
+        {/* Simulation result summary */}
+        {simulationResult && prescription.status === 'complete' && (
+          <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-100">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-emerald-700">
+                {simulationResult.expectedValue}% expected
+              </span>
+              <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                simulationResult.confidenceLevel === 'high'
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : simulationResult.confidenceLevel === 'medium'
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'bg-red-100 text-red-700'
+              }`}>
+                {simulationResult.confidenceLevel} confidence
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={onViewResults}
+              className="text-xs font-medium hover:underline"
+              style={{ color: accentColor }}
+            >
+              View Results
+            </button>
+          </div>
+        )}
+
+        {/* Run / View button */}
+        {prescription.status === 'not_simulated' && !isSimulating && (
+          <button
+            type="button"
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+            onClick={() => onRunSimulation?.(prescription)}
+            className="w-full rounded-lg px-4 py-2.5 text-sm font-medium text-white transition-colors hover:opacity-90 cursor-pointer"
+            style={{ backgroundColor: accentColor }}
+          >
+            Run Deep Simulation
+          </button>
+        )}
+
+        {prescription.status === 'complete' && !simulationResult && (
+          <button
+            type="button"
+            disabled
+            className="w-full rounded-lg px-4 py-2.5 text-sm font-medium bg-slate-100 text-slate-400 cursor-not-allowed"
+          >
+            Simulation Complete
+          </button>
+        )}
+
+        {showTooltip && prescription.status === 'running' && (
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap rounded-md bg-slate-800 px-3 py-1.5 text-xs text-white shadow-lg">
-            {prescription.status === 'running'
-              ? 'Simulation in progress...'
-              : 'Simulation already completed'}
+            Simulation in progress...
           </div>
         )}
       </div>
