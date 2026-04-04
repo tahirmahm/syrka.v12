@@ -84,13 +84,30 @@ export default function InternationalBenchmarking({ country, accentColor }: Inte
     )
   }
 
-  if (error || !data) {
+  if (error) {
+    return (
+      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
+        <h3 className="font-display text-lg text-[#0A1628]">International Benchmarking</h3>
+        <p className="text-sm text-slate-500 mt-2">{error}</p>
+      </div>
+    )
+  }
+
+  if (!data || Object.keys(data.latestCountryValues || {}).length === 0) {
     return (
       <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
         <h3 className="font-display text-lg text-[#0A1628]">International Benchmarking</h3>
         <p className="text-sm text-slate-500 mt-2">
-          {error || 'No benchmarking data available. Run the data refresh cron jobs to populate international statistics.'}
+          No international statistics data yet. The Vercel Cron jobs will populate data from World Bank, ILO, OECD, UNESCO, and WEF automatically on a weekly schedule. You can also trigger them manually via the API.
         </p>
+        <div className="mt-4 grid grid-cols-5 gap-3">
+          {['World Bank', 'ILO', 'OECD', 'UNESCO', 'WEF'].map(source => (
+            <div key={source} className="text-center py-3 rounded-lg border border-dashed border-[#E2E5EB]">
+              <p className="text-xs text-[#8B95A8]">{source}</p>
+              <p className="text-[10px] text-slate-400 mt-1">Awaiting data</p>
+            </div>
+          ))}
+        </div>
       </div>
     )
   }

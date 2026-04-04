@@ -14,6 +14,12 @@ const SLUG_TO_CODE: Record<string, string> = {
   kuwait: 'KW',
 }
 
+const CODE_TO_NAME: Record<string, string> = {
+  MT: 'Malta', SA: 'Saudi Arabia', CY: 'Cyprus', EE: 'Estonia',
+  SI: 'Slovenia', LU: 'Luxembourg', AE: 'UAE', QA: 'Qatar',
+  BH: 'Bahrain', KW: 'Kuwait',
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ country: string }> }
@@ -125,11 +131,54 @@ export async function GET(
       a.indicator_code.localeCompare(b.indicator_code) || a.year - b.year
     )
 
+    // Build the response format expected by the frontend
+    // Group stats by country_code -> indicator_code -> [{year, value}]
+    const countryIndicators: Record<string, { year: number; value: number }[]> = {}
+    const peerIndicatorMap: Record<string, Record<string, { year: number; value: number }[]>> = {}
+
+    for (const row of stats ?? []) {
+      if (row.country_code === countryCode) {
+        if (!countryIndicators[row.indicator_code]) countryIndicators[row.indicator_code] = []
+        countryIndicators[row.indicator_code].push({ year: row.year, value: row.value })
+      } else {
+        if (!peerIndicatorMap[row.country_code]) peerIndicatorMap[row.country_code] = {}
+        if (!peerIndicatorMap[row.country_code][row.indicator_code]) peerIndicatorMap[row.country_code][row.indicator_code] = []
+        peerIndicatorMap[row.country_code][row.indicator_code].push({ year: row.year, value: row.value })
+      }
+    }
+
+    // Compute latest country values and peer averages per indicator
+    const latestCountryValues: Record<string, number> = {}
+    const peerAverage: Record<string, number> = {}
+
+    for (const b of benchmarks) {
+      if (b.country_value !== null && !latestCountryValues[b.indicator_code]) {
+        latestCountryValues[b.indicator_code] = b.country_value
+      }
+      if (b.peer_average !== null && !peerAverage[b.indicator_code]) {
+        peerAverage[b.indicator_code] = b.peer_average
+      }
+    }
+
+    // Use latest year values
+    for (const [code, years] of Object.entries(countryIndicators)) {
+      const sorted = years.sort((a, b) => b.year - a.year)
+      if (sorted.length > 0) latestCountryValues[code] = sorted[0].value
+    }
+
     return NextResponse.json({
-      country_code: countryCode,
-      peer_codes: peerCodes,
-      benchmarks,
-      count: benchmarks.length,
+      country: {
+        code: countryCode,
+        name: CODE_TO_NAME[countryCode] || countryCode,
+        indicators: countryIndicators,
+      },
+      peers: peerCodes.map(pc => ({
+        code: pc,
+        name: CODE_TO_NAME[pc] || pc,
+        indicators: peerIndicatorMap[pc] || {},
+      })),
+      peerAverage,
+      latestCountryValues,
     })
   } catch (err: unknown) {
     return NextResponse.json(
