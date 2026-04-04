@@ -45,7 +45,7 @@ export default async function LandingPage() {
         <div className="text-center">
           <h1 className="font-display text-4xl text-white tracking-wide">SYRKA</h1>
           <p className="text-white/60 text-sm tracking-[0.2em] uppercase mt-1">
-            National Human Capital Intelligence
+            National Human Capital Intelligence Platform
           </p>
         </div>
       </header>
@@ -152,8 +152,23 @@ export default async function LandingPage() {
         </Link>
       </div>
 
-      <footer className="absolute bottom-0 left-0 right-0 z-20 text-center py-6">
+      <footer className="absolute bottom-0 left-0 right-0 z-20 text-center py-6 space-y-2">
         <p className="text-white/30 text-xs tracking-wider">From National Vision to Human Capital Reality</p>
+        <div className="flex items-center justify-center gap-4 text-white/20 text-[10px] tracking-wider">
+          <span>World Bank</span>
+          <span className="w-px h-2.5 bg-white/10" />
+          <span>ILO</span>
+          <span className="w-px h-2.5 bg-white/10" />
+          <span>OECD</span>
+          <span className="w-px h-2.5 bg-white/10" />
+          <span>UNESCO</span>
+          <span className="w-px h-2.5 bg-white/10" />
+          <span>QS Rankings</span>
+          <span className="w-px h-2.5 bg-white/10" />
+          <span>ESCO</span>
+          <span className="w-px h-2.5 bg-white/10" />
+          <span>Wikidata</span>
+        </div>
       </footer>
     </div>
   )

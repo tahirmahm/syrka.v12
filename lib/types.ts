@@ -209,6 +209,69 @@ export interface CurriculumAnalysisResult {
   employer_readiness_impact: string
 }
 
+// Sprint 1: International data types
+
+export interface InternationalStat {
+  id: string
+  country_code: string
+  source: string
+  indicator_code: string
+  indicator_name: string
+  year: number
+  value: number | null
+  unit: string | null
+  fetched_at: string
+}
+
+export interface CourseSkillMapping {
+  id: string
+  course_id: string
+  esco_skill_uri: string
+  esco_skill_label: string
+  relevance_score: number | null
+  mapped_at: string
+}
+
+export interface UniversityRanking {
+  id: string
+  institution_id: string | null
+  institution_name: string
+  ranking_system: string
+  year: number
+  overall_rank: string | null
+  overall_score: number | null
+  ar_score: number | null
+  ar_rank: string | null
+  er_score: number | null
+  er_rank: string | null
+  fsr_score: number | null
+  fsr_rank: string | null
+  cpf_score: number | null
+  cpf_rank: string | null
+  ifr_score: number | null
+  ifr_rank: string | null
+  isr_score: number | null
+  isr_rank: string | null
+  isd_score: number | null
+  isd_rank: string | null
+  irn_score: number | null
+  irn_rank: string | null
+  eo_score: number | null
+  eo_rank: string | null
+  sus_score: number | null
+  sus_rank: string | null
+  location_code: string | null
+  country: string | null
+}
+
+export interface PeerGroup {
+  id: string
+  country_code: string
+  peer_country_codes: string[]
+  similarity_basis: string | null
+  created_at: string
+}
+
 export type UserRole = 'ministry' | 'university' | 'employer' | 'student'
 
 export interface CountryConfig {

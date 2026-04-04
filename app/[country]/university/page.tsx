@@ -6,6 +6,7 @@ import { createBrowserClient } from '@/lib/supabase'
 import RoleSelector from '@/components/layout/RoleSelector'
 import InstitutionSelector from '@/components/university/InstitutionSelector'
 import ProgrammeAlignmentTable from '@/components/university/ProgrammeAlignmentTable'
+import RankingsIntelligence from '@/components/university/RankingsIntelligence'
 import type { Institution, Programme } from '@/lib/types'
 
 const ACCENT: Record<string, string> = {
@@ -22,6 +23,7 @@ export default function UniversityDashboard() {
   const [selectedInstitutionId, setSelectedInstitutionId] = useState<string>('')
   const [programmes, setProgrammes] = useState<Programme[]>([])
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<'alignment' | 'rankings'>('alignment')
 
   useEffect(() => {
     async function loadData() {
@@ -83,7 +85,7 @@ export default function UniversityDashboard() {
       <RoleSelector role="University" accentColor={accentColor} />
 
       <div className="mt-6">
-        <h1 className="font-display text-3xl text-[#0A1628]">Institution & Programme Alignment</h1>
+        <h1 className="font-display text-3xl text-[#0A1628]">Institution & Programme Intelligence</h1>
         <p className="text-[#5A6478] mt-1 text-sm">
           Measuring educational output against national vision workforce requirements
         </p>
@@ -118,12 +120,54 @@ export default function UniversityDashboard() {
         </div>
       )}
 
-      <div className="mt-8">
-        <ProgrammeAlignmentTable
-          programmes={programmes}
-          accentColor={accentColor}
-        />
+      {/* Tab Navigation */}
+      <div className="mt-6 flex gap-1 border-b border-[#E2E5EB]">
+        <button
+          onClick={() => setActiveTab('alignment')}
+          className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
+            activeTab === 'alignment'
+              ? 'text-[#0A1628]'
+              : 'text-[#8B95A8] hover:text-[#5A6478]'
+          }`}
+        >
+          Programme Alignment
+          {activeTab === 'alignment' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('rankings')}
+          className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
+            activeTab === 'rankings'
+              ? 'text-[#0A1628]'
+              : 'text-[#8B95A8] hover:text-[#5A6478]'
+          }`}
+        >
+          Rankings Intelligence
+          {activeTab === 'rankings' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
+          )}
+        </button>
       </div>
+
+      {activeTab === 'alignment' ? (
+        <div className="mt-8">
+          <ProgrammeAlignmentTable
+            programmes={programmes}
+            accentColor={accentColor}
+          />
+        </div>
+      ) : (
+        <div className="mt-8">
+          {selectedInstitution && (
+            <RankingsIntelligence
+              institutionName={selectedInstitution.name}
+              accentColor={accentColor}
+              country={country}
+            />
+          )}
+        </div>
+      )}
     </div>
   )
 }

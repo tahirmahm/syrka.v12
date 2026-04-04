@@ -1,16 +1,7 @@
 'use client'
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts'
+import ReactECharts from 'echarts-for-react'
+import { useMemo } from 'react'
 
 interface ScenarioDataPoint {
   year: number
@@ -29,142 +20,120 @@ function formatYAxisLabel(value: number): string {
   return value.toString()
 }
 
-interface CustomTooltipProps {
-  active?: boolean
-  payload?: Array<{
-    name: string
-    value: number
-    color: string
-    dataKey: string
-  }>
-  label?: number
-}
-
-function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
-  if (!active || !payload || payload.length === 0) return null
-
-  const before = payload.find((p) => p.dataKey === 'before')
-  const after = payload.find((p) => p.dataKey === 'after')
-  const reduction =
-    before && after && before.value > 0
-      ? Math.round(((before.value - after.value) / before.value) * 100)
-      : null
-
-  return (
-    <div
-      className="rounded-lg px-4 py-3 shadow-xl border border-white/10 text-sm"
-      style={{ backgroundColor: '#0A1628' }}
-    >
-      <p className="text-white/60 font-mono text-xs mb-2">{label}</p>
-      {payload.map((entry) => (
-        <div key={entry.dataKey} className="flex items-center gap-2 py-0.5">
-          <span
-            className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
-            style={{ backgroundColor: entry.color }}
-          />
-          <span className="text-white/70 text-xs">{entry.name}:</span>
-          <span className="text-white font-medium text-xs ml-auto pl-3">
-            {entry.value.toLocaleString()}
-          </span>
-        </div>
-      ))}
-      {reduction !== null && (
-        <div className="mt-1.5 pt-1.5 border-t border-white/10">
-          <span className="text-xs text-emerald-400">
-            {reduction}% gap reduction
-          </span>
-        </div>
-      )}
-    </div>
-  )
-}
-
-interface CustomLegendProps {
-  payload?: Array<{
-    value: string
-    color: string
-  }>
-}
-
-function CustomLegend({ payload }: CustomLegendProps) {
-  if (!payload) return null
-
-  return (
-    <div className="flex items-center justify-center gap-6 pt-2">
-      {payload.map((entry) => (
-        <div key={entry.value} className="flex items-center gap-2 text-xs text-slate-400">
-          <span
-            className="w-3 h-3 rounded-sm"
-            style={{ backgroundColor: entry.color }}
-          />
-          <span>{entry.value}</span>
-        </div>
-      ))}
-    </div>
-  )
-}
-
 export default function ScenarioComparisonChart({
   data,
   accentColor,
 }: ScenarioComparisonChartProps) {
-  const sortedData = [...data].sort((a, b) => a.year - b.year)
+  const sortedData = useMemo(() => [...data].sort((a, b) => a.year - b.year), [data])
+
+  const option = useMemo(
+    () => ({
+      backgroundColor: 'transparent',
+      grid: {
+        top: 8,
+        right: 16,
+        bottom: 40,
+        left: 52,
+      },
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: '#0A1628',
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 1,
+        padding: [12, 16],
+        textStyle: {
+          color: '#fff',
+          fontSize: 12,
+        },
+        formatter(params: Array<{ seriesName: string; value: number; color: string; axisValue: string }>) {
+          if (!Array.isArray(params) || params.length === 0) return ''
+          const year = params[0].axisValue
+          const before = params.find((p) => p.seriesName === 'Before Intervention')
+          const after = params.find((p) => p.seriesName === 'After Intervention')
+          const reduction =
+            before && after && before.value > 0
+              ? Math.round(((before.value - after.value) / before.value) * 100)
+              : null
+
+          let html = `<div style="font-family:monospace;color:rgba(255,255,255,0.6);font-size:11px;margin-bottom:6px">${year}</div>`
+          for (const p of params) {
+            html += `<div style="display:flex;align-items:center;gap:6px;padding:2px 0">
+              <span style="width:8px;height:8px;border-radius:2px;background:${p.color};flex-shrink:0"></span>
+              <span style="color:rgba(255,255,255,0.7);font-size:11px">${p.seriesName}:</span>
+              <span style="color:#fff;font-weight:500;font-size:11px;margin-left:auto;padding-left:12px">${Number(p.value).toLocaleString()}</span>
+            </div>`
+          }
+          if (reduction !== null) {
+            html += `<div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.1)">
+              <span style="color:#34D399;font-size:11px">${reduction}% gap reduction</span>
+            </div>`
+          }
+          return html
+        },
+      },
+      legend: {
+        bottom: 0,
+        textStyle: { color: '#94A3B8', fontSize: 11 },
+        icon: 'roundRect',
+        itemWidth: 12,
+        itemHeight: 12,
+      },
+      xAxis: {
+        type: 'category',
+        data: sortedData.map((d) => d.year),
+        axisLine: { lineStyle: { color: '#1E293B' } },
+        axisTick: { show: false },
+        axisLabel: { color: '#64748B', fontSize: 11 },
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          color: '#64748B',
+          fontSize: 11,
+          formatter: formatYAxisLabel,
+        },
+        axisLine: { show: false },
+        axisTick: { show: false },
+        splitLine: {
+          lineStyle: { color: 'rgba(148,163,184,0.08)', type: 'dashed' },
+        },
+      },
+      series: [
+        {
+          name: 'Before Intervention',
+          type: 'bar',
+          data: sortedData.map((d) => d.before),
+          itemStyle: {
+            color: '#EF4444',
+            opacity: 0.7,
+            borderRadius: [3, 3, 0, 0],
+          },
+          barGap: '10%',
+          barCategoryGap: '20%',
+        },
+        {
+          name: 'After Intervention',
+          type: 'bar',
+          data: sortedData.map((d) => d.after),
+          itemStyle: {
+            color: accentColor,
+            opacity: 0.85,
+            borderRadius: [3, 3, 0, 0],
+          },
+        },
+      ],
+    }),
+    [sortedData, accentColor]
+  )
 
   return (
     <div className="w-full" style={{ height: 280 }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={sortedData}
-          margin={{ top: 8, right: 16, left: 0, bottom: 4 }}
-          barCategoryGap="20%"
-          barGap={2}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="currentColor"
-            className="text-slate-800/40"
-            vertical={false}
-          />
-          <XAxis
-            dataKey="year"
-            tick={{ fontSize: 11, fill: '#64748B' }}
-            tickLine={false}
-            axisLine={{ stroke: '#1E293B' }}
-          />
-          <YAxis
-            tickFormatter={formatYAxisLabel}
-            tick={{ fontSize: 11, fill: '#64748B' }}
-            tickLine={false}
-            axisLine={false}
-            width={52}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend content={<CustomLegend />} />
-
-          <Bar
-            dataKey="before"
-            name="Before Intervention"
-            fill="#EF4444"
-            radius={[3, 3, 0, 0]}
-            opacity={0.8}
-          >
-            {sortedData.map((_, index) => (
-              <Cell key={`before-${index}`} fill="#EF4444" fillOpacity={0.7} />
-            ))}
-          </Bar>
-
-          <Bar
-            dataKey="after"
-            name="After Intervention"
-            fill={accentColor}
-            radius={[3, 3, 0, 0]}
-          >
-            {sortedData.map((_, index) => (
-              <Cell key={`after-${index}`} fill={accentColor} fillOpacity={0.85} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+      <ReactECharts
+        option={option}
+        style={{ height: '100%', width: '100%' }}
+        opts={{ renderer: 'canvas' }}
+        notMerge
+      />
     </div>
   )
 }
