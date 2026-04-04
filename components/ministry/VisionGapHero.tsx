@@ -185,7 +185,7 @@ export default function VisionGapHero({
                 ${
                   isActive
                     ? 'text-white border-transparent'
-                    : 'text-white/40 border-white/8 hover:text-white/70 hover:border-white/15 bg-transparent'
+                    : 'text-[#5A6478] border-[#E2E5EB] hover:text-[#0A1628] hover:border-[#C5CAD3] bg-white'
                 }
               `}
               style={
