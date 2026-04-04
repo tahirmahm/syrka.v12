@@ -19,6 +19,14 @@
     {
       "path": "/api/stats/refresh/wef",
       "schedule": "0 3 * * 5"
+    },
+    {
+      "path": "/api/mirofish/ping",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/mirofish/retry-stuck",
+      "schedule": "*/5 * * * *"
     }
   ]
 }
