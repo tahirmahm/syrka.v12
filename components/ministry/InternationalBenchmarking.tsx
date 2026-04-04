@@ -55,17 +55,21 @@ function normalizeValue(value: number, indicator: string): number {
 export default function InternationalBenchmarking({ country, accentColor }: InternationalBenchmarkingProps) {
   const [data, setData] = useState<BenchmarkData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [selectedIndicator, setSelectedIndicator] = useState('SL.UEM.TOTL.ZS')
 
   const loadData = useCallback(async () => {
     try {
       const res = await fetch(`/api/benchmark/${country}`)
-      if (!res.ok) throw new Error('Failed to fetch benchmark data')
       const json = await res.json()
-      setData(json)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load benchmarking data')
+      if (!res.ok) {
+        // API returned an error, but we can still show the empty state
+        setData(null)
+      } else {
+        setData(json)
+      }
+    } catch {
+      // Network error or JSON parse failure — show empty state, not error
+      setData(null)
     } finally {
       setLoading(false)
     }
@@ -80,15 +84,6 @@ export default function InternationalBenchmarking({ country, accentColor }: Inte
           <div className="h-6 bg-slate-200 rounded w-48" />
           <div className="h-64 bg-slate-200 rounded" />
         </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-        <h3 className="font-display text-lg text-[#0A1628]">International Benchmarking</h3>
-        <p className="text-sm text-slate-500 mt-2">{error}</p>
       </div>
     )
   }

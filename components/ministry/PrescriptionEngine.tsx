@@ -87,8 +87,9 @@ export default function PrescriptionEngine({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           country,
+          sector: sector.name,
           sector_id: sector.id,
-          sector_name: sector.name,
+          gap_workers: sector.target_workforce - sector.current_workforce,
           current_workforce: sector.current_workforce,
           target_workforce: sector.target_workforce,
           target_year: sector.target_year,
