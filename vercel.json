@@ -1,32 +1,10 @@
 {
   "crons": [
-    {
-      "path": "/api/stats/refresh/worldbank",
-      "schedule": "0 3 * * 1"
-    },
-    {
-      "path": "/api/stats/refresh/ilo",
-      "schedule": "0 3 * * 2"
-    },
-    {
-      "path": "/api/stats/refresh/oecd",
-      "schedule": "0 3 * * 3"
-    },
-    {
-      "path": "/api/stats/refresh/unesco",
-      "schedule": "0 3 * * 4"
-    },
-    {
-      "path": "/api/stats/refresh/wef",
-      "schedule": "0 3 * * 5"
-    },
-    {
-      "path": "/api/mirofish/ping",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/mirofish/retry-stuck",
-      "schedule": "0 */6 * * *"
-    }
+    {"path": "/api/stats/refresh/worldbank", "schedule": "0 2 * * *"},
+    {"path": "/api/stats/refresh/ilo", "schedule": "0 3 * * *"},
+    {"path": "/api/stats/refresh/oecd", "schedule": "0 4 * * *"},
+    {"path": "/api/stats/refresh/unesco", "schedule": "0 5 * * *"},
+    {"path": "/api/stats/refresh/wef", "schedule": "0 6 * * *"},
+    {"path": "/api/mirofish/ping", "schedule": "0 8 * * *"}
   ]
 }

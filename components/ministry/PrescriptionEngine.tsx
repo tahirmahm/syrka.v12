@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import PrescriptionCard from './PrescriptionCard'
 import SimulationBriefDrawer from './SimulationBriefDrawer'
 import ScenarioComparisonModal from './ScenarioComparisonModal'
@@ -297,6 +297,68 @@ ${chromaContext.results?.slice(0, 3)?.map((r: { text: string }) => r.text).join(
     }
   }, [country, sector])
 
+  /* ------ Client-side stuck job recovery ------ */
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    // Poll running simulation jobs every 30s; if stuck > 20min, check MiroFish and update
+    const runningIndices = prescriptions
+      .map((p, i) => (p.status === 'running' ? i : -1))
+      .filter((i) => i >= 0)
+
+    if (runningIndices.length === 0) {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+        pollingRef.current = null
+      }
+      return
+    }
+
+    if (pollingRef.current) return // already polling
+
+    const startTime = Date.now()
+
+    pollingRef.current = setInterval(async () => {
+      const elapsedMs = Date.now() - startTime
+      const supabase = createBrowserClient()
+
+      for (const idx of runningIndices) {
+        const simResult = simulationResults[idx]
+        if (!simResult) continue
+
+        // After 20 minutes, try to recover
+        if (elapsedMs > 20 * 60 * 1000) {
+          try {
+            const res = await fetch(`/api/mirofish/status/${simResult.id}`)
+            const data = await res.json()
+
+            if (data.status === 'complete' || data.error === 'simulation_unavailable') {
+              await supabase
+                .from('simulation_jobs')
+                .update({ status: 'failed' })
+                .eq('id', simResult.id)
+
+              setPrescriptions((prev) =>
+                prev.map((p, i) =>
+                  i === idx ? { ...p, status: 'not_simulated' as const } : p
+                )
+              )
+            }
+          } catch {
+            // Silently continue polling
+          }
+        }
+      }
+    }, 30000)
+
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+        pollingRef.current = null
+      }
+    }
+  }, [prescriptions, simulationResults])
+
   /* ------ Gap info ------ */
   const gap = sector.target_workforce - sector.current_workforce
   const gapFormatted =
@@ -429,6 +491,21 @@ ${chromaContext.results?.slice(0, 3)?.map((r: { text: string }) => r.text).join(
         open={activeDrawerIndex !== null}
         onClose={() => setActiveDrawerIndex(null)}
         accentColor={accentColor}
+        onRetry={activeDrawerIndex !== null ? () => {
+          const idx = activeDrawerIndex
+          setActiveDrawerIndex(null)
+          const rx = prescriptions[idx]
+          if (rx) {
+            setPrescriptions(prev => prev.map((p, i) =>
+              i === idx ? { ...p, status: 'not_simulated' as const } : p
+            ))
+            setSimulationResults(prev => {
+              const next = { ...prev }
+              delete next[idx]
+              return next
+            })
+          }
+        } : undefined}
       />
 
       {/* ---- Scenario Comparison Modal ---- */}

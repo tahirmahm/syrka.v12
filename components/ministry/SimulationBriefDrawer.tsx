@@ -38,6 +38,7 @@ interface SimulationBriefDrawerProps {
   open: boolean
   onClose: () => void
   accentColor: string
+  onRetry?: () => void
 }
 
 /* ------------------------------------------------------------------ */
@@ -85,7 +86,30 @@ export default function SimulationBriefDrawer({
   open,
   onClose,
   accentColor,
+  onRetry,
 }: SimulationBriefDrawerProps) {
+  const [retrying, setRetrying] = useState(false)
+
+  const handleRetry = useCallback(async () => {
+    if (!result || !onRetry) return
+    setRetrying(true)
+    try {
+      // Check MiroFish status directly
+      const res = await fetch(`/api/mirofish/status/${result.id}`)
+      const data = await res.json()
+      if (data.status === 'complete' && data.result) {
+        // Status recovered — trigger parent refresh
+        onRetry()
+      } else {
+        // Re-run the simulation
+        onRetry()
+      }
+    } catch {
+      onRetry()
+    } finally {
+      setRetrying(false)
+    }
+  }, [result, onRetry])
   const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([])
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
@@ -281,7 +305,21 @@ export default function SimulationBriefDrawer({
             </ul>
           </section>
 
-          {/* 8. Stakeholder Chat */}
+          {/* 8. Retry Simulation */}
+          {onRetry && (
+            <section>
+              <button
+                type="button"
+                onClick={handleRetry}
+                disabled={retrying}
+                className="rounded-lg px-4 py-2 text-sm font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50"
+              >
+                {retrying ? 'Retrying...' : 'Retry Simulation'}
+              </button>
+            </section>
+          )}
+
+          {/* 9. Stakeholder Chat */}
           <section>
             <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">Stakeholder Chat</h3>
 
