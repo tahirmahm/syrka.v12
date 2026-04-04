@@ -37,12 +37,12 @@ export async function GET(
 
     const supabase = createClient()
 
-    // Fetch peer group for this country
-    const { data: peerGroup, error: peerError } = await supabase
+    // Fetch peer group for this country (limit 1 in case of duplicates)
+    const { data: peerGroups, error: peerError } = await supabase
       .from('peer_groups')
       .select('peer_country_codes')
       .eq('country_code', countryCode)
-      .single()
+      .limit(1)
 
     if (peerError) {
       return NextResponse.json(
@@ -51,7 +51,21 @@ export async function GET(
       )
     }
 
-    const peerCodes: string[] = peerGroup.peer_country_codes ?? []
+    // Fallback peer groups in case the table is empty or RLS blocks reads
+    const FALLBACK_PEERS: Record<string, string[]> = {
+      MT: ['CY', 'EE', 'SI', 'LU'],
+      SA: ['AE', 'QA', 'BH', 'KW'],
+    }
+
+    const peerGroup = peerGroups?.[0]
+    const peerCodes: string[] = peerGroup?.peer_country_codes ?? FALLBACK_PEERS[countryCode] ?? []
+
+    if (peerCodes.length === 0) {
+      return NextResponse.json(
+        { error: `No peer group configured for ${countryCode}` },
+        { status: 404 }
+      )
+    }
     const allCodes = [countryCode, ...peerCodes]
 
     // Fetch international stats for country and all peers
