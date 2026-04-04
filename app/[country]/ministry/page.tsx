@@ -9,6 +9,7 @@ import PolicyInterventionSimulator from '@/components/ministry/PolicyInterventio
 import PolicyBriefGenerator from '@/components/ministry/PolicyBriefGenerator'
 import SectorPanel from '@/components/ministry/SectorPanel'
 import InternationalBenchmarking from '@/components/ministry/InternationalBenchmarking'
+import PrescriptionEngine from '@/components/ministry/PrescriptionEngine'
 import type { Sector, Skill } from '@/lib/types'
 
 interface SimTrajectoryPoint {
@@ -178,6 +179,19 @@ export default function MinistryDashboard() {
                   visionSlug={country}
                   sectorId={selectedSectorId}
                   sectorName={selectedSector.name}
+                  accentColor={accentColor}
+                />
+              )}
+              {selectedSector && (
+                <PrescriptionEngine
+                  country={country}
+                  sector={{
+                    id: selectedSector.id,
+                    name: selectedSector.name,
+                    current_workforce: selectedSector.current_workforce,
+                    target_workforce: selectedSector.target_workforce,
+                    target_year: selectedSector.target_year,
+                  }}
                   accentColor={accentColor}
                 />
               )}

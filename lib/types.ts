@@ -272,6 +272,25 @@ export interface PeerGroup {
   created_at: string
 }
 
+// Sprint 2: Prescription types
+
+export interface Prescription {
+  id?: string
+  title: string
+  what_to_do: string
+  why_closes_gap: string
+  gap_closure_percent: number
+  cost_estimate: string
+  timeline: 'short' | 'medium' | 'long'
+  key_risk: string
+  esco_skill_codes: string[]
+  wef_skill_alignment: { aligned: boolean; global_rank: number | null; trend: string }
+  ranking_impact: { indicator: string; projected_change: string } | null
+  confidence_score: number
+  lever: 'curriculum_reform' | 'immigration' | 'employer_training' | 'public_private_partnership' | 'regulatory_change'
+  status: 'not_simulated' | 'running' | 'complete' | 'compared'
+}
+
 export type UserRole = 'ministry' | 'university' | 'employer' | 'student'
 
 export interface CountryConfig {
