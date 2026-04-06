@@ -23,11 +23,8 @@ function formatYAxisLabel(value: number): string {
   return value.toString()
 }
 
-export default function GapTrajectoryChart({
-  data,
-  accentColor,
-  targetYear,
-}: GapTrajectoryChartProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function GapTrajectoryChart({ data, accentColor, targetYear }: GapTrajectoryChartProps) {
   const sortedData = useMemo(() => [...data].sort((a, b) => a.year - b.year), [data])
 
   const hasIntervention = sortedData.some(
@@ -202,7 +199,7 @@ export default function GapTrajectoryChart({
         },
       ],
     }),
-    [sortedData, accentColor, targetYear, hasIntervention, historicalPoints, years]
+    [sortedData, accentColor, hasIntervention, historicalPoints, years]
   )
 
   return (

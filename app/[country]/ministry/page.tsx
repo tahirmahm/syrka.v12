@@ -10,6 +10,8 @@ import PolicyBriefGenerator from '@/components/ministry/PolicyBriefGenerator'
 import SectorPanel from '@/components/ministry/SectorPanel'
 import InternationalBenchmarking from '@/components/ministry/InternationalBenchmarking'
 import PrescriptionEngine from '@/components/ministry/PrescriptionEngine'
+import SyrkaScoreWidget from '@/components/ministry/SyrkaScoreWidget'
+import PolicyBriefExport from '@/components/ministry/PolicyBriefExport'
 import type { Sector, Skill } from '@/lib/types'
 
 interface SimTrajectoryPoint {
@@ -114,11 +116,17 @@ export default function MinistryDashboard() {
     <div className="p-8">
       <RoleSelector role="Ministry" accentColor={accentColor} />
 
-      <div className="mt-6">
-        <h1 className="font-display text-3xl text-[#0A1628]">National Workforce Gap Overview</h1>
-        <p className="text-[#5A6478] mt-1 text-sm">
-          Strategic human capital intelligence for {country === 'saudi' ? 'Saudi Vision 2030' : 'Malta Vision 2050'}
-        </p>
+      <div className="mt-6 flex items-start justify-between gap-6">
+        <div>
+          <h1 className="font-display text-3xl text-[#0A1628]">National Workforce Gap Overview</h1>
+          <p className="text-[#5A6478] mt-1 text-sm">
+            Strategic human capital intelligence for {country === 'saudi' ? 'Saudi Vision 2030' : 'Malta Vision 2050'}
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <PolicyBriefExport country={country} accentColor={accentColor} hasPrescriptions={true} />
+          <SyrkaScoreWidget country={country} accentColor={accentColor} />
+        </div>
       </div>
 
       {/* Tab Navigation */}

@@ -1,10 +1,12 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Landmark, GraduationCap, Briefcase, User } from 'lucide-react'
 import CountryBadge from './CountryBadge'
 import DocumentUpload from '@/components/ministry/DocumentUpload'
+import AddCountryModal from './AddCountryModal'
 
 interface SidebarProps {
   country: string
@@ -26,6 +28,13 @@ const countrySwitcher = [
 
 export default function Sidebar({ country, accentColor, visionName }: SidebarProps) {
   const pathname = usePathname()
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [showAddCountry, setShowAddCountry] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setIsAdmin(process.env.NODE_ENV === 'development' || params.get('admin') === 'true')
+  }, [])
 
   return (
     <aside
@@ -131,7 +140,17 @@ export default function Sidebar({ country, accentColor, visionName }: SidebarPro
             )
           })}
         </ul>
+        {isAdmin && (
+          <button
+            onClick={() => setShowAddCountry(true)}
+            className="mt-2 mx-3 px-3 py-2 rounded-lg text-sm text-white/30 hover:text-white/60 hover:bg-white/[0.03] transition-colors w-[calc(100%-24px)] text-left"
+          >
+            + Add Country
+          </button>
+        )}
       </div>
+
+      {showAddCountry && <AddCountryModal onClose={() => setShowAddCountry(false)} />}
     </aside>
   )
 }
