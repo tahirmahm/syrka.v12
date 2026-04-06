@@ -70,10 +70,13 @@ export async function GET(
 
     const supabase = createClient()
 
+    // Strip parenthesized abbreviations like "(KFUPM)" for fuzzy matching
+    const searchName = institutionName.replace(/\s*\([^)]*\)\s*$/, '').trim()
+
     const { data: rankings, error } = await supabase
       .from('university_rankings')
       .select('*')
-      .ilike('institution_name', `%${institutionName}%`)
+      .ilike('institution_name', `%${searchName}%`)
       .order('year', { ascending: false })
 
     if (error) {
@@ -81,7 +84,7 @@ export async function GET(
     }
 
     // Fetch peer institutions
-    const peerNames = getPeerInstitutions(institutionName)
+    const peerNames = getPeerInstitutions(searchName)
     const { data: peers } = await supabase
       .from('university_rankings')
       .select('*')
