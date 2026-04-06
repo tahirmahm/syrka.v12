@@ -37,6 +37,22 @@ function calculateRankTrend(
   return current - previous
 }
 
+function getPeerInstitutions(name: string): string[] {
+  const peerGroups: Record<string, string[]> = {
+    Malta: [
+      'University of Cyprus', 'University of Ljubljana',
+      'Tallinn University of Technology', 'University of Luxembourg',
+    ],
+    Saudi: [
+      'King Fahd University of Petroleum and Minerals',
+      'King Saud University', 'King Abdulaziz University',
+      'United Arab Emirates University', 'Qatar University',
+    ],
+  }
+  if (name.toLowerCase().includes('malta')) return peerGroups.Malta
+  return peerGroups.Saudi
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ institution: string }> }
@@ -57,12 +73,20 @@ export async function GET(
     const { data: rankings, error } = await supabase
       .from('university_rankings')
       .select('*')
-      .ilike('institution_name', institutionName)
+      .ilike('institution_name', `%${institutionName}%`)
       .order('year', { ascending: false })
 
     if (error) {
       throw new Error(`Query error: ${error.message}`)
     }
+
+    // Fetch peer institutions
+    const peerNames = getPeerInstitutions(institutionName)
+    const { data: peers } = await supabase
+      .from('university_rankings')
+      .select('*')
+      .in('institution_name', peerNames)
+      .order('year', { ascending: true })
 
     if (!rankings || rankings.length === 0) {
       return NextResponse.json(
@@ -114,6 +138,7 @@ export async function GET(
       institution: rankings[0].institution_name,
       country: rankings[0].country,
       rankings: rankingsWithTrends,
+      peers: peers ?? [],
     })
   } catch (error) {
     console.error('Rankings fetch error:', error)

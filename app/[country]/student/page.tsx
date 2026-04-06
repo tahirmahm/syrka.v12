@@ -134,8 +134,7 @@ export default function StudentDashboard() {
 
       <div className="mt-8">
         <ObservablePlotSection
-          sectors={sectors}
-          skillProfiles={skillProfiles}
+          country={country}
           accentColor={accentColor}
         />
       </div>

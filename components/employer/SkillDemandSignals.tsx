@@ -14,6 +14,18 @@ const CRITICALITY_STYLES: Record<string, { bg: string; text: string; border: str
   low: { bg: 'bg-gray-50', text: 'text-gray-500', border: 'border-gray-200' },
 }
 
+const DEMAND_TAG_STYLES: Record<string, { bg: string; text: string }> = {
+  Growing: { bg: 'bg-emerald-50', text: 'text-emerald-700' },
+  Stable: { bg: 'bg-slate-50', text: 'text-slate-500' },
+  Declining: { bg: 'bg-red-50', text: 'text-red-600' },
+}
+
+function wefDemandTag(growthRate: number): string {
+  if (growthRate > 0.02) return 'Growing'
+  if (growthRate < -0.02) return 'Declining'
+  return 'Stable'
+}
+
 export default function SkillDemandSignals({ skills, accentColor }: SkillDemandSignalsProps) {
   const ranked = [...skills].sort((a, b) => (b.gap_score ?? 0) - (a.gap_score ?? 0))
 
@@ -24,12 +36,13 @@ export default function SkillDemandSignals({ skills, accentColor }: SkillDemandS
       </h3>
       <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
         {/* Table header */}
-        <div className="grid grid-cols-[1fr_100px_1fr_90px_90px] gap-3 px-5 py-3 border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-400 font-medium">
+        <div className="grid grid-cols-[1fr_100px_1fr_90px_90px_80px] gap-3 px-5 py-3 border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-400 font-medium">
           <span>Skill</span>
           <span>Category</span>
           <span>Gap Score</span>
           <span>Criticality</span>
           <span className="text-right">Growth Rate</span>
+          <span className="text-center">WEF Demand</span>
         </div>
 
         {/* Rows */}
@@ -45,7 +58,7 @@ export default function SkillDemandSignals({ skills, accentColor }: SkillDemandS
             return (
               <div
                 key={skill.id}
-                className="grid grid-cols-[1fr_100px_1fr_90px_90px] gap-3 px-5 py-3 items-center hover:bg-slate-50/50 transition-colors"
+                className="grid grid-cols-[1fr_100px_1fr_90px_90px_80px] gap-3 px-5 py-3 items-center hover:bg-slate-50/50 transition-colors"
               >
                 {/* Skill name with rank */}
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -93,6 +106,17 @@ export default function SkillDemandSignals({ skills, accentColor }: SkillDemandS
                   {growth > 0 ? '+' : ''}
                   {(growth * 100).toFixed(1)}%
                 </span>
+
+                {/* WEF Demand Tag */}
+                {(() => {
+                  const tag = wefDemandTag(growth)
+                  const tagStyle = DEMAND_TAG_STYLES[tag]
+                  return (
+                    <span className={`inline-flex justify-center px-2 py-0.5 rounded text-[10px] font-medium ${tagStyle.bg} ${tagStyle.text}`}>
+                      {tag}
+                    </span>
+                  )
+                })()}
               </div>
             )
           })}

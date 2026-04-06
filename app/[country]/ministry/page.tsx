@@ -131,7 +131,7 @@ export default function MinistryDashboard() {
               : 'text-[#8B95A8] hover:text-[#5A6478]'
           }`}
         >
-          Workforce Overview
+          {country === 'saudi' ? 'Saudi Arabia' : 'Malta'} — Workforce Overview
           {activeTab === 'overview' && (
             <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
           )}
@@ -144,7 +144,7 @@ export default function MinistryDashboard() {
               : 'text-[#8B95A8] hover:text-[#5A6478]'
           }`}
         >
-          International Benchmarking
+          {country === 'saudi' ? 'Saudi Arabia' : 'Malta'} — International Benchmarking
           {activeTab === 'benchmarking' && (
             <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
           )}
@@ -214,6 +214,19 @@ export default function MinistryDashboard() {
           <InternationalBenchmarking country={country} accentColor={accentColor} />
         </div>
       )}
+
+      {/* Data Source Footer */}
+      <footer className="mt-12 pt-6 border-t border-[#E2E5EB]">
+        <div className="flex flex-wrap items-center gap-3 text-[11px] text-[#8B95A8]">
+          <span className="uppercase tracking-wider font-medium">Data sources</span>
+          {['World Bank', 'ILO', 'OECD', 'UNESCO', 'WEF', 'ESCO'].map((src, i) => (
+            <span key={src} className="flex items-center gap-3">
+              {i > 0 && <span className="w-px h-3 bg-[#E2E5EB]" />}
+              {src}
+            </span>
+          ))}
+        </div>
+      </footer>
     </div>
   )
 }

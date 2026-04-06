@@ -28,6 +28,12 @@ async function getStats(visionId: string) {
   return { totalGap, sectorCount, institutionCount: institutionCount || 0 }
 }
 
+function formatGap(gap: number): string {
+  if (gap >= 1_000_000) return `${(gap / 1_000_000).toFixed(2)}M`
+  if (gap >= 1_000) return `${(gap / 1_000).toFixed(1)}K`
+  return gap.toLocaleString()
+}
+
 export const dynamic = 'force-dynamic'
 
 export default async function LandingPage() {
@@ -79,7 +85,7 @@ export default async function LandingPage() {
             {maltaStats && (
               <div className="grid grid-cols-3 gap-6 border-t border-white/10 pt-8">
                 <div>
-                  <p className="font-display text-2xl text-[#1B6B5A]">{maltaStats.totalGap.toLocaleString()}</p>
+                  <p className="font-display text-2xl text-[#1B6B5A]">{formatGap(maltaStats.totalGap)}</p>
                   <p className="text-white/40 text-xs mt-1">Workers Gap</p>
                 </div>
                 <div>
@@ -129,7 +135,7 @@ export default async function LandingPage() {
             {saudiStats && (
               <div className="grid grid-cols-3 gap-6 border-t border-white/10 pt-8">
                 <div>
-                  <p className="font-display text-2xl text-[#C9A84C]">{saudiStats.totalGap.toLocaleString()}</p>
+                  <p className="font-display text-2xl text-[#C9A84C]">{formatGap(saudiStats.totalGap)}</p>
                   <p className="text-white/40 text-xs mt-1">Workers Gap</p>
                 </div>
                 <div>
@@ -152,8 +158,13 @@ export default async function LandingPage() {
         </Link>
       </div>
 
-      <footer className="absolute bottom-0 left-0 right-0 z-20 text-center py-6 space-y-2">
-        <p className="text-white/30 text-xs tracking-wider">From National Vision to Human Capital Reality</p>
+      <footer className="absolute bottom-0 left-0 right-0 z-20 text-center py-6 space-y-3">
+        <p className="text-white/25 text-[13px] max-w-2xl mx-auto leading-relaxed px-4">
+          The only national human capital intelligence platform that connects government Vision targets to workforce reality — grounded in OECD, World Bank, ILO, UNESCO, ESCO, and WEF data.
+        </p>
+        <p className="text-white/20 text-[13px]">
+          No conflict of interest. We do not run the rankings we help you improve.
+        </p>
         <div className="flex items-center justify-center gap-4 text-white/20 text-[10px] tracking-wider">
           <span>World Bank</span>
           <span className="w-px h-2.5 bg-white/10" />
@@ -164,6 +175,8 @@ export default async function LandingPage() {
           <span>UNESCO</span>
           <span className="w-px h-2.5 bg-white/10" />
           <span>QS Rankings</span>
+          <span className="w-px h-2.5 bg-white/10" />
+          <span>THE Rankings</span>
           <span className="w-px h-2.5 bg-white/10" />
           <span>ESCO</span>
           <span className="w-px h-2.5 bg-white/10" />
