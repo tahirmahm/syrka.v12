@@ -100,7 +100,6 @@ export default function GapTrajectoryChart({
         axisLine: { lineStyle: { color: '#1E293B' } },
         axisTick: { show: false },
         axisLabel: { color: '#64748B', fontSize: 11 },
-        max: targetYear,
       },
       yAxis: {
         type: 'value',
