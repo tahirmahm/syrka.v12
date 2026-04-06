@@ -78,6 +78,9 @@ export default function ProgrammeAlignmentTable({
               <th className="text-left px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400 min-w-[180px]">
                 Alignment Score
               </th>
+              <th className="text-center px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400">
+                ESCO Skills
+              </th>
               <th className="text-right px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400">
                 Employment Rate
               </th>
@@ -134,6 +137,22 @@ export default function ProgrammeAlignmentTable({
                       </span>
                     </div>
                   </td>
+                  <td className="px-4 py-3.5 text-center">
+                    {score != null ? (
+                      <span
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium"
+                        style={{
+                          backgroundColor: `${accentColor}12`,
+                          color: accentColor,
+                        }}
+                      >
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 1L10 5.5L15 6.2L11.5 9.5L12.4 14.5L8 12L3.6 14.5L4.5 9.5L1 6.2L6 5.5L8 1Z" fill="currentColor" opacity="0.6"/></svg>
+                        {Math.round(score / 10)}
+                      </span>
+                    ) : (
+                      <span className="text-gray-300">--</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3.5 text-right tabular-nums text-gray-700">
                     {prog.employment_rate_6months != null
                       ? `${prog.employment_rate_6months}%`
@@ -162,7 +181,7 @@ export default function ProgrammeAlignmentTable({
             })}
             {programmes.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-gray-400 text-sm">
+                <td colSpan={7} className="px-4 py-12 text-center text-gray-400 text-sm">
                   No programmes found for this institution.
                 </td>
               </tr>
