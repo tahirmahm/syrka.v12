@@ -3,7 +3,7 @@ import OpenAI from 'openai'
 
 export async function POST(req: NextRequest) {
   try {
-    const { step1, step2, interests, country } = await req.json()
+    const { step1, step2, interests, country, resumeSkills } = await req.json()
 
     if (!process.env.DEEPSEEK_API_KEY) {
       return NextResponse.json({ skills: [] }, { status: 200 })
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
 Student background: ${step1}
 Student experiences: ${step2}
-Student interests: ${(interests || []).join(', ')}
+Student interests: ${(interests || []).join(', ')}${resumeSkills && resumeSkills.length > 0 ? `\nSkills explicitly mentioned in their CV: ${resumeSkills.join(', ')}` : ''}
 
 Extract exactly 12 specific, concrete transferable skills this person likely has based on what they have shared. Map each to the nearest ESCO Skills Taxonomy label.
 
