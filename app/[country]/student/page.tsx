@@ -58,6 +58,8 @@ interface Session {
   careerMatches: CareerMatch[]
   identityStatement: string
   country: string
+  resumeSkills: string[]
+  resumeUploaded: boolean
 }
 
 export default function StudentDashboard() {
@@ -69,16 +71,50 @@ export default function StudentDashboard() {
     step: 1, step1: '', step2: '', interests: [],
     extractedSkills: [], careerMatches: [],
     identityStatement: '', country,
+    resumeSkills: [], resumeUploaded: false,
   })
   const [loading, setLoading] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState('')
   const [expandedCareer, setExpandedCareer] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [deselected, setDeselected] = useState<Set<string>>(new Set())
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'extracting' | 'done' | 'error'>('idle')
 
   const update = useCallback((patch: Partial<Session>) => {
     setSession((prev) => ({ ...prev, ...patch }))
   }, [])
+
+  const handleResumeUpload = useCallback(async (file: File) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    setUploadStatus('extracting')
+    try {
+      const res = await fetch('/api/students/parse-resume', { method: 'POST', body: formData })
+      const { extracted } = await res.json()
+      const summary = extracted.summary_for_career_planner || ''
+      const education = (extracted.education || []) as string[]
+      const experience = (extracted.experience || []) as string[]
+      const skills = (extracted.skills_mentioned || []) as string[]
+      const step2Lines = [
+        ...education.map((e: string) => `Education: ${e}`),
+        ...experience.map((e: string) => `Experience: ${e}`),
+      ].join('\n')
+
+      if (!summary && !step2Lines) {
+        setUploadStatus('error')
+        return
+      }
+      update({
+        step1: summary || session.step1,
+        step2: step2Lines || session.step2,
+        resumeSkills: skills,
+        resumeUploaded: true,
+      })
+      setUploadStatus('done')
+    } catch {
+      setUploadStatus('error')
+    }
+  }, [session.step1, session.step2, update])
 
   const progressPercent = Math.round((session.step / 6) * 100)
 
@@ -94,7 +130,10 @@ export default function StudentDashboard() {
       const res = await fetch('/api/students/extract-skills', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ step1: session.step1, step2: session.step2, interests: session.interests, country }),
+        body: JSON.stringify({
+          step1: session.step1, step2: session.step2, interests: session.interests, country,
+          resumeSkills: session.resumeSkills,
+        }),
       })
       const data = await res.json()
       update({ extractedSkills: data.skills || [], step: 4 })
@@ -297,12 +336,43 @@ export default function StudentDashboard() {
             <p className="text-[15px] text-gray-400 mt-2">
               Career paths aren&apos;t always linear. Every experience matters.
             </p>
+
+            {/* Resume Upload */}
+            <div className="mt-6 p-4 border border-dashed border-gray-200 rounded-lg">
+              <p className="text-sm text-gray-600 mb-2">Upload your CV or resume (optional)</p>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-400">PDF or DOCX, max 5MB</span>
+                <label className="cursor-pointer px-4 py-1.5 rounded-lg border text-xs font-medium transition-colors hover:bg-gray-50" style={{ borderColor: accentColor, color: accentColor }}>
+                  {uploadStatus === 'extracting' ? 'Reading...' : 'Upload file'}
+                  <input
+                    type="file"
+                    accept=".pdf,.docx"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file && file.size <= 5 * 1024 * 1024) handleResumeUpload(file)
+                    }}
+                    disabled={uploadStatus === 'extracting'}
+                  />
+                </label>
+              </div>
+              {uploadStatus === 'done' && (
+                <p className="text-xs text-emerald-600 mt-2">Resume uploaded — we will extract your background automatically.</p>
+              )}
+              {uploadStatus === 'error' && (
+                <p className="text-xs text-amber-600 mt-2">We could not read this file format — please describe your background below.</p>
+              )}
+              <p className="text-[10px] text-gray-300 mt-2">Your CV is processed to extract background information and is not stored on our servers.</p>
+            </div>
+
+            <p className="text-xs text-gray-300 text-center my-4">— or describe your background below —</p>
+
             <textarea
               value={session.step1}
               onChange={(e) => update({ step1: e.target.value })}
               rows={3}
               placeholder="I'm studying computer science at university / I work in finance / I recently graduated in engineering..."
-              className="mt-6 w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700 focus:outline-none focus:border-gray-400 resize-none"
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700 focus:outline-none focus:border-gray-400 resize-none"
             />
             <div className="flex flex-wrap gap-2 mt-4">
               {(QUICK_CHIPS[country] || QUICK_CHIPS.saudi).map((chip) => (
@@ -335,7 +405,9 @@ export default function StudentDashboard() {
               className="mt-6 w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700 focus:outline-none focus:border-gray-400 resize-none"
             />
             <p className="text-[11px] text-gray-300 mt-2">
-              The more detail you share, the more accurate your career matches will be.
+              {session.resumeUploaded
+                ? 'Pre-filled from your CV — edit or add anything we missed.'
+                : 'The more detail you share, the more accurate your career matches will be.'}
             </p>
           </div>
         )}
@@ -556,7 +628,8 @@ export default function StudentDashboard() {
               </button>
               <button
                 onClick={() => {
-                  setSession({ step: 1, step1: '', step2: '', interests: [], extractedSkills: [], careerMatches: [], identityStatement: '', country })
+                  setSession({ step: 1, step1: '', step2: '', interests: [], extractedSkills: [], careerMatches: [], identityStatement: '', country, resumeSkills: [], resumeUploaded: false })
+                  setUploadStatus('idle')
                   setDeselected(new Set())
                   setExpandedCareer(null)
                 }}
