@@ -440,7 +440,7 @@ export default function StudentDashboard() {
                         <div>
                           <h3 className="font-semibold text-gray-900">{career.title}</h3>
                           <p className="text-xs text-gray-400 mt-0.5" style={{ letterSpacing: '0.3px' }}>
-                            {career.sector.toUpperCase()}
+                            {(career.sector || '').toUpperCase()}
                           </p>
                         </div>
                         <div className="text-right">

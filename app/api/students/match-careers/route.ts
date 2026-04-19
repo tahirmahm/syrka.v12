@@ -304,6 +304,7 @@ Return valid JSON array only:
       const staticData = careers.find((c) => c.title === m.title)
       return {
         ...m,
+        sector: staticData?.sector || (m.sector as string) || '',
         salary: staticData ? (staticData as unknown as Record<string, unknown>)[salaryKey] : null,
         currency: currencySymbol,
         open_roles: staticData?.open_roles,
