@@ -31,6 +31,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
 h1, h2, h3, .font-display {
   font-family: 'Instrument Serif', Georgia, serif;
 }
@@ -88,4 +92,8 @@ h1, h2, h3, .font-display {
 
 [data-accent="saudi"] {
   --accent: #C9A84C;
+}
+
+[data-accent="uk"] {
+  --accent: #1a3a6b;
 }

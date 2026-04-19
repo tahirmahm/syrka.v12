@@ -25,6 +25,19 @@ interface SimTrajectoryPoint {
 const ACCENT: Record<string, string> = {
   malta: '#1B6B5A',
   saudi: '#C9A84C',
+  uk: '#1a3a6b',
+}
+
+const VISION_LABEL: Record<string, string> = {
+  saudi: 'Saudi Vision 2030',
+  malta: 'Malta Vision 2050',
+  uk: 'AI Opportunities Action Plan — 2030',
+}
+
+const COUNTRY_LABEL: Record<string, string> = {
+  saudi: 'Saudi Arabia',
+  malta: 'Malta',
+  uk: 'United Kingdom',
 }
 
 export default function MinistryDashboard() {
@@ -120,7 +133,7 @@ export default function MinistryDashboard() {
         <div>
           <h1 className="font-display text-3xl text-[#0A1628]">National Workforce Gap Overview</h1>
           <p className="text-[#5A6478] mt-1 text-sm">
-            Strategic human capital intelligence for {country === 'saudi' ? 'Saudi Vision 2030' : 'Malta Vision 2050'}
+            Strategic human capital intelligence for {VISION_LABEL[country] || 'National Vision'}
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -139,7 +152,7 @@ export default function MinistryDashboard() {
               : 'text-[#8B95A8] hover:text-[#5A6478]'
           }`}
         >
-          {country === 'saudi' ? 'Saudi Arabia' : 'Malta'} — Workforce Overview
+          {COUNTRY_LABEL[country] || country} — Workforce Overview
           {activeTab === 'overview' && (
             <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
           )}
@@ -152,7 +165,7 @@ export default function MinistryDashboard() {
               : 'text-[#8B95A8] hover:text-[#5A6478]'
           }`}
         >
-          {country === 'saudi' ? 'Saudi Arabia' : 'Malta'} — International Benchmarking
+          {COUNTRY_LABEL[country] || country} — International Benchmarking
           {activeTab === 'benchmarking' && (
             <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
           )}

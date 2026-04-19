@@ -12,6 +12,7 @@ import type { Employer, Skill } from '@/lib/types'
 const ACCENT: Record<string, string> = {
   malta: '#1B6B5A',
   saudi: '#C9A84C',
+  uk: '#1a3a6b',
 }
 
 export default function EmployerDashboard() {

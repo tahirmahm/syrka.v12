@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 const COUNTRY_CONFIG: Record<string, { accentColor: string; visionName: string }> = {
   malta: { accentColor: '#1B6B5A', visionName: 'Vision 2050' },
   saudi: { accentColor: '#C9A84C', visionName: 'Vision 2030' },
+  uk: { accentColor: '#1a3a6b', visionName: 'AI Opportunities Action Plan' },
 }
 
 export default async function CountryLayout({
@@ -31,7 +32,7 @@ export default async function CountryLayout({
         accentColor={config.accentColor}
         visionName={vision?.vision_name || config.visionName}
       />
-      <main className="flex-1 ml-[240px] min-h-screen">
+      <main className="flex-1 ml-0 md:ml-[240px] min-h-screen">
         {children}
       </main>
     </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Landmark, GraduationCap, Briefcase, User } from 'lucide-react'
+import { Landmark, GraduationCap, Briefcase, User, Menu, X } from 'lucide-react'
 import CountryBadge from './CountryBadge'
 import DocumentUpload from '@/components/ministry/DocumentUpload'
 import AddCountryModal from './AddCountryModal'
@@ -24,12 +24,14 @@ const navItems = [
 const countrySwitcher = [
   { slug: 'malta', label: 'Malta', accent: '#1B6B5A' },
   { slug: 'saudi', label: 'Saudi Arabia', accent: '#C9A84C' },
+  { slug: 'uk', label: 'United Kingdom', accent: '#1a3a6b' },
 ]
 
 export default function Sidebar({ country, accentColor, visionName }: SidebarProps) {
   const pathname = usePathname()
   const [isAdmin, setIsAdmin] = useState(false)
   const [showAddCountry, setShowAddCountry] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -37,10 +39,31 @@ export default function Sidebar({ country, accentColor, visionName }: SidebarPro
   }, [])
 
   return (
+    <>
+    {/* Mobile hamburger */}
+    <button
+      onClick={() => setMobileOpen(true)}
+      className="fixed top-4 left-4 z-40 p-2 rounded-lg bg-[#0A1628] text-white/70 md:hidden"
+      aria-label="Open menu"
+    >
+      <Menu size={20} />
+    </button>
+    {/* Mobile overlay */}
+    {mobileOpen && (
+      <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={() => setMobileOpen(false)} />
+    )}
     <aside
-      className="fixed left-0 top-0 bottom-0 flex flex-col z-30"
+      className={`fixed left-0 top-0 bottom-0 flex flex-col z-50 transition-transform duration-200 md:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       style={{ width: 240, backgroundColor: '#0A1628' }}
     >
+      {/* Mobile close button */}
+      <button
+        onClick={() => setMobileOpen(false)}
+        className="absolute top-4 right-4 p-1 text-white/40 hover:text-white/70 md:hidden"
+        aria-label="Close menu"
+      >
+        <X size={18} />
+      </button>
       {/* Wordmark */}
       <div className="px-6 pt-8 pb-2">
         <h1 className="font-display text-2xl text-white tracking-wide">SYRKA</h1>
@@ -76,7 +99,7 @@ export default function Sidebar({ country, accentColor, visionName }: SidebarPro
                 <Link
                   href={href}
                   className={`
-                    flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-150
+                    relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-150
                     ${isActive
                       ? 'text-white'
                       : 'text-white/40 hover:text-white/70 hover:bg-white/[0.03]'
@@ -84,17 +107,17 @@ export default function Sidebar({ country, accentColor, visionName }: SidebarPro
                   `}
                   style={isActive ? { backgroundColor: `${accentColor}15`, color: accentColor } : undefined}
                 >
+                  {isActive && (
+                    <div
+                      className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r"
+                      style={{ backgroundColor: accentColor }}
+                    />
+                  )}
                   <Icon
                     size={18}
                     strokeWidth={isActive ? 2 : 1.5}
                   />
                   <span className="font-medium">{label}</span>
-                  {isActive && (
-                    <div
-                      className="ml-auto w-1.5 h-1.5 rounded-full"
-                      style={{ backgroundColor: accentColor }}
-                    />
-                  )}
                 </Link>
               </li>
             )
@@ -152,5 +175,6 @@ export default function Sidebar({ country, accentColor, visionName }: SidebarPro
 
       {showAddCountry && <AddCountryModal onClose={() => setShowAddCountry(false)} />}
     </aside>
+    </>
   )
 }

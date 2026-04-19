@@ -1,308 +1,219 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import RoleSelector from '@/components/layout/RoleSelector'
 
 const ACCENT: Record<string, string> = {
   malta: '#1B6B5A',
   saudi: '#C9A84C',
+  uk: '#1a3a6b',
 }
 
-const INTEREST_CHIPS: Record<string, string[]> = {
-  saudi: [
-    'AI and Machine Learning', 'Cybersecurity', 'Cloud Computing',
-    'Fintech', 'Smart Cities', 'Renewable Energy',
-    'Tourism Technology', 'Healthcare AI', 'Defense Tech',
-    'Digital Media', 'Logistics', 'Space Technology',
-  ],
-  malta: [
-    'Blockchain and Web3', 'AI and Machine Learning', 'iGaming Technology',
-    'Cybersecurity', 'Fintech', 'Maritime Technology',
-    'Climate Tech', 'Digital Media', 'Health Tech',
-  ],
+const EMPLOYERS: Record<string, Record<string, string[]>> = {
+  saudi: {
+    'Technology': ['Aramco Digital', 'STC', 'NEOM', 'Saudi Data & AI Authority', 'stc Pay'],
+    'Finance': ['Saudi National Bank', 'Riyad Bank', 'STC Pay', 'Tamara'],
+    'Energy': ['Saudi Aramco', 'ACWA Power', 'Saudi Electricity Company'],
+    'Health': ['Saudi German Hospital', 'Dr. Sulaiman Al Habib', 'National Guard Health Affairs'],
+  },
+  malta: {
+    'Digital': ['Betsson', 'Tipico', 'Evolution Gaming', 'Datatrak', 'GO plc'],
+    'Gaming': ['Betsson', 'LeoVegas', 'GiG', 'Evolution Gaming'],
+    'Finance': ['Bank of Valletta', 'HSBC Malta', 'Calamatta Cuschieri'],
+    'Maritime': ['Malta Freeport', 'Medserv', 'Boskalis Malta'],
+  },
+  uk: {
+    'AI and Machine Learning': ['DeepMind', 'Wayve', 'Stability AI', 'Graphcore', 'Arm'],
+    'Cybersecurity': ['BAE Systems', 'NCSC', 'Darktrace', 'BT Security', 'CrowdStrike UK'],
+    'Cloud and Infrastructure': ['AWS UK', 'Microsoft UK', 'Google UK', 'IBM UK'],
+    'Data Science and Analytics': ['ONS', 'NHS Digital', 'Palantir UK', 'Faculty AI', 'Quantexa'],
+    'Health and Public Sector AI': ['NHS', 'Faculty AI', 'Sensyne Health', 'Babylon'],
+  },
 }
 
-const QUICK_CHIPS: Record<string, string[]> = {
-  saudi: ['University student', 'Recent graduate', 'Working professional'],
-  malta: ['University student', 'iGaming professional', 'Switching careers'],
+interface Profile {
+  name: string | null
+  career_stage: string
+  education_level: string
+  education_field: string
+  explicit_skills: string[]
+  inferred_skills: string[]
+  inferred_interests: string[]
+  strongest_dimensions: string[]
+  vision_alignment_signals: string[]
+  summary: string
+  suggested_sectors: string[]
+  career_trajectory: string
 }
 
-interface ExtractedSkill {
-  skill: string
-  esco_label: string
-  source: string
-  vision_relevance: string
+interface Certification {
+  name: string
+  url: string
+  free: boolean
+  duration: string
 }
 
 interface CareerMatch {
   title: string
   sector: string
-  gap_years: number
-  median_salary_usd: number
-  open_roles: number
-  vision_priority: string
   match_percent: number
   why_you_fit: string
   matching_skills: string[]
   skills_to_develop: string[]
-  free_resource?: string
+  realistic_gap_months: number
+  salary: number | null
+  currency: string
+  open_roles: number
+  vision_priority: string
+  gap_years: number
+  certifications: Certification[]
 }
 
-interface Session {
-  step: number
-  step1: string
-  step2: string
-  interests: string[]
-  extractedSkills: ExtractedSkill[]
-  careerMatches: CareerMatch[]
-  identityStatement: string
-  country: string
-  resumeSkills: string[]
-  resumeUploaded: boolean
-}
+type Step = 1 | 2 | 3 | 4
 
 export default function StudentDashboard() {
   const params = useParams()
   const country = (params.country as string) || 'saudi'
-  const accentColor = ACCENT[country] || '#C9A84C'
+  const accent = ACCENT[country] || '#C9A84C'
 
-  const [session, setSession] = useState<Session>({
-    step: 1, step1: '', step2: '', interests: [],
-    extractedSkills: [], careerMatches: [],
-    identityStatement: '', country,
-    resumeSkills: [], resumeUploaded: false,
-  })
+  const [step, setStep] = useState<Step>(1)
+  const [file, setFile] = useState<File | null>(null)
+  const [context, setContext] = useState('')
   const [loading, setLoading] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState('')
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [editedSummary, setEditedSummary] = useState('')
+  const [confirmedSkills, setConfirmedSkills] = useState<Set<string>>(new Set())
+  const [careerMatches, setCareerMatches] = useState<CareerMatch[]>([])
+  const [identityStatement, setIdentityStatement] = useState('')
   const [expandedCareer, setExpandedCareer] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
-  const [deselected, setDeselected] = useState<Set<string>>(new Set())
-  const [uploadStatus, setUploadStatus] = useState<'idle' | 'extracting' | 'done' | 'error'>('idle')
+  const [dragOver, setDragOver] = useState(false)
+  const [error, setError] = useState('')
 
-  const update = useCallback((patch: Partial<Session>) => {
-    setSession((prev) => ({ ...prev, ...patch }))
-  }, [])
+  const progressPct = (step / 4) * 100
 
-  const handleResumeUpload = useCallback(async (file: File) => {
-    const formData = new FormData()
-    formData.append('file', file)
-    setUploadStatus('extracting')
+  function toggleSkill(skill: string) {
+    setConfirmedSkills(prev => {
+      const next = new Set(prev)
+      if (next.has(skill)) next.delete(skill)
+      else next.add(skill)
+      return next
+    })
+  }
+
+  async function handleAnalyse() {
+    if (!file) return
+    setLoading(true)
+    setError('')
+    setLoadingMsg('Reading your CV...')
     try {
-      const res = await fetch('/api/students/parse-resume', { method: 'POST', body: formData })
-      const { extracted } = await res.json()
-      const summary = extracted.summary_for_career_planner || ''
-      const education = (extracted.education || []) as string[]
-      const experience = (extracted.experience || []) as string[]
-      const skills = (extracted.skills_mentioned || []) as string[]
-      const step2Lines = [
-        ...education.map((e: string) => `Education: ${e}`),
-        ...experience.map((e: string) => `Experience: ${e}`),
-      ].join('\n')
-
-      if (!summary && !step2Lines) {
-        setUploadStatus('error')
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('context', context)
+      fd.append('country', country)
+      const res = await fetch('/api/students/parse-resume', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (data.error && !data.profile?.summary) {
+        setError(data.error || 'Could not read file')
+        setLoading(false)
         return
       }
-      update({
-        step1: summary || session.step1,
-        step2: step2Lines || session.step2,
-        resumeSkills: skills,
-        resumeUploaded: true,
-      })
-      setUploadStatus('done')
+      const p: Profile = data.profile
+      setProfile(p)
+      setEditedSummary(p.summary)
+      const allSkills = new Set([...p.explicit_skills, ...p.inferred_skills])
+      setConfirmedSkills(allSkills)
+      setStep(2)
     } catch {
-      setUploadStatus('error')
-    }
-  }, [session.step1, session.step2, update])
-
-  const progressPercent = Math.round((session.step / 6) * 100)
-
-  // Step 4: extract skills
-  const runExtraction = useCallback(async () => {
-    setLoading(true)
-    const msgs = ['Reading your experiences...', 'Mapping to ESCO Skills Taxonomy...', 'Finding your strengths...']
-    for (let i = 0; i < msgs.length; i++) {
-      setLoadingMsg(msgs[i])
-      await new Promise((r) => setTimeout(r, 1500))
-    }
-    try {
-      const res = await fetch('/api/students/extract-skills', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          step1: session.step1, step2: session.step2, interests: session.interests, country,
-          resumeSkills: session.resumeSkills,
-        }),
-      })
-      const data = await res.json()
-      update({ extractedSkills: data.skills || [], step: 4 })
-    } catch {
-      update({ extractedSkills: [], step: 4 })
+      setError('Something went wrong — please try again.')
     }
     setLoading(false)
-  }, [session.step1, session.step2, session.interests, country, update])
+  }
 
-  // Step 5: match careers
-  const runMatching = useCallback(async () => {
+  async function handleMatch() {
+    if (!profile) return
     setLoading(true)
-    setLoadingMsg('Matching your skills to Vision careers...')
+    setLoadingMsg('Matching your profile to Vision careers...')
+    const patchedProfile = { ...profile, summary: editedSummary, explicit_skills: Array.from(confirmedSkills) }
     try {
-      const activeSkills = session.extractedSkills.filter((s) => !deselected.has(s.skill))
       const res = await fetch('/api/students/match-careers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ skills: activeSkills, country, interests: session.interests }),
+        body: JSON.stringify({ profile: patchedProfile, country }),
       })
       const data = await res.json()
-      update({ careerMatches: data.matches || [], step: 5 })
+      setCareerMatches(data.matches || [])
+      setStep(3)
     } catch {
-      update({ careerMatches: [], step: 5 })
+      setCareerMatches([])
+      setStep(3)
     }
     setLoading(false)
-  }, [session.extractedSkills, session.interests, country, deselected, update])
+  }
 
-  // Step 6: identity statement
-  const runIdentity = useCallback(async () => {
+  async function handleIdentity() {
+    if (!profile || careerMatches.length === 0) return
     setLoading(true)
     setLoadingMsg('Crafting your Career Identity Statement...')
     try {
-      const top = session.careerMatches[0]
-      const activeSkills = session.extractedSkills.filter((s) => !deselected.has(s.skill))
+      const top = careerMatches[0]
       const res = await fetch('/api/students/identity-statement', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          skills: activeSkills,
+          skills: Array.from(confirmedSkills).slice(0, 6).map(s => ({ skill: s })),
           topCareer: top,
-          background: `${session.step1}. ${session.step2}`,
+          background: editedSummary,
           country,
         }),
       })
       const data = await res.json()
-      update({ identityStatement: data.statement || '', step: 6 })
-
-      // Save profile silently
+      setIdentityStatement(data.statement || '')
+      setStep(4)
       fetch('/api/students/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           country,
-          sector_interest: session.interests[0],
-          self_assessed_skills: activeSkills,
-          vision_aligned_careers: session.careerMatches.slice(0, 3),
+          sector_interest: profile.suggested_sectors?.[0],
+          self_assessed_skills: Array.from(confirmedSkills).map(s => ({ skill: s })),
+          vision_aligned_careers: careerMatches.slice(0, 3),
         }),
       }).catch(() => {})
     } catch {
-      update({ identityStatement: 'Unable to generate statement at this time.', step: 6 })
+      setIdentityStatement('Unable to generate statement at this time.')
+      setStep(4)
     }
     setLoading(false)
-  }, [session, country, deselected, update])
+  }
 
-  // PDF download
-  const downloadPDF = useCallback(async () => {
-    const { default: jsPDF } = await import('jspdf')
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-    const accent: [number, number, number] = country === 'saudi' ? [201, 168, 76] : [27, 107, 90]
-    const M = 20, W = 210
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setDragOver(false)
+    const dropped = e.dataTransfer.files[0]
+    if (dropped && dropped.size <= 5 * 1024 * 1024) setFile(dropped)
+  }
 
-    doc.setFillColor(...accent)
-    doc.rect(0, 0, W, 6, 'F')
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(18)
-    doc.setTextColor(40, 40, 40)
-    doc.text('SYRKA', M, 20)
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(10)
-    doc.setTextColor(120)
-    doc.text('Career Identity Statement', M, 26)
-    doc.text(new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }), W - M, 26, { align: 'right' })
+  function reset() {
+    setStep(1); setFile(null); setContext(''); setProfile(null)
+    setEditedSummary(''); setConfirmedSkills(new Set()); setCareerMatches([])
+    setIdentityStatement(''); setExpandedCareer(null); setError('')
+  }
 
-    doc.setDrawColor(...accent)
-    doc.line(M, 30, W - M, 30)
-
-    doc.setFont('helvetica', 'italic')
-    doc.setFontSize(12)
-    doc.setTextColor(40)
-    const lines = doc.splitTextToSize(session.identityStatement, W - 2 * M)
-    doc.text(lines, M, 42)
-
-    let y = 42 + lines.length * 6 + 12
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(13)
-    doc.text('Top Career Matches', M, y)
-    y += 8
-
-    session.careerMatches.slice(0, 3).forEach((c) => {
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(11)
-      doc.setTextColor(...accent)
-      doc.text(c.title, M, y)
-      doc.setFont('helvetica', 'normal')
-      doc.setFontSize(10)
-      doc.setTextColor(80)
-      doc.text(`${c.sector}  |  ~${c.gap_years} years to close gap  |  $${(c.median_salary_usd || 0).toLocaleString()}/yr`, M, y + 5)
-      y += 14
-    })
-
-    y += 6
-    doc.setFont('helvetica', 'italic')
-    doc.setFontSize(9)
-    doc.setTextColor(120)
-    doc.text('Generated by Syrka — syrka.co — Powered by ESCO Skills Taxonomy', M, y)
-
-    const cName = country === 'saudi' ? 'Saudi_Arabia' : 'Malta'
-    doc.save(`Syrka_Career_Identity_${cName}_${new Date().toISOString().split('T')[0]}.pdf`)
-  }, [session, country])
-
-  const handleNext = useCallback(() => {
-    if (session.step === 3) {
-      update({ step: 4 })
-      runExtraction()
-    } else if (session.step === 4) {
-      runMatching()
-    } else if (session.step === 5) {
-      runIdentity()
-    } else {
-      update({ step: session.step + 1 })
-    }
-  }, [session.step, update, runExtraction, runMatching, runIdentity])
-
-  const canAdvance = (() => {
-    if (loading) return false
-    if (session.step === 1) return session.step1.length >= 10
-    if (session.step === 2) return session.step2.length >= 20
-    if (session.step === 3) return session.interests.length >= 1
-    if (session.step === 4) return session.extractedSkills.length > 0
-    if (session.step === 5) return session.careerMatches.length > 0
-    return false
-  })()
-
-  const nextLabel = (() => {
-    if (session.step === 3) return 'Uncover my skills →'
-    if (session.step === 4) return 'Find my career matches →'
-    if (session.step === 5) return 'Generate my Career Identity →'
-    return 'Next →'
-  })()
-
-  // Loading overlay for Steps 4-6
-  if (loading && session.step >= 3) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="px-8 py-4">
-          <RoleSelector role="Student" accentColor={accentColor} />
-        </div>
-        <div className="flex flex-col items-center justify-center" style={{ minHeight: 'calc(100vh - 120px)' }}>
-          <div className="flex gap-1.5 mb-6">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="w-2.5 h-2.5 rounded-full animate-bounce"
-                style={{ backgroundColor: accentColor, animationDelay: `${i * 0.15}s` }}
-              />
+        <RoleSelector role="Student" accentColor={accent} />
+        <div className="flex flex-col items-center justify-center" style={{ minHeight: 'calc(100vh - 56px)' }}>
+          <div className="flex gap-2 mb-6">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="w-2.5 h-2.5 rounded-full animate-bounce"
+                style={{ backgroundColor: accent, animationDelay: `${i * 0.15}s` }} />
             ))}
           </div>
-          <p className="text-lg text-gray-600">{loadingMsg}</p>
+          <p className="text-gray-500 text-sm">{loadingMsg}</p>
         </div>
       </div>
     )
@@ -310,374 +221,477 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="px-8 py-4">
-        <RoleSelector role="Student" accentColor={accentColor} />
-      </div>
+      <RoleSelector role="Student" accentColor={accent} />
 
-      {/* Progress bar */}
-      <div className="px-8">
+      {/* Progress */}
+      <div className="px-8 pt-5">
         <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{ width: `${progressPercent}%`, backgroundColor: accentColor }}
-          />
+          <div className="h-full rounded-full transition-all duration-500"
+            style={{ width: `${progressPct}%`, backgroundColor: accent }} />
         </div>
-        <p className="text-xs text-gray-400 mt-2">Step {session.step} of 6</p>
+        <p className="text-xs text-gray-400 mt-2" style={{ letterSpacing: '0.3px' }}>
+          STEP {step} OF 4
+        </p>
       </div>
 
-      <div className="max-w-2xl mx-auto" style={{ padding: '48px 32px' }}>
+      <div className="max-w-2xl mx-auto px-8 py-10">
 
-        {/* Step 1 */}
-        {session.step === 1 && (
+        {/* ── STEP 1: Upload ── */}
+        {step === 1 && (
           <div>
-            <h1 className="text-[28px] text-gray-900" style={{ fontFamily: 'var(--font-display, serif)' }}>
-              Tell us about yourself
-            </h1>
-            <p className="text-[15px] text-gray-400 mt-2">
-              Career paths aren&apos;t always linear. Every experience matters.
+            <h1 className="font-display text-[28px] text-gray-900">Upload your CV</h1>
+            <p className="text-gray-400 text-[15px] mt-2 leading-relaxed">
+              We read your CV and build your career profile automatically. No chips to select. No boxes to fill.
             </p>
 
-            {/* Resume Upload */}
-            <div className="mt-6 p-4 border border-dashed border-gray-200 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">Upload your CV or resume (optional)</p>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-gray-400">PDF or DOCX, max 5MB</span>
-                <label className="cursor-pointer px-4 py-1.5 rounded-lg border text-xs font-medium transition-colors hover:bg-gray-50" style={{ borderColor: accentColor, color: accentColor }}>
-                  {uploadStatus === 'extracting' ? 'Reading...' : 'Upload file'}
-                  <input
-                    type="file"
-                    accept=".pdf,.docx"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      if (file && file.size <= 5 * 1024 * 1024) handleResumeUpload(file)
-                    }}
-                    disabled={uploadStatus === 'extracting'}
-                  />
-                </label>
+            {/* Drop zone */}
+            <div
+              onDragOver={e => { e.preventDefault(); setDragOver(true) }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={handleDrop}
+              className="mt-8 border-2 border-dashed rounded-xl p-10 text-center transition-colors"
+              style={{ borderColor: dragOver ? accent : '#E2E5EB', backgroundColor: dragOver ? `${accent}08` : '#FAFAFA' }}
+            >
+              {file ? (
+                <div>
+                  <p className="text-sm font-medium text-gray-700">{file.name}</p>
+                  <p className="text-xs text-gray-400 mt-1">{(file.size / 1024).toFixed(0)} KB</p>
+                  <button onClick={() => setFile(null)}
+                    className="mt-3 text-xs text-gray-400 hover:text-gray-600 underline">
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <div className="text-3xl mb-3">📄</div>
+                  <p className="text-sm text-gray-500">Drag and drop your CV here</p>
+                  <p className="text-xs text-gray-400 mt-1">PDF or DOCX · max 5 MB</p>
+                  <label className="mt-4 inline-block cursor-pointer px-5 py-2 rounded-lg border text-sm font-medium transition-colors hover:bg-gray-50"
+                    style={{ borderColor: accent, color: accent }}>
+                    Browse file
+                    <input type="file" accept=".pdf,.docx" className="hidden"
+                      onChange={e => { const f = e.target.files?.[0]; if (f && f.size <= 5 * 1024 * 1024) setFile(f) }} />
+                  </label>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6">
+              <label className="block text-sm text-gray-500 mb-2">
+                Anything you want us to know? <span className="text-gray-300">(optional)</span>
+              </label>
+              <textarea value={context} onChange={e => setContext(e.target.value)} rows={3}
+                placeholder="e.g. I am switching careers from finance to tech, or I am particularly interested in AI..."
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700 focus:outline-none focus:border-gray-400 resize-none" />
+            </div>
+
+            {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+
+            <button onClick={handleAnalyse} disabled={!file}
+              className="mt-8 w-full py-3 rounded-lg text-sm font-medium text-white transition-all disabled:opacity-30"
+              style={{ backgroundColor: accent }}>
+              Analyse my CV →
+            </button>
+            <p className="text-xs text-gray-300 text-center mt-3">
+              Your CV is processed to extract your profile and is not stored on our servers.
+            </p>
+          </div>
+        )}
+
+        {/* ── STEP 2: Review Profile ── */}
+        {step === 2 && profile && (
+          <div>
+            <h1 className="font-display text-[28px] text-gray-900">
+              {profile.name ? `Here's your profile, ${profile.name}` : 'Here is your profile'}
+            </h1>
+            <p className="text-gray-400 text-[15px] mt-2">
+              Review what we found. Edit the summary, deselect any skills that don&apos;t fit.
+            </p>
+
+            {/* Summary */}
+            <div className="mt-8">
+              <p className="text-xs font-medium uppercase tracking-wider text-gray-400 mb-2"
+                style={{ letterSpacing: '0.3px' }}>Summary</p>
+              <textarea value={editedSummary} onChange={e => setEditedSummary(e.target.value)} rows={4}
+                className="w-full border-l-2 pl-4 py-2 text-sm text-gray-700 bg-transparent focus:outline-none resize-none italic leading-relaxed"
+                style={{ borderColor: accent }} />
+            </div>
+
+            {/* Strongest dimensions */}
+            {profile.strongest_dimensions.length > 0 && (
+              <div className="mt-6">
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-400 mb-2"
+                  style={{ letterSpacing: '0.3px' }}>Strongest dimensions</p>
+                <div className="flex flex-wrap gap-2">
+                  {profile.strongest_dimensions.map(d => (
+                    <span key={d} className="px-3 py-1 rounded-full text-xs font-medium text-white"
+                      style={{ backgroundColor: accent }}>
+                      {d}
+                    </span>
+                  ))}
+                </div>
               </div>
-              {uploadStatus === 'done' && (
-                <p className="text-xs text-emerald-600 mt-2">Resume uploaded — we will extract your background automatically.</p>
-              )}
-              {uploadStatus === 'error' && (
-                <p className="text-xs text-amber-600 mt-2">We could not read this file format — please describe your background below.</p>
-              )}
-              <p className="text-[10px] text-gray-300 mt-2">Your CV is processed to extract background information and is not stored on our servers.</p>
-            </div>
-
-            <p className="text-xs text-gray-300 text-center my-4">— or describe your background below —</p>
-
-            <textarea
-              value={session.step1}
-              onChange={(e) => update({ step1: e.target.value })}
-              rows={3}
-              placeholder="I'm studying computer science at university / I work in finance / I recently graduated in engineering..."
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700 focus:outline-none focus:border-gray-400 resize-none"
-            />
-            <div className="flex flex-wrap gap-2 mt-4">
-              {(QUICK_CHIPS[country] || QUICK_CHIPS.saudi).map((chip) => (
-                <button
-                  key={chip}
-                  onClick={() => update({ step1: chip })}
-                  className="px-4 py-1.5 rounded-full border border-gray-200 text-xs text-gray-500 hover:border-gray-400 transition-colors"
-                >
-                  {chip}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 2 */}
-        {session.step === 2 && (
-          <div>
-            <h1 className="text-[28px] text-gray-900" style={{ fontFamily: 'var(--font-display, serif)' }}>
-              What have you done?
-            </h1>
-            <p className="text-[15px] text-gray-400 mt-2">
-              Studies, projects, jobs, volunteering — anything counts.
-            </p>
-            <textarea
-              value={session.step2}
-              onChange={(e) => update({ step2: e.target.value })}
-              rows={5}
-              placeholder="I've worked on a Python project for automating reports, volunteered at a tech event, completed a Google Data Analytics certificate, helped my family business with accounting..."
-              className="mt-6 w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700 focus:outline-none focus:border-gray-400 resize-none"
-            />
-            <p className="text-[11px] text-gray-300 mt-2">
-              {session.resumeUploaded
-                ? 'Pre-filled from your CV — edit or add anything we missed.'
-                : 'The more detail you share, the more accurate your career matches will be.'}
-            </p>
-          </div>
-        )}
-
-        {/* Step 3 */}
-        {session.step === 3 && (
-          <div>
-            <h1 className="text-[28px] text-gray-900" style={{ fontFamily: 'var(--font-display, serif)' }}>
-              What pulls your attention?
-            </h1>
-            <p className="text-[15px] text-gray-400 mt-2">
-              Choose up to 3 Vision-priority areas that interest you most.
-            </p>
-            <div className="flex flex-wrap gap-2.5 mt-6">
-              {(INTEREST_CHIPS[country] || INTEREST_CHIPS.saudi).map((chip) => {
-                const selected = session.interests.includes(chip)
-                return (
-                  <button
-                    key={chip}
-                    onClick={() => {
-                      if (selected) {
-                        update({ interests: session.interests.filter((i) => i !== chip) })
-                      } else if (session.interests.length < 3) {
-                        update({ interests: [...session.interests, chip] })
-                      }
-                    }}
-                    className="px-4 py-2 rounded-full text-sm transition-all"
-                    style={{
-                      border: `1.5px solid ${selected ? accentColor : '#e5e7eb'}`,
-                      backgroundColor: selected ? `${accentColor}10` : 'white',
-                      color: selected ? accentColor : '#6b7280',
-                    }}
-                  >
-                    {chip}
-                  </button>
-                )
-              })}
-            </div>
-            <p className="text-xs text-gray-300 mt-3">
-              {session.interests.length}/3 selected
-            </p>
-          </div>
-        )}
-
-        {/* Step 4 — Skills Display */}
-        {session.step === 4 && !loading && (
-          <div>
-            <h1 className="text-[28px] text-gray-900" style={{ fontFamily: 'var(--font-display, serif)' }}>
-              Here are your skills
-            </h1>
-            <p className="text-[15px] text-gray-400 mt-2">
-              These are the transferable skills we found in your background. Deselect any that don&apos;t fit.
-            </p>
-            <div className="flex flex-wrap gap-3 mt-6">
-              {session.extractedSkills.map((skill) => {
-                const isDeselected = deselected.has(skill.skill)
-                return (
-                  <button
-                    key={skill.skill}
-                    onClick={() => {
-                      setDeselected((prev) => {
-                        const next = new Set(prev)
-                        if (isDeselected) next.delete(skill.skill)
-                        else next.add(skill.skill)
-                        return next
-                      })
-                    }}
-                    className="group text-left"
-                  >
-                    <span
-                      className="inline-block px-4 py-2 rounded-full text-sm transition-all"
-                      style={{
-                        border: `1.5px solid ${isDeselected ? '#e5e7eb' : accentColor}`,
-                        backgroundColor: isDeselected ? '#f9fafb' : `${accentColor}10`,
-                        color: isDeselected ? '#9ca3af' : accentColor,
-                        textDecoration: isDeselected ? 'line-through' : 'none',
-                      }}
-                    >
-                      {skill.skill}
-                    </span>
-                    <span className="block text-[11px] text-gray-300 mt-1 px-2">
-                      {skill.source}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-            {session.extractedSkills.length === 0 && (
-              <p className="text-sm text-gray-400 mt-6">No skills could be extracted. Try adding more detail in the previous steps.</p>
             )}
+
+            {/* Skills */}
+            <div className="mt-6">
+              <p className="text-xs font-medium uppercase tracking-wider text-gray-400 mb-2"
+                style={{ letterSpacing: '0.3px' }}>Skills — deselect any that don&apos;t fit</p>
+
+              {profile.explicit_skills.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-xs text-gray-300 mb-1.5">From your CV</p>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.explicit_skills.map(s => {
+                      const on = confirmedSkills.has(s)
+                      return (
+                        <button key={s} onClick={() => toggleSkill(s)}
+                          className="px-3 py-1.5 rounded-full text-xs transition-all"
+                          style={{
+                            border: `1.5px solid ${on ? '#16A34A' : '#E2E5EB'}`,
+                            backgroundColor: on ? '#F0FDF4' : '#F9FAFB',
+                            color: on ? '#15803D' : '#9CA3AF',
+                            textDecoration: on ? 'none' : 'line-through',
+                          }}>
+                          {s}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {profile.inferred_skills.length > 0 && (
+                <div>
+                  <p className="text-xs text-gray-300 mb-1.5">Inferred from your background</p>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.inferred_skills.map(s => {
+                      const on = confirmedSkills.has(s)
+                      return (
+                        <button key={s} onClick={() => toggleSkill(s)}
+                          className="px-3 py-1.5 rounded-full text-xs transition-all"
+                          style={{
+                            border: `1.5px solid ${on ? '#D97706' : '#E2E5EB'}`,
+                            backgroundColor: on ? '#FFFBEB' : '#F9FAFB',
+                            color: on ? '#B45309' : '#9CA3AF',
+                            textDecoration: on ? 'none' : 'line-through',
+                          }}>
+                          {s}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Sectors */}
+            {profile.suggested_sectors.length > 0 && (
+              <div className="mt-6">
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-400 mb-2"
+                  style={{ letterSpacing: '0.3px' }}>Best-fit sectors</p>
+                <div className="flex flex-wrap gap-2">
+                  {profile.suggested_sectors.map(s => (
+                    <span key={s} className="px-3 py-1.5 rounded-full text-xs border border-gray-200 text-gray-500">
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-3 mt-10">
+              <button onClick={() => setStep(1)}
+                className="px-5 py-2.5 rounded-lg text-sm border border-gray-200 text-gray-500 hover:border-gray-400 transition-colors">
+                ← Back
+              </button>
+              <button onClick={handleMatch} disabled={confirmedSkills.size === 0}
+                className="flex-1 py-2.5 rounded-lg text-sm font-medium text-white transition-all disabled:opacity-30"
+                style={{ backgroundColor: accent }}>
+                Find my career matches →
+              </button>
+            </div>
           </div>
         )}
 
-        {/* Step 5 — Career Matches */}
-        {session.step === 5 && !loading && (
+        {/* ── STEP 3: Career Matches ── */}
+        {step === 3 && (
           <div>
-            <h1 className="text-[28px] text-gray-900" style={{ fontFamily: 'var(--font-display, serif)' }}>
-              Careers that could fit you
-            </h1>
-            <p className="text-[15px] text-gray-400 mt-2">
-              Based on your skills and Vision-priority interests.
+            <h1 className="font-display text-[28px] text-gray-900">Career matches</h1>
+            <p className="text-gray-400 text-[15px] mt-2">
+              Ranked by fit to your profile — not generic job descriptions.
             </p>
-            <div className="space-y-4 mt-6">
-              {session.careerMatches.map((career) => {
-                const isExpanded = expandedCareer === career.title
+
+            <div className="space-y-4 mt-8">
+              {careerMatches.map(career => {
+                const expanded = expandedCareer === career.title
+                const freeCert = career.certifications?.find(c => c.free)
+                const paidCerts = career.certifications?.filter(c => !c.free) || []
+                const employers = (EMPLOYERS[country] || {})[career.sector] || []
+                const salaryDisplay = career.salary
+                  ? `${career.currency} ${Number(career.salary).toLocaleString()}/yr`
+                  : null
+
                 return (
-                  <div
-                    key={career.title}
-                    className="bg-white rounded-xl p-5"
-                    style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{career.title}</h3>
-                        <p className="text-xs text-gray-400 mt-0.5">
-                          {career.sector} · Vision Priority: <span className="capitalize">{career.vision_priority}</span>
-                        </p>
+                  <div key={career.title} className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+                    style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                    <div className="p-5">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{career.title}</h3>
+                          <p className="text-xs text-gray-400 mt-0.5" style={{ letterSpacing: '0.3px' }}>
+                            {career.sector.toUpperCase()}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-lg font-bold tabular-nums" style={{ color: accent }}>
+                            {career.match_percent}%
+                          </span>
+                          <p className="text-xs text-gray-400">fit</p>
+                        </div>
                       </div>
-                      <button
-                        onClick={() => setExpandedCareer(isExpanded ? null : career.title)}
-                        className="text-xs px-3 py-1 rounded border transition-colors"
-                        style={{ borderColor: accentColor, color: accentColor }}
-                      >
-                        {isExpanded ? 'Collapse' : 'Explore'}
+
+                      {/* Match bar */}
+                      <div className="mt-3 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all duration-700"
+                          style={{ width: `${career.match_percent}%`, backgroundColor: accent }} />
+                      </div>
+
+                      <p className="mt-4 text-sm text-gray-600 leading-[1.65]">{career.why_you_fit}</p>
+
+                      <div className="grid grid-cols-3 gap-3 mt-4 text-xs text-gray-500">
+                        <div>
+                          <p className="font-medium tabular-nums text-gray-700">
+                            {career.realistic_gap_months || Math.round((career.gap_years || 2) * 12)} mo
+                          </p>
+                          <p className="text-gray-400">to close gap</p>
+                        </div>
+                        {salaryDisplay && (
+                          <div>
+                            <p className="font-medium tabular-nums text-gray-700">{salaryDisplay}</p>
+                            <p className="text-gray-400">median salary</p>
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-medium tabular-nums text-gray-700">
+                            {(career.open_roles || 0).toLocaleString()}
+                          </p>
+                          <p className="text-gray-400">open roles</p>
+                        </div>
+                      </div>
+
+                      <button onClick={() => setExpandedCareer(expanded ? null : career.title)}
+                        className="mt-4 text-xs font-medium transition-colors"
+                        style={{ color: accent }}>
+                        {expanded ? 'Hide details ↑' : 'See certification path ↓'}
                       </button>
                     </div>
-                    <p className="text-sm text-gray-600 mt-3 leading-relaxed">{career.why_you_fit}</p>
-                    {/* Match bar */}
-                    <div className="mt-3 flex items-center gap-3">
-                      <span className="text-[11px] text-gray-400 w-20">Skills match</span>
-                      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full transition-all duration-500"
-                          style={{ width: `${career.match_percent}%`, backgroundColor: accentColor }}
-                        />
-                      </div>
-                      <span className="text-xs font-medium" style={{ color: accentColor }}>
-                        {career.match_percent}%
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4 mt-3 text-xs text-gray-500">
-                      <div>~{career.gap_years} years gap</div>
-                      <div>${(career.median_salary_usd || 0).toLocaleString()}/yr</div>
-                      <div>{(career.open_roles || 0).toLocaleString()} open roles</div>
-                    </div>
-                    {isExpanded && (
-                      <div className="mt-4 pt-4 border-t border-gray-100">
-                        <div className="mb-3">
-                          <p className="text-[11px] text-gray-400 uppercase tracking-wider mb-1.5">Skills you have</p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {(career.matching_skills || []).map((s) => (
-                              <span key={s} className="px-2.5 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-100">
-                                {s}
-                              </span>
-                            ))}
+
+                    {expanded && (
+                      <div className="border-t border-gray-50 p-5 bg-gray-50/50 space-y-5">
+                        {/* Skills */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-xs uppercase tracking-wider text-gray-400 mb-2"
+                              style={{ letterSpacing: '0.3px' }}>Skills you have</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {(career.matching_skills || []).map(s => (
+                                <span key={s} className="px-2.5 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                  {s}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-xs uppercase tracking-wider text-gray-400 mb-2"
+                              style={{ letterSpacing: '0.3px' }}>Skills to build</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {(career.skills_to_develop || []).map(s => (
+                                <span key={s} className="px-2.5 py-1 rounded-full text-xs bg-amber-50 text-amber-700 border border-amber-100">
+                                  {s}
+                                </span>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                        <div className="mb-3">
-                          <p className="text-[11px] text-gray-400 uppercase tracking-wider mb-1.5">Skills to develop</p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {(career.skills_to_develop || []).map((s) => (
-                              <span key={s} className="px-2.5 py-0.5 rounded-full text-xs bg-amber-50 text-amber-700 border border-amber-100">
-                                {s}
-                              </span>
-                            ))}
+
+                        {/* Certification pipeline */}
+                        {career.certifications?.length > 0 && (
+                          <div>
+                            <p className="text-xs uppercase tracking-wider text-gray-400 mb-3"
+                              style={{ letterSpacing: '0.3px' }}>Certification pipeline</p>
+                            <div className="space-y-2">
+                              {freeCert && (
+                                <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-100">
+                                  <span className="text-emerald-700 text-xs font-bold uppercase tracking-wide shrink-0">Free</span>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-emerald-800 truncate">{freeCert.name}</p>
+                                    <p className="text-xs text-emerald-600">{freeCert.duration}</p>
+                                  </div>
+                                  <a href={freeCert.url} target="_blank" rel="noopener noreferrer"
+                                    className="text-xs text-emerald-700 hover:underline shrink-0">
+                                    Start →
+                                  </a>
+                                </div>
+                              )}
+                              {paidCerts.slice(0, 2).map((cert, i) => (
+                                <div key={i} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-100">
+                                  <span className="text-gray-400 text-xs font-bold uppercase tracking-wide shrink-0">Paid</span>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-gray-700 truncate">{cert.name}</p>
+                                    <p className="text-xs text-gray-400">{cert.duration}</p>
+                                  </div>
+                                  <a href={cert.url} target="_blank" rel="noopener noreferrer"
+                                    className="text-xs text-gray-400 hover:text-gray-600 hover:underline shrink-0">
+                                    View →
+                                  </a>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                        {career.free_resource && (
-                          <p className="text-xs text-gray-500 mt-2">
-                            <span className="font-medium">Start with:</span> {career.free_resource}
-                          </p>
+                        )}
+
+                        {/* Employers */}
+                        {employers.length > 0 && (
+                          <div>
+                            <p className="text-xs uppercase tracking-wider text-gray-400 mb-2"
+                              style={{ letterSpacing: '0.3px' }}>Who&apos;s hiring</p>
+                            <div className="flex flex-wrap gap-2">
+                              {employers.slice(0, 4).map(e => (
+                                <span key={e} className="px-2.5 py-1 rounded text-xs bg-white border border-gray-200 text-gray-600">
+                                  {e}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
                         )}
                       </div>
                     )}
                   </div>
                 )
               })}
-              {session.careerMatches.length === 0 && (
-                <p className="text-sm text-gray-400">No career matches found. Try adjusting your skills or interests.</p>
+
+              {careerMatches.length === 0 && (
+                <p className="text-sm text-gray-400 text-center py-8">No career matches found — try adjusting your profile.</p>
               )}
             </div>
+
+            <div className="flex gap-3 mt-10">
+              <button onClick={() => setStep(2)}
+                className="px-5 py-2.5 rounded-lg text-sm border border-gray-200 text-gray-500 hover:border-gray-400 transition-colors">
+                ← Back
+              </button>
+              <button onClick={handleIdentity} disabled={careerMatches.length === 0}
+                className="flex-1 py-2.5 rounded-lg text-sm font-medium text-white transition-all disabled:opacity-30"
+                style={{ backgroundColor: accent }}>
+                Generate my Career Identity →
+              </button>
+            </div>
           </div>
         )}
 
-        {/* Step 6 — Identity Statement */}
-        {session.step === 6 && !loading && (
+        {/* ── STEP 4: Identity Statement + 90-day Plan ── */}
+        {step === 4 && (
           <div>
-            <h1 className="text-[28px] text-gray-900" style={{ fontFamily: 'var(--font-display, serif)' }}>
-              Your Career Identity Statement
-            </h1>
-            <p className="text-[15px] text-gray-400 mt-2">
-              A professional summary you can use on your CV, LinkedIn, or in interviews.
+            <h1 className="font-display text-[28px] text-gray-900">Your Career Identity Statement</h1>
+            <p className="text-gray-400 text-[15px] mt-2">
+              Use this on your CV, LinkedIn, or in interviews.
             </p>
-            <blockquote
-              className="mt-8 p-6 rounded-lg bg-white italic text-lg leading-[1.7] text-gray-800"
-              style={{ borderLeft: `3px solid ${accentColor}` }}
-            >
-              {session.identityStatement}
+
+            <blockquote className="mt-8 p-6 rounded-lg italic text-lg leading-[1.7] text-gray-800"
+              style={{ borderLeft: `3px solid ${accent}`, backgroundColor: `${accent}06` }}>
+              {identityStatement}
             </blockquote>
-            <div className="flex flex-wrap gap-3 mt-6">
+
+            <div className="flex flex-wrap gap-3 mt-5">
               <button
-                onClick={() => {
-                  navigator.clipboard.writeText(session.identityStatement)
-                  setCopied(true)
-                  setTimeout(() => setCopied(false), 2000)
-                }}
-                className="px-5 py-2.5 rounded-lg text-sm font-medium text-white transition-colors"
-                style={{ backgroundColor: accentColor }}
-              >
-                {copied ? 'Copied ✓' : 'Copy Statement'}
+                onClick={() => { navigator.clipboard.writeText(identityStatement); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+                className="px-5 py-2.5 rounded-lg text-sm font-medium text-white"
+                style={{ backgroundColor: accent }}>
+                {copied ? 'Copied ✓' : 'Copy statement'}
               </button>
-              <button
-                onClick={downloadPDF}
-                className="px-5 py-2.5 rounded-lg text-sm font-medium border transition-colors"
-                style={{ borderColor: accentColor, color: accentColor }}
-              >
-                Download as PDF
-              </button>
-              <button
-                onClick={() => {
-                  setSession({ step: 1, step1: '', step2: '', interests: [], extractedSkills: [], careerMatches: [], identityStatement: '', country, resumeSkills: [], resumeUploaded: false })
-                  setUploadStatus('idle')
-                  setDeselected(new Set())
-                  setExpandedCareer(null)
-                }}
-                className="px-5 py-2.5 rounded-lg text-sm font-medium border border-gray-200 text-gray-500 hover:border-gray-400 transition-colors"
-              >
-                Start Again
+              <button onClick={reset}
+                className="px-5 py-2.5 rounded-lg text-sm font-medium border border-gray-200 text-gray-500 hover:border-gray-400 transition-colors">
+                Start again
               </button>
             </div>
 
-            {/* Next steps */}
-            {session.careerMatches.length > 0 && (
-              <div className="mt-10 pt-6 border-t border-gray-100">
-                <h2 className="text-sm font-semibold text-gray-800 mb-4">Your next steps</h2>
-                <div className="space-y-3">
-                  <a
-                    href={`/${country}/employer`}
-                    className="block text-sm text-gray-600 hover:underline"
-                  >
-                    1. Explore {session.careerMatches[0].title} — {(session.careerMatches[0].open_roles || 0).toLocaleString()} open roles in {country === 'saudi' ? 'Saudi Vision 2030' : 'Malta Vision 2050'}
-                  </a>
-                  {session.careerMatches[0]?.skills_to_develop?.[0] && (
-                    <p className="text-sm text-gray-600">
-                      2. Develop {session.careerMatches[0].skills_to_develop[0]} — {session.careerMatches[0].free_resource || 'Search for free courses online'}
-                    </p>
-                  )}
-                  <a
-                    href={`/${country}/university`}
-                    className="block text-sm text-gray-600 hover:underline"
-                  >
-                    3. See how universities are aligning curriculum to these roles →
-                  </a>
+            {/* 90-day action plan */}
+            {careerMatches.length > 0 && (() => {
+              const top = careerMatches[0]
+              const freeCert = top.certifications?.find(c => c.free)
+              const paidCert = top.certifications?.find(c => !c.free)
+              const employers = (EMPLOYERS[country] || {})[top.sector] || []
+
+              return (
+                <div className="mt-10">
+                  <h2 className="font-display text-xl text-gray-900 mb-6">Your 90-Day Action Plan</h2>
+                  <div className="space-y-4">
+                    <div className="flex gap-4">
+                      <div className="shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        style={{ backgroundColor: accent }}>
+                        Mo 1
+                      </div>
+                      <div className="flex-1 pt-1">
+                        <p className="font-semibold text-gray-800 text-sm">Start free certification</p>
+                        {freeCert ? (
+                          <p className="text-sm text-gray-500 mt-1 leading-[1.65]">
+                            Begin <a href={freeCert.url} target="_blank" rel="noopener noreferrer"
+                              className="underline" style={{ color: accent }}>{freeCert.name}</a> — {freeCert.duration}. No cost, immediate signal of intent on LinkedIn.
+                          </p>
+                        ) : (
+                          <p className="text-sm text-gray-500 mt-1">Find a free introductory course in {top.skills_to_develop?.[0] || top.sector}.</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        style={{ backgroundColor: accent }}>
+                        Mo 2–3
+                      </div>
+                      <div className="flex-1 pt-1">
+                        <p className="font-semibold text-gray-800 text-sm">Add paid credential</p>
+                        {paidCert ? (
+                          <p className="text-sm text-gray-500 mt-1 leading-[1.65]">
+                            Enrol in <a href={paidCert.url} target="_blank" rel="noopener noreferrer"
+                              className="underline" style={{ color: accent }}>{paidCert.name}</a> — {paidCert.duration}. This is the credential {top.title} hiring managers look for.
+                          </p>
+                        ) : (
+                          <p className="text-sm text-gray-500 mt-1">Research industry-recognised certifications for {top.sector}.</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        style={{ backgroundColor: accent }}>
+                        Mo 3+
+                      </div>
+                      <div className="flex-1 pt-1">
+                        <p className="font-semibold text-gray-800 text-sm">Apply with real employers</p>
+                        <p className="text-sm text-gray-500 mt-1 leading-[1.65]">
+                          {employers.length > 0
+                            ? `Target: ${employers.slice(0, 3).join(', ')}. These employers actively recruit for ${top.title} roles in ${country === 'saudi' ? 'Vision 2030' : country === 'uk' ? 'the UK AI Action Plan' : 'Vision 2050'}.`
+                            : `Search for ${top.title} roles aligned with ${top.sector}.`
+                          }
+                        </p>
+                        <a
+                          href={`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(top.title)}&location=${encodeURIComponent(country === 'saudi' ? 'Saudi Arabia' : country === 'uk' ? 'United Kingdom' : 'Malta')}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="inline-block mt-2 text-xs font-medium underline"
+                          style={{ color: accent }}>
+                          Search {top.title} on LinkedIn →
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
+              )
+            })()}
           </div>
         )}
 
-        {/* Next button — Steps 1-5 */}
-        {session.step < 6 && (
-          <button
-            onClick={handleNext}
-            disabled={!canAdvance}
-            className="mt-8 w-full py-3 rounded-lg text-sm font-medium text-white transition-all disabled:opacity-30"
-            style={{ backgroundColor: accentColor }}
-          >
-            {nextLabel}
-          </button>
-        )}
       </div>
     </div>
   )

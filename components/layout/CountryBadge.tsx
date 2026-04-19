@@ -7,7 +7,12 @@ interface CountryBadgeProps {
 }
 
 export default function CountryBadge({ country, visionName, accentColor }: CountryBadgeProps) {
-  const displayName = country === 'malta' ? 'Republic of Malta' : 'Kingdom of Saudi Arabia'
+  const displayNames: Record<string, string> = {
+    malta: 'Republic of Malta',
+    saudi: 'Kingdom of Saudi Arabia',
+    uk: 'United Kingdom',
+  }
+  const displayName = displayNames[country] || country
 
   return (
     <div
