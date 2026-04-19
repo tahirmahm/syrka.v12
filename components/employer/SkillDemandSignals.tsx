@@ -11,7 +11,7 @@ const CRITICALITY_STYLES: Record<string, { bg: string; text: string; border: str
   critical: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
   high: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
   medium: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
-  low: { bg: 'bg-gray-50', text: 'text-gray-500', border: 'border-gray-200' },
+  low: { bg: 'bg-[#0D1117]', text: 'text-[#8B949E]', border: 'border-[#21262D]' },
 }
 
 const DEMAND_TAG_STYLES: Record<string, { bg: string; text: string }> = {
@@ -34,7 +34,7 @@ export default function SkillDemandSignals({ skills, accentColor }: SkillDemandS
       <h3 className="font-display text-lg text-slate-800 tracking-tight">
         Skill Demand Signals
       </h3>
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+      <div className="bg-[#0D1117] rounded-lg border border-slate-200 overflow-hidden">
         {/* Table header */}
         <div className="grid grid-cols-[1fr_100px_1fr_90px_90px_80px] gap-3 px-5 py-3 border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-400 font-medium">
           <span>Skill</span>

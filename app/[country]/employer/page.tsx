@@ -3,22 +3,28 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase'
-import RoleSelector from '@/components/layout/RoleSelector'
+import Shell from '@/components/Shell'
 import TalentPipelineHealth from '@/components/employer/TalentPipelineHealth'
 import SkillDemandSignals from '@/components/employer/SkillDemandSignals'
 import NationalShortageAlerts from '@/components/employer/NationalShortageAlerts'
 import type { Employer, Skill } from '@/lib/types'
 
-const ACCENT: Record<string, string> = {
-  malta: '#1B6B5A',
+const ACCENTS: Record<string, string> = {
+  malta: '#1D9E75',
   saudi: '#C9A84C',
-  uk: '#1a3a6b',
+  uk: '#3B8BD4',
+}
+
+const COUNTRY_LABEL: Record<string, string> = {
+  saudi: 'Saudi Arabia',
+  malta: 'Malta',
+  uk: 'United Kingdom',
 }
 
 export default function EmployerDashboard() {
   const params = useParams()
   const country = params.country as string
-  const accentColor = ACCENT[country] || '#C9A84C'
+  const accentColor = ACCENTS[country] || '#C9A84C'
 
   const [employers, setEmployers] = useState<Employer[]>([])
   const [skills, setSkills] = useState<Skill[]>([])
@@ -55,44 +61,64 @@ export default function EmployerDashboard() {
     loadData()
   }, [country])
 
-  if (loading) {
-    return (
-      <div className="p-8">
-        <RoleSelector role="Employer" accentColor={accentColor} />
-        <div className="mt-8 animate-pulse-subtle">
-          <div className="h-8 bg-gray-200 rounded w-64 mb-4" />
-          <div className="h-64 bg-gray-200 rounded" />
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="p-8">
-      <RoleSelector role="Employer" accentColor={accentColor} />
-
-      <div className="mt-6">
-        <h1 className="font-display text-3xl text-[#0A1628]">Talent Pipeline & Demand Intelligence</h1>
-        <p className="text-[#5A6478] mt-1 text-sm">
-          Real-time workforce demand signals and pipeline health indicators
+    <Shell country={country} activeTrack="employer">
+      {/* Top bar */}
+      <div style={{
+        background: 'var(--bg-surface)',
+        borderBottom: '0.5px solid var(--border-subtle)',
+        padding: 'clamp(10px, 2vw, 14px) clamp(16px, 3vw, 24px)',
+        flexShrink: 0,
+      }}>
+        <h1 style={{
+          fontSize: 'clamp(13px, 2vw, 15px)',
+          fontWeight: 600,
+          color: 'var(--text-primary)',
+          letterSpacing: '0.2px',
+        }}>
+          Talent Pipeline &amp; Demand Intelligence
+        </h1>
+        <p className="label-caps" style={{ marginTop: 3 }}>
+          {COUNTRY_LABEL[country] || country} &middot; Employer Track
         </p>
       </div>
 
-      <div className="mt-8">
-        <NationalShortageAlerts skills={skills} accentColor={accentColor} />
-      </div>
+      {/* Content */}
+      <div style={{
+        flex: 1,
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        padding: 'clamp(16px, 3vw, 20px) clamp(16px, 3vw, 24px)',
+        WebkitOverflowScrolling: 'touch',
+      }}>
+        {loading ? (
+          <div style={{ padding: 40 }}>
+            <div className="skeleton" style={{ height: 32, width: 200, marginBottom: 16 }} />
+            <div className="skeleton" style={{ height: 240 }} />
+          </div>
+        ) : (
+          <>
+            <NationalShortageAlerts skills={skills} accentColor={accentColor} />
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-8">
-        <TalentPipelineHealth
-          employers={employers}
-          skills={skills}
-          accentColor={accentColor}
-        />
-        <SkillDemandSignals
-          skills={skills}
-          accentColor={accentColor}
-        />
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
+              gap: 16,
+              marginTop: 20,
+            }}>
+              <TalentPipelineHealth
+                employers={employers}
+                skills={skills}
+                accentColor={accentColor}
+              />
+              <SkillDemandSignals
+                skills={skills}
+                accentColor={accentColor}
+              />
+            </div>
+          </>
+        )}
       </div>
-    </div>
+    </Shell>
   )
 }

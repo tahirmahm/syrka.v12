@@ -1,9 +1,19 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'SYRKA — National Human Capital Intelligence System',
-  description: 'Ministerial-grade national workforce intelligence platform for policy decision support.',
+  title: 'Syrka — National Human Capital Intelligence',
+  description: 'From National Vision to Human Capital Reality.',
+  icons: { icon: '/syrka.png', apple: '/syrka.png' },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+  themeColor: '#0A0C10',
 }
 
 export default function RootLayout({
@@ -13,7 +23,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[#F4F5F7]">
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Syrka" />
+        <link rel="apple-touch-icon" href="/syrka.png" />
+        <link rel="manifest" href="/manifest.json" />
+      </head>
+      <body style={{ background: 'var(--bg-base)' }}>
         {children}
       </body>
     </html>

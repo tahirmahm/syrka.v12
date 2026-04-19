@@ -52,7 +52,7 @@ export default function SyrkaScoreWidget({ country, accentColor }: SyrkaScoreWid
       data: data.dimensions.map((d) => d.name),
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { fontSize: 10, color: '#8B95A8' },
+      axisLabel: { fontSize: 10, color: '#8B949E' },
       inverse: true,
     },
     series: [
@@ -61,7 +61,7 @@ export default function SyrkaScoreWidget({ country, accentColor }: SyrkaScoreWid
         data: data.dimensions.map((d) => ({
           value: d.available ? d.score : 0,
           itemStyle: {
-            color: d.available ? accentColor : '#E2E5EB',
+            color: d.available ? accentColor : '#21262D',
             borderRadius: [0, 3, 3, 0],
           },
         })),
@@ -70,7 +70,7 @@ export default function SyrkaScoreWidget({ country, accentColor }: SyrkaScoreWid
           show: true,
           position: 'right' as const,
           fontSize: 10,
-          color: '#5A6478',
+          color: '#C9D1D9',
           formatter: (p: { dataIndex: number }) => {
             const dim = data.dimensions[p.dataIndex]
             return dim.available ? `${dim.score}` : 'Awaiting data'
@@ -93,33 +93,33 @@ export default function SyrkaScoreWidget({ country, accentColor }: SyrkaScoreWid
         onClick={() => setExpanded(!expanded)}
         className="text-right cursor-pointer hover:opacity-80 transition-opacity"
       >
-        <p className="text-[11px] uppercase tracking-wider text-[#8B95A8] font-medium">Syrka Score</p>
+        <p className="text-[11px] uppercase tracking-wider text-[#8B949E] font-medium">Syrka Score</p>
         {hasEnoughData ? (
           <>
             <p className="font-display text-2xl mt-0.5" style={{ color: accentColor }}>
-              {data.score} <span className="text-sm text-[#8B95A8]">/ 100</span>
+              {data.score} <span className="text-sm text-[#8B949E]">/ 100</span>
             </p>
-            <p className="text-xs text-[#8B95A8]">{data.grade}</p>
+            <p className="text-xs text-[#8B949E]">{data.grade}</p>
           </>
         ) : (
-          <p className="text-xs text-[#8B95A8] mt-1">
+          <p className="text-xs text-[#8B949E] mt-1">
             Calculating — {data.availableDimensions}/5 sources connected
           </p>
         )}
       </button>
 
       {expanded && (
-        <div className="absolute right-0 top-full mt-2 w-[380px] bg-white rounded-lg border border-[#E2E5EB] shadow-lg z-50 p-4">
+        <div className="absolute right-0 top-full mt-2 w-[380px] bg-[#0D1117] rounded-lg border border-[#21262D] shadow-lg z-50 p-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-semibold text-[#0A1628]">Score Breakdown</h4>
-            <button onClick={() => setExpanded(false)} className="text-xs text-[#8B95A8] hover:text-[#5A6478]">
+            <h4 className="text-sm font-semibold text-[#E6EDF3]">Score Breakdown</h4>
+            <button onClick={() => setExpanded(false)} className="text-xs text-[#8B949E] hover:text-[#C9D1D9]">
               Close
             </button>
           </div>
           <div style={{ height: 180 }}>
             <ReactECharts option={chartOption} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'canvas' }} notMerge />
           </div>
-          <p className="text-[10px] text-[#8B95A8] mt-2">
+          <p className="text-[10px] text-[#8B949E] mt-2">
             Weighted composite of {data.availableDimensions} available dimensions. Click each bar for details.
           </p>
         </div>

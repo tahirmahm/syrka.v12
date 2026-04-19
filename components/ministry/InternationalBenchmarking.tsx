@@ -79,7 +79,7 @@ export default function InternationalBenchmarking({ country, accentColor }: Inte
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-slate-200 rounded w-48" />
           <div className="h-64 bg-slate-200 rounded" />
@@ -90,15 +90,15 @@ export default function InternationalBenchmarking({ country, accentColor }: Inte
 
   if (!data || Object.keys(data.latestCountryValues || {}).length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-        <h3 className="font-display text-lg text-[#0A1628]">International Benchmarking</h3>
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+        <h3 className="font-display text-lg text-[#E6EDF3]">International Benchmarking</h3>
         <p className="text-sm text-slate-500 mt-2">
           No international statistics data yet. The Vercel Cron jobs will populate data from World Bank, ILO, OECD, UNESCO, and WEF automatically on a weekly schedule. You can also trigger them manually via the API.
         </p>
         <div className="mt-4 grid grid-cols-5 gap-3">
           {['World Bank', 'ILO', 'OECD', 'UNESCO', 'WEF'].map(source => (
-            <div key={source} className="text-center py-3 rounded-lg border border-dashed border-[#E2E5EB]">
-              <p className="text-xs text-[#8B95A8]">{source}</p>
+            <div key={source} className="text-center py-3 rounded-lg border border-dashed border-[#21262D]">
+              <p className="text-xs text-[#8B949E]">{source}</p>
               <p className="text-[10px] text-slate-400 mt-1">Awaiting data</p>
             </div>
           ))}
@@ -132,11 +132,11 @@ export default function InternationalBenchmarking({ country, accentColor }: Inte
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="font-display text-lg text-[#0A1628]">International Benchmarking</h3>
-            <p className="text-sm text-[#5A6478] mt-1">
+            <h3 className="font-display text-lg text-[#E6EDF3]">International Benchmarking</h3>
+            <p className="text-sm text-[#C9D1D9] mt-1">
               {data.country.name} vs peer group ({data.peers.map(p => COUNTRY_NAMES[p.code] || p.code).join(', ')})
             </p>
           </div>
@@ -163,13 +163,13 @@ export default function InternationalBenchmarking({ country, accentColor }: Inte
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="font-display text-lg text-[#0A1628]">Indicator Comparison Over Time</h3>
+          <h3 className="font-display text-lg text-[#E6EDF3]">Indicator Comparison Over Time</h3>
           <select
             value={selectedIndicator}
             onChange={(e) => setSelectedIndicator(e.target.value)}
-            className="text-sm border border-[#E2E5EB] rounded-lg px-3 py-1.5 text-[#0A1628] bg-white"
+            className="text-sm border border-[#21262D] rounded-lg px-3 py-1.5 text-[#E6EDF3] bg-[#0D1117]"
           >
             {Object.entries(INDICATOR_LABELS).map(([code, label]) => (
               <option key={code} value={code}>{label}</option>
@@ -187,18 +187,18 @@ export default function InternationalBenchmarking({ country, accentColor }: Inte
       </div>
 
       {/* Key metrics comparison table */}
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-        <h3 className="font-display text-lg text-[#0A1628] mb-4">Latest Indicators</h3>
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+        <h3 className="font-display text-lg text-[#E6EDF3] mb-4">Latest Indicators</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#E2E5EB]">
-                <th className="text-left py-2 px-3 text-[#8B95A8] font-medium text-xs uppercase tracking-wider">Indicator</th>
+              <tr className="border-b border-[#21262D]">
+                <th className="text-left py-2 px-3 text-[#8B949E] font-medium text-xs uppercase tracking-wider">Indicator</th>
                 <th className="text-right py-2 px-3 text-xs uppercase tracking-wider font-medium" style={{ color: accentColor }}>
                   {data.country.name}
                 </th>
-                <th className="text-right py-2 px-3 text-[#8B95A8] font-medium text-xs uppercase tracking-wider">Peer Avg</th>
-                <th className="text-right py-2 px-3 text-[#8B95A8] font-medium text-xs uppercase tracking-wider">Gap</th>
+                <th className="text-right py-2 px-3 text-[#8B949E] font-medium text-xs uppercase tracking-wider">Peer Avg</th>
+                <th className="text-right py-2 px-3 text-[#8B949E] font-medium text-xs uppercase tracking-wider">Gap</th>
               </tr>
             </thead>
             <tbody>
@@ -207,12 +207,12 @@ export default function InternationalBenchmarking({ country, accentColor }: Inte
                 const pv = data.peerAverage[code]
                 const gap = cv !== undefined && pv !== undefined ? cv - pv : null
                 return (
-                  <tr key={code} className="border-b border-[#E2E5EB]/50 hover:bg-slate-50/50">
-                    <td className="py-2.5 px-3 text-[#0A1628]">{label}</td>
+                  <tr key={code} className="border-b border-[#21262D]/50 hover:bg-slate-50/50">
+                    <td className="py-2.5 px-3 text-[#E6EDF3]">{label}</td>
                     <td className="py-2.5 px-3 text-right font-mono" style={{ color: accentColor }}>
                       {cv !== undefined ? cv.toFixed(1) : '—'}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-[#5A6478]">
+                    <td className="py-2.5 px-3 text-right font-mono text-[#C9D1D9]">
                       {pv !== undefined ? pv.toFixed(1) : '—'}
                     </td>
                     <td className={`py-2.5 px-3 text-right font-mono ${gap !== null && gap >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>

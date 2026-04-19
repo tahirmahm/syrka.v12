@@ -25,18 +25,18 @@ export default function CourseScoreCard({ course, recommendation }: CourseScoreC
   const color = scoreColor(course.alignment_score)
 
   return (
-    <div className="bg-white rounded-lg border border-[#E2E5EB] p-4">
+    <div className="bg-[#0D1117] rounded-lg border border-[#21262D] p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           {course.code && (
-            <span className="inline-block text-[11px] font-mono font-medium tracking-wide text-gray-400 uppercase mb-1">
+            <span className="inline-block text-[11px] font-mono font-medium tracking-wide text-[#484F58] uppercase mb-1">
               {course.code}
             </span>
           )}
-          <h4 className="font-display text-sm text-gray-900 leading-snug">{course.name}</h4>
+          <h4 className="font-display text-sm text-[#E6EDF3] leading-snug">{course.name}</h4>
         </div>
         {course.last_updated != null && (
-          <span className="shrink-0 text-[11px] text-gray-400">
+          <span className="shrink-0 text-[11px] text-[#484F58]">
             Updated {course.last_updated}
           </span>
         )}
@@ -45,17 +45,17 @@ export default function CourseScoreCard({ course, recommendation }: CourseScoreC
       {/* Alignment Score Bar */}
       <div className="mt-3">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+          <span className="text-[11px] font-medium text-[#8B949E] uppercase tracking-wide">
             Alignment
           </span>
           <span className="text-xs font-semibold" style={{ color }}>
             {course.alignment_score != null ? `${course.alignment_score}%` : 'N/A'}
-            <span className="ml-1.5 font-normal text-gray-400">
+            <span className="ml-1.5 font-normal text-[#484F58]">
               {scoreLabel(course.alignment_score)}
             </span>
           </span>
         </div>
-        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-[#161B22] rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{

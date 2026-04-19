@@ -97,7 +97,7 @@ export default function VisionGapHero({
         {/* Current Gap */}
         <div
           className="rounded-xl px-6 py-5"
-          style={{ backgroundColor: '#0A1628' }}
+          style={{ backgroundColor: '#161B22' }}
         >
           <p className="text-[11px] font-medium tracking-[0.1em] uppercase text-white/40 mb-1">
             Current Gap
@@ -113,7 +113,7 @@ export default function VisionGapHero({
         {/* Years to Target */}
         <div
           className="rounded-xl px-6 py-5"
-          style={{ backgroundColor: '#0A1628' }}
+          style={{ backgroundColor: '#161B22' }}
         >
           <p className="text-[11px] font-medium tracking-[0.1em] uppercase text-white/40 mb-1">
             Years to Target
@@ -129,7 +129,7 @@ export default function VisionGapHero({
         {/* On-Track Status */}
         <div
           className="rounded-xl px-6 py-5"
-          style={{ backgroundColor: '#0A1628' }}
+          style={{ backgroundColor: '#161B22' }}
         >
           <p className="text-[11px] font-medium tracking-[0.1em] uppercase text-white/40 mb-1">
             On-Track Status
@@ -156,7 +156,7 @@ export default function VisionGapHero({
       {/* ---------- Trajectory chart ---------- */}
       <div
         className="rounded-xl p-6 mb-6"
-        style={{ backgroundColor: '#0A1628' }}
+        style={{ backgroundColor: '#161B22' }}
       >
         <h2 className="font-display text-lg text-white mb-4">
           {sector.name} -- Workforce Trajectory
@@ -185,7 +185,7 @@ export default function VisionGapHero({
                 ${
                   isActive
                     ? 'text-white border-transparent'
-                    : 'text-[#5A6478] border-[#E2E5EB] hover:text-[#0A1628] hover:border-[#C5CAD3] bg-white'
+                    : 'text-[#C9D1D9] border-[#21262D] hover:text-[#E6EDF3] hover:border-[#C5CAD3] bg-[#0D1117]'
                 }
               `}
               style={

@@ -81,7 +81,7 @@ export default function PrescriptionCard({
   const extraSkillCount = prescription.esco_skill_codes.length - 3
 
   return (
-    <article className="rounded-xl bg-white p-6 shadow-sm border border-slate-100 flex flex-col gap-4">
+    <article className="rounded-xl bg-[#0D1117] p-6 shadow-sm border border-slate-100 flex flex-col gap-4">
       {/* ---- Top row: lever badge + status badge ---- */}
       <div className="flex items-center justify-between gap-2">
         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${lever.classes}`}>

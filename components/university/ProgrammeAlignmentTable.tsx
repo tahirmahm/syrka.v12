@@ -62,26 +62,26 @@ export default function ProgrammeAlignmentTable({
 
   return (
     <>
-      <div className="bg-white rounded-lg border border-[#E2E5EB] overflow-hidden">
+      <div className="bg-[#0D1117] rounded-lg border border-[#21262D] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[#E2E5EB]">
-              <th className="text-left px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400">
+            <tr className="border-b border-[#21262D]">
+              <th className="text-left px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58]">
                 Programme
               </th>
-              <th className="text-left px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400">
+              <th className="text-left px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58]">
                 Level
               </th>
-              <th className="text-right px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400">
+              <th className="text-right px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58]">
                 Annual Graduates
               </th>
-              <th className="text-left px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400 min-w-[180px]">
+              <th className="text-left px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58] min-w-[180px]">
                 Alignment Score
               </th>
-              <th className="text-center px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400">
+              <th className="text-center px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58]">
                 ESCO Skills
               </th>
-              <th className="text-right px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400">
+              <th className="text-right px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58]">
                 Employment Rate
               </th>
               <th className="px-4 py-3" />
@@ -96,10 +96,10 @@ export default function ProgrammeAlignmentTable({
               return (
                 <tr
                   key={prog.id}
-                  className="border-b border-[#E2E5EB] last:border-b-0 hover:bg-gray-50/50 transition-colors"
+                  className="border-b border-[#21262D] last:border-b-0 hover:bg-[#0D1117]/50 transition-colors"
                 >
                   <td className="px-4 py-3.5">
-                    <span className="font-medium text-gray-900">{prog.name}</span>
+                    <span className="font-medium text-[#E6EDF3]">{prog.name}</span>
                   </td>
                   <td className="px-4 py-3.5">
                     {prog.level && levelStyle ? (
@@ -110,17 +110,17 @@ export default function ProgrammeAlignmentTable({
                         {prog.level}
                       </span>
                     ) : (
-                      <span className="text-gray-300">--</span>
+                      <span className="text-[#484F58]">--</span>
                     )}
                   </td>
-                  <td className="px-4 py-3.5 text-right tabular-nums text-gray-700">
+                  <td className="px-4 py-3.5 text-right tabular-nums text-[#C9D1D9]">
                     {prog.annual_graduates != null
                       ? prog.annual_graduates.toLocaleString()
                       : '--'}
                   </td>
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-2.5">
-                      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="flex-1 h-2 bg-[#161B22] rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all duration-500"
                           style={{
@@ -150,10 +150,10 @@ export default function ProgrammeAlignmentTable({
                         {Math.round(score / 10)}
                       </span>
                     ) : (
-                      <span className="text-gray-300">--</span>
+                      <span className="text-[#484F58]">--</span>
                     )}
                   </td>
-                  <td className="px-4 py-3.5 text-right tabular-nums text-gray-700">
+                  <td className="px-4 py-3.5 text-right tabular-nums text-[#C9D1D9]">
                     {prog.employment_rate_6months != null
                       ? `${prog.employment_rate_6months}%`
                       : '--'}
@@ -181,7 +181,7 @@ export default function ProgrammeAlignmentTable({
             })}
             {programmes.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-gray-400 text-sm">
+                <td colSpan={7} className="px-4 py-12 text-center text-[#484F58] text-sm">
                   No programmes found for this institution.
                 </td>
               </tr>

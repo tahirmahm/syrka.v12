@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase'
-import RoleSelector from '@/components/layout/RoleSelector'
+import Shell from '@/components/Shell'
 import VisionGapHero from '@/components/ministry/VisionGapHero'
 import PolicyInterventionSimulator from '@/components/ministry/PolicyInterventionSimulator'
 import PolicyBriefGenerator from '@/components/ministry/PolicyBriefGenerator'
@@ -22,10 +22,10 @@ interface SimTrajectoryPoint {
   data_type: 'historical' | 'projected' | null
 }
 
-const ACCENT: Record<string, string> = {
-  malta: '#1B6B5A',
+const ACCENTS: Record<string, string> = {
+  malta: '#1D9E75',
   saudi: '#C9A84C',
-  uk: '#1a3a6b',
+  uk: '#3B8BD4',
 }
 
 const VISION_LABEL: Record<string, string> = {
@@ -40,10 +40,16 @@ const COUNTRY_LABEL: Record<string, string> = {
   uk: 'United Kingdom',
 }
 
+const VISION_YEARS: Record<string, number> = {
+  saudi: 2030,
+  malta: 2050,
+  uk: 2030,
+}
+
 export default function MinistryDashboard() {
   const params = useParams()
   const country = params.country as string
-  const accentColor = ACCENT[country] || '#C9A84C'
+  const accentColor = ACCENTS[country] || '#C9A84C'
 
   const [visionId, setVisionId] = useState<string>('')
   const [sectors, setSectors] = useState<Sector[]>([])
@@ -113,68 +119,90 @@ export default function MinistryDashboard() {
   const selectedSector = sectors.find(s => s.id === selectedSectorId)
   const sectorSkills = skills.filter(s => s.sector_id === selectedSectorId)
 
-  if (loading) {
-    return (
-      <div className="p-8">
-        <RoleSelector role="Ministry" accentColor={accentColor} />
-        <div className="mt-8 animate-pulse-subtle">
-          <div className="h-8 bg-gray-200 rounded w-64 mb-4" />
-          <div className="h-[340px] bg-gray-200 rounded" />
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="p-8">
-      <RoleSelector role="Ministry" accentColor={accentColor} />
-
-      <div className="mt-6 flex items-start justify-between gap-6">
+    <Shell country={country} activeTrack="ministry">
+      {/* Sticky top bar */}
+      <div style={{
+        background: 'var(--bg-surface)',
+        borderBottom: '0.5px solid var(--border-subtle)',
+        padding: 'clamp(10px, 2vw, 14px) clamp(16px, 3vw, 24px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexShrink: 0,
+        flexWrap: 'wrap',
+        gap: 10,
+      }}>
         <div>
-          <h1 className="font-display text-3xl text-[#0A1628]">National Workforce Gap Overview</h1>
-          <p className="text-[#5A6478] mt-1 text-sm">
-            Strategic human capital intelligence for {VISION_LABEL[country] || 'National Vision'}
+          <h1 style={{
+            fontSize: 'clamp(13px, 2vw, 15px)',
+            fontWeight: 600,
+            color: 'var(--text-primary)',
+            letterSpacing: '0.2px',
+          }}>
+            National Workforce Gap — Ministry
+          </h1>
+          <p className="label-caps" style={{ marginTop: 3 }}>
+            {COUNTRY_LABEL[country] || country} &middot; {VISION_LABEL[country] || ''} &middot; {VISION_YEARS[country] || ''}
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          <PolicyBriefExport country={country} accentColor={accentColor} hasPrescriptions={true} />
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <SyrkaScoreWidget country={country} accentColor={accentColor} />
+          <PolicyBriefExport country={country} accentColor={accentColor} hasPrescriptions={true} />
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="mt-6 flex gap-1 border-b border-[#E2E5EB]">
-        <button
-          onClick={() => setActiveTab('overview')}
-          className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
-            activeTab === 'overview'
-              ? 'text-[#0A1628]'
-              : 'text-[#8B95A8] hover:text-[#5A6478]'
-          }`}
-        >
-          {COUNTRY_LABEL[country] || country} — Workforce Overview
-          {activeTab === 'overview' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
-          )}
-        </button>
-        <button
-          onClick={() => setActiveTab('benchmarking')}
-          className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
-            activeTab === 'benchmarking'
-              ? 'text-[#0A1628]'
-              : 'text-[#8B95A8] hover:text-[#5A6478]'
-          }`}
-        >
-          {COUNTRY_LABEL[country] || country} — International Benchmarking
-          {activeTab === 'benchmarking' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
-          )}
-        </button>
+      {/* Sticky tabs */}
+      <div style={{
+        background: 'var(--bg-surface)',
+        borderBottom: '0.5px solid var(--border-subtle)',
+        overflowX: 'auto',
+        flexShrink: 0,
+        WebkitOverflowScrolling: 'touch',
+      }}>
+        <div style={{ display: 'flex', minWidth: 'max-content', padding: '0 clamp(16px, 3vw, 24px)' }}>
+          {[
+            { id: 'overview', label: `${COUNTRY_LABEL[country] || country} — Workforce Overview` },
+            { id: 'benchmarking', label: `${COUNTRY_LABEL[country] || country} — International Benchmarking` },
+          ].map(tab => (
+            <button key={tab.id}
+              onClick={() => setActiveTab(tab.id as 'overview' | 'benchmarking')}
+              style={{
+                padding: '12px 16px',
+                fontSize: 12,
+                fontWeight: activeTab === tab.id ? 600 : 400,
+                color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-muted)',
+                background: 'transparent',
+                border: 'none',
+                borderBottom: `2px solid ${activeTab === tab.id ? accentColor : 'transparent'}`,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                minHeight: 44,
+                transition: 'all var(--t-fast)',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {activeTab === 'overview' ? (
-        <>
-          <div className="mt-8">
+      {/* Scrollable content */}
+      <div style={{
+        flex: 1,
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        padding: 'clamp(16px, 3vw, 20px) clamp(16px, 3vw, 24px)',
+        WebkitOverflowScrolling: 'touch',
+      }}>
+        {loading ? (
+          <div style={{ padding: 40 }}>
+            <div className="skeleton" style={{ height: 32, width: 200, marginBottom: 16 }} />
+            <div className="skeleton" style={{ height: 300 }} />
+          </div>
+        ) : activeTab === 'overview' ? (
+          <>
             <VisionGapHero
               sectors={sectors}
               trajectoryData={trajectoryData}
@@ -184,70 +212,85 @@ export default function MinistryDashboard() {
               onSectorChange={setSelectedSectorId}
               simulationTrajectory={simulationTrajectory}
             />
-          </div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-8">
-            <div className="xl:col-span-2 space-y-6">
-              {selectedSector && (
-                <SectorPanel
-                  sector={selectedSector}
-                  skills={sectorSkills}
-                  accentColor={accentColor}
-                />
-              )}
-              {selectedSector && (
-                <PolicyBriefGenerator
-                  visionSlug={country}
-                  sectorId={selectedSectorId}
-                  sectorName={selectedSector.name}
-                  accentColor={accentColor}
-                />
-              )}
-              {selectedSector && (
-                <PrescriptionEngine
-                  country={country}
-                  sector={{
-                    id: selectedSector.id,
-                    name: selectedSector.name,
-                    current_workforce: selectedSector.current_workforce,
-                    target_workforce: selectedSector.target_workforce,
-                    target_year: selectedSector.target_year,
-                  }}
-                  accentColor={accentColor}
-                />
-              )}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
+              gap: 16,
+              marginTop: 20,
+            }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {selectedSector && (
+                  <SectorPanel
+                    sector={selectedSector}
+                    skills={sectorSkills}
+                    accentColor={accentColor}
+                  />
+                )}
+                {selectedSector && (
+                  <PolicyBriefGenerator
+                    visionSlug={country}
+                    sectorId={selectedSectorId}
+                    sectorName={selectedSector.name}
+                    accentColor={accentColor}
+                  />
+                )}
+                {selectedSector && (
+                  <PrescriptionEngine
+                    country={country}
+                    sector={{
+                      id: selectedSector.id,
+                      name: selectedSector.name,
+                      current_workforce: selectedSector.current_workforce,
+                      target_workforce: selectedSector.target_workforce,
+                      target_year: selectedSector.target_year,
+                    }}
+                    accentColor={accentColor}
+                  />
+                )}
+              </div>
+              <div>
+                {selectedSector && (
+                  <PolicyInterventionSimulator
+                    sector={selectedSector}
+                    accentColor={accentColor}
+                    visionId={visionId}
+                    onSimulationResult={(trajectory) => setSimulationTrajectory(trajectory)}
+                  />
+                )}
+              </div>
             </div>
-
-            <div>
-              {selectedSector && (
-                <PolicyInterventionSimulator
-                  sector={selectedSector}
-                  accentColor={accentColor}
-                  visionId={visionId}
-                  onSimulationResult={(trajectory) => setSimulationTrajectory(trajectory)}
-                />
-              )}
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className="mt-8">
+          </>
+        ) : (
           <InternationalBenchmarking country={country} accentColor={accentColor} />
-        </div>
-      )}
+        )}
 
-      {/* Data Source Footer */}
-      <footer className="mt-12 pt-6 border-t border-[#E2E5EB]">
-        <div className="flex flex-wrap items-center gap-3 text-[11px] text-[#8B95A8]">
-          <span className="uppercase tracking-wider font-medium">Data sources</span>
-          {['World Bank', 'ILO', 'OECD', 'UNESCO', 'WEF', 'ESCO'].map((src, i) => (
-            <span key={src} className="flex items-center gap-3">
-              {i > 0 && <span className="w-px h-3 bg-[#E2E5EB]" />}
+        {/* Data footer */}
+        <div style={{
+          marginTop: 40,
+          paddingTop: 16,
+          borderTop: '0.5px solid var(--border-subtle)',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 8,
+          alignItems: 'center',
+        }}>
+          <span className="label-caps">Data sources</span>
+          {['World Bank', 'ILO', 'OECD', 'UNESCO', 'WEF', 'ESCO'].map(src => (
+            <span key={src} style={{
+              fontSize: 9,
+              color: 'var(--text-faint)',
+              border: '0.5px solid var(--border-subtle)',
+              borderRadius: 3,
+              padding: '2px 6px',
+              letterSpacing: '0.5px',
+              textTransform: 'uppercase',
+            }}>
               {src}
             </span>
           ))}
         </div>
-      </footer>
-    </div>
+      </div>
+    </Shell>
   )
 }

@@ -2,12 +2,11 @@
 
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
-import RoleSelector from '@/components/layout/RoleSelector'
 
 const ACCENT: Record<string, string> = {
-  malta: '#1B6B5A',
+  malta: '#1D9E75',
   saudi: '#C9A84C',
-  uk: '#1a3a6b',
+  uk: '#3B8BD4',
 }
 
 const EMPLOYERS: Record<string, Record<string, string[]>> = {
@@ -205,7 +204,6 @@ export default function StudentDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <RoleSelector role="Student" accentColor={accent} />
         <div className="flex flex-col items-center justify-center" style={{ minHeight: 'calc(100vh - 56px)' }}>
           <div className="flex gap-2 mb-6">
             {[0, 1, 2].map(i => (
@@ -221,7 +219,6 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-white">
-      <RoleSelector role="Student" accentColor={accent} />
 
       {/* Progress */}
       <div className="px-8 pt-5">

@@ -103,7 +103,7 @@ export default function VisionAlignmentScore({ students, accentColor }: VisionAl
         Vision Alignment Score
       </h3>
 
-      <div className="bg-white rounded-lg border border-slate-200 p-6">
+      <div className="bg-[#0D1117] rounded-lg border border-slate-200 p-6">
         <div className="flex flex-col md:flex-row items-center gap-8">
           {/* Main radial score */}
           <div className="flex flex-col items-center gap-2">

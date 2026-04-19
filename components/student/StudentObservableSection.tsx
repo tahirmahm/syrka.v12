@@ -85,7 +85,7 @@ export default function StudentObservableSection({
       calculable: true,
       orient: 'horizontal' as const,
       left: 'center', bottom: 0,
-      inRange: { color: ['#f8fafc', accentColor] },
+      inRange: { color: ['#0D1117', accentColor] },
       textStyle: { color: '#64748B', fontSize: 10 },
     },
     series: [{
@@ -99,8 +99,8 @@ export default function StudentObservableSection({
   if (loading) {
     return (
       <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-200 rounded w-48" />
-        <div className="h-64 bg-gray-200 rounded" />
+        <div className="h-8 bg-[#161B22] rounded w-48" />
+        <div className="h-64 bg-[#161B22] rounded" />
       </div>
     )
   }
@@ -121,36 +121,36 @@ export default function StudentObservableSection({
       )}
 
       {/* Chart 1 — Dot Plot */}
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-        <h3 className="font-display text-lg text-[#0A1628] mb-1">Vision Alignment</h3>
-        <p className="text-sm text-[#5A6478] mb-4">
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+        <h3 className="font-display text-lg text-[#E6EDF3] mb-1">Vision Alignment</h3>
+        <p className="text-sm text-[#C9D1D9] mb-4">
           Years of study needed to close the skill gap for each Vision-aligned career
         </p>
         <VisionAlignmentDotPlot careers={filteredCareers} accentColor={accentColor} />
       </div>
 
       {/* Chart 2 — Salary Scatter */}
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-        <h3 className="font-display text-lg text-[#0A1628] mb-1">Salary vs Skill Gap</h3>
-        <p className="text-sm text-[#5A6478] mb-4">
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+        <h3 className="font-display text-lg text-[#E6EDF3] mb-1">Salary vs Skill Gap</h3>
+        <p className="text-sm text-[#C9D1D9] mb-4">
           Estimated years to close skill gap vs median salary. Bubble size = open roles.
         </p>
         <SalaryVsSkillGapScatter careers={filteredCareers} accentColor={accentColor} />
       </div>
 
       {/* Chart 3 — Trajectory */}
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-        <h3 className="font-display text-lg text-[#0A1628] mb-1">Skill Development Trajectory</h3>
-        <p className="text-sm text-[#5A6478] mb-4">
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+        <h3 className="font-display text-lg text-[#E6EDF3] mb-1">Skill Development Trajectory</h3>
+        <p className="text-sm text-[#C9D1D9] mb-4">
           Projected skill score: current education path vs Vision-aligned courses over 10 years
         </p>
         <SkillTrajectoryLine accentColor={accentColor} />
       </div>
 
       {/* Chart 4 — Sector Demand Heatmap (ECharts) */}
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-        <h3 className="font-display text-lg text-[#0A1628] mb-1">Sector Demand Forecast</h3>
-        <p className="text-sm text-[#5A6478] mb-4">
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+        <h3 className="font-display text-lg text-[#E6EDF3] mb-1">Sector Demand Forecast</h3>
+        <p className="text-sm text-[#C9D1D9] mb-4">
           Projected demand by Vision-priority sector, 2025-2035
         </p>
         <div className="h-[300px]">

@@ -54,15 +54,15 @@ export default function CurriculumRecommendations({
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-2xl bg-white shadow-2xl overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-[#0D1117] shadow-2xl overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-white border-b border-[#E2E5EB]">
+        <div className="sticky top-0 z-10 bg-[#0D1117] border-b border-[#21262D]">
           <div className="flex items-center justify-between px-6 py-4">
             <div>
-              <p className="text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400 mb-0.5">
+              <p className="text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58] mb-0.5">
                 Curriculum Analysis
               </p>
-              <h2 className="font-display text-lg text-gray-900">{programmeName}</h2>
+              <h2 className="font-display text-lg text-[#E6EDF3]">{programmeName}</h2>
             </div>
             <div className="flex items-center gap-3">
               <span
@@ -74,7 +74,7 @@ export default function CurriculumRecommendations({
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                className="p-1.5 rounded-lg hover:bg-[#161B22] transition-colors text-[#484F58] hover:text-[#C9D1D9]"
               >
                 <X size={18} />
               </button>
@@ -85,16 +85,16 @@ export default function CurriculumRecommendations({
         <div className="px-6 py-6 space-y-8">
           {/* Overall Assessment */}
           <section>
-            <h3 className="font-display text-sm text-gray-900 mb-2">Overall Assessment</h3>
-            <p className="text-sm text-gray-600 leading-relaxed">{analysis.overall_assessment}</p>
+            <h3 className="font-display text-sm text-[#E6EDF3] mb-2">Overall Assessment</h3>
+            <p className="text-sm text-[#C9D1D9] leading-relaxed">{analysis.overall_assessment}</p>
           </section>
 
           {/* Score Comparison */}
           <section>
-            <h3 className="font-display text-sm text-gray-900 mb-3">Score Projection</h3>
+            <h3 className="font-display text-sm text-[#E6EDF3] mb-3">Score Projection</h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-50 rounded-lg border border-[#E2E5EB] p-4 text-center">
-                <p className="text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400 mb-1">
+              <div className="bg-[#0D1117] rounded-lg border border-[#21262D] p-4 text-center">
+                <p className="text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58] mb-1">
                   Current Score
                 </p>
                 <p
@@ -104,8 +104,8 @@ export default function CurriculumRecommendations({
                   {analysis.current_score}%
                 </p>
               </div>
-              <div className="bg-gray-50 rounded-lg border border-[#E2E5EB] p-4 text-center">
-                <p className="text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400 mb-1">
+              <div className="bg-[#0D1117] rounded-lg border border-[#21262D] p-4 text-center">
+                <p className="text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58] mb-1">
                   Projected Score
                 </p>
                 <p
@@ -126,14 +126,14 @@ export default function CurriculumRecommendations({
 
           {/* Employer Readiness Impact */}
           {analysis.employer_readiness_impact && (
-            <section className="px-4 py-3 rounded-lg border border-[#E2E5EB] bg-gray-50">
+            <section className="px-4 py-3 rounded-lg border border-[#21262D] bg-[#0D1117]">
               <div className="flex items-start gap-2.5">
-                <Target size={14} className="text-gray-400 mt-0.5 shrink-0" />
+                <Target size={14} className="text-[#484F58] mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400 mb-0.5">
+                  <p className="text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58] mb-0.5">
                     Employer Readiness Impact
                   </p>
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-sm text-[#C9D1D9] leading-relaxed">
                     {analysis.employer_readiness_impact}
                   </p>
                 </div>
@@ -144,18 +144,18 @@ export default function CurriculumRecommendations({
           {/* Course-by-Course Table */}
           {analysis.course_scores.length > 0 && (
             <section>
-              <h3 className="font-display text-sm text-gray-900 mb-3">Course Analysis</h3>
-              <div className="border border-[#E2E5EB] rounded-lg overflow-hidden">
+              <h3 className="font-display text-sm text-[#E6EDF3] mb-3">Course Analysis</h3>
+              <div className="border border-[#21262D] rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-[#E2E5EB] bg-gray-50/80">
-                      <th className="text-left px-4 py-2.5 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400">
+                    <tr className="border-b border-[#21262D] bg-[#0D1117]/80">
+                      <th className="text-left px-4 py-2.5 text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58]">
                         Course
                       </th>
-                      <th className="text-right px-4 py-2.5 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400 w-20">
+                      <th className="text-right px-4 py-2.5 text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58] w-20">
                         Score
                       </th>
-                      <th className="text-left px-4 py-2.5 text-[11px] font-medium tracking-[0.08em] uppercase text-gray-400">
+                      <th className="text-left px-4 py-2.5 text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58]">
                         Recommendation
                       </th>
                     </tr>
@@ -164,13 +164,13 @@ export default function CurriculumRecommendations({
                     {analysis.course_scores.map((cs) => (
                       <tr
                         key={cs.course_code}
-                        className="border-b border-[#E2E5EB] last:border-b-0"
+                        className="border-b border-[#21262D] last:border-b-0"
                       >
                         <td className="px-4 py-3">
-                          <span className="font-mono text-[11px] text-gray-400 mr-2">
+                          <span className="font-mono text-[11px] text-[#484F58] mr-2">
                             {cs.course_code}
                           </span>
-                          <span className="text-gray-800">{cs.course_name}</span>
+                          <span className="text-[#E6EDF3]">{cs.course_name}</span>
                           {cs.issue && (
                             <p className="text-[11px] text-red-500 mt-0.5">{cs.issue}</p>
                           )}
@@ -183,7 +183,7 @@ export default function CurriculumRecommendations({
                             {cs.current_score}%
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-gray-600 text-xs leading-relaxed">
+                        <td className="px-4 py-3 text-[#C9D1D9] text-xs leading-relaxed">
                           {cs.recommendation}
                         </td>
                       </tr>
@@ -199,7 +199,7 @@ export default function CurriculumRecommendations({
             <section>
               <div className="flex items-center gap-2 mb-3">
                 <BookOpen size={14} style={{ color: accentColor }} />
-                <h3 className="font-display text-sm text-gray-900">
+                <h3 className="font-display text-sm text-[#E6EDF3]">
                   Recommended New Modules
                 </h3>
               </div>
@@ -207,17 +207,17 @@ export default function CurriculumRecommendations({
                 {analysis.new_modules_recommended.map((mod) => (
                   <div
                     key={mod.name}
-                    className="rounded-lg border border-[#E2E5EB] p-4 bg-white"
+                    className="rounded-lg border border-[#21262D] p-4 bg-[#0D1117]"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <h4 className="font-display text-sm text-gray-900">{mod.name}</h4>
+                      <h4 className="font-display text-sm text-[#E6EDF3]">{mod.name}</h4>
                       {mod.replaces && (
-                        <span className="shrink-0 text-[11px] text-gray-400">
+                        <span className="shrink-0 text-[11px] text-[#484F58]">
                           Replaces: {mod.replaces}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-600 leading-relaxed mt-1.5">{mod.rationale}</p>
+                    <p className="text-xs text-[#C9D1D9] leading-relaxed mt-1.5">{mod.rationale}</p>
                     <div className="flex items-center gap-2 mt-2.5 flex-wrap">
                       {mod.target_skills.map((skill) => (
                         <span
@@ -233,7 +233,7 @@ export default function CurriculumRecommendations({
                       ))}
                     </div>
                     {mod.estimated_demand_uplift && (
-                      <p className="text-[11px] text-gray-400 mt-2">
+                      <p className="text-[11px] text-[#484F58] mt-2">
                         Estimated demand uplift: {mod.estimated_demand_uplift}
                       </p>
                     )}
@@ -248,7 +248,7 @@ export default function CurriculumRecommendations({
             <section>
               <div className="flex items-center gap-2 mb-3">
                 <Zap size={14} style={{ color: accentColor }} />
-                <h3 className="font-display text-sm text-gray-900">Quick Wins</h3>
+                <h3 className="font-display text-sm text-[#E6EDF3]">Quick Wins</h3>
               </div>
               <ul className="space-y-2">
                 {analysis.quick_wins.map((win, i) => (
@@ -257,7 +257,7 @@ export default function CurriculumRecommendations({
                       className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
                       style={{ backgroundColor: accentColor }}
                     />
-                    <span className="text-sm text-gray-700 leading-relaxed">{win}</span>
+                    <span className="text-sm text-[#C9D1D9] leading-relaxed">{win}</span>
                   </li>
                 ))}
               </ul>

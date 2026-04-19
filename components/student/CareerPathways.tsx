@@ -34,7 +34,7 @@ export default function CareerPathways({ sectors, accentColor }: CareerPathwaysP
           return (
             <div
               key={sector.name}
-              className="bg-white rounded-lg border border-slate-200 p-5 space-y-4 hover:border-slate-300 transition-colors"
+              className="bg-[#0D1117] rounded-lg border border-slate-200 p-5 space-y-4 hover:border-slate-300 transition-colors"
             >
               {/* Sector name */}
               <div className="flex items-start justify-between">
@@ -110,7 +110,7 @@ export default function CareerPathways({ sectors, accentColor }: CareerPathwaysP
       </div>
 
       {sorted.length === 0 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-8 text-center text-sm text-slate-400">
+        <div className="bg-[#0D1117] rounded-lg border border-slate-200 p-8 text-center text-sm text-slate-400">
           No career pathway data available
         </div>
       )}

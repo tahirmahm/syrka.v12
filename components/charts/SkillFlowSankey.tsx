@@ -50,12 +50,12 @@ export default function SkillFlowSankey({
       tooltip: {
         trigger: 'item',
         triggerOn: 'mousemove',
-        backgroundColor: '#0A1628',
+        backgroundColor: 'transparent',
         borderColor: 'rgba(255,255,255,0.1)',
         borderWidth: 1,
         padding: [12, 16],
         textStyle: {
-          color: '#fff',
+          color: '#E6EDF3',
           fontSize: 12,
         },
         formatter(params: { dataType: string; name: string; data: { source: string; target: string; value: number } }) {

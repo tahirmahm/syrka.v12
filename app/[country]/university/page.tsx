@@ -3,22 +3,28 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase'
-import RoleSelector from '@/components/layout/RoleSelector'
+import Shell from '@/components/Shell'
 import InstitutionSelector from '@/components/university/InstitutionSelector'
 import ProgrammeAlignmentTable from '@/components/university/ProgrammeAlignmentTable'
 import RankingsIntelligence from '@/components/university/RankingsIntelligence'
 import type { Institution, Programme } from '@/lib/types'
 
-const ACCENT: Record<string, string> = {
-  malta: '#1B6B5A',
+const ACCENTS: Record<string, string> = {
+  malta: '#1D9E75',
   saudi: '#C9A84C',
-  uk: '#1a3a6b',
+  uk: '#3B8BD4',
+}
+
+const COUNTRY_LABEL: Record<string, string> = {
+  saudi: 'Saudi Arabia',
+  malta: 'Malta',
+  uk: 'United Kingdom',
 }
 
 export default function UniversityDashboard() {
   const params = useParams()
   const country = params.country as string
-  const accentColor = ACCENT[country] || '#C9A84C'
+  const accentColor = ACCENTS[country] || '#C9A84C'
 
   const [institutions, setInstitutions] = useState<Institution[]>([])
   const [selectedInstitutionId, setSelectedInstitutionId] = useState<string>('')
@@ -69,106 +75,136 @@ export default function UniversityDashboard() {
 
   const selectedInstitution = institutions.find(i => i.id === selectedInstitutionId)
 
-  if (loading) {
-    return (
-      <div className="p-8">
-        <RoleSelector role="University" accentColor={accentColor} />
-        <div className="mt-8 animate-pulse-subtle">
-          <div className="h-8 bg-gray-200 rounded w-64 mb-4" />
-          <div className="h-64 bg-gray-200 rounded" />
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="p-8">
-      <RoleSelector role="University" accentColor={accentColor} />
-
-      <div className="mt-6">
-        <h1 className="font-display text-3xl text-[#0A1628]">Institution & Programme Intelligence</h1>
-        <p className="text-[#5A6478] mt-1 text-sm">
-          Measuring educational output against national vision workforce requirements
+    <Shell country={country} activeTrack="university">
+      {/* Top bar */}
+      <div style={{
+        background: 'var(--bg-surface)',
+        borderBottom: '0.5px solid var(--border-subtle)',
+        padding: 'clamp(10px, 2vw, 14px) clamp(16px, 3vw, 24px)',
+        flexShrink: 0,
+      }}>
+        <h1 style={{
+          fontSize: 'clamp(13px, 2vw, 15px)',
+          fontWeight: 600,
+          color: 'var(--text-primary)',
+          letterSpacing: '0.2px',
+        }}>
+          Institution &amp; Programme Intelligence
+        </h1>
+        <p className="label-caps" style={{ marginTop: 3 }}>
+          {COUNTRY_LABEL[country] || country} &middot; University Track
         </p>
       </div>
 
-      <div className="mt-8">
-        <InstitutionSelector
-          institutions={institutions}
-          selectedId={selectedInstitutionId}
-          onSelect={setSelectedInstitutionId}
-        />
+      {/* Tabs */}
+      <div style={{
+        background: 'var(--bg-surface)',
+        borderBottom: '0.5px solid var(--border-subtle)',
+        overflowX: 'auto',
+        flexShrink: 0,
+        WebkitOverflowScrolling: 'touch',
+      }}>
+        <div style={{ display: 'flex', minWidth: 'max-content', padding: '0 clamp(16px, 3vw, 24px)' }}>
+          {[
+            { id: 'alignment', label: 'Programme Alignment' },
+            { id: 'rankings', label: 'Rankings Intelligence' },
+          ].map(tab => (
+            <button key={tab.id}
+              onClick={() => setActiveTab(tab.id as 'alignment' | 'rankings')}
+              style={{
+                padding: '12px 16px',
+                fontSize: 12,
+                fontWeight: activeTab === tab.id ? 600 : 400,
+                color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-muted)',
+                background: 'transparent',
+                border: 'none',
+                borderBottom: `2px solid ${activeTab === tab.id ? accentColor : 'transparent'}`,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                minHeight: 44,
+                transition: 'all var(--t-fast)',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {selectedInstitution && (
-        <div className="mt-6 grid grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg border border-[#E2E5EB] p-5">
-            <p className="text-[#8B95A8] text-xs uppercase tracking-wider">Students Enrolled</p>
-            <p className="font-display text-2xl mt-1">{selectedInstitution.student_count?.toLocaleString()}</p>
+      {/* Content */}
+      <div style={{
+        flex: 1,
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        padding: 'clamp(16px, 3vw, 20px) clamp(16px, 3vw, 24px)',
+        WebkitOverflowScrolling: 'touch',
+      }}>
+        {loading ? (
+          <div style={{ padding: 40 }}>
+            <div className="skeleton" style={{ height: 32, width: 200, marginBottom: 16 }} />
+            <div className="skeleton" style={{ height: 240 }} />
           </div>
-          <div className="bg-white rounded-lg border border-[#E2E5EB] p-5">
-            <p className="text-[#8B95A8] text-xs uppercase tracking-wider">Annual Graduates</p>
-            <p className="font-display text-2xl mt-1">{selectedInstitution.annual_graduate_count?.toLocaleString()}</p>
-          </div>
-          <div className="bg-white rounded-lg border border-[#E2E5EB] p-5">
-            <p className="text-[#8B95A8] text-xs uppercase tracking-wider">Type</p>
-            <p className="font-display text-2xl mt-1 capitalize">{selectedInstitution.type}</p>
-          </div>
-          <div className="bg-white rounded-lg border border-[#E2E5EB] p-5">
-            <p className="text-[#8B95A8] text-xs uppercase tracking-wider">Established</p>
-            <p className="font-display text-2xl mt-1">{selectedInstitution.established_year}</p>
-          </div>
-        </div>
-      )}
+        ) : (
+          <>
+            <div style={{ marginBottom: 16 }}>
+              <InstitutionSelector
+                institutions={institutions}
+                selectedId={selectedInstitutionId}
+                onSelect={setSelectedInstitutionId}
+              />
+            </div>
 
-      {/* Tab Navigation */}
-      <div className="mt-6 flex gap-1 border-b border-[#E2E5EB]">
-        <button
-          onClick={() => setActiveTab('alignment')}
-          className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
-            activeTab === 'alignment'
-              ? 'text-[#0A1628]'
-              : 'text-[#8B95A8] hover:text-[#5A6478]'
-          }`}
-        >
-          Programme Alignment
-          {activeTab === 'alignment' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
-          )}
-        </button>
-        <button
-          onClick={() => setActiveTab('rankings')}
-          className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
-            activeTab === 'rankings'
-              ? 'text-[#0A1628]'
-              : 'text-[#8B95A8] hover:text-[#5A6478]'
-          }`}
-        >
-          Rankings Intelligence
-          {activeTab === 'rankings' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentColor }} />
-          )}
-        </button>
+            {selectedInstitution && (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                gap: 12,
+                marginBottom: 20,
+              }}>
+                {[
+                  { label: 'STUDENTS ENROLLED', value: selectedInstitution.student_count?.toLocaleString() || '—' },
+                  { label: 'ANNUAL GRADUATES', value: selectedInstitution.annual_graduate_count?.toLocaleString() || '—' },
+                  { label: 'TYPE', value: selectedInstitution.type || '—' },
+                  { label: 'ESTABLISHED', value: String(selectedInstitution.established_year || '—') },
+                ].map(stat => (
+                  <div key={stat.label} style={{
+                    background: 'var(--bg-surface)',
+                    border: '0.5px solid var(--border-subtle)',
+                    borderRadius: 'var(--r-md)',
+                    padding: 'clamp(12px, 2vw, 16px)',
+                  }}>
+                    <div className="label-caps" style={{ marginBottom: 6 }}>{stat.label}</div>
+                    <div className="num" style={{
+                      fontSize: 'clamp(18px, 4vw, 22px)',
+                      color: accentColor,
+                      textTransform: 'capitalize',
+                    }}>
+                      {stat.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {activeTab === 'alignment' ? (
+              <ProgrammeAlignmentTable
+                programmes={programmes}
+                accentColor={accentColor}
+              />
+            ) : (
+              selectedInstitution && (
+                <RankingsIntelligence
+                  institutionName={selectedInstitution.name}
+                  accentColor={accentColor}
+                  country={country}
+                />
+              )
+            )}
+          </>
+        )}
       </div>
-
-      {activeTab === 'alignment' ? (
-        <div className="mt-8">
-          <ProgrammeAlignmentTable
-            programmes={programmes}
-            accentColor={accentColor}
-          />
-        </div>
-      ) : (
-        <div className="mt-8">
-          {selectedInstitution && (
-            <RankingsIntelligence
-              institutionName={selectedInstitution.name}
-              accentColor={accentColor}
-              country={country}
-            />
-          )}
-        </div>
-      )}
-    </div>
+    </Shell>
   )
 }

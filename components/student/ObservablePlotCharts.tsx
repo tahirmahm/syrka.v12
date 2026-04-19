@@ -192,11 +192,11 @@ export function StudentProfileForm({
     : ['Digital', 'Gaming', 'Finance', 'Green', 'Maritime']
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-      <h3 className="font-display text-lg text-[#0A1628] mb-4">Your Profile</h3>
+    <form onSubmit={handleSubmit} className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+      <h3 className="font-display text-lg text-[#E6EDF3] mb-4">Your Profile</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="text-xs text-[#8B95A8] uppercase tracking-wider block mb-1.5">What are you currently studying?</label>
+          <label className="text-xs text-[#8B949E] uppercase tracking-wider block mb-1.5">What are you currently studying?</label>
           <input
             name="study"
             type="text"
@@ -205,7 +205,7 @@ export function StudentProfileForm({
           />
         </div>
         <div>
-          <label className="text-xs text-[#8B95A8] uppercase tracking-wider block mb-1.5">Which sector interests you most?</label>
+          <label className="text-xs text-[#8B949E] uppercase tracking-wider block mb-1.5">Which sector interests you most?</label>
           <select
             name="sector"
             className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-slate-300"

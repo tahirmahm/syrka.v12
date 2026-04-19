@@ -137,7 +137,7 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-slate-200 rounded w-48" />
           <div className="h-64 bg-slate-200 rounded" />
@@ -150,8 +150,8 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
   if (isKaust || isReporter) {
     return (
       <div className="space-y-6">
-        <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-          <h3 className="font-display text-lg text-[#0A1628] mb-3">Rankings Intelligence</h3>
+        <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+          <h3 className="font-display text-lg text-[#E6EDF3] mb-3">Rankings Intelligence</h3>
           <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-5">
             <p className="text-sm font-medium text-blue-800 mb-2">Rankings data pending</p>
             <p className="text-sm text-blue-700 leading-relaxed">
@@ -169,8 +169,8 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
 
   if (qsRankings.length === 0 && theRankings.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-        <h3 className="font-display text-lg text-[#0A1628]">Rankings Intelligence</h3>
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+        <h3 className="font-display text-lg text-[#E6EDF3]">Rankings Intelligence</h3>
         <p className="text-sm text-slate-500 mt-2">
           No QS/THE ranking data found for {institutionName}. Rankings data will appear once seeded.
         </p>
@@ -186,12 +186,12 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
   // Pillar radar with peer median overlay
   const pillars = Object.keys(PILLAR_LABELS)
   const radarOption = {
-    tooltip: { backgroundColor: '#0A1628', borderColor: 'rgba(255,255,255,0.1)', textStyle: { color: '#fff', fontSize: 12 } },
+    tooltip: { backgroundColor: '#161B22', borderColor: 'rgba(255,255,255,0.1)', textStyle: { color: '#E6EDF3', fontSize: 12 } },
     legend: { data: [String(latestQS.year), 'Peer Median'], bottom: 0, textStyle: { fontSize: 11, color: '#64748B' } },
     radar: {
       indicator: pillars.map(p => ({ name: PILLAR_LABELS[p], max: 100 })),
       shape: 'polygon' as const,
-      splitArea: { areaStyle: { color: ['#f8fafc', '#f1f5f9'] } },
+      splitArea: { areaStyle: { color: ['#0D1117', '#f1f5f9'] } },
       splitLine: { lineStyle: { color: '#e2e8f0' } },
       axisLine: { lineStyle: { color: '#e2e8f0' } },
       axisName: { color: '#64748B', fontSize: 10 },
@@ -224,7 +224,7 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
   const peerLatest = peers.filter(p => p.ranking_system === 'QS')
   const peerNames = Array.from(new Set(peerLatest.map(p => p.institution_name)))
   const trajectoryOption = {
-    tooltip: { trigger: 'axis' as const, backgroundColor: '#0A1628', textStyle: { color: '#fff', fontSize: 12 } },
+    tooltip: { trigger: 'axis' as const, backgroundColor: '#161B22', textStyle: { color: '#E6EDF3', fontSize: 12 } },
     legend: { data: [institutionName.split(' ').slice(0, 3).join(' '), ...peerNames.map(n => n.split(' ').slice(0, 3).join(' '))], bottom: 0, textStyle: { fontSize: 10, color: '#64748B' } },
     grid: { left: 60, right: 20, top: 20, bottom: 60 },
     xAxis: { type: 'category' as const, data: years.map(String), axisLabel: { color: '#64748B', fontSize: 11 } },
@@ -259,7 +259,7 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
     : null
 
   const isrOption = {
-    tooltip: { trigger: 'axis' as const, backgroundColor: '#0A1628', textStyle: { color: '#fff', fontSize: 12 } },
+    tooltip: { trigger: 'axis' as const, backgroundColor: '#161B22', textStyle: { color: '#E6EDF3', fontSize: 12 } },
     grid: { left: 50, right: 20, top: 20, bottom: 30 },
     xAxis: { type: 'category' as const, data: isrData.map(r => String(r.year)), axisLabel: { color: '#64748B', fontSize: 11 } },
     yAxis: { type: 'value' as const, min: 0, max: 100, splitLine: { lineStyle: { color: '#f1f5f9' } }, axisLabel: { color: '#64748B', fontSize: 11 } },
@@ -286,21 +286,21 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
     <div className="space-y-6">
       {/* Header stats */}
       <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border border-[#E2E5EB] p-5">
-          <p className="text-[#8B95A8] text-xs uppercase tracking-wider">QS Rank {latestQS.year}</p>
+        <div className="bg-[#0D1117] rounded-lg border border-[#21262D] p-5">
+          <p className="text-[#8B949E] text-xs uppercase tracking-wider">QS Rank {latestQS.year}</p>
           <p className="font-display text-2xl mt-1" style={{ color: accentColor }}>{latestQS.overall_rank}</p>
           {rankDelta !== 0 && <p className={`text-xs mt-1 ${rankDelta > 0 ? 'text-emerald-600' : 'text-red-500'}`}>{rankDelta > 0 ? `+${rankDelta} places` : `${rankDelta} places`}</p>}
         </div>
-        <div className="bg-white rounded-lg border border-[#E2E5EB] p-5">
-          <p className="text-[#8B95A8] text-xs uppercase tracking-wider">Overall Score</p>
+        <div className="bg-[#0D1117] rounded-lg border border-[#21262D] p-5">
+          <p className="text-[#8B949E] text-xs uppercase tracking-wider">Overall Score</p>
           <p className="font-display text-2xl mt-1">{latestQS.overall_score?.toFixed(1) || '—'}</p>
         </div>
-        <div className="bg-white rounded-lg border border-[#E2E5EB] p-5">
-          <p className="text-[#8B95A8] text-xs uppercase tracking-wider">Academic Rep.</p>
+        <div className="bg-[#0D1117] rounded-lg border border-[#21262D] p-5">
+          <p className="text-[#8B949E] text-xs uppercase tracking-wider">Academic Rep.</p>
           <p className="font-display text-2xl mt-1">{latestQS.ar_score?.toFixed(1) || '—'}</p>
         </div>
-        <div className="bg-white rounded-lg border border-[#E2E5EB] p-5">
-          <p className="text-[#8B95A8] text-xs uppercase tracking-wider">Intl. Students</p>
+        <div className="bg-[#0D1117] rounded-lg border border-[#21262D] p-5">
+          <p className="text-[#8B949E] text-xs uppercase tracking-wider">Intl. Students</p>
           <p className="font-display text-2xl mt-1">{latestQS.isr_score?.toFixed(1) || '—'}</p>
           {country === 'malta' && latestQS.isr_score && latestQS.isr_score > 40 && <p className="text-xs text-emerald-600 mt-1">Breakthrough trajectory</p>}
         </div>
@@ -314,8 +314,8 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
             const median = peerMedians[p]
             const delta = val !== null && median !== undefined ? val - median : null
             return (
-              <div key={p} className="bg-white rounded-lg border border-[#E2E5EB] p-3 text-center">
-                <p className="text-[9px] text-[#8B95A8] uppercase tracking-wider">{PILLAR_LABELS[p]}</p>
+              <div key={p} className="bg-[#0D1117] rounded-lg border border-[#21262D] p-3 text-center">
+                <p className="text-[9px] text-[#8B949E] uppercase tracking-wider">{PILLAR_LABELS[p]}</p>
                 <p className="font-display text-lg mt-0.5">{val?.toFixed(1) ?? '—'}</p>
                 {delta !== null && (
                   <p className={`text-[10px] font-medium mt-0.5 ${delta >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
@@ -330,16 +330,16 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
 
       {/* Radar + Trajectory */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-          <h3 className="font-display text-lg text-[#0A1628] mb-1">Current Standing</h3>
-          <p className="text-xs text-[#8B95A8] mb-4">QS indicator radar — institution vs peer median</p>
+        <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+          <h3 className="font-display text-lg text-[#E6EDF3] mb-1">Current Standing</h3>
+          <p className="text-xs text-[#8B949E] mb-4">QS indicator radar — institution vs peer median</p>
           <div className="h-[340px]">
             <ReactECharts option={radarOption} style={{ height: '100%', width: '100%' }} />
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-          <h3 className="font-display text-lg text-[#0A1628] mb-1">Ranking Trajectory</h3>
-          <p className="text-xs text-[#8B95A8] mb-4">Rank over time (lower = better)</p>
+        <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+          <h3 className="font-display text-lg text-[#E6EDF3] mb-1">Ranking Trajectory</h3>
+          <p className="text-xs text-[#8B949E] mb-4">Rank over time (lower = better)</p>
           <div className="h-[340px]">
             <ReactECharts option={trajectoryOption} style={{ height: '100%', width: '100%' }} />
           </div>
@@ -348,9 +348,9 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
 
       {/* ISR trajectory */}
       {isrData.length > 0 && (
-        <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-          <h3 className="font-display text-lg text-[#0A1628] mb-1">International Students Ratio</h3>
-          <p className="text-xs text-[#8B95A8] mb-4">ISR pillar score across ranking years</p>
+        <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+          <h3 className="font-display text-lg text-[#E6EDF3] mb-1">International Students Ratio</h3>
+          <p className="text-xs text-[#8B949E] mb-4">ISR pillar score across ranking years</p>
           <div className="h-[240px]">
             <ReactECharts option={isrOption} style={{ height: '100%', width: '100%' }} />
           </div>
@@ -361,9 +361,9 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
       )}
 
       {/* Ranking Impact Projector */}
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-        <h3 className="font-display text-lg text-[#0A1628] mb-1">Ranking Impact Projector</h3>
-        <p className="text-xs text-[#8B95A8] mb-4">Projected QS indicator impact from policy interventions</p>
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+        <h3 className="font-display text-lg text-[#E6EDF3] mb-1">Ranking Impact Projector</h3>
+        <p className="text-xs text-[#8B949E] mb-4">Projected QS indicator impact from policy interventions</p>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {impactCards.map(card => (
             <div key={card.type} className="rounded-lg border border-slate-100 p-4">
@@ -383,15 +383,15 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
       </div>
 
       {/* Pillar scores table */}
-      <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-        <h3 className="font-display text-lg text-[#0A1628] mb-4">Detailed Pillar Scores</h3>
+      <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+        <h3 className="font-display text-lg text-[#E6EDF3] mb-4">Detailed Pillar Scores</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#E2E5EB]">
-                <th className="text-left py-2 px-3 text-[#8B95A8] font-medium text-xs uppercase tracking-wider">Pillar</th>
-                {years.map(y => <th key={y} className="text-right py-2 px-3 text-[#8B95A8] font-medium text-xs uppercase tracking-wider">{y}</th>)}
-                <th className="text-right py-2 px-3 text-[#8B95A8] font-medium text-xs uppercase tracking-wider">Change</th>
+              <tr className="border-b border-[#21262D]">
+                <th className="text-left py-2 px-3 text-[#8B949E] font-medium text-xs uppercase tracking-wider">Pillar</th>
+                {years.map(y => <th key={y} className="text-right py-2 px-3 text-[#8B949E] font-medium text-xs uppercase tracking-wider">{y}</th>)}
+                <th className="text-right py-2 px-3 text-[#8B949E] font-medium text-xs uppercase tracking-wider">Change</th>
               </tr>
             </thead>
             <tbody>
@@ -404,9 +404,9 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
                 const last = [...values].reverse().find(v => v !== null)
                 const delta = first != null && last != null ? last - first : null
                 return (
-                  <tr key={key} className="border-b border-[#E2E5EB]/50 hover:bg-slate-50/50">
-                    <td className="py-2.5 px-3 text-[#0A1628]">{label}</td>
-                    {values.map((v, i) => <td key={years[i]} className="py-2.5 px-3 text-right font-mono text-[#5A6478]">{v != null ? v.toFixed(1) : '—'}</td>)}
+                  <tr key={key} className="border-b border-[#21262D]/50 hover:bg-slate-50/50">
+                    <td className="py-2.5 px-3 text-[#E6EDF3]">{label}</td>
+                    {values.map((v, i) => <td key={years[i]} className="py-2.5 px-3 text-right font-mono text-[#C9D1D9]">{v != null ? v.toFixed(1) : '—'}</td>)}
                     <td className={`py-2.5 px-3 text-right font-mono ${delta != null && delta >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                       {delta != null ? `${delta >= 0 ? '+' : ''}${delta.toFixed(1)}` : '—'}
                     </td>
@@ -420,29 +420,29 @@ export default function RankingsIntelligence({ institutionName, accentColor, cou
 
       {/* THE Rankings summary */}
       {theRankings.length > 0 && (
-        <div className="bg-white rounded-xl border border-[#E2E5EB] p-6">
-          <h3 className="font-display text-lg text-[#0A1628] mb-4">THE World University Rankings</h3>
+        <div className="bg-[#0D1117] rounded-xl border border-[#21262D] p-6">
+          <h3 className="font-display text-lg text-[#E6EDF3] mb-4">THE World University Rankings</h3>
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             {theRankings.slice(-1).map(r => (
               <>
                 <div key={`${r.year}-rank`} className="bg-slate-50 rounded-lg p-4 text-center">
-                  <p className="text-[9px] text-[#8B95A8] uppercase">THE Rank {r.year}</p>
+                  <p className="text-[9px] text-[#8B949E] uppercase">THE Rank {r.year}</p>
                   <p className="font-display text-xl mt-1" style={{ color: accentColor }}>{r.overall_rank}</p>
                 </div>
                 <div key={`${r.year}-teach`} className="bg-slate-50 rounded-lg p-4 text-center">
-                  <p className="text-[9px] text-[#8B95A8] uppercase">Teaching</p>
+                  <p className="text-[9px] text-[#8B949E] uppercase">Teaching</p>
                   <p className="font-display text-xl mt-1">{r.the_teaching?.toFixed(1) ?? '—'}</p>
                 </div>
                 <div key={`${r.year}-research`} className="bg-slate-50 rounded-lg p-4 text-center">
-                  <p className="text-[9px] text-[#8B95A8] uppercase">Research</p>
+                  <p className="text-[9px] text-[#8B949E] uppercase">Research</p>
                   <p className="font-display text-xl mt-1">{r.the_research_quality?.toFixed(1) ?? '—'}</p>
                 </div>
                 <div key={`${r.year}-industry`} className="bg-slate-50 rounded-lg p-4 text-center">
-                  <p className="text-[9px] text-[#8B95A8] uppercase">Industry</p>
+                  <p className="text-[9px] text-[#8B949E] uppercase">Industry</p>
                   <p className="font-display text-xl mt-1">{r.the_industry?.toFixed(1) ?? '—'}</p>
                 </div>
                 <div key={`${r.year}-intl`} className="bg-slate-50 rounded-lg p-4 text-center">
-                  <p className="text-[9px] text-[#8B95A8] uppercase">Intl. Outlook</p>
+                  <p className="text-[9px] text-[#8B949E] uppercase">Intl. Outlook</p>
                   <p className="font-display text-xl mt-1">{r.the_international_outlook?.toFixed(1) ?? '—'}</p>
                 </div>
               </>

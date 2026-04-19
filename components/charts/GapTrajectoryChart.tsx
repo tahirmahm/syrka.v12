@@ -52,12 +52,12 @@ export default function GapTrajectoryChart({ data, accentColor, targetYear }: Ga
       },
       tooltip: {
         trigger: 'axis',
-        backgroundColor: '#0A1628',
+        backgroundColor: 'transparent',
         borderColor: 'rgba(255,255,255,0.1)',
         borderWidth: 1,
         padding: [12, 16],
         textStyle: {
-          color: '#fff',
+          color: '#E6EDF3',
           fontSize: 12,
         },
         formatter(params: Array<{ seriesName: string; value: number | null; color: string }>) {

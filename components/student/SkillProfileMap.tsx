@@ -28,7 +28,7 @@ export default function SkillProfileMap({ skills, accentColor }: SkillProfileMap
         Skill Profile Map
       </h3>
 
-      <div className="bg-white rounded-lg border border-slate-200 p-5">
+      <div className="bg-[#0D1117] rounded-lg border border-slate-200 p-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
           {sorted.map((skill) => {
             const barWidth = maxProficiency > 0 ? (skill.avgProficiency / maxProficiency) * 100 : 0

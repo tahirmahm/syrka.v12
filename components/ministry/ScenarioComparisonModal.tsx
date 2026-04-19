@@ -129,8 +129,8 @@ export default function ScenarioComparisonModal({
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-y-auto mx-4">
-        <div className="sticky top-0 bg-white z-10 px-8 py-5 border-b border-slate-100 flex items-center justify-between">
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#0D1117] rounded-2xl shadow-2xl overflow-y-auto mx-4">
+        <div className="sticky top-0 bg-[#0D1117] z-10 px-8 py-5 border-b border-slate-100 flex items-center justify-between">
           <h2 className="font-display text-lg text-slate-900">Scenario Comparison</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X size={20} />

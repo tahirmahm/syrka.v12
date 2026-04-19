@@ -37,11 +37,11 @@ export default function PipelineFlowChart({
       tooltip: {
         trigger: 'item',
         triggerOn: 'mousemove',
-        backgroundColor: '#0A1628',
+        backgroundColor: 'transparent',
         borderColor: 'rgba(255,255,255,0.1)',
         borderWidth: 1,
         padding: [12, 16],
-        textStyle: { color: '#fff', fontSize: 12 },
+        textStyle: { color: '#E6EDF3', fontSize: 12 },
         formatter(params: { data: { source?: string; target?: string; value?: number; name?: string } }) {
           const d = params.data
           if (d.source && d.target) {

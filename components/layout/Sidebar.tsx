@@ -1,37 +1,53 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { Landmark, GraduationCap, Briefcase, User, Menu, X } from 'lucide-react'
-import CountryBadge from './CountryBadge'
+import SyrkaWordmark from '@/components/SyrkaWordmark'
 import DocumentUpload from '@/components/ministry/DocumentUpload'
 import AddCountryModal from './AddCountryModal'
 
-interface SidebarProps {
-  country: string
-  accentColor: string
-  visionName: string
+const ACCENTS: Record<string, string> = {
+  saudi: '#C9A84C',
+  malta: '#1D9E75',
+  uk:    '#3B8BD4',
 }
 
-const navItems = [
-  { key: 'ministry', label: 'Ministry', icon: Landmark },
-  { key: 'university', label: 'University', icon: GraduationCap },
-  { key: 'employer', label: 'Employer', icon: Briefcase },
-  { key: 'student', label: 'Student', icon: User },
+const COUNTRY_NAMES: Record<string, string> = {
+  saudi: 'Kingdom of Saudi Arabia',
+  malta: 'Republic of Malta',
+  uk:    'United Kingdom',
+}
+
+const VISION_NAMES: Record<string, string> = {
+  saudi: 'Saudi Vision 2030',
+  malta: 'Malta Vision 2050',
+  uk:    'AI Opportunities Action Plan',
+}
+
+interface SidebarProps {
+  country: string
+  activeTrack?: string
+  onClose?: () => void
+}
+
+const countries = [
+  { slug: 'saudi', name: 'Saudi Arabia', color: '#C9A84C' },
+  { slug: 'malta', name: 'Malta',        color: '#1D9E75' },
+  { slug: 'uk',    name: 'United Kingdom', color: '#3B8BD4' },
 ]
 
-const countrySwitcher = [
-  { slug: 'malta', label: 'Malta', accent: '#1B6B5A' },
-  { slug: 'saudi', label: 'Saudi Arabia', accent: '#C9A84C' },
-  { slug: 'uk', label: 'United Kingdom', accent: '#1a3a6b' },
-]
-
-export default function Sidebar({ country, accentColor, visionName }: SidebarProps) {
+export default function Sidebar({ country, activeTrack, onClose }: SidebarProps) {
   const pathname = usePathname()
+  const accent = ACCENTS[country] || '#C9A84C'
   const [isAdmin, setIsAdmin] = useState(false)
   const [showAddCountry, setShowAddCountry] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+
+  const resolvedTrack = activeTrack || (() => {
+    if (pathname?.includes('/university')) return 'university'
+    if (pathname?.includes('/employer'))   return 'employer'
+    if (pathname?.includes('/student'))    return 'student'
+    return 'ministry'
+  })()
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -39,142 +55,127 @@ export default function Sidebar({ country, accentColor, visionName }: SidebarPro
   }, [])
 
   return (
-    <>
-    {/* Mobile hamburger */}
-    <button
-      onClick={() => setMobileOpen(true)}
-      className="fixed top-4 left-4 z-40 p-2 rounded-lg bg-[#0A1628] text-white/70 md:hidden"
-      aria-label="Open menu"
-    >
-      <Menu size={20} />
-    </button>
-    {/* Mobile overlay */}
-    {mobileOpen && (
-      <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={() => setMobileOpen(false)} />
-    )}
-    <aside
-      className={`fixed left-0 top-0 bottom-0 flex flex-col z-50 transition-transform duration-200 md:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
-      style={{ width: 240, backgroundColor: '#0A1628' }}
-    >
-      {/* Mobile close button */}
-      <button
-        onClick={() => setMobileOpen(false)}
-        className="absolute top-4 right-4 p-1 text-white/40 hover:text-white/70 md:hidden"
-        aria-label="Close menu"
-      >
-        <X size={18} />
-      </button>
-      {/* Wordmark */}
-      <div className="px-6 pt-8 pb-2">
-        <h1 className="font-display text-2xl text-white tracking-wide">SYRKA</h1>
-        <p className="text-white/40 text-[10px] tracking-[0.15em] uppercase mt-0.5">
-          Human Capital Intelligence
-        </p>
+    <aside style={{
+      width: 200,
+      minWidth: 200,
+      height: '100%',
+      background: 'var(--bg-surface)',
+      borderRight: '0.5px solid var(--border-subtle)',
+      display: 'flex',
+      flexDirection: 'column',
+      overflowY: 'auto',
+      overflowX: 'hidden',
+    }}>
+      {/* Logo */}
+      <div style={{
+        padding: '20px 16px 16px',
+        borderBottom: '0.5px solid var(--border-subtle)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <SyrkaWordmark country={country} size="md" />
+        {onClose && (
+          <button onClick={onClose} style={{ color: 'var(--text-faint)', padding: 4, background: 'none', border: 'none', cursor: 'pointer', fontSize: 14 }}>
+            ✕
+          </button>
+        )}
       </div>
 
-      {/* Country Badge */}
-      <div className="px-6 py-4">
-        <CountryBadge
-          country={country}
-          visionName={visionName}
-          accentColor={accentColor}
-        />
+      {/* Active country card */}
+      <div style={{
+        margin: '12px 8px',
+        background: 'var(--bg-elevated)',
+        border: '0.5px solid var(--border-subtle)',
+        borderRadius: 'var(--r-md)',
+        padding: '10px 12px',
+      }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)' }}>
+          {COUNTRY_NAMES[country] || country}
+        </div>
+        <div className="label-caps" style={{ marginTop: 2 }}>
+          {VISION_NAMES[country] || ''}
+        </div>
       </div>
 
-      {/* Divider */}
-      <div className="mx-6 border-t border-white/5" />
-
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-6">
-        <p className="px-3 mb-3 text-[10px] font-medium tracking-[0.15em] uppercase text-white/30">
-          Dashboards
-        </p>
-        <ul className="space-y-1">
-          {navItems.map(({ key, label, icon: Icon }) => {
-            const href = `/${country}/${key}`
-            const isActive = pathname === href || pathname?.startsWith(`${href}/`)
-
-            return (
-              <li key={key}>
-                <Link
-                  href={href}
-                  className={`
-                    relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-150
-                    ${isActive
-                      ? 'text-white'
-                      : 'text-white/40 hover:text-white/70 hover:bg-white/[0.03]'
-                    }
-                  `}
-                  style={isActive ? { backgroundColor: `${accentColor}15`, color: accentColor } : undefined}
-                >
-                  {isActive && (
-                    <div
-                      className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r"
-                      style={{ backgroundColor: accentColor }}
-                    />
-                  )}
-                  <Icon
-                    size={18}
-                    strokeWidth={isActive ? 2 : 1.5}
-                  />
-                  <span className="font-medium">{label}</span>
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
+      {/* Track nav */}
+      <nav style={{ padding: '8px 0', flex: 1 }}>
+        <div className="label-caps" style={{ padding: '6px 16px 4px' }}>Dashboards</div>
+        {[
+          { id: 'ministry',   label: 'Ministry' },
+          { id: 'university', label: 'University' },
+          { id: 'employer',   label: 'Employer' },
+          { id: 'student',    label: 'Student' },
+        ].map(({ id, label }) => (
+          <a key={id} href={`/${country}/${id}`} style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: resolvedTrack === id ? '9px 14px' : '9px 16px',
+            fontSize: 12,
+            color: resolvedTrack === id ? accent : 'var(--text-muted)',
+            background: resolvedTrack === id ? 'var(--bg-elevated)' : 'transparent',
+            borderLeft: `2px solid ${resolvedTrack === id ? accent : 'transparent'}`,
+            textDecoration: 'none',
+            transition: 'all var(--t-fast)',
+            letterSpacing: '0.2px',
+            minHeight: 44,
+            WebkitTapHighlightColor: 'transparent',
+          }}>
+            <span style={{
+              width: 6, height: 6, borderRadius: '50%',
+              background: resolvedTrack === id ? accent : 'var(--border-subtle)',
+              flexShrink: 0,
+            }} />
+            {label}
+          </a>
+        ))}
       </nav>
 
-      {/* Document Upload */}
-      <div className="mx-6 border-t border-white/5" />
-      <DocumentUpload country={country} accentColor={accentColor} />
+      {/* Upload */}
+      <div style={{ padding: '0 8px 12px' }}>
+        <DocumentUpload country={country} accentColor={accent} />
+      </div>
 
-      {/* Divider */}
-      <div className="mx-6 border-t border-white/5" />
-
-      {/* Country Switcher */}
-      <div className="px-3 py-5">
-        <p className="px-3 mb-3 text-[10px] font-medium tracking-[0.15em] uppercase text-white/30">
-          Country
-        </p>
-        <ul className="space-y-1">
-          {countrySwitcher.map(({ slug, label, accent }) => {
-            const isActive = country === slug
-
-            return (
-              <li key={slug}>
-                <Link
-                  href={`/${slug}/ministry`}
-                  className={`
-                    flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors duration-150
-                    ${isActive
-                      ? 'text-white'
-                      : 'text-white/40 hover:text-white/70 hover:bg-white/[0.03]'
-                    }
-                  `}
-                >
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: isActive ? accent : 'rgba(255,255,255,0.15)' }}
-                  />
-                  <span>{label}</span>
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
+      {/* Country switcher */}
+      <div style={{
+        padding: '12px 16px',
+        borderTop: '0.5px solid var(--border-subtle)',
+        paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
+      }}>
+        <div className="label-caps" style={{ marginBottom: 8 }}>Countries</div>
+        {countries.map(c => (
+          <a key={c.slug} href={`/${c.slug}/ministry`} style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '5px 0', fontSize: 11,
+            color: country === c.slug ? 'var(--text-primary)' : 'var(--text-muted)',
+            textDecoration: 'none',
+            WebkitTapHighlightColor: 'transparent',
+          }}>
+            <span style={{
+              width: 6, height: 6, borderRadius: '50%',
+              background: country === c.slug ? c.color : 'var(--border-default)',
+              flexShrink: 0,
+            }} />
+            {c.name}
+          </a>
+        ))}
         {isAdmin && (
           <button
             onClick={() => setShowAddCountry(true)}
-            className="mt-2 mx-3 px-3 py-2 rounded-lg text-sm text-white/30 hover:text-white/60 hover:bg-white/[0.03] transition-colors w-[calc(100%-24px)] text-left"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '5px 0', fontSize: 10,
+              color: 'var(--border-default)', background: 'none',
+              border: 'none', cursor: 'pointer', marginTop: 4,
+            }}
           >
-            + Add Country
+            + Add country
           </button>
         )}
       </div>
 
       {showAddCountry && <AddCountryModal onClose={() => setShowAddCountry(false)} />}
     </aside>
-    </>
   )
 }

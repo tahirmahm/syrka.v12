@@ -31,7 +31,7 @@ interface PrescriptionEngineProps {
 
 function SkeletonCard() {
   return (
-    <div className="rounded-xl bg-white p-6 shadow-sm border border-slate-100 animate-pulse">
+    <div className="rounded-xl bg-[#0D1117] p-6 shadow-sm border border-slate-100 animate-pulse">
       <div className="flex items-center justify-between mb-4">
         <div className="h-5 w-28 rounded-full bg-slate-100" />
         <div className="h-5 w-20 rounded-full bg-slate-100" />
@@ -369,7 +369,7 @@ ${chromaContext.results?.slice(0, 3)?.map((r: { text: string }) => r.text).join(
         : gap.toLocaleString()
 
   return (
-    <section className="rounded-xl bg-white p-6 shadow-sm border border-slate-100">
+    <section className="rounded-xl bg-[#0D1117] p-6 shadow-sm border border-slate-100">
       {/* ---- Header ---- */}
       <div className="flex items-start justify-between mb-1">
         <div>

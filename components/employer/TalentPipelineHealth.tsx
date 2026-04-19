@@ -12,7 +12,7 @@ const DEMAND_COLORS: Record<string, { bg: string; text: string }> = {
   critical: { bg: 'bg-red-100 border-red-200', text: 'text-red-700' },
   high: { bg: 'bg-amber-100 border-amber-200', text: 'text-amber-700' },
   medium: { bg: 'bg-blue-100 border-blue-200', text: 'text-blue-700' },
-  low: { bg: 'bg-gray-100 border-gray-200', text: 'text-gray-500' },
+  low: { bg: 'bg-[#161B22] border-[#21262D]', text: 'text-[#8B949E]' },
 }
 
 interface SectorAggregation {
@@ -101,7 +101,7 @@ export default function TalentPipelineHealth({
         {sectors.map((sector) => (
           <div
             key={sector.sectorName}
-            className="bg-white rounded-lg border border-slate-200 p-5 space-y-4"
+            className="bg-[#0D1117] rounded-lg border border-slate-200 p-5 space-y-4"
           >
             {/* Header */}
             <div className="flex items-center justify-between">
