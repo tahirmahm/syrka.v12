@@ -32,8 +32,9 @@ export async function POST(req: NextRequest) {
     let rawText = ''
     try {
       if (isPDF) {
+        // Use internal path to avoid pdf-parse loading test file on init (breaks Vercel)
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const pdfParse = require('pdf-parse')
+        const pdfParse = require('pdf-parse/lib/pdf-parse.js')
         const pdfData = await pdfParse(buffer)
         rawText = pdfData.text || ''
       } else if (isDOCX) {
