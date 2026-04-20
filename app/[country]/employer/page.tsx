@@ -9,12 +9,6 @@ import SkillDemandSignals from '@/components/employer/SkillDemandSignals'
 import NationalShortageAlerts from '@/components/employer/NationalShortageAlerts'
 import type { Employer, Skill } from '@/lib/types'
 
-const ACCENTS: Record<string, string> = {
-  malta: '#1D9E75',
-  saudi: '#C9A84C',
-  uk: '#3B8BD4',
-}
-
 const COUNTRY_LABEL: Record<string, string> = {
   saudi: 'Saudi Arabia',
   malta: 'Malta',
@@ -24,7 +18,6 @@ const COUNTRY_LABEL: Record<string, string> = {
 export default function EmployerDashboard() {
   const params = useParams()
   const country = params.country as string
-  const accentColor = ACCENTS[country] || '#C9A84C'
 
   const [employers, setEmployers] = useState<Employer[]>([])
   const [skills, setSkills] = useState<Skill[]>([])
@@ -61,63 +54,91 @@ export default function EmployerDashboard() {
     loadData()
   }, [country])
 
+  const totalOpenRoles = employers.reduce((sum, e) => sum + (e.open_roles || 0), 0)
+  const criticalSkills = skills.filter(s => s.gap_score >= 7).length
+
   return (
     <Shell country={country} activeTrack="employer">
-      {/* Top bar */}
-      <div style={{
-        background: 'var(--bg-surface)',
-        borderBottom: '0.5px solid var(--border-subtle)',
-        padding: 'clamp(10px, 2vw, 14px) clamp(16px, 3vw, 24px)',
-        flexShrink: 0,
-      }}>
-        <h1 style={{
-          fontSize: 'clamp(13px, 2vw, 15px)',
-          fontWeight: 600,
-          color: 'var(--text-primary)',
-          letterSpacing: '0.2px',
-        }}>
-          Talent Pipeline &amp; Demand Intelligence
-        </h1>
-        <p className="label-caps" style={{ marginTop: 3 }}>
-          {COUNTRY_LABEL[country] || country} &middot; Employer Track
-        </p>
-      </div>
+      <div className="overflow-y-auto px-6 md:px-12 pb-16 pt-12" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))' }}>
+        <div className="max-w-7xl mx-auto space-y-10">
 
-      {/* Content */}
-      <div style={{
-        flex: 1,
-        overflowY: 'auto',
-        overflowX: 'hidden',
-        padding: 'clamp(16px, 3vw, 20px) clamp(16px, 3vw, 24px)',
-        WebkitOverflowScrolling: 'touch',
-      }}>
-        {loading ? (
-          <div style={{ padding: 40 }}>
-            <div className="skeleton" style={{ height: 32, width: 200, marginBottom: 16 }} />
-            <div className="skeleton" style={{ height: 240 }} />
-          </div>
-        ) : (
-          <>
-            <NationalShortageAlerts skills={skills} accentColor={accentColor} />
-
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
-              gap: 16,
-              marginTop: 20,
-            }}>
-              <TalentPipelineHealth
-                employers={employers}
-                skills={skills}
-                accentColor={accentColor}
-              />
-              <SkillDemandSignals
-                skills={skills}
-                accentColor={accentColor}
-              />
+          {/* Hero */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 pt-8">
+            <div>
+              <div className="badge-live mb-4">
+                <span className="w-2 h-2 bg-primary animate-pulse block" />
+                Demand Signals Active
+              </div>
+              <h1 className="font-headline text-display-sm font-bold tracking-tighter text-primary leading-tight">
+                Talent Pipeline &amp;<br/>Demand Intelligence
+              </h1>
+              <p className="font-body text-on-surface-variant text-lg mt-4 max-w-2xl">
+                {COUNTRY_LABEL[country] || country} — Employer Track. Workforce productivity signals, skill demand mapping, and pipeline health analysis.
+              </p>
             </div>
-          </>
-        )}
+          </div>
+
+          {loading ? (
+            <div className="space-y-4">
+              <div className="skeleton h-8 w-64" />
+              <div className="skeleton h-[300px]" />
+            </div>
+          ) : (
+            <>
+              {/* KPI Bento */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="bg-surface-container-low p-6 md:p-8 flex flex-col justify-between min-h-[160px]">
+                  <div className="font-label text-label-sm uppercase tracking-wider text-on-surface-variant mb-2">Employers Tracked</div>
+                  <div className="font-headline text-4xl md:text-5xl text-primary tracking-tighter">{employers.length}</div>
+                </div>
+                <div className="bg-surface-container-low p-6 md:p-8 flex flex-col justify-between min-h-[160px]">
+                  <div className="font-label text-label-sm uppercase tracking-wider text-on-surface-variant mb-2">Total Open Roles</div>
+                  <div className="font-headline text-4xl md:text-5xl text-primary tracking-tighter">{totalOpenRoles.toLocaleString()}</div>
+                </div>
+                <div className="bg-surface-container-low p-6 md:p-8 flex flex-col justify-between min-h-[160px]">
+                  <div className="font-label text-label-sm uppercase tracking-wider text-on-surface-variant mb-2">Skills Monitored</div>
+                  <div className="font-headline text-4xl md:text-5xl text-primary tracking-tighter">{skills.length}</div>
+                </div>
+                <div className="bg-surface-container-low p-6 md:p-8 flex flex-col justify-between min-h-[160px]">
+                  <div>
+                    <div className="font-label text-label-sm uppercase tracking-wider text-on-surface-variant mb-2">Critical Gaps</div>
+                    <div className="font-headline text-4xl md:text-5xl text-primary tracking-tighter">{criticalSkills}</div>
+                  </div>
+                  <div className="flex items-center gap-2 text-error mt-4">
+                    <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>warning</span>
+                    <span className="font-body text-sm">Immediate Action</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Shortage alerts */}
+              <NationalShortageAlerts skills={skills} accentColor="#FFFFFF" />
+
+              {/* Two-column layout */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <TalentPipelineHealth
+                  employers={employers}
+                  skills={skills}
+                  accentColor="#FFFFFF"
+                />
+                <SkillDemandSignals
+                  skills={skills}
+                  accentColor="#FFFFFF"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Data attribution */}
+          <div className="border-t border-surface-container pt-6 flex flex-wrap items-center gap-x-6 gap-y-2 justify-between">
+            <div className="flex flex-wrap gap-4">
+              {['ILO', 'OECD', 'ESCO', 'WEF'].map(s => (
+                <span key={s} className="text-[9px] font-label uppercase tracking-widest text-outline">{s}</span>
+              ))}
+            </div>
+            <span className="text-[10px] font-body text-outline italic">Real-time demand signal aggregation across employer networks.</span>
+          </div>
+        </div>
       </div>
     </Shell>
   )

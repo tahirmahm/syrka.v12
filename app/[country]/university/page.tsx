@@ -9,12 +9,6 @@ import ProgrammeAlignmentTable from '@/components/university/ProgrammeAlignmentT
 import RankingsIntelligence from '@/components/university/RankingsIntelligence'
 import type { Institution, Programme } from '@/lib/types'
 
-const ACCENTS: Record<string, string> = {
-  malta: '#1D9E75',
-  saudi: '#C9A84C',
-  uk: '#3B8BD4',
-}
-
 const COUNTRY_LABEL: Record<string, string> = {
   saudi: 'Saudi Arabia',
   malta: 'Malta',
@@ -24,7 +18,6 @@ const COUNTRY_LABEL: Record<string, string> = {
 export default function UniversityDashboard() {
   const params = useParams()
   const country = params.country as string
-  const accentColor = ACCENTS[country] || '#C9A84C'
 
   const [institutions, setInstitutions] = useState<Institution[]>([])
   const [selectedInstitutionId, setSelectedInstitutionId] = useState<string>('')
@@ -77,133 +70,99 @@ export default function UniversityDashboard() {
 
   return (
     <Shell country={country} activeTrack="university">
-      {/* Top bar */}
-      <div style={{
-        background: 'var(--bg-surface)',
-        borderBottom: '0.5px solid var(--border-subtle)',
-        padding: 'clamp(10px, 2vw, 14px) clamp(16px, 3vw, 24px)',
-        flexShrink: 0,
-      }}>
-        <h1 style={{
-          fontSize: 'clamp(13px, 2vw, 15px)',
-          fontWeight: 600,
-          color: 'var(--text-primary)',
-          letterSpacing: '0.2px',
-        }}>
-          Institution &amp; Programme Intelligence
-        </h1>
-        <p className="label-caps" style={{ marginTop: 3 }}>
-          {COUNTRY_LABEL[country] || country} &middot; University Track
-        </p>
-      </div>
+      <div className="overflow-y-auto px-6 md:px-12 pb-16 pt-12" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))' }}>
+        <div className="max-w-7xl mx-auto space-y-10">
 
-      {/* Tabs */}
-      <div style={{
-        background: 'var(--bg-surface)',
-        borderBottom: '0.5px solid var(--border-subtle)',
-        overflowX: 'auto',
-        flexShrink: 0,
-        WebkitOverflowScrolling: 'touch',
-      }}>
-        <div style={{ display: 'flex', minWidth: 'max-content', padding: '0 clamp(16px, 3vw, 24px)' }}>
-          {[
-            { id: 'alignment', label: 'Programme Alignment' },
-            { id: 'rankings', label: 'Rankings Intelligence' },
-          ].map(tab => (
-            <button key={tab.id}
-              onClick={() => setActiveTab(tab.id as 'alignment' | 'rankings')}
-              style={{
-                padding: '12px 16px',
-                fontSize: 12,
-                fontWeight: activeTab === tab.id ? 600 : 400,
-                color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-muted)',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: `2px solid ${activeTab === tab.id ? accentColor : 'transparent'}`,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                minHeight: 44,
-                transition: 'all var(--t-fast)',
-                WebkitTapHighlightColor: 'transparent',
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div style={{
-        flex: 1,
-        overflowY: 'auto',
-        overflowX: 'hidden',
-        padding: 'clamp(16px, 3vw, 20px) clamp(16px, 3vw, 24px)',
-        WebkitOverflowScrolling: 'touch',
-      }}>
-        {loading ? (
-          <div style={{ padding: 40 }}>
-            <div className="skeleton" style={{ height: 32, width: 200, marginBottom: 16 }} />
-            <div className="skeleton" style={{ height: 240 }} />
-          </div>
-        ) : (
-          <>
-            <div style={{ marginBottom: 16 }}>
-              <InstitutionSelector
-                institutions={institutions}
-                selectedId={selectedInstitutionId}
-                onSelect={setSelectedInstitutionId}
-              />
+          {/* Hero */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 pt-8">
+            <div>
+              <div className="badge-live mb-4">
+                <span className="w-2 h-2 bg-primary animate-pulse block" />
+                Institution Intelligence Active
+              </div>
+              <h1 className="font-headline text-display-sm font-bold tracking-tighter text-primary leading-tight">
+                Institution &amp; Programme<br/>Intelligence
+              </h1>
+              <p className="font-body text-on-surface-variant text-lg mt-4 max-w-2xl">
+                {COUNTRY_LABEL[country] || country} — University Track. Graduate employment velocity, curriculum alignment, and strategic sector positioning.
+              </p>
             </div>
+          </div>
 
-            {selectedInstitution && (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-                gap: 12,
-                marginBottom: 20,
-              }}>
-                {[
-                  { label: 'STUDENTS ENROLLED', value: selectedInstitution.student_count?.toLocaleString() || '—' },
-                  { label: 'ANNUAL GRADUATES', value: selectedInstitution.annual_graduate_count?.toLocaleString() || '—' },
-                  { label: 'TYPE', value: selectedInstitution.type || '—' },
-                  { label: 'ESTABLISHED', value: String(selectedInstitution.established_year || '—') },
-                ].map(stat => (
-                  <div key={stat.label} style={{
-                    background: 'var(--bg-surface)',
-                    border: '0.5px solid var(--border-subtle)',
-                    borderRadius: 'var(--r-md)',
-                    padding: 'clamp(12px, 2vw, 16px)',
-                  }}>
-                    <div className="label-caps" style={{ marginBottom: 6 }}>{stat.label}</div>
-                    <div className="num" style={{
-                      fontSize: 'clamp(18px, 4vw, 22px)',
-                      color: accentColor,
-                      textTransform: 'capitalize',
-                    }}>
-                      {stat.value}
+          {loading ? (
+            <div className="space-y-4">
+              <div className="skeleton h-8 w-64" />
+              <div className="skeleton h-[300px]" />
+            </div>
+          ) : (
+            <>
+              {/* Institution selector */}
+              <div className="mb-6">
+                <InstitutionSelector
+                  institutions={institutions}
+                  selectedId={selectedInstitutionId}
+                  onSelect={setSelectedInstitutionId}
+                />
+              </div>
+
+              {/* KPI Bento */}
+              {selectedInstitution && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  {[
+                    { label: 'Students Enrolled', value: selectedInstitution.student_count?.toLocaleString() || '—' },
+                    { label: 'Annual Graduates', value: selectedInstitution.annual_graduate_count?.toLocaleString() || '—' },
+                    { label: 'Type', value: selectedInstitution.type || '—' },
+                    { label: 'Established', value: String(selectedInstitution.established_year || '—') },
+                  ].map(stat => (
+                    <div key={stat.label} className="bg-surface-container-low p-6 md:p-8 flex flex-col justify-between min-h-[140px]">
+                      <div className="font-label text-label-sm uppercase tracking-wider text-on-surface-variant mb-2">{stat.label}</div>
+                      <div className="font-headline text-3xl md:text-4xl text-primary tracking-tighter capitalize">{stat.value}</div>
                     </div>
-                  </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Tabs */}
+              <div className="flex gap-6 border-b border-surface-container">
+                {[
+                  { id: 'alignment', label: `${COUNTRY_LABEL[country] || country} — Programme Alignment` },
+                  { id: 'rankings', label: `${COUNTRY_LABEL[country] || country} — Rankings Intelligence` },
+                ].map(tab => (
+                  <button key={tab.id} onClick={() => setActiveTab(tab.id as 'alignment' | 'rankings')}
+                    className={`font-body text-sm pb-3 transition-colors ${activeTab === tab.id ? 'text-primary border-b-2 border-primary' : 'text-on-surface-variant hover:text-primary'}`}
+                    style={{ background: 'none', border: 'none', borderBottom: activeTab === tab.id ? '2px solid #fff' : '2px solid transparent', cursor: 'pointer', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>
+                    {tab.label}
+                  </button>
                 ))}
               </div>
-            )}
 
-            {activeTab === 'alignment' ? (
-              <ProgrammeAlignmentTable
-                programmes={programmes}
-                accentColor={accentColor}
-              />
-            ) : (
-              selectedInstitution && (
-                <RankingsIntelligence
-                  institutionName={selectedInstitution.name}
-                  accentColor={accentColor}
-                  country={country}
+              {activeTab === 'alignment' ? (
+                <ProgrammeAlignmentTable
+                  programmes={programmes}
+                  accentColor="#FFFFFF"
                 />
-              )
-            )}
-          </>
-        )}
+              ) : (
+                selectedInstitution && (
+                  <RankingsIntelligence
+                    institutionName={selectedInstitution.name}
+                    accentColor="#FFFFFF"
+                    country={country}
+                  />
+                )
+              )}
+            </>
+          )}
+
+          {/* Data attribution */}
+          <div className="border-t border-surface-container pt-6 flex flex-wrap items-center gap-x-6 gap-y-2 justify-between">
+            <div className="flex flex-wrap gap-4">
+              {['QS', 'THE', 'ESCO', 'UNESCO', 'OECD'].map(s => (
+                <span key={s} className="text-[9px] font-label uppercase tracking-widest text-outline">{s}</span>
+              ))}
+            </div>
+            <span className="text-[10px] font-body text-outline italic">No conflict of interest — we do not run the rankings we help you improve.</span>
+          </div>
+        </div>
       </div>
     </Shell>
   )

@@ -13,7 +13,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: '#0A0C10',
+  themeColor: '#111417',
 }
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -30,7 +30,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/syrka.png" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body style={{ background: 'var(--bg-base)' }}>
+      <body>
         {children}
       </body>
     </html>

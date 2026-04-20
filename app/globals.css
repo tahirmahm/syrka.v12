@@ -1,135 +1,120 @@
-@import '../styles/tokens.css';
-@import '@fontsource/inter/400.css';
-@import '@fontsource/inter/500.css';
-@import '@fontsource/inter/600.css';
-@import '@fontsource/inter/800.css';
-@import '@fontsource/jetbrains-mono/700.css';
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { background: var(--bg-base); }
-
-body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-size: 13px;
-  color: var(--text-secondary);
-  background: var(--bg-base);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.num {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-}
-
-.font-display {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 600;
-}
-
-.label-caps {
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes drawLine {
-  from { stroke-dashoffset: 2000; }
-  to   { stroke-dashoffset: 0; }
-}
-@keyframes fillBar {
-  from { width: 0; }
-}
-@keyframes pulse {
-  0%,100% { opacity: 1; }
-  50%      { opacity: 0.5; }
-}
-
-.fade-up   { animation: fadeUp var(--t-slow) var(--ease-out) both; }
-.delay-1   { animation-delay: 60ms; }
-.delay-2   { animation-delay: 120ms; }
-.delay-3   { animation-delay: 180ms; }
-.delay-4   { animation-delay: 240ms; }
-.delay-5   { animation-delay: 300ms; }
-
-.bar-fill  {
-  animation: fillBar 900ms var(--ease-out) both;
-  animation-delay: 500ms;
-}
-
-.chart-line {
-  stroke-dasharray: 2000;
-  animation: drawLine 1.4s var(--ease-out) forwards;
-}
-
-.skeleton {
-  background: var(--bg-elevated);
-  animation: pulse 1.5s ease-in-out infinite;
-  border-radius: var(--r-md);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fade-up, .bar-fill, .chart-line, .skeleton {
-    animation: none !important;
+@layer base {
+  html { @apply dark; }
+  body {
+    @apply bg-background text-on-background font-body antialiased;
+    font-size: 15px;
   }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-headline;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+    font-size: 1.25rem;
+  }
+  ::selection {
+    @apply bg-primary text-on-primary;
+  }
+}
+
+@layer components {
+  .ghost-border {
+    border: 1px solid rgba(71, 71, 71, 0.15);
+  }
+
+  .nav-glass {
+    background: rgba(17, 20, 23, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .nav-active {
+    @apply text-primary bg-surface-container-highest border-l-2 border-primary;
+    font-weight: 700;
+  }
+
+  .data-chip {
+    @apply bg-surface-container-highest text-primary font-label uppercase px-2 py-1;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  .status-critical {
+    @apply bg-error-container text-error font-label uppercase px-2 py-1;
+    font-size: 10px;
+  }
+
+  .status-active {
+    @apply bg-surface-container-highest text-primary font-label uppercase px-2 py-1;
+    font-size: 10px;
+  }
+
+  .metric-display {
+    @apply font-headline text-primary tracking-tight;
+  }
+
+  .bento-card {
+    @apply bg-surface-container-low p-8;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-on-primary font-label uppercase tracking-widest px-6 py-3 transition-colors duration-150;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    border: none;
+    cursor: pointer;
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-primary:hover {
+    background: #A9ABAF;
+  }
+
+  .btn-ghost {
+    @apply text-primary font-label uppercase tracking-widest px-6 py-3 transition-colors duration-150;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    border: 1px solid rgba(145, 145, 145, 0.20);
+    background: transparent;
+    cursor: pointer;
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-ghost:hover {
+    background: #323538;
+  }
+
+  .badge-live {
+    @apply inline-flex items-center gap-2 px-3 py-1 bg-surface-container-highest text-primary font-label uppercase;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+}
+
+@layer utilities {
+  .tracking-ultra { letter-spacing: 0.25em; }
 }
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #474747; }
 
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  min-height: 44px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-muted);
-  background: transparent;
-  border: 0.5px solid var(--border-default);
-  border-radius: var(--r-md);
-  cursor: pointer;
-  transition: all var(--t-fast);
-  -webkit-tap-highlight-color: transparent;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-.btn-ghost:hover {
-  color: var(--text-secondary);
-  border-color: var(--border-emphasis);
-  background: var(--bg-elevated);
+.skeleton {
+  background: #1D2023;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  min-height: 44px;
-  font-size: 12px;
-  font-weight: 700;
-  border: none;
-  border-radius: var(--r-md);
-  cursor: pointer;
-  transition: all var(--t-fast);
-  letter-spacing: 0.3px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.btn-primary:hover {
-  filter: brightness(1.1);
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none !important; }
 }
