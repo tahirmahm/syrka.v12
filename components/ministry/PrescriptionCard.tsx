@@ -51,7 +51,6 @@ const STATUS_LABEL: Record<Prescription['status'], string> = {
 
 export default function PrescriptionCard({
   prescription,
-  accentColor,
   index,
   onRunSimulation,
   simulationResult,

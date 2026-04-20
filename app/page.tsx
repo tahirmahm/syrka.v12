@@ -87,7 +87,7 @@ export default async function LandingPage() {
                    style={{ textDecoration: 'none' }}>
                   <div>
                     <div className="flex justify-between items-start mb-8">
-                      <span className="font-label text-[9px] uppercase tracking-widest text-outline">{c.vision} // {c.code}</span>
+                      <span className="font-label text-[9px] uppercase tracking-widest text-outline">{c.vision}{' // '}{c.code}</span>
                       <span className="material-symbols-outlined text-outline text-2xl">arrow_outward</span>
                     </div>
                     <h3 className="text-3xl font-headline font-bold tracking-tighter mb-4 text-primary whitespace-pre-line">{c.name}</h3>

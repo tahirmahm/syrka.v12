@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
 import DocumentUpload from '@/components/ministry/DocumentUpload'
 import AddCountryModal from '@/components/layout/AddCountryModal'
 

@@ -6,7 +6,6 @@
 @tailwind utilities;
 
 @layer base {
-  html { @apply dark; }
   body {
     @apply bg-background text-on-background font-body antialiased;
     font-size: 15px;

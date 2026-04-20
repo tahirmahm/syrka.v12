@@ -55,7 +55,7 @@ export default function EmployerDashboard() {
   }, [country])
 
   const totalOpenRoles = employers.reduce((sum, e) => sum + (e.open_roles || 0), 0)
-  const criticalSkills = skills.filter(s => s.gap_score >= 7).length
+  const criticalSkills = skills.filter(s => (s.gap_score ?? 0) >= 7).length
 
   return (
     <Shell country={country} activeTrack="employer">
