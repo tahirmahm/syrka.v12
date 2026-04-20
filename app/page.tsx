@@ -37,7 +37,7 @@ export default async function LandingPage() {
 
       {/* Fixed nav */}
       <nav className="nav-glass fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 py-5 ghost-border">
-        <div className="text-xl font-headline font-bold tracking-ultra text-primary">Syrka</div>
+        <a href="/" className="text-xl font-headline font-bold text-primary" style={{ letterSpacing: '0.35em', textDecoration: 'none' }}>SYRKA</a>
         <div className="hidden md:flex gap-10 items-center">
           {['Intelligence', 'Infrastructure', 'Partners', 'Data'].map((item, i) => (
             <span key={item} className={`font-label text-[11px] uppercase tracking-widest transition-colors cursor-pointer ${i === 3 ? 'text-primary border-b border-primary pb-1' : 'text-on-surface-variant hover:text-primary'}`}>
@@ -146,7 +146,7 @@ export default async function LandingPage() {
 
         {/* Footer */}
         <footer className="px-8 md:px-16 py-8 border-t border-surface-container flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="font-headline font-bold text-lg tracking-tighter text-primary">Syrka</div>
+          <a href="/" className="font-headline font-bold text-lg text-primary" style={{ letterSpacing: '0.35em', textDecoration: 'none' }}>SYRKA</a>
           <div className="flex gap-8">
             {['Privacy', 'Legal', 'Security'].map(item => (
               <span key={item} className="text-xs font-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors cursor-pointer">{item}</span>

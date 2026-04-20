@@ -33,17 +33,12 @@ export default function Shell({ children, country, activeTrack }: ShellProps) {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest z-40 overflow-y-auto">
         {/* Wordmark */}
-        <div className="px-6 py-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 bg-surface-container-highest ghost-border flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>hub</span>
-            </div>
-            <span className="text-xl font-headline font-bold tracking-tighter text-primary">Syrka</span>
-          </div>
-          <span className="text-[9px] font-label text-secondary-fixed-dim tracking-widest uppercase pl-11">
+        <a href="/" className="block px-6 py-8" style={{ textDecoration: 'none' }}>
+          <span className="text-lg font-headline font-bold text-primary" style={{ letterSpacing: '0.35em' }}>SYRKA</span>
+          <span className="block text-[9px] font-label text-outline tracking-widest uppercase mt-1">
             Human Capital Intelligence
           </span>
-        </div>
+        </a>
 
         {/* Country indicator */}
         <div className="px-6 mb-6">
@@ -104,7 +99,7 @@ export default function Shell({ children, country, activeTrack }: ShellProps) {
                     onClick={() => setMobileNavOpen(!mobileNavOpen)}>
               <span className="material-symbols-outlined">menu</span>
             </button>
-            <span className="text-lg font-headline font-black text-primary tracking-tighter">Sector Dashboard</span>
+            <a href="/" className="text-lg font-headline font-bold text-primary md:hidden" style={{ letterSpacing: '0.35em', textDecoration: 'none' }}>SYRKA</a>
             <nav className="hidden lg:flex items-center gap-6">
               {(['ministry', 'university', 'employer', 'student'] as const).map(track => (
                 <a key={track} href={`/${country}/${track}`}
@@ -139,7 +134,7 @@ export default function Shell({ children, country, activeTrack }: ShellProps) {
             <div className="absolute inset-0 bg-black/60" onClick={() => setMobileNavOpen(false)} />
             <aside className="absolute left-0 top-0 h-full w-64 bg-surface-container-lowest flex flex-col">
               <div className="flex items-center justify-between px-6 py-6">
-                <span className="text-xl font-headline font-bold text-primary tracking-tighter">Syrka</span>
+                <a href="/" className="text-lg font-headline font-bold text-primary" style={{ letterSpacing: '0.35em', textDecoration: 'none' }}>SYRKA</a>
                 <button onClick={() => setMobileNavOpen(false)} className="text-on-surface-variant" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
                   <span className="material-symbols-outlined">close</span>
                 </button>
