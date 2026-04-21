@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="panel.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&family=Inter:wght@200;400;600&family=Material+Symbols+Outlined:opsz,wght,fill,GRAD@20..48,200,0..1,-50..200" rel="stylesheet">
+</head>
+<body>
+  <div class="panel-container">
+    <header>
+      <div class="wordmark">SYRKA</div>
+      <div class="header-right">
+        <span id="page-badge" class="badge">SCANNING...</span>
+        <button id="close-btn" class="icon-btn">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="content">
+      <div id="loading" class="section">
+        <p>Analyzing page content...</p>
+      </div>
+
+      <div id="course-section" class="section hidden">
+        <h3>COURSE INTELLIGENCE</h3>
+        <div id="course-info">
+          <p class="label">Course</p>
+          <p id="course-name" class="value">-</p>
+
+          <p class="label">Modules</p>
+          <ul id="module-list"></ul>
+
+          <p class="label">Upcoming Assignments</p>
+          <ul id="assignment-list"></ul>
+        </div>
+        <button id="analyse-skills-btn" class="primary-btn">Analyse Skills Gap</button>
+      </div>
+
+      <div id="job-section" class="section hidden">
+        <div class="job-header">
+          <h3>JOB INTELLIGENCE</h3>
+          <div id="score-badge" class="score-badge">-</div>
+        </div>
+        <div id="job-info">
+          <p class="label">Role</p>
+          <p id="job-title" class="value">-</p>
+
+          <p class="label">Company</p>
+          <p id="job-company" class="value">-</p>
+
+          <p class="label">Salary</p>
+          <p id="job-salary" class="value">-</p>
+
+          <p class="label">Required Skills</p>
+          <div id="job-skills" class="pills"></div>
+        </div>
+        <div class="button-group">
+          <button id="add-pipeline-btn" class="primary-btn">Add to Syrka Pipeline</button>
+          <button id="gen-app-btn" class="secondary-btn">Generate Application</button>
+        </div>
+      </div>
+
+      <div id="no-intel" class="section hidden">
+        <p>No intelligence found on this page.</p>
+        <p class="small">Try visiting Moodle or a Job listing (LinkedIn, Indeed, etc.)</p>
+      </div>
+    </main>
+  </div>
+  <script src="scoring.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>
