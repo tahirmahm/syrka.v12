@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Syrka Extension",
+  "version": "1.0.0",
+  "description": "National Human Capital Intelligence Platform Extension",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["*://*.moodle.org/*", "*://*.linkedin.com/*", "*://*.indeed.com/*", "http://localhost:3001/*"],
+  "action": {
+    "default_title": "Open Syrka Sidebar"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-scripts/injector.js", "content-scripts/moodle.js", "content-scripts/jobs.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["sidebar/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
