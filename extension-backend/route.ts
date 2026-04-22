@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { createClient } from '@/lib/supabase';
+
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
@@ -10,7 +12,6 @@ export async function OPTIONS() {
     },
   });
 }
-import { createClient } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
