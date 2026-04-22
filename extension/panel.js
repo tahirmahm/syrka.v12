@@ -29,6 +29,8 @@ function updateUI(intel) {
 }
 
 function showCourse(data) {
+  window.syrkaPageData = { courseName: data.courseName, modules: data.modules || [] };
+
   const section = document.getElementById('course-section');
   section.classList.remove('hidden');
 
@@ -91,8 +93,118 @@ document.getElementById('close-btn').addEventListener('click', () => {
   window.parent.postMessage({ action: 'closePanel' }, '*');
 });
 
-document.getElementById('analyse-skills-btn').addEventListener('click', () => {
-  analyseSkillsGap();
+document.getElementById('analyse-skills-btn').addEventListener('click', function() {
+  const btn = this;
+  btn.textContent = 'ANALYSING...';
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
+
+  const modules = window.syrkaPageData?.modules || [];
+  const courseName = window.syrkaPageData?.courseName || 'This Course';
+
+  const SKILL_MAP = {
+    'introduction': ['Critical Thinking', 'Academic Research'],
+    'economics': ['Economic Analysis', 'Data Interpretation', 'Policy Evaluation'],
+    'policy': ['Policy Analysis', 'Regulatory Knowledge', 'Public Administration'],
+    'resources': ['Information Literacy', 'Self-directed Learning'],
+    'lecture': ['Analytical Reasoning', 'Academic Writing'],
+    'seminar': ['Public Speaking', 'Debate', 'Argumentation'],
+    'test': ['Examination Technique', 'Time Management'],
+    'data': ['Data Analysis', 'Statistical Thinking'],
+    'research': ['Research Methods', 'Academic Writing'],
+    'management': ['Project Management', 'Organisational Skills'],
+    'progress': ['Systems Thinking', 'Interdisciplinary Analysis'],
+    'intervention': ['Policy Design', 'Impact Assessment'],
+    'debate': ['Argumentation', 'Public Speaking', 'Critical Thinking'],
+  };
+
+  const VISION_SKILLS = [
+    'Economic Analysis', 'Policy Evaluation', 'Data Analysis',
+    'Statistical Thinking', 'Public Administration', 'Research Methods',
+    'Project Management', 'Analytical Reasoning', 'Policy Design',
+    'Impact Assessment', 'Systems Thinking'
+  ];
+
+  const extractedSkills = new Set();
+  modules.forEach(mod => {
+    const lower = mod.toLowerCase();
+    Object.entries(SKILL_MAP).forEach(([key, skills]) => {
+      if (lower.includes(key)) skills.forEach(s => extractedSkills.add(s));
+    });
+  });
+  const courseNameLower = courseName.toLowerCase();
+  Object.entries(SKILL_MAP).forEach(([key, skills]) => {
+    if (courseNameLower.includes(key)) skills.forEach(s => extractedSkills.add(s));
+  });
+
+  const skillsArray = Array.from(extractedSkills);
+  const aligned = skillsArray.filter(s => VISION_SKILLS.includes(s));
+  const gaps = VISION_SKILLS.filter(s => !extractedSkills.has(s));
+
+  setTimeout(() => {
+    const panelBody = document.getElementById('course-info');
+    btn.remove();
+
+    const section = document.getElementById('course-section');
+    const heading = section.querySelector('h3');
+    heading.textContent = 'SKILLS ANALYSIS';
+
+    panelBody.innerHTML = `
+      <div style="padding:0;font-family:'Space Grotesk',sans-serif;">
+
+        <div style="margin-bottom:16px;">
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+                      color:#484F58;margin-bottom:8px;">EXTRACTED SKILLS</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            ${skillsArray.length > 0
+              ? skillsArray.map(s => `
+                <span style="background:#1D2023;border:1px solid rgba(71,71,71,0.3);
+                             padding:3px 8px;font-size:10px;color:#fff;">${s}</span>
+              `).join('')
+              : '<span style="font-size:11px;color:#484F58;">No skills mapped from module names</span>'
+            }
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+                      color:#484F58;margin-bottom:8px;">VISION ALIGNMENT</div>
+          ${aligned.length > 0
+            ? aligned.map(s => `
+              <div style="display:flex;align-items:center;gap:8px;
+                          padding:5px 0;border-bottom:1px solid rgba(71,71,71,0.15);
+                          font-size:11px;color:#fff;">
+                <span style="color:#3FB950;">&#10003;</span> ${s}
+              </div>
+            `).join('')
+            : '<div style="font-size:11px;color:#484F58;">No direct Vision alignment found</div>'
+          }
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+                      color:#484F58;margin-bottom:8px;">SKILL GAPS</div>
+          ${gaps.length > 0
+            ? gaps.slice(0, 5).map(s => `
+              <div style="display:flex;align-items:center;gap:8px;
+                          padding:5px 0;border-bottom:1px solid rgba(71,71,71,0.15);
+                          font-size:11px;color:#F85149;">
+                &#8599; ${s}
+              </div>
+            `).join('')
+            : '<div style="font-size:11px;color:#3FB950;">Full Vision coverage from this course.</div>'
+          }
+        </div>
+
+        <a href="https://syrka.co/saudi/student" target="_blank"
+           style="display:block;background:#fff;color:#111417;text-align:center;
+                  padding:10px;font-size:11px;font-weight:700;letter-spacing:1px;
+                  text-transform:uppercase;text-decoration:none;cursor:pointer;">
+          OPEN IN SYRKA &rarr;
+        </a>
+      </div>
+    `;
+  }, 1500);
 });
 
 document.getElementById('add-pipeline-btn').addEventListener('click', () => {
@@ -108,140 +220,6 @@ document.getElementById('gen-app-btn').addEventListener('click', () => {
   window.open(`https://syrka.co/student?${params.toString()}`, '_blank');
 });
 
-function analyseSkillsGap() {
-  const btn = document.getElementById('analyse-skills-btn');
-  btn.textContent = 'ANALYSING...';
-  btn.disabled = true;
-  btn.style.opacity = '0.5';
-
-  const SKILL_MAP = {
-    'introduction': ['Critical Thinking', 'Academic Research'],
-    'economics': ['Economic Analysis', 'Data Interpretation', 'Policy Evaluation'],
-    'policy': ['Policy Analysis', 'Regulatory Knowledge', 'Public Administration'],
-    'resources': ['Information Literacy', 'Self-directed Learning'],
-    'lecture': ['Analytical Reasoning', 'Academic Writing'],
-    'seminar': ['Public Speaking', 'Debate', 'Argumentation'],
-    'test': ['Examination Technique', 'Time Management'],
-    'data': ['Data Analysis', 'Statistical Thinking'],
-    'research': ['Research Methods', 'Academic Writing'],
-    'management': ['Project Management', 'Organisational Skills'],
-  };
-
-  const VISION_SKILLS = [
-    'Economic Analysis', 'Policy Evaluation', 'Data Analysis',
-    'Statistical Thinking', 'Public Administration', 'Research Methods',
-    'Project Management', 'Analytical Reasoning'
-  ];
-
-  const modules = (state.data && state.data.modules) || [];
-  const extractedSet = new Set();
-  modules.forEach(mod => {
-    const lower = mod.toLowerCase();
-    Object.keys(SKILL_MAP).forEach(key => {
-      if (lower.includes(key)) {
-        SKILL_MAP[key].forEach(skill => extractedSet.add(skill));
-      }
-    });
-  });
-  const extractedSkills = Array.from(extractedSet);
-
-  const aligned = VISION_SKILLS.filter(s => extractedSet.has(s));
-  const gaps = VISION_SKILLS.filter(s => !extractedSet.has(s));
-
-  setTimeout(() => {
-    const section = document.getElementById('course-section');
-    const heading = section.querySelector('h3');
-    const courseInfo = document.getElementById('course-info');
-
-    courseInfo.innerHTML = '';
-    btn.remove();
-
-    heading.textContent = 'SKILLS ANALYSIS';
-
-    // Extracted Skills
-    const skillsLabel = document.createElement('p');
-    skillsLabel.className = 'label';
-    skillsLabel.textContent = 'EXTRACTED SKILLS';
-    courseInfo.appendChild(skillsLabel);
-
-    const skillsPills = document.createElement('div');
-    skillsPills.className = 'pills';
-    skillsPills.style.marginBottom = '20px';
-    if (extractedSkills.length === 0) {
-      const none = document.createElement('p');
-      none.className = 'small';
-      none.textContent = 'No skills matched from modules.';
-      courseInfo.appendChild(none);
-    } else {
-      extractedSkills.forEach(skill => {
-        const pill = document.createElement('span');
-        pill.className = 'pill';
-        pill.textContent = skill;
-        skillsPills.appendChild(pill);
-      });
-    }
-    courseInfo.appendChild(skillsPills);
-
-    // Vision Alignment
-    const alignLabel = document.createElement('p');
-    alignLabel.className = 'label';
-    alignLabel.textContent = 'VISION ALIGNMENT';
-    courseInfo.appendChild(alignLabel);
-
-    const alignList = document.createElement('div');
-    alignList.style.margin = '8px 0 20px 0';
-    VISION_SKILLS.forEach(skill => {
-      const row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;';
-      const isAligned = aligned.includes(skill);
-      const icon = document.createElement('span');
-      icon.textContent = isAligned ? '✓' : '—';
-      icon.style.cssText = `color:${isAligned ? '#FFFFFF' : '#474747'};font-weight:700;width:16px;`;
-      const name = document.createElement('span');
-      name.textContent = skill;
-      name.style.color = isAligned ? '#E1E2E6' : '#919191';
-      row.appendChild(icon);
-      row.appendChild(name);
-      alignList.appendChild(row);
-    });
-    courseInfo.appendChild(alignList);
-
-    // Skill Gaps
-    const gapLabel = document.createElement('p');
-    gapLabel.className = 'label';
-    gapLabel.textContent = 'SKILL GAPS';
-    courseInfo.appendChild(gapLabel);
-
-    const gapPills = document.createElement('div');
-    gapPills.className = 'pills';
-    gapPills.style.marginBottom = '24px';
-    if (gaps.length === 0) {
-      const full = document.createElement('p');
-      full.className = 'small';
-      full.textContent = 'Full Vision coverage from this course.';
-      courseInfo.appendChild(full);
-    } else {
-      gaps.forEach(skill => {
-        const pill = document.createElement('span');
-        pill.className = 'pill';
-        pill.style.cssText = 'border-color:rgba(255,180,171,0.4);color:#FFB4AB;';
-        pill.textContent = skill;
-        gapPills.appendChild(pill);
-      });
-    }
-    courseInfo.appendChild(gapPills);
-
-    // Open in Syrka button
-    const openBtn = document.createElement('button');
-    openBtn.className = 'primary-btn';
-    openBtn.textContent = 'Open in Syrka';
-    openBtn.style.width = '100%';
-    openBtn.addEventListener('click', () => {
-      window.open('https://syrka.co/saudi/student', '_blank');
-    });
-    courseInfo.appendChild(openBtn);
-  }, 1500);
-}
 
 async function ingestData() {
   const API_ENDPOINT = 'http://localhost:3000/api/extension/ingest'; // Should be configurable
