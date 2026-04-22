@@ -75,11 +75,85 @@
   }
 
   // --- 2. Data Extraction ---
-  function extractIntel() {
+
+  function detectPageType() {
+    const url = window.location.href;
+    const hostname = window.location.hostname;
+
+    // Moodle detection
+    if (url.includes('/course/') || url.includes('/moodle/') ||
+        url.includes('/mod/') || url.includes('moodle.') ||
+        document.querySelector('.course-content') ||
+        document.querySelector('#region-main .section')) {
+      return 'moodle';
+    }
+
+    // Job site detection — hostname AND URL patterns
+    if (hostname.includes('linkedin.com') ||
+        hostname.includes('indeed.com') ||
+        hostname.includes('glassdoor.com') ||
+        hostname.includes('seek.com') ||
+        hostname.includes('reed.co.uk') ||
+        hostname.includes('totaljobs.com') ||
+        url.includes('/jobs/') ||
+        url.includes('/job/') ||
+        url.includes('/careers/') ||
+        document.querySelector('[class*="job-details"]') ||
+        document.querySelector('[class*="jobsearch"]') ||
+        document.querySelector('.job-view-layout')) {
+      return 'job';
+    }
+
+    return 'none';
+  }
+
+  function extractJobData() {
     const url = window.location.href;
 
-    // Moodle Detection
-    if (url.includes('/moodle/') || url.includes('/course/') || url.includes('/mod/')) {
+    const title =
+      document.querySelector('.job-details-jobs-unified-top-card__job-title h1')?.innerText ||
+      document.querySelector('.topcard__title')?.innerText ||
+      document.querySelector('h1[class*="title"]')?.innerText ||
+      document.querySelector('h1')?.innerText ||
+      'Unknown Title';
+
+    const company =
+      document.querySelector('.job-details-jobs-unified-top-card__company-name')?.innerText ||
+      document.querySelector('.topcard__org-name-link')?.innerText ||
+      document.querySelector('[class*="company-name"]')?.innerText ||
+      'Unknown Company';
+
+    const description =
+      document.querySelector('.jobs-description__content')?.innerText ||
+      document.querySelector('.description__text')?.innerText ||
+      document.querySelector('[class*="description"]')?.innerText ||
+      document.body.innerText.substring(0, 2000);
+
+    const skillKeywords = [
+      'Python', 'JavaScript', 'TypeScript', 'React', 'Node.js', 'SQL', 'Excel',
+      'PowerPoint', 'leadership', 'communication', 'analysis', 'management',
+      'research', 'strategy', 'economics', 'finance', 'data', 'machine learning',
+      'AI', 'policy', 'stakeholder', 'project management', 'Tableau'
+    ];
+
+    const skills = skillKeywords.filter(skill =>
+      description.toLowerCase().includes(skill.toLowerCase())
+    );
+
+    return {
+      title: title.trim(),
+      company: company.trim(),
+      salary: null,
+      skills,
+      description,
+      workType: url.includes('remote') ? 'Remote' : 'Onsite'
+    };
+  }
+
+  function extractIntel() {
+    const pageType = detectPageType();
+
+    if (pageType === 'moodle') {
       return {
         type: 'course',
         data: {
@@ -87,28 +161,14 @@
           modules: Array.from(document.querySelectorAll('.sectionname')).map(el => el.innerText.trim()),
           assignments: Array.from(document.querySelectorAll('.modtype_assign')).map(el => ({
             name: el.querySelector('.instancename')?.innerText.replace('Assignment', '').trim(),
-            dueDate: 'N/A' // Harder to get from list view, but could be scraped if present
+            dueDate: 'N/A'
           }))
         }
       };
     }
 
-    // Job Detection
-    const jobPatterns = ['linkedin.com/jobs', 'indeed.com', 'glassdoor.com', 'seek.com', '/jobs/'];
-    if (jobPatterns.some(p => url.includes(p))) {
-      // Very basic generic extraction, should be tailored per site in real use
-      return {
-        type: 'job',
-        data: {
-          title: document.querySelector('h1')?.innerText || 'Unknown Role',
-          company: document.querySelector('.job-details-company-name')?.innerText ||
-                   document.querySelector('[class*="company"]')?.innerText || 'Unknown Company',
-          salary: null, // Scraper specific needed
-          skills: Array.from(document.body.innerText.matchAll(/[A-Z][a-z]+ (Engineer|Developer|Manager|Analyst)/g)).map(m => m[0]).slice(0, 5),
-          description: document.body.innerText.substring(0, 1000),
-          workType: url.includes('remote') ? 'Remote' : 'Onsite'
-        }
-      };
+    if (pageType === 'job') {
+      return { type: 'job', data: extractJobData() };
     }
 
     return { type: 'none', data: {} };
