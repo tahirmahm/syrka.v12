@@ -141,6 +141,20 @@ export default function StudentDashboard() {
   const [cvBrief, setCvBrief] = useState<CvBrief | null>(null)
   const [copiedField, setCopiedField] = useState('')
 
+  interface JobRec {
+    title: string
+    description: string
+    matchPercent: number
+    keySkillsMatched: string[]
+    salaryRange: string
+    seniorityLevel: string
+    linkedinSearchUrl: string
+    indeedSearchUrl: string
+    whyMatch: string
+  }
+  const [jobRecs, setJobRecs] = useState<JobRec[]>([])
+  const [loadingRecs, setLoadingRecs] = useState(false)
+
   const progressPct = (step / 5) * 100
 
   function toggleSkill(skill: string) {
@@ -324,6 +338,25 @@ export default function StudentDashboard() {
     setIdentityStatement(''); setExpandedCareer(null); setError('')
     setOfferEval(null); setCvBrief(null); setOfferJobTitle(''); setOfferCompany('')
     setOfferDescription(''); setOfferSalary(''); setOfferCurrency('USD')
+    setJobRecs([])
+  }
+
+  async function fetchJobRecs() {
+    const skills = Array.from(confirmedSkills)
+    if (skills.length === 0) return
+    setLoadingRecs(true)
+    try {
+      const res = await fetch('/api/students/job-recommendations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skills, country, userId: user?.id }),
+      })
+      const data = await res.json()
+      setJobRecs(Array.isArray(data) ? data : [])
+    } catch {
+      setJobRecs([])
+    }
+    setLoadingRecs(false)
   }
 
   return (
@@ -846,6 +879,68 @@ export default function StudentDashboard() {
                       </div>
                     )
                   })()}
+
+                  {/* Job Recommendations */}
+                  <div className="mt-12 border-t border-surface-container pt-8">
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <div className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Based on your profile</div>
+                        <h2 className="font-headline text-2xl font-bold tracking-tighter text-primary">
+                          Job Recommendations
+                        </h2>
+                      </div>
+                      <button onClick={fetchJobRecs}
+                        className="btn-ghost text-xs py-2 px-4"
+                        style={{ background: 'none', border: '1px solid rgba(71,71,71,0.4)', cursor: 'pointer' }}>
+                        {jobRecs.length > 0 ? 'Refresh' : 'Load'} &#8635;
+                      </button>
+                    </div>
+
+                    {loadingRecs && (
+                      <div className="grid grid-cols-1 gap-4">
+                        {[1, 2, 3].map(i => (
+                          <div key={i} className="skeleton h-48 w-full" />
+                        ))}
+                      </div>
+                    )}
+
+                    {jobRecs.length > 0 && (
+                      <div className="grid grid-cols-1 gap-4">
+                        {jobRecs.map((job, i) => (
+                          <div key={i} className="bg-surface-container-low ghost-border p-6 flex flex-col justify-between">
+                            <div>
+                              <div className="flex items-start justify-between mb-3">
+                                <div>
+                                  <div className="font-headline text-base font-bold text-primary tracking-tighter">{job.title}</div>
+                                  <div className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mt-1">{job.seniorityLevel}</div>
+                                </div>
+                                <div className="font-headline text-xl font-bold text-primary tabular-nums">
+                                  {job.matchPercent}%
+                                </div>
+                              </div>
+                              <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-4">{job.whyMatch}</p>
+                              <div className="flex flex-wrap gap-2 mb-4">
+                                {(job.keySkillsMatched || []).slice(0, 3).map(skill => (
+                                  <span key={skill} className="data-chip text-[9px]">{skill}</span>
+                                ))}
+                              </div>
+                              <div className="font-label text-label-sm text-on-surface-variant mb-4">{job.salaryRange}</div>
+                            </div>
+                            <div className="flex gap-2 mt-auto pt-4 border-t border-surface-container">
+                              <a href={job.linkedinSearchUrl} target="_blank" rel="noopener noreferrer"
+                                 className="btn-primary flex-1 text-center text-xs py-2" style={{ textDecoration: 'none' }}>
+                                LinkedIn Jobs &#8599;
+                              </a>
+                              <a href={job.indeedSearchUrl} target="_blank" rel="noopener noreferrer"
+                                 className="btn-ghost flex-1 text-center text-xs py-2" style={{ textDecoration: 'none' }}>
+                                Indeed &#8599;
+                              </a>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
                   <div className="mt-10 border-t border-surface-container pt-8">
                     <button onClick={() => { setOfferJobTitle(careerMatches[0]?.title || ''); setStep(5) }}
