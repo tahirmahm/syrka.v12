@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import DocumentUpload from '@/components/ministry/DocumentUpload'
 import AddCountryModal from '@/components/layout/AddCountryModal'
+import { AuthButton } from '@/components/AuthButton'
 
 const COUNTRY_CONFIG: Record<string, { name: string; vision: string }> = {
   saudi: { name: 'KINGDOM OF SAUDI ARABIA', vision: 'Saudi Vision 2030' },
@@ -122,6 +123,7 @@ export default function Shell({ children, country, activeTrack }: ShellProps) {
                 <span className="material-symbols-outlined">{icon}</span>
               </button>
             ))}
+            <AuthButton />
             <div className="w-8 h-8 bg-surface-container-highest ghost-border flex items-center justify-center ml-2">
               <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '1.2rem' }}>person</span>
             </div>
