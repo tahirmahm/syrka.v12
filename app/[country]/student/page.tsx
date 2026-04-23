@@ -6,6 +6,8 @@ import Shell from '@/components/Shell'
 import { supabase } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 
+declare const chrome: { runtime?: { sendMessage: (id: string, msg: unknown) => void } } | undefined
+
 const EMPLOYERS: Record<string, Record<string, string[]>> = {
   saudi: {
     'Technology': ['Aramco Digital', 'STC', 'NEOM', 'Saudi Data & AI Authority', 'stc Pay'],
@@ -127,6 +129,17 @@ export default function StudentDashboard() {
             setConfirmedSkills(new Set(skills))
             setStep(3)
           }
+        }
+        // Forward auth token to Chrome extension if installed
+        const session = await supabase.auth.getSession()
+        const token = session.data.session?.access_token
+        if (token && typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+          try {
+            chrome.runtime.sendMessage(
+              'SYRKA_EXTENSION_ID',
+              { type: 'STORE_AUTH', token }
+            )
+          } catch {}
         }
       }
     })
