@@ -206,9 +206,9 @@ export default function StudentDashboard() {
         supabase.from('user_profiles').upsert({
           id: user.id,
           resume_parsed: p,
-          extracted_skills: [...allSkills],
+          extracted_skills: Array.from(allSkills),
           updated_at: new Date().toISOString()
-        }, { onConflict: 'id' }).catch(() => {})
+        }, { onConflict: 'id' }).then(() => {})
       }
     } catch {
       setError('Something went wrong — please try again.')
@@ -408,11 +408,11 @@ export default function StudentDashboard() {
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    {userProfile?.linkedin_url && (
-                      <a href={userProfile.linkedin_url as string} target="_blank" rel="noopener noreferrer"
+                    {typeof userProfile?.linkedin_url === 'string' && userProfile.linkedin_url && (
+                      <a href={userProfile.linkedin_url} target="_blank" rel="noopener noreferrer"
                          className="btn-ghost text-xs py-1 px-3" style={{ textDecoration: 'none' }}>LinkedIn &#8599;</a>
                     )}
-                    {userProfile?.github_username && (
+                    {typeof userProfile?.github_username === 'string' && userProfile.github_username && (
                       <a href={`https://github.com/${userProfile.github_username}`}
                          target="_blank" rel="noopener noreferrer"
                          className="btn-ghost text-xs py-1 px-3" style={{ textDecoration: 'none' }}>GitHub &#8599;</a>
