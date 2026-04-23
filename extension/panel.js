@@ -1,11 +1,8 @@
-// Initial state
 const state = {
   type: null,
-  data: null,
-  studentId: 'demo-student-id' // Placeholder
+  data: null
 };
 
-// Listen for data from content script
 window.addEventListener('message', (event) => {
   if (event.data.type === 'PAGE_INTEL') {
     updateUI(event.data.intel);
@@ -49,6 +46,8 @@ function showCourse(data) {
     li.textContent = `${asn.name} (${asn.dueDate})`;
     assignmentList.appendChild(li);
   });
+
+  window.syrkaCourseData = { courseName: data.courseName, modules: data.modules };
 }
 
 function showJob(data) {
@@ -61,118 +60,194 @@ function showJob(data) {
 
   const skillsContainer = document.getElementById('job-skills');
   skillsContainer.innerHTML = '';
-  data.skills.forEach(skill => {
+  (data.skills || []).forEach(skill => {
     const pill = document.createElement('span');
     pill.className = 'pill';
     pill.textContent = skill;
     skillsContainer.appendChild(pill);
   });
 
-  // Calculate Score
-  const userPrefs = {
-    expectedSalary: 100000,
-    skills: ['React', 'TypeScript', 'Node.js', 'Next.js'],
-    targetSeniority: 'Senior',
-    preferredCompanySize: 'Large',
-    preferredWorkType: 'Remote'
-  };
-
-  if (typeof calculateScore !== 'undefined') {
-    const numericScore = calculateScore(data, userPrefs);
-    const grade = getGrade(numericScore);
-    const badge = document.getElementById('score-badge');
-    badge.textContent = grade;
-    state.data.score = grade;
+  const badge = document.getElementById('score-badge');
+  if (data.grade) {
+    badge.textContent = data.grade;
   }
 }
 
-// Event Listeners for buttons
+// Close panel
 document.getElementById('close-btn').addEventListener('click', () => {
   window.parent.postMessage({ action: 'closePanel' }, '*');
 });
 
+// Analyse Skills Gap — inline, no fetch
 document.getElementById('analyse-skills-btn').addEventListener('click', () => {
-  ingestData();
+  const btn = document.getElementById('analyse-skills-btn');
+  btn.disabled = true;
+  btn.textContent = 'Analysing...';
+
+  const courseName = state.data?.courseName || window.syrkaCourseData?.courseName || 'Unknown Course';
+  const modules = state.data?.modules || window.syrkaCourseData?.modules || [];
+
+  const SKILL_MAP = {
+    'programming': 'Python / JavaScript',
+    'software': 'Software Engineering',
+    'database': 'SQL & Data Management',
+    'network': 'Network Architecture',
+    'security': 'Cybersecurity',
+    'web': 'Web Development',
+    'data': 'Data Analysis',
+    'machine learning': 'Machine Learning',
+    'artificial intelligence': 'AI Systems',
+    'cloud': 'Cloud Computing',
+    'project': 'Project Management',
+    'business': 'Business Analysis',
+    'design': 'UX/UI Design',
+    'math': 'Applied Mathematics',
+    'statistic': 'Statistical Analysis',
+    'research': 'Research Methodology',
+    'progress': 'Progress Tracking',
+    'intervention': 'Strategic Intervention',
+    'debate': 'Critical Argumentation'
+  };
+
+  const VISION_SKILLS = [
+    'AI Systems', 'Data Analysis', 'Cloud Computing', 'Cybersecurity',
+    'Machine Learning', 'Digital Transformation', 'Policy Design',
+    'Impact Assessment', 'Systems Thinking'
+  ];
+
+  const extractedSkills = [];
+  const lowerModules = modules.map(m => m.toLowerCase()).join(' ');
+  const lowerCourse = courseName.toLowerCase();
+  const combined = lowerCourse + ' ' + lowerModules;
+
+  for (const [keyword, skill] of Object.entries(SKILL_MAP)) {
+    if (combined.includes(keyword) && !extractedSkills.includes(skill)) {
+      extractedSkills.push(skill);
+    }
+  }
+
+  const gaps = VISION_SKILLS.filter(vs => !extractedSkills.includes(vs));
+
+  // Store for Syrka link
+  window.syrkaCourseData = { ...window.syrkaCourseData, extractedSkills, gaps };
+
+  // Build session recommendations
+  const recommendations = [];
+  for (const mod of modules) {
+    if (recommendations.length >= 3) break;
+    const modLower = mod.toLowerCase();
+    for (const gap of gaps) {
+      if (recommendations.length >= 3) break;
+      const gapKeywords = gap.toLowerCase().split(' ');
+      const hasRelevance = gapKeywords.some(k => modLower.includes(k)) ||
+        Object.entries(SKILL_MAP).some(([kw, sk]) => sk !== gap && modLower.includes(kw));
+      if (hasRelevance) {
+        recommendations.push({ module: mod, gap });
+        break;
+      }
+    }
+  }
+
+  // Build results HTML
+  const courseParams = new URLSearchParams({
+    course: encodeURIComponent(courseName),
+    skills: encodeURIComponent(extractedSkills.join(',')),
+    gaps: encodeURIComponent(gaps.join(',')),
+    source: 'moodle-extension'
+  });
+  const syrkaUrl = `https://syrka.co/saudi/student?${courseParams.toString()}`;
+
+  let html = `
+    <div style="margin-top: 12px;">
+      <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: #919191; margin-bottom: 8px;">
+        COURSE SKILLS DETECTED
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px;">
+        ${extractedSkills.map(s => `<span style="font-size: 10px; padding: 2px 8px; background: #272A2D; color: #C6C6C6; border: 1px solid rgba(71,71,71,0.3);">${s}</span>`).join('')}
+        ${extractedSkills.length === 0 ? '<span style="font-size: 11px; color: #666;">No skills detected from modules</span>' : ''}
+      </div>
+
+      <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: #919191; margin-bottom: 8px;">
+        SKILL GAPS (vs Vision 2030)
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px;">
+        ${gaps.slice(0, 6).map(g => `<span style="font-size: 10px; padding: 2px 8px; border: 1px solid rgba(244,67,54,0.4); color: #F44336;">${g}</span>`).join('')}
+      </div>`;
+
+  if (recommendations.length > 0) {
+    html += `
+      <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: #919191; margin-bottom: 8px;">
+        SESSION RECOMMENDATIONS
+      </p>
+      <div style="margin-bottom: 16px;">
+        ${recommendations.map(r =>
+          `<div style="font-size: 11px; color: #C9D1D9; padding: 4px 0; border-bottom: 1px solid rgba(71,71,71,0.15);">→ ${r.module} — develop ${r.gap}</div>`
+        ).join('')}
+      </div>`;
+  }
+
+  html += `
+      <a href="${syrkaUrl}" target="_blank"
+         style="display: block; text-align: center; padding: 10px; background: #FFFFFF; color: #111417;
+                font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-decoration: none;
+                text-transform: uppercase; margin-top: 8px; cursor: pointer;">
+        OPEN IN SYRKA →
+      </a>
+    </div>`;
+
+  const container = document.getElementById('course-section');
+  let resultsDiv = document.getElementById('skills-analysis-results');
+  if (!resultsDiv) {
+    resultsDiv = document.createElement('div');
+    resultsDiv.id = 'skills-analysis-results';
+    container.appendChild(resultsDiv);
+  }
+  resultsDiv.innerHTML = html;
+
+  btn.textContent = 'Analysis Complete';
 });
 
-document.getElementById('evolve-course-btn').addEventListener('click', async () => {
+// Evolve to AI-Native — inline, no fetch
+document.getElementById('evolve-course-btn').addEventListener('click', () => {
   const btn = document.getElementById('evolve-course-btn');
   btn.disabled = true;
-  btn.textContent = 'Evolving...';
-
-  try {
-    const response = await fetch('http://localhost:3000/api/extension/evolve', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        courseName: state.data.courseName,
-        modules: state.data.modules
-      })
-    });
-
-    const result = await response.json();
-    if (result.success) {
-      const evo = result.evolution;
-      document.getElementById('evolution-display').classList.remove('hidden');
-
-      const readingList = document.getElementById('reading-list');
-      readingList.innerHTML = '';
-      evo.readingList.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = item;
-        readingList.appendChild(li);
-      });
-
-      document.getElementById('evo-assignment').textContent = evo.assignment;
-      document.getElementById('evo-path').textContent = evo.adaptivePath;
-    } else {
-      alert('Evolution failed: ' + (result.error || 'Unknown error'));
-    }
-  } catch (err) {
-    console.error('Evolution error:', err);
-    alert('Failed to connect to evolution API.');
-  } finally {
+  btn.textContent = 'Not available offline';
+  setTimeout(() => {
     btn.disabled = false;
     btn.textContent = 'Evolve to AI-Native';
-  }
+  }, 2000);
 });
 
+// Add to Syrka Pipeline — chrome.storage, no fetch
 document.getElementById('add-pipeline-btn').addEventListener('click', () => {
-  ingestData();
-});
+  const btn = document.getElementById('add-pipeline-btn');
+  const jobData = state.data || {};
 
-document.getElementById('gen-app-btn').addEventListener('click', () => {
-  const params = new URLSearchParams({
-    jobTitle: state.data.title,
-    company: state.data.company,
-    description: state.data.description
-  });
-  window.open(`https://syrka.co/student?${params.toString()}`, '_blank');
-});
-
-async function ingestData() {
-  const API_ENDPOINT = 'http://localhost:3000/api/extension/ingest'; // Should be configurable
-
-  try {
-    const response = await fetch(API_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: state.type,
-        country: 'uk', // Default for now
-        data: state.data,
-        studentId: state.studentId
-      })
-    });
-
-    const result = await response.json();
-    if (result.success) {
-      alert('Data successfully added to Syrka!');
-    } else {
-      alert('Error: ' + (result.error || 'Failed to ingest data'));
+  chrome.storage.local.set({
+    syrka_pipeline: {
+      title: jobData.title,
+      company: jobData.company,
+      skills: jobData.skills,
+      description: (jobData.description || '').substring(0, 500),
+      score: jobData.score,
+      addedAt: new Date().toISOString(),
+      sourceUrl: window.location.href
     }
-  } catch (err) {
-    console.error('Ingest failed:', err);
-    alert('Failed to connect to Syrka backend. Is it running?');
-  }
-}
+  });
+
+  btn.textContent = '✓ ADDED TO PIPELINE';
+  btn.disabled = true;
+});
+
+// Generate Application — open Syrka student page with params, no fetch
+document.getElementById('gen-app-btn').addEventListener('click', () => {
+  const jobData = state.data || {};
+  const params = new URLSearchParams({
+    jobTitle: encodeURIComponent(jobData.title || ''),
+    company: encodeURIComponent(jobData.company || ''),
+    skills: encodeURIComponent((jobData.skills || []).join(',')),
+    source: 'extension'
+  });
+  const url = `https://syrka.co/saudi/student?${params.toString()}`;
+  window.open(url, '_blank');
+});

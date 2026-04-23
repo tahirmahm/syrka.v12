@@ -9,7 +9,6 @@
 
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // Styles for the host and shadow
   const style = document.createElement('style');
   style.textContent = `
     #syrka-panel-container {
@@ -74,47 +73,116 @@
     container.classList.toggle('open');
   }
 
-  // --- 2. Data Extraction ---
-  function extractIntel() {
+  // --- 2. Page Type Detection ---
+  function detectPageType() {
+    const hostname = window.location.hostname;
     const url = window.location.href;
 
-    // Moodle Detection
-    if (url.includes('/moodle/') || url.includes('/course/') || url.includes('/mod/')) {
-      return {
-        type: 'course',
-        data: {
-          courseName: document.querySelector('.page-header-headings h1')?.innerText || document.title,
-          modules: Array.from(document.querySelectorAll('.sectionname')).map(el => el.innerText.trim()),
-          assignments: Array.from(document.querySelectorAll('.modtype_assign')).map(el => ({
-            name: el.querySelector('.instancename')?.innerText.replace('Assignment', '').trim(),
-            dueDate: 'N/A' // Harder to get from list view, but could be scraped if present
-          }))
-        }
-      };
-    }
+    if (hostname.includes('linkedin.com') && url.includes('/jobs/')) return 'job';
+    if (hostname.includes('indeed.com')) return 'job';
+    if (hostname.includes('glassdoor.com')) return 'job';
+    if (hostname.includes('seek.com')) return 'job';
+    if (url.includes('/jobs/')) return 'job';
 
-    // Job Detection
-    const jobPatterns = ['linkedin.com/jobs', 'indeed.com', 'glassdoor.com', 'seek.com', '/jobs/'];
-    if (jobPatterns.some(p => url.includes(p))) {
-      // Very basic generic extraction, should be tailored per site in real use
-      return {
-        type: 'job',
-        data: {
-          title: document.querySelector('h1')?.innerText || 'Unknown Role',
-          company: document.querySelector('.job-details-company-name')?.innerText ||
-                   document.querySelector('[class*="company"]')?.innerText || 'Unknown Company',
-          salary: null, // Scraper specific needed
-          skills: Array.from(document.body.innerText.matchAll(/[A-Z][a-z]+ (Engineer|Developer|Manager|Analyst)/g)).map(m => m[0]).slice(0, 5),
-          description: document.body.innerText.substring(0, 1000),
-          workType: url.includes('remote') ? 'Remote' : 'Onsite'
-        }
-      };
-    }
+    if (url.includes('/moodle/') || url.includes('/course/') || url.includes('/mod/')) return 'course';
 
-    return { type: 'none', data: {} };
+    return 'none';
   }
 
-  // --- 3. Communication ---
+  // --- 3. Data Extraction ---
+  function extractJobData() {
+    const tryExtract = (attempts) => {
+      if (attempts <= 0) return fallbackExtract();
+
+      const title =
+        document.querySelector('.job-details-jobs-unified-top-card__job-title')?.innerText?.trim() ||
+        document.querySelector('h1.t-24')?.innerText?.trim() ||
+        document.querySelector('h1')?.innerText?.trim() ||
+        'Unknown Role';
+
+      const company =
+        document.querySelector('.job-details-jobs-unified-top-card__company-name a')?.innerText?.trim() ||
+        document.querySelector('.topcard__org-name-link')?.innerText?.trim() ||
+        document.querySelector('[data-tracking-control-name="public_jobs_topcard-org-name"]')?.innerText?.trim() ||
+        'Unknown Company';
+
+      const salary =
+        document.querySelector('.compensation__salary')?.innerText?.trim() ||
+        document.querySelector('[class*="salary"]')?.innerText?.trim() ||
+        'Not specified';
+
+      const descriptionEl =
+        document.querySelector('.jobs-description__content .jobs-box__html-content') ||
+        document.querySelector('.jobs-description') ||
+        document.querySelector('[class*="description"]');
+
+      const description = descriptionEl?.innerText?.trim() || '';
+
+      if (title === 'Unknown Role' && company === 'Unknown Company') {
+        setTimeout(() => tryExtract(attempts - 1), 800);
+        return;
+      }
+
+      const SKILL_KEYWORDS = [
+        'Python','JavaScript','TypeScript','React','Node.js','SQL','Excel',
+        'PowerPoint','leadership','communication','analysis','management',
+        'research','strategy','economics','finance','data','machine learning',
+        'AI','policy','stakeholder','project management','Tableau','Power BI',
+        'Java','C++','AWS','Azure','GCP','Docker','Kubernetes','Figma',
+        'marketing','sales','operations','consulting','investment','banking'
+      ];
+
+      const skills = SKILL_KEYWORDS.filter(s =>
+        description.toLowerCase().includes(s.toLowerCase())
+      );
+
+      const skillMatchScore = Math.min(skills.length * 8, 40);
+      const hasVisionRole = ['AI','data','analysis','policy','research','strategy']
+        .some(k => title.toLowerCase().includes(k) || description.toLowerCase().includes(k));
+      const visionScore = hasVisionRole ? 30 : 10;
+      const totalScore = skillMatchScore + visionScore + 20;
+      const grade = totalScore >= 85 ? 'A' : totalScore >= 70 ? 'B' :
+                    totalScore >= 55 ? 'C' : totalScore >= 40 ? 'D' : 'F';
+
+      window.syrkaJobData = { title, company, salary, skills, description, score: totalScore, grade };
+      sendIntel({ type: 'job', data: window.syrkaJobData });
+    };
+
+    tryExtract(5);
+  }
+
+  function fallbackExtract() {
+    window.syrkaJobData = {
+      title: document.title.replace(' | LinkedIn', '').trim(),
+      company: 'See page',
+      salary: 'Not specified',
+      skills: [],
+      description: '',
+      score: 0,
+      grade: 'N/A'
+    };
+    sendIntel({ type: 'job', data: window.syrkaJobData });
+  }
+
+  function extractCourseData() {
+    return {
+      type: 'course',
+      data: {
+        courseName: document.querySelector('.page-header-headings h1')?.innerText || document.title,
+        modules: Array.from(document.querySelectorAll('.sectionname')).map(el => el.innerText.trim()),
+        assignments: Array.from(document.querySelectorAll('.modtype_assign')).map(el => ({
+          name: el.querySelector('.instancename')?.innerText.replace('Assignment', '').trim(),
+          dueDate: 'N/A'
+        }))
+      }
+    };
+  }
+
+  function sendIntel(intel) {
+    iframe.contentWindow.postMessage({ type: 'PAGE_INTEL', intel }, '*');
+  }
+
+  // --- 4. Communication ---
   window.addEventListener('message', (event) => {
     if (event.data.action === 'closePanel') {
       container.classList.remove('open');
@@ -125,10 +193,17 @@
     if (msg.action === 'togglePanel') togglePanel();
   });
 
-  // Send intel to panel once it's loaded
   iframe.onload = () => {
-    const intel = extractIntel();
-    iframe.contentWindow.postMessage({ type: 'PAGE_INTEL', intel }, '*');
+    const pageType = detectPageType();
+
+    if (pageType === 'job') {
+      setTimeout(extractJobData, 1200);
+    } else if (pageType === 'course') {
+      const intel = extractCourseData();
+      sendIntel(intel);
+    } else {
+      sendIntel({ type: 'none', data: {} });
+    }
   };
 
 })();
