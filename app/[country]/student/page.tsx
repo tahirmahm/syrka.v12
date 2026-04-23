@@ -64,7 +64,26 @@ interface CareerMatch {
   certifications: Certification[]
 }
 
-type Step = 1 | 2 | 3 | 4
+interface OfferEvaluation {
+  dimensions: Array<{ name: string; score: number; weight: number; rationale: string }>
+  overall_score: number
+  grade: string
+  verdict: string
+  negotiation_points: string[]
+  key_risk: string
+}
+
+interface CvBrief {
+  headline: string
+  skills_to_highlight: string[]
+  skills_to_downplay: string[]
+  cover_letter_opening: string
+  ats_keywords: string[]
+  accomplishment_reframes: string[]
+  vision_alignment_statement: string
+}
+
+type Step = 1 | 2 | 3 | 4 | 5
 
 export default function StudentDashboard() {
   const params = useParams()
@@ -85,7 +104,16 @@ export default function StudentDashboard() {
   const [dragOver, setDragOver] = useState(false)
   const [error, setError] = useState('')
 
-  const progressPct = (step / 4) * 100
+  const [offerJobTitle, setOfferJobTitle] = useState('')
+  const [offerCompany, setOfferCompany] = useState('')
+  const [offerDescription, setOfferDescription] = useState('')
+  const [offerSalary, setOfferSalary] = useState('')
+  const [offerCurrency, setOfferCurrency] = useState('USD')
+  const [offerEval, setOfferEval] = useState<OfferEvaluation | null>(null)
+  const [cvBrief, setCvBrief] = useState<CvBrief | null>(null)
+  const [copiedField, setCopiedField] = useState('')
+
+  const progressPct = (step / 5) * 100
 
   function toggleSkill(skill: string) {
     setConfirmedSkills(prev => {
@@ -189,10 +217,77 @@ export default function StudentDashboard() {
     if (dropped && dropped.size <= 5 * 1024 * 1024) setFile(dropped)
   }
 
+  async function handleEvaluateOffer() {
+    if (!offerJobTitle) return
+    setLoading(true)
+    setLoadingMsg('Evaluating your offer...')
+    try {
+      const res = await fetch('/api/students/evaluate-offer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobTitle: offerJobTitle,
+          company: offerCompany,
+          description: offerDescription,
+          salaryOffered: offerSalary,
+          salaryCurrency: offerCurrency,
+          country,
+          studentSkills: Array.from(confirmedSkills),
+        }),
+      })
+      const data = await res.json()
+      if (data.error) {
+        setError(data.error)
+      } else {
+        setOfferEval(data)
+      }
+    } catch {
+      setError('Could not evaluate offer — please try again.')
+    }
+    setLoading(false)
+  }
+
+  async function handleGenerateBrief() {
+    if (!offerJobTitle) return
+    setLoading(true)
+    setLoadingMsg('Generating your CV brief...')
+    try {
+      const res = await fetch('/api/students/generate-cv-brief', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobTitle: offerJobTitle,
+          company: offerCompany,
+          description: offerDescription,
+          studentSkills: Array.from(confirmedSkills),
+          studentSummary: editedSummary,
+          country,
+        }),
+      })
+      const data = await res.json()
+      if (data.error) {
+        setError(data.error)
+      } else {
+        setCvBrief(data)
+      }
+    } catch {
+      setError('Could not generate brief — please try again.')
+    }
+    setLoading(false)
+  }
+
+  function copyField(text: string, label: string) {
+    navigator.clipboard.writeText(text)
+    setCopiedField(label)
+    setTimeout(() => setCopiedField(''), 2000)
+  }
+
   function reset() {
     setStep(1); setFile(null); setContext(''); setProfile(null)
     setEditedSummary(''); setConfirmedSkills(new Set()); setCareerMatches([])
     setIdentityStatement(''); setExpandedCareer(null); setError('')
+    setOfferEval(null); setCvBrief(null); setOfferJobTitle(''); setOfferCompany('')
+    setOfferDescription(''); setOfferSalary(''); setOfferCurrency('USD')
   }
 
   return (
@@ -219,7 +314,7 @@ export default function StudentDashboard() {
                     style={{ width: `${progressPct}%` }} />
                 </div>
                 <p className="font-label text-label-sm uppercase tracking-widest text-outline mt-3">
-                  Step {step} of 4
+                  Step {step} of 5
                 </p>
               </div>
 
@@ -683,6 +778,302 @@ export default function StudentDashboard() {
                       </div>
                     )
                   })()}
+
+                  <div className="mt-10 border-t border-surface-container pt-8">
+                    <button onClick={() => { setOfferJobTitle(careerMatches[0]?.title || ''); setStep(5) }}
+                      className="btn-primary w-full">
+                      Evaluate a job offer →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* ── STEP 5: Job Pipeline ── */}
+              {step === 5 && (
+                <div>
+                  <h1 className="font-headline text-display-sm font-bold tracking-tighter text-primary">
+                    Job Pipeline
+                  </h1>
+                  <p className="font-body text-on-surface-variant text-lg mt-4">
+                    Evaluate an offer and generate a tailored CV brief.
+                  </p>
+
+                  {/* Offer form */}
+                  <div className="mt-8 space-y-4">
+                    <div>
+                      <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Job Title</label>
+                      <input type="text" value={offerJobTitle} onChange={e => setOfferJobTitle(e.target.value)}
+                        placeholder="e.g. AI Engineer"
+                        className="w-full bg-surface-container-low text-on-surface font-body text-sm px-4 py-3 placeholder-outline focus:outline-none"
+                        style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }} />
+                    </div>
+                    <div>
+                      <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Company</label>
+                      <input type="text" value={offerCompany} onChange={e => setOfferCompany(e.target.value)}
+                        placeholder="e.g. NEOM"
+                        className="w-full bg-surface-container-low text-on-surface font-body text-sm px-4 py-3 placeholder-outline focus:outline-none"
+                        style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }} />
+                    </div>
+                    <div>
+                      <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Job Description <span className="text-outline normal-case tracking-normal">(optional)</span></label>
+                      <textarea value={offerDescription} onChange={e => setOfferDescription(e.target.value)} rows={3}
+                        placeholder="Paste the job description or key requirements..."
+                        className="w-full bg-surface-container-low text-on-surface font-body text-sm px-4 py-3 placeholder-outline focus:outline-none resize-none"
+                        style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Salary Offered</label>
+                        <input type="text" value={offerSalary} onChange={e => setOfferSalary(e.target.value)}
+                          placeholder="e.g. 85000"
+                          className="w-full bg-surface-container-low text-on-surface font-body text-sm px-4 py-3 placeholder-outline focus:outline-none"
+                          style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }} />
+                      </div>
+                      <div>
+                        <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Currency</label>
+                        <select value={offerCurrency} onChange={e => setOfferCurrency(e.target.value)}
+                          className="w-full bg-surface-container-low text-on-surface font-body text-sm px-4 py-3 focus:outline-none appearance-none"
+                          style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }}>
+                          <option value="SAR">SAR</option>
+                          <option value="EUR">EUR</option>
+                          <option value="GBP">GBP</option>
+                          <option value="USD">USD</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {error && <p className="font-body text-sm text-error">{error}</p>}
+
+                    <div className="flex gap-3 pt-2">
+                      <button onClick={handleEvaluateOffer} disabled={!offerJobTitle}
+                        className="btn-primary flex-1 disabled:opacity-30">
+                        Evaluate Offer
+                      </button>
+                      <button onClick={handleGenerateBrief} disabled={!offerJobTitle}
+                        className="btn-ghost flex-1 disabled:opacity-30">
+                        Generate CV Brief
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Offer evaluation results */}
+                  {offerEval && (
+                    <div className="mt-10 border-t border-surface-container pt-8">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Offer Grade</p>
+                          <h2 className="font-headline text-headline-lg font-bold text-primary">
+                            {offerJobTitle} at {offerCompany || 'Company'}
+                          </h2>
+                        </div>
+                        <div className="shrink-0 w-16 h-16 flex items-center justify-center ghost-border"
+                          style={{
+                            backgroundColor: offerEval.grade.startsWith('A') ? 'rgba(76,175,80,0.15)'
+                              : offerEval.grade.startsWith('B') ? 'rgba(33,150,243,0.15)'
+                              : offerEval.grade.startsWith('C') ? 'rgba(255,193,7,0.15)'
+                              : 'rgba(244,67,54,0.15)',
+                          }}>
+                          <span className="font-headline text-2xl font-bold"
+                            style={{
+                              color: offerEval.grade.startsWith('A') ? '#4CAF50'
+                                : offerEval.grade.startsWith('B') ? '#2196F3'
+                                : offerEval.grade.startsWith('C') ? '#FFC107'
+                                : '#F44336',
+                            }}>
+                            {offerEval.grade}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4 mb-6">
+                        <span className="font-headline text-4xl font-bold text-primary tabular-nums">{offerEval.overall_score}</span>
+                        <span className="font-label text-label-sm uppercase tracking-widest text-outline">/100 weighted score</span>
+                      </div>
+
+                      <p className="font-body text-on-surface-variant leading-relaxed mb-6">{offerEval.verdict}</p>
+
+                      {/* Dimension breakdown */}
+                      <div className="space-y-3 mb-8">
+                        <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant">Dimension Breakdown</p>
+                        {offerEval.dimensions.map(d => (
+                          <div key={d.name} className="bg-surface-container-low p-4 ghost-border">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-label text-xs uppercase tracking-wider text-on-surface-variant">{d.name}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-label text-xs text-outline">{d.weight}%w</span>
+                                <span className="font-headline font-bold text-primary tabular-nums">{d.score}</span>
+                              </div>
+                            </div>
+                            <div className="h-px bg-surface-container-high overflow-hidden mb-2">
+                              <div className="h-full bg-primary transition-all duration-700"
+                                style={{ width: `${d.score}%` }} />
+                            </div>
+                            <p className="font-body text-xs text-outline">{d.rationale}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Negotiation points */}
+                      {offerEval.negotiation_points?.length > 0 && (
+                        <div className="mb-6">
+                          <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-3">Negotiation Points</p>
+                          <div className="space-y-2">
+                            {offerEval.negotiation_points.map((point, i) => (
+                              <div key={i} className="flex gap-3 p-3 bg-surface-container">
+                                <span className="font-headline font-bold text-primary shrink-0">{i + 1}.</span>
+                                <p className="font-body text-sm text-on-surface-variant">{point}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Key risk */}
+                      {offerEval.key_risk && (
+                        <div className="p-4 bg-surface-container ghost-border" style={{ borderLeftColor: 'rgba(244,67,54,0.5)', borderLeftWidth: 2 }}>
+                          <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Key Risk</p>
+                          <p className="font-body text-sm text-on-surface-variant">{offerEval.key_risk}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* CV Brief results */}
+                  {cvBrief && (
+                    <div className="mt-10 border-t border-surface-container pt-8">
+                      <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">CV Brief</p>
+                      <h2 className="font-headline text-headline-lg font-bold text-primary mb-6">
+                        Tailored for {offerJobTitle}
+                      </h2>
+
+                      {/* Headline */}
+                      <div className="mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant">Professional Headline</p>
+                          <button onClick={() => copyField(cvBrief.headline, 'headline')}
+                            className="font-label text-label-sm uppercase tracking-widest text-outline hover:text-primary transition-colors"
+                            style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                            {copiedField === 'headline' ? 'Copied' : 'Copy'}
+                          </button>
+                        </div>
+                        <p className="font-headline font-bold text-primary text-lg">{cvBrief.headline}</p>
+                      </div>
+
+                      {/* Skills to highlight */}
+                      {cvBrief.skills_to_highlight?.length > 0 && (
+                        <div className="mb-6">
+                          <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-3">Skills to Highlight</p>
+                          <div className="flex flex-wrap gap-2">
+                            {cvBrief.skills_to_highlight.map(s => (
+                              <span key={s} className="font-label text-xs px-3 py-1.5 uppercase tracking-wider bg-surface-container-highest text-primary">
+                                {s}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Skills to downplay */}
+                      {cvBrief.skills_to_downplay?.length > 0 && (
+                        <div className="mb-6">
+                          <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-3">Skills to Downplay</p>
+                          <div className="flex flex-wrap gap-2">
+                            {cvBrief.skills_to_downplay.map(s => (
+                              <span key={s} className="font-label text-xs px-3 py-1.5 uppercase tracking-wider text-outline line-through"
+                                style={{ border: '1px solid rgba(71,71,71,0.4)' }}>
+                                {s}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Cover letter opening */}
+                      {cvBrief.cover_letter_opening && (
+                        <div className="mb-6">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant">Cover Letter Opening</p>
+                            <button onClick={() => copyField(cvBrief.cover_letter_opening, 'cover')}
+                              className="font-label text-label-sm uppercase tracking-widest text-outline hover:text-primary transition-colors"
+                              style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                              {copiedField === 'cover' ? 'Copied' : 'Copy'}
+                            </button>
+                          </div>
+                          <blockquote className="p-4 bg-surface-container-low italic font-body text-sm leading-relaxed text-on-surface-variant"
+                            style={{ borderLeft: '2px solid #FFFFFF' }}>
+                            {cvBrief.cover_letter_opening}
+                          </blockquote>
+                        </div>
+                      )}
+
+                      {/* ATS keywords */}
+                      {cvBrief.ats_keywords?.length > 0 && (
+                        <div className="mb-6">
+                          <div className="flex items-center justify-between mb-3">
+                            <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant">ATS Keywords</p>
+                            <button onClick={() => copyField(cvBrief.ats_keywords.join(', '), 'ats')}
+                              className="font-label text-label-sm uppercase tracking-widest text-outline hover:text-primary transition-colors"
+                              style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                              {copiedField === 'ats' ? 'Copied' : 'Copy all'}
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {cvBrief.ats_keywords.map(k => (
+                              <span key={k} className="data-chip">{k}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Accomplishment reframes */}
+                      {cvBrief.accomplishment_reframes?.length > 0 && (
+                        <div className="mb-6">
+                          <div className="flex items-center justify-between mb-3">
+                            <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant">Accomplishment Reframes</p>
+                            <button onClick={() => copyField(cvBrief.accomplishment_reframes.join('\n'), 'reframes')}
+                              className="font-label text-label-sm uppercase tracking-widest text-outline hover:text-primary transition-colors"
+                              style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                              {copiedField === 'reframes' ? 'Copied' : 'Copy all'}
+                            </button>
+                          </div>
+                          <div className="space-y-2">
+                            {cvBrief.accomplishment_reframes.map((r, i) => (
+                              <div key={i} className="p-3 bg-surface-container-low ghost-border">
+                                <p className="font-body text-sm text-on-surface-variant leading-relaxed">{r}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Vision alignment */}
+                      {cvBrief.vision_alignment_statement && (
+                        <div className="mb-6">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant">Vision Alignment</p>
+                            <button onClick={() => copyField(cvBrief.vision_alignment_statement, 'vision')}
+                              className="font-label text-label-sm uppercase tracking-widest text-outline hover:text-primary transition-colors"
+                              style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                              {copiedField === 'vision' ? 'Copied' : 'Copy'}
+                            </button>
+                          </div>
+                          <p className="font-body text-sm text-primary leading-relaxed p-4 bg-surface-container-low"
+                            style={{ borderLeft: '2px solid #FFFFFF' }}>
+                            {cvBrief.vision_alignment_statement}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 mt-10">
+                    <button onClick={() => setStep(4)} className="btn-ghost px-5 py-2.5 text-sm">
+                      ← Back
+                    </button>
+                    <button onClick={reset} className="btn-ghost flex-1">
+                      Start again
+                    </button>
+                  </div>
                 </div>
               )}
             </>
