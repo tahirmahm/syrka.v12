@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Shell from '@/components/Shell'
+import { supabase } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 
 const EMPLOYERS: Record<string, Record<string, string[]>> = {
   saudi: {
@@ -104,6 +106,32 @@ export default function StudentDashboard() {
   const [dragOver, setDragOver] = useState(false)
   const [error, setError] = useState('')
 
+  const [user, setUser] = useState<User | null>(null)
+  const [userProfile, setUserProfile] = useState<Record<string, unknown> | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (data.user) {
+        setUser(data.user)
+        const { data: prof } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single()
+        if (prof) {
+          setUserProfile(prof)
+          if (prof.resume_parsed && typeof prof.resume_parsed === 'object' && Object.keys(prof.resume_parsed).length > 0) {
+            setProfile(prof.resume_parsed as Profile)
+            setEditedSummary((prof.resume_parsed as Profile).summary || '')
+            const skills = (prof.extracted_skills as string[]) || []
+            setConfirmedSkills(new Set(skills))
+            setStep(3)
+          }
+        }
+      }
+    })
+  }, [])
+
   const [offerJobTitle, setOfferJobTitle] = useState('')
   const [offerCompany, setOfferCompany] = useState('')
   const [offerDescription, setOfferDescription] = useState('')
@@ -147,6 +175,14 @@ export default function StudentDashboard() {
       const allSkills = new Set([...p.explicit_skills, ...p.inferred_skills])
       setConfirmedSkills(allSkills)
       setStep(2)
+      if (user) {
+        supabase.from('user_profiles').upsert({
+          id: user.id,
+          resume_parsed: p,
+          extracted_skills: [...allSkills],
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' }).catch(() => {})
+      }
     } catch {
       setError('Something went wrong — please try again.')
     }
@@ -307,6 +343,38 @@ export default function StudentDashboard() {
             </div>
           ) : (
             <>
+              {/* Profile status bar */}
+              {user && (
+                <div className="bg-surface-container-low ghost-border p-4 mb-6 flex items-center justify-between mt-8">
+                  <div className="flex items-center gap-4">
+                    {user.user_metadata?.avatar_url && (
+                      <img src={user.user_metadata.avatar_url}
+                           className="w-8 h-8" style={{ borderRadius: 0 }} alt="" />
+                    )}
+                    <div>
+                      <div className="font-headline text-sm font-bold text-primary">
+                        {user.user_metadata?.full_name}
+                      </div>
+                      <div className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant">
+                        {userProfile?.resume_parsed && typeof userProfile.resume_parsed === 'object' && Object.keys(userProfile.resume_parsed).length > 0
+                          ? '● Profile synced' : '○ Upload resume to build profile'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    {userProfile?.linkedin_url && (
+                      <a href={userProfile.linkedin_url as string} target="_blank" rel="noopener noreferrer"
+                         className="btn-ghost text-xs py-1 px-3" style={{ textDecoration: 'none' }}>LinkedIn &#8599;</a>
+                    )}
+                    {userProfile?.github_username && (
+                      <a href={`https://github.com/${userProfile.github_username}`}
+                         target="_blank" rel="noopener noreferrer"
+                         className="btn-ghost text-xs py-1 px-3" style={{ textDecoration: 'none' }}>GitHub &#8599;</a>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Progress */}
               <div className="pt-8 mb-10">
                 <div className="h-px bg-surface-container-high overflow-hidden">
