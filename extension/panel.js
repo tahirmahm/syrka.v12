@@ -296,25 +296,72 @@ document.getElementById('evolve-course-btn').addEventListener('click', () => {
   }, 2000);
 });
 
-// Add to Syrka Pipeline — chrome.storage, no fetch
-document.getElementById('add-pipeline-btn').addEventListener('click', () => {
+// Add to Syrka Pipeline — sync to server, fall back to local
+document.getElementById('add-pipeline-btn').addEventListener('click', async () => {
   const btn = document.getElementById('add-pipeline-btn');
+  btn.disabled = true;
+  btn.textContent = 'Syncing...';
   const jobData = state.data || {};
 
-  chrome.storage.local.set({
-    syrka_pipeline: {
-      title: jobData.title,
-      company: jobData.company,
-      skills: jobData.skills,
-      description: (jobData.description || '').substring(0, 500),
-      score: jobData.score,
-      addedAt: new Date().toISOString(),
-      sourceUrl: window.location.href
-    }
-  });
+  let serverResponse = null;
+  const { syrka_token } = await chrome.storage.local.get(['syrka_token']);
+  if (syrka_token) {
+    try {
+      const res = await fetch('https://syrka.co/api/extension/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${syrka_token}`
+        },
+        body: JSON.stringify({
+          type: 'job',
+          data: {
+            ...jobData,
+            description: (jobData.description || '').substring(0, 2000),
+            sourceUrl: window.location.href
+          }
+        })
+      });
+      serverResponse = await res.json();
+    } catch {}
+  }
 
-  btn.textContent = '✓ ADDED TO PIPELINE';
-  btn.disabled = true;
+  // Always save locally too
+  const stored = await chrome.storage.local.get(['syrka_pipeline']);
+  const pipelineArr = Array.isArray(stored.syrka_pipeline) ? stored.syrka_pipeline : [];
+  pipelineArr.push({
+    title: jobData.title,
+    company: jobData.company,
+    skills: jobData.skills,
+    score: jobData.score,
+    grade: jobData.grade,
+    addedAt: new Date().toISOString(),
+    sourceUrl: window.location.href,
+    synced: !!serverResponse?.success
+  });
+  await chrome.storage.local.set({ syrka_pipeline: pipelineArr });
+
+  btn.textContent = serverResponse?.success ? '✓ SYNCED TO SYRKA' : '✓ SAVED LOCALLY';
+
+  // Show rejection pattern warning if returned
+  if (serverResponse?.rejectionPatternWarning) {
+    const { skills } = serverResponse.rejectionPatternWarning;
+    const warningDiv = document.createElement('div');
+    warningDiv.innerHTML = `
+      <div style="padding:10px 14px;background:#2D1116;border-top:1px solid #3D1C1C;margin-top:8px;">
+        <div style="font-size:9px;color:#F85149;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">
+          &#9888; REJECTION PATTERN DETECTED
+        </div>
+        <div style="font-size:10px;color:#C9D1D9;margin-bottom:6px;">
+          Your past rejections flagged these gaps. Work on these before applying:
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;">
+          ${skills.map(s => `<span style="font-size:9px;color:#F85149;background:#2D1116;padding:2px 6px;border:1px solid #3D1C1C;">${s}</span>`).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('job-section').appendChild(warningDiv);
+  }
 });
 
 // Generate Application — open Syrka student page with params, no fetch
