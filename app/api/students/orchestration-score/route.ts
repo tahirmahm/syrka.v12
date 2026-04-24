@@ -34,7 +34,7 @@ function getNextMilestone(score: number): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const { skills, completedModules, aiAssessmentScore, country } = await req.json()
+    const { skills, aiAssessmentScore } = await req.json()
 
     const studentSkills = (skills || []) as string[]
     const lowerSkills = studentSkills.map((s: string) => s.toLowerCase())
