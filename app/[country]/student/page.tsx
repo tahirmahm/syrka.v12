@@ -186,6 +186,21 @@ export default function StudentDashboard() {
   const [adaptivePath, setAdaptivePath] = useState<AdaptivePath | null>(null)
   const [loadingPath, setLoadingPath] = useState(false)
 
+  interface AiDimension { score: number; evidence: string; feedback: string }
+  interface AiAssessment {
+    dimensions: Record<string, AiDimension>
+    overall_ai_literacy_score: number
+    grade: string
+    headline: string
+    what_they_did_well: string[]
+    what_to_develop: string[]
+    vs_human_alone: string
+  }
+  const [submissionText, setSubmissionText] = useState('')
+  const [assignmentBrief, setAssignmentBrief] = useState('')
+  const [aiAssessment, setAiAssessment] = useState<AiAssessment | null>(null)
+  const [loadingAssessment, setLoadingAssessment] = useState(false)
+
   const progressPct = (step / 5) * 100
 
   function toggleSkill(skill: string) {
@@ -392,6 +407,26 @@ export default function StudentDashboard() {
       if (data.week_ranges) setAdaptivePath(data)
     } catch {}
     setLoadingPath(false)
+  }
+
+  async function assessAiUsage() {
+    if (!submissionText) return
+    setLoadingAssessment(true)
+    try {
+      const res = await fetch('/api/students/assess-ai-usage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          submissionText,
+          assignmentBrief,
+          studentSkills: Array.from(confirmedSkills),
+          country,
+        }),
+      })
+      const data = await res.json()
+      if (data.dimensions) setAiAssessment(data)
+    } catch {}
+    setLoadingAssessment(false)
   }
 
   async function fetchJobRecs() {
@@ -1372,6 +1407,102 @@ export default function StudentDashboard() {
                       )}
                     </div>
                   )}
+
+                  {/* AI Usage Assessment */}
+                  <div className="mt-10 border-t border-surface-container pt-8">
+                    <div className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">AI-Native Assessment</div>
+                    <h2 className="font-headline text-2xl font-bold tracking-tighter text-primary mb-4">
+                      AI Usage Assessment
+                    </h2>
+                    <p className="font-body text-sm text-on-surface-variant mb-6">
+                      Measures HOW you collaborate with AI — not whether you used it.
+                    </p>
+
+                    <div className="space-y-4 mb-4">
+                      <div>
+                        <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Paste your assignment submission</label>
+                        <textarea value={submissionText} onChange={e => setSubmissionText(e.target.value)} rows={5}
+                          placeholder="Paste the text of your assignment submission here..."
+                          className="w-full bg-surface-container-low text-on-surface font-body text-sm px-4 py-3 placeholder-outline focus:outline-none resize-none"
+                          style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }} />
+                      </div>
+                      <div>
+                        <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Paste the assignment brief <span className="text-outline normal-case tracking-normal">(optional)</span></label>
+                        <textarea value={assignmentBrief} onChange={e => setAssignmentBrief(e.target.value)} rows={2}
+                          placeholder="What was the assignment asking you to do?"
+                          className="w-full bg-surface-container-low text-on-surface font-body text-sm px-4 py-3 placeholder-outline focus:outline-none resize-none"
+                          style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }} />
+                      </div>
+                    </div>
+
+                    <button onClick={assessAiUsage} disabled={!submissionText || loadingAssessment}
+                      className="btn-primary w-full disabled:opacity-30 mb-6">
+                      {loadingAssessment ? 'Assessing...' : 'Assess My AI Collaboration'}
+                    </button>
+
+                    {aiAssessment && (
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-4">
+                          <div className="shrink-0 w-16 h-16 flex items-center justify-center ghost-border"
+                            style={{
+                              backgroundColor: (aiAssessment.overall_ai_literacy_score >= 70) ? 'rgba(76,175,80,0.15)'
+                                : (aiAssessment.overall_ai_literacy_score >= 50) ? 'rgba(33,150,243,0.15)'
+                                : 'rgba(255,193,7,0.15)',
+                            }}>
+                            <span className="font-headline text-2xl font-bold"
+                              style={{
+                                color: (aiAssessment.overall_ai_literacy_score >= 70) ? '#4CAF50'
+                                  : (aiAssessment.overall_ai_literacy_score >= 50) ? '#2196F3'
+                                  : '#FFC107',
+                              }}>
+                              {aiAssessment.grade}
+                            </span>
+                          </div>
+                          <div>
+                            <div className="font-headline text-3xl font-bold text-primary tabular-nums">{aiAssessment.overall_ai_literacy_score}<span className="text-lg text-on-surface-variant">/100</span></div>
+                            <div className="font-body text-sm text-on-surface-variant">{aiAssessment.headline}</div>
+                          </div>
+                        </div>
+
+                        {/* Dimension bars */}
+                        <div className="space-y-3">
+                          {Object.entries(aiAssessment.dimensions).map(([name, dim]) => (
+                            <div key={name} className="bg-surface-container-low p-4 ghost-border">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="font-label text-xs uppercase tracking-wider text-on-surface-variant">{name}</span>
+                                <span className="font-headline font-bold text-primary tabular-nums">{dim.score}/10</span>
+                              </div>
+                              <div className="h-px bg-surface-container-high overflow-hidden mb-2">
+                                <div className="h-full bg-primary transition-all duration-700" style={{ width: `${dim.score * 10}%` }} />
+                              </div>
+                              <p className="font-body text-xs text-outline">{dim.feedback}</p>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* vs Human Alone */}
+                        <div className="p-4 bg-surface-container ghost-border" style={{ borderLeftColor: 'rgba(33,150,243,0.5)', borderLeftWidth: 2 }}>
+                          <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">AI + Human vs Human Alone</p>
+                          <p className="font-body text-sm text-on-surface-variant">{aiAssessment.vs_human_alone}</p>
+                        </div>
+
+                        {/* What to develop */}
+                        {aiAssessment.what_to_develop?.length > 0 && (
+                          <div>
+                            <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-3">To develop</p>
+                            <div className="space-y-2">
+                              {aiAssessment.what_to_develop.map((item, i) => (
+                                <div key={i} className="flex gap-3 p-3 bg-surface-container">
+                                  <span className="font-headline font-bold text-primary shrink-0">{i + 1}.</span>
+                                  <p className="font-body text-sm text-on-surface-variant">{item}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
                   <div className="flex gap-3 mt-10">
                     <button onClick={() => setStep(4)} className="btn-ghost px-5 py-2.5 text-sm">
