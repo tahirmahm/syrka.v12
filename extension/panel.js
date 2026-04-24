@@ -1,11 +1,89 @@
 const state = {
   type: null,
-  data: null
+  data: null,
+  profile: null
 };
+
+async function loadUserProfile() {
+  const { syrka_token } = await chrome.storage.local.get(['syrka_token']);
+  if (!syrka_token) return null;
+  try {
+    const res = await fetch('https://syrka.co/api/extension/profile', {
+      headers: { 'Authorization': `Bearer ${syrka_token}` }
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch { return null; }
+}
+
+function renderProfileBanner(profile) {
+  const banner = document.getElementById('profile-banner');
+  if (!banner) return;
+
+  if (!profile || !profile.authenticated) {
+    banner.innerHTML = `
+      <div style="padding:10px 14px;border-bottom:1px solid rgba(71,71,71,0.15);
+                  display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:9px;color:#484F58;letter-spacing:1px;text-transform:uppercase;">
+          Not signed in
+        </span>
+        <a href="https://syrka.co/saudi/student" target="_blank"
+           style="font-size:9px;color:#C9D1D9;text-decoration:none;letter-spacing:0.5px;">
+          SIGN IN &rarr;
+        </a>
+      </div>
+    `;
+    return;
+  }
+
+  const signal = profile.weeklySignal;
+  const gaps = profile.topMissingSkills || [];
+
+  banner.innerHTML = `
+    <div style="padding:10px 14px;border-bottom:1px solid rgba(71,71,71,0.15);background:#1D2023;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:11px;font-weight:700;color:#fff;font-family:'Space Grotesk',sans-serif;">
+          ${signal?.week_focus || 'Your Syrka Profile'}
+        </span>
+        <span style="font-size:18px;font-weight:700;color:#fff;font-family:'Space Grotesk',sans-serif;">
+          ${profile.orchestrationScore}<span style="font-size:9px;color:#484F58;">/100</span>
+        </span>
+      </div>
+      ${signal?.skill_to_drop_everything_for ? `
+        <div style="font-size:9px;color:#484F58;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">
+          FOCUS THIS WEEK
+        </div>
+        <div style="font-size:10px;color:#C9D1D9;">
+          ${signal.skill_to_drop_everything_for}
+        </div>
+      ` : ''}
+      ${gaps.length > 0 ? `
+        <div style="font-size:9px;color:#484F58;letter-spacing:1px;text-transform:uppercase;margin-top:8px;margin-bottom:4px;">
+          YOUR TOP GAPS
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;">
+          ${gaps.map(s => `<span style="font-size:9px;color:#F85149;background:#2D1116;padding:2px 6px;border:1px solid #3D1C1C;">&nearr; ${s}</span>`).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+// Load profile on panel open
+loadUserProfile().then(profile => {
+  state.profile = profile;
+  renderProfileBanner(profile);
+});
 
 window.addEventListener('message', (event) => {
   if (event.data.type === 'PAGE_INTEL') {
     updateUI(event.data.intel);
+  }
+  if (event.data.type === 'SYRKA_AUTH') {
+    loadUserProfile().then(profile => {
+      state.profile = profile;
+      renderProfileBanner(profile);
+    });
   }
 });
 
