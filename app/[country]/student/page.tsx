@@ -212,6 +212,9 @@ export default function StudentDashboard() {
   }
   const [cohortPos, setCohortPos] = useState<CohortPosition | null>(null)
 
+  interface OrchScore { score: number; level: string; nextMilestone: string }
+  const [orchScore, setOrchScore] = useState<OrchScore | null>(null)
+
   const progressPct = (step / 5) * 100
 
   function toggleSkill(skill: string) {
@@ -434,9 +437,29 @@ export default function StudentDashboard() {
     } catch {}
   }
 
+  async function fetchOrchestrationScore() {
+    const skills = Array.from(confirmedSkills)
+    if (skills.length === 0) return
+    try {
+      const res = await fetch('/api/students/orchestration-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          skills,
+          completedModules: [],
+          aiAssessmentScore: aiAssessment?.overall_ai_literacy_score || 0,
+          country,
+        }),
+      })
+      const data = await res.json()
+      if (typeof data.score === 'number') setOrchScore(data)
+    } catch {}
+  }
+
   useEffect(() => {
-    if (confirmedSkills.size > 0 && !cohortPos) {
-      fetchCohortPosition()
+    if (confirmedSkills.size > 0) {
+      if (!cohortPos) fetchCohortPosition()
+      fetchOrchestrationScore()
     }
   }, [step])
 
@@ -523,6 +546,31 @@ export default function StudentDashboard() {
                          target="_blank" rel="noopener noreferrer"
                          className="btn-ghost text-xs py-1 px-3" style={{ textDecoration: 'none' }}>GitHub &#8599;</a>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* AI Orchestration Score */}
+              {orchScore && (
+                <div className="mt-8 mb-6 bg-surface-container-low ghost-border p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="font-headline text-3xl font-bold text-primary tabular-nums"
+                      style={{ transition: 'all 1s ease-out' }}>
+                      {orchScore.score}
+                    </div>
+                    <div>
+                      <div className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant">AI Orchestration Score</div>
+                      <span className="font-label text-[9px] uppercase tracking-widest px-2 py-0.5 mt-1 inline-block"
+                        style={{
+                          background: orchScore.score >= 61 ? 'rgba(76,175,80,0.15)' : orchScore.score >= 41 ? 'rgba(33,150,243,0.15)' : 'rgba(255,193,7,0.15)',
+                          color: orchScore.score >= 61 ? '#4CAF50' : orchScore.score >= 41 ? '#2196F3' : '#FFC107',
+                        }}>
+                        {orchScore.level}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right hidden sm:block">
+                    <p className="font-body text-xs text-on-surface-variant">{orchScore.nextMilestone}</p>
                   </div>
                 </div>
               )}
