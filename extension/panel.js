@@ -376,3 +376,109 @@ document.getElementById('gen-app-btn').addEventListener('click', () => {
   const url = `https://syrka.co/saudi/student?${params.toString()}`;
   window.open(url, '_blank');
 });
+
+// Outcome Logger toggle
+document.getElementById('log-outcome-toggle').addEventListener('click', () => {
+  const logger = document.getElementById('syrka-outcome-logger');
+  if (logger.classList.contains('hidden')) {
+    logger.classList.remove('hidden');
+    logger.innerHTML = `
+      <div style="padding:12px 14px;border-top:1px solid rgba(71,71,71,0.15);">
+        <div style="font-size:9px;color:#484F58;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">
+          LOG OUTCOME
+        </div>
+        <select id="syrka-outcome-status" style="width:100%;background:#1D2023;color:#fff;border:1px solid rgba(71,71,71,0.3);padding:6px 8px;font-size:11px;margin-bottom:6px;">
+          <option value="applied">Applied</option>
+          <option value="viewed">Viewed by recruiter</option>
+          <option value="phone_screen">Phone screen</option>
+          <option value="interview">Interview</option>
+          <option value="offer">Offer received</option>
+          <option value="rejected">Rejected</option>
+          <option value="ghosted">Ghosted</option>
+        </select>
+        <input id="syrka-missing-skills" type="text" placeholder="Skills they asked about (comma-separated)"
+               style="width:100%;background:#1D2023;color:#fff;border:1px solid rgba(71,71,71,0.3);padding:6px 8px;font-size:11px;margin-bottom:6px;box-sizing:border-box;"/>
+        <button id="syrka-log-outcome" style="width:100%;background:#fff;color:#111417;padding:8px;font-size:10px;font-weight:700;border:none;cursor:pointer;letter-spacing:1px;text-transform:uppercase;">
+          LOG TO SYRKA
+        </button>
+      </div>
+    `;
+    document.getElementById('syrka-log-outcome').addEventListener('click', submitOutcome);
+  } else {
+    logger.classList.add('hidden');
+    logger.innerHTML = '';
+  }
+});
+
+async function submitOutcome() {
+  const status = document.getElementById('syrka-outcome-status').value;
+  const missingRaw = document.getElementById('syrka-missing-skills').value;
+  const skillsTheyAskedAbout = missingRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+  const { syrka_token, syrka_user_id } = await chrome.storage.local.get(['syrka_token', 'syrka_user_id']);
+
+  if (!syrka_token) {
+    document.getElementById('syrka-outcome-logger').innerHTML = `
+      <div style="padding:12px 14px;text-align:center;">
+        <a href="https://syrka.co/saudi/student" target="_blank"
+           style="font-size:10px;color:#C9D1D9;text-decoration:none;">Sign in to Syrka first &rarr;</a>
+      </div>
+    `;
+    return;
+  }
+
+  const btn = document.getElementById('syrka-log-outcome');
+  btn.disabled = true;
+  btn.textContent = 'Logging...';
+
+  try {
+    const res = await fetch('https://syrka.co/api/students/outcomes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${syrka_token}`
+      },
+      body: JSON.stringify({
+        userId: syrka_user_id,
+        jobTitle: window.syrkaJobData?.title || 'Unknown',
+        company: window.syrkaJobData?.company || 'Unknown',
+        status,
+        skillsTheyAskedAbout,
+        skillsILacked: skillsTheyAskedAbout
+      })
+    });
+
+    const result = await res.json();
+
+    if (result.learningSignal) {
+      const signal = result.learningSignal;
+      document.getElementById('syrka-outcome-logger').innerHTML = `
+        <div style="padding:12px 14px;background:#0D2215;border-top:1px solid #1C3526;">
+          <div style="font-size:9px;color:#3FB950;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">
+            &#10003; LEARNING SIGNAL GENERATED
+          </div>
+          <div style="font-size:11px;font-weight:700;color:#fff;margin-bottom:4px;">
+            ${signal.priority_skill_to_learn || 'Focus updated'}
+          </div>
+          <div style="font-size:10px;color:#C9D1D9;margin-bottom:6px;">
+            ${signal.why || ''}
+          </div>
+          <div style="font-size:9px;color:#484F58;">
+            ${signal.estimated_days_to_competency ? signal.estimated_days_to_competency + ' days to competency' : ''}
+          </div>
+        </div>
+      `;
+    } else {
+      document.getElementById('syrka-outcome-logger').innerHTML = `
+        <div style="padding:12px 14px;background:#0D2215;border-top:1px solid #1C3526;">
+          <div style="font-size:9px;color:#3FB950;letter-spacing:1px;text-transform:uppercase;">
+            &#10003; OUTCOME LOGGED
+          </div>
+        </div>
+      `;
+    }
+  } catch {
+    btn.textContent = 'Failed — try again';
+    btn.disabled = false;
+  }
+}
