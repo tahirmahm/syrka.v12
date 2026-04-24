@@ -103,11 +103,22 @@ function updateUI(intel) {
   }
 }
 
-function showCourse(data) {
+async function showCourse(data) {
   const section = document.getElementById('course-section');
   section.classList.remove('hidden');
 
   document.getElementById('course-name').textContent = data.courseName;
+
+  // Show sync status
+  const { syrka_token } = await chrome.storage.local.get(['syrka_token']);
+  const syncIndicator = document.createElement('div');
+  syncIndicator.style.cssText = 'font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;';
+  if (syrka_token) {
+    syncIndicator.innerHTML = '<span style="color:#3FB950;">&#9679; Synced to Syrka</span>';
+  } else {
+    syncIndicator.innerHTML = '<span style="color:#484F58;">&#9675; Sign in to sync</span>';
+  }
+  section.insertBefore(syncIndicator, section.querySelector('#course-info'));
 
   const moduleList = document.getElementById('module-list');
   moduleList.innerHTML = '';

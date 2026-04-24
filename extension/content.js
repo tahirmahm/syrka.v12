@@ -182,6 +182,32 @@
     iframe.contentWindow.postMessage({ type: 'PAGE_INTEL', intel }, '*');
   }
 
+  // --- Auto-sync Moodle course data to Syrka ---
+  async function autoSyncCourse(courseData) {
+    const { syrka_token } = await chrome.storage.local.get(['syrka_token']);
+    if (!syrka_token) return;
+    try {
+      await fetch('https://syrka.co/api/extension/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${syrka_token}`
+        },
+        body: JSON.stringify({
+          type: 'course',
+          data: {
+            courseName: courseData.courseName,
+            modules: courseData.modules,
+            extractedSkills: courseData.extractedSkills || [],
+            visionAlignment: courseData.visionAlignment || [],
+            skillGaps: courseData.skillGaps || [],
+            sourceUrl: window.location.href
+          }
+        })
+      });
+    } catch {}
+  }
+
   // --- 4. Auth Bridge ---
   window.addEventListener('syrka:auth', (event) => {
     const { token, userId, name, skills, orchestrationScore } = event.detail;
@@ -223,6 +249,7 @@
       setTimeout(extractJobData, 1200);
     } else if (pageType === 'course') {
       const intel = extractCourseData();
+      autoSyncCourse(intel.data);
       sendIntel(intel);
     } else {
       sendIntel({ type: 'none', data: {} });
