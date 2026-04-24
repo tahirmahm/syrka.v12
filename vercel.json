@@ -6,6 +6,7 @@
     {"path": "/api/stats/refresh/unesco", "schedule": "0 5 * * *"},
     {"path": "/api/stats/refresh/wef", "schedule": "0 6 * * *"},
     {"path": "/api/mirofish/ping", "schedule": "0 8 * * *"},
-    {"path": "/api/university/evolve-curriculum", "schedule": "0 1 * * *"}
+    {"path": "/api/university/evolve-curriculum", "schedule": "0 1 * * *"},
+    {"path": "/api/students/weekly-signal", "schedule": "0 7 * * 1"}
   ]
 }
