@@ -201,6 +201,17 @@ export default function StudentDashboard() {
   const [aiAssessment, setAiAssessment] = useState<AiAssessment | null>(null)
   const [loadingAssessment, setLoadingAssessment] = useState(false)
 
+  interface CohortPosition {
+    skillCount: number
+    cohortAverage: number
+    percentileEstimate: number
+    rareSkills: string[]
+    cohortGaps: string[]
+    positioning: string
+    standoutFactor: string
+  }
+  const [cohortPos, setCohortPos] = useState<CohortPosition | null>(null)
+
   const progressPct = (step / 5) * 100
 
   function toggleSkill(skill: string) {
@@ -408,6 +419,26 @@ export default function StudentDashboard() {
     } catch {}
     setLoadingPath(false)
   }
+
+  async function fetchCohortPosition() {
+    const skills = Array.from(confirmedSkills)
+    if (skills.length === 0) return
+    try {
+      const res = await fetch('/api/students/cohort-position', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skills, country }),
+      })
+      const data = await res.json()
+      setCohortPos(data)
+    } catch {}
+  }
+
+  useEffect(() => {
+    if (confirmedSkills.size > 0 && !cohortPos) {
+      fetchCohortPosition()
+    }
+  }, [step])
 
   async function assessAiUsage() {
     if (!submissionText) return
@@ -674,6 +705,43 @@ export default function StudentDashboard() {
                           </span>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Cohort Position */}
+                  {cohortPos && (
+                    <div className="mt-8 bg-surface-container-low ghost-border p-6">
+                      <div className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-3">Your Position</div>
+                      <div className="flex items-end gap-3 mb-4">
+                        <span className="font-headline text-4xl font-bold text-primary tabular-nums">
+                          Top {100 - cohortPos.percentileEstimate}%
+                        </span>
+                        <span className="font-body text-sm text-on-surface-variant pb-1">
+                          of {country === 'saudi' ? 'Saudi' : country === 'uk' ? 'UK' : 'Maltese'} students
+                        </span>
+                      </div>
+                      {cohortPos.rareSkills.length > 0 && (
+                        <div className="mb-3">
+                          <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Rare skills (few peers have these)</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {cohortPos.rareSkills.map(s => (
+                              <span key={s} className="data-chip text-[9px]">{s}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {cohortPos.cohortGaps.length > 0 && (
+                        <div className="mb-3">
+                          <p className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Your cohort mostly lacks</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {cohortPos.cohortGaps.map(g => (
+                              <span key={g} className="font-label text-[9px] px-2.5 py-1 uppercase tracking-wider"
+                                style={{ border: '1px solid rgba(244,67,54,0.4)', color: '#F44336' }}>{g}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      <p className="font-body text-xs text-on-surface-variant italic">{cohortPos.standoutFactor}</p>
                     </div>
                   )}
 
