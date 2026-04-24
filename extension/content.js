@@ -182,7 +182,30 @@
     iframe.contentWindow.postMessage({ type: 'PAGE_INTEL', intel }, '*');
   }
 
-  // --- 4. Communication ---
+  // --- 4. Auth Bridge ---
+  window.addEventListener('syrka:auth', (event) => {
+    const { token, userId, name, skills, orchestrationScore } = event.detail;
+    chrome.storage.local.set({
+      syrka_token: token,
+      syrka_user_id: userId,
+      syrka_user_name: name,
+      syrka_skills: skills,
+      syrka_orchestration_score: orchestrationScore,
+      syrka_authed_at: Date.now()
+    });
+    if (window.syrkaPanelOpen) {
+      iframe.contentWindow.postMessage({ type: 'SYRKA_AUTH', name, orchestrationScore }, '*');
+    }
+  });
+
+  // Tell syrka.co the extension is present
+  if (window.location.hostname.includes('syrka.co') || window.location.hostname === 'localhost') {
+    window.dispatchEvent(new CustomEvent('syrka:extension-present', {
+      detail: { version: '1.0.0' }
+    }));
+  }
+
+  // --- 5. Communication ---
   window.addEventListener('message', (event) => {
     if (event.data.action === 'closePanel') {
       container.classList.remove('open');
