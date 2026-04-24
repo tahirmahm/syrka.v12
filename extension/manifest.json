@@ -5,7 +5,9 @@
   "description": "Course and Job Intelligence for Syrka",
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "alarms",
+    "notifications"
   ],
   "action": {
     "default_popup": "popup.html"
