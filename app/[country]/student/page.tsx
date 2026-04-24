@@ -168,6 +168,24 @@ export default function StudentDashboard() {
   const [jobRecs, setJobRecs] = useState<JobRec[]>([])
   const [loadingRecs, setLoadingRecs] = useState(false)
 
+  interface WeekRange {
+    weeks: string
+    focus: string
+    actions: string[]
+    resources: string[]
+    skills_unlocked: string[]
+  }
+  interface AdaptivePath {
+    week_ranges: WeekRange[]
+    immediate_action: string
+    velocity_assessment: 'ahead' | 'on_track' | 'behind'
+    velocity_reasoning: string
+    bottleneck: string
+    shortcut: string
+  }
+  const [adaptivePath, setAdaptivePath] = useState<AdaptivePath | null>(null)
+  const [loadingPath, setLoadingPath] = useState(false)
+
   const progressPct = (step / 5) * 100
 
   function toggleSkill(skill: string) {
@@ -352,6 +370,28 @@ export default function StudentDashboard() {
     setOfferEval(null); setCvBrief(null); setOfferJobTitle(''); setOfferCompany('')
     setOfferDescription(''); setOfferSalary(''); setOfferCurrency('USD')
     setJobRecs([])
+  }
+
+  async function fetchAdaptivePath() {
+    const skills = Array.from(confirmedSkills)
+    if (skills.length === 0) return
+    setLoadingPath(true)
+    try {
+      const res = await fetch('/api/students/adaptive-path', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          skills,
+          completedModules: [],
+          timeAvailable: 'medium',
+          targetRole: careerMatches[0]?.title || '',
+          country,
+        }),
+      })
+      const data = await res.json()
+      if (data.week_ranges) setAdaptivePath(data)
+    } catch {}
+    setLoadingPath(false)
   }
 
   async function fetchJobRecs() {
@@ -892,6 +932,97 @@ export default function StudentDashboard() {
                       </div>
                     )
                   })()}
+
+                  {/* Adaptive Learning Path */}
+                  <div className="mt-12 border-t border-surface-container pt-8">
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <div className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Personalised for you</div>
+                        <h2 className="font-headline text-2xl font-bold tracking-tighter text-primary">
+                          Adaptive Learning Path
+                        </h2>
+                      </div>
+                      <button onClick={fetchAdaptivePath}
+                        className="btn-ghost text-xs py-2 px-4"
+                        style={{ background: 'none', border: '1px solid rgba(71,71,71,0.4)', cursor: 'pointer' }}>
+                        {adaptivePath ? 'Refresh' : 'Generate'} &#8635;
+                      </button>
+                    </div>
+
+                    {loadingPath && (
+                      <div className="space-y-4">
+                        {[1, 2, 3].map(i => <div key={i} className="skeleton h-24 w-full" />)}
+                      </div>
+                    )}
+
+                    {adaptivePath && (
+                      <div className="space-y-6">
+                        {/* Today's action */}
+                        <div className="btn-primary p-4 text-center">
+                          <div className="font-label text-label-sm uppercase tracking-widest opacity-70 mb-1">Today&apos;s Action</div>
+                          <div className="font-body text-sm">{adaptivePath.immediate_action}</div>
+                        </div>
+
+                        {/* Velocity badge */}
+                        <div className="flex items-center gap-4">
+                          <span className="font-label text-xs uppercase tracking-widest px-3 py-1"
+                            style={{
+                              background: adaptivePath.velocity_assessment === 'ahead' ? 'rgba(76,175,80,0.15)'
+                                : adaptivePath.velocity_assessment === 'on_track' ? 'rgba(33,150,243,0.15)'
+                                : 'rgba(244,67,54,0.15)',
+                              color: adaptivePath.velocity_assessment === 'ahead' ? '#4CAF50'
+                                : adaptivePath.velocity_assessment === 'on_track' ? '#2196F3'
+                                : '#F44336',
+                              border: `1px solid ${adaptivePath.velocity_assessment === 'ahead' ? 'rgba(76,175,80,0.3)'
+                                : adaptivePath.velocity_assessment === 'on_track' ? 'rgba(33,150,243,0.3)'
+                                : 'rgba(244,67,54,0.3)'}`,
+                            }}>
+                            {adaptivePath.velocity_assessment === 'on_track' ? 'ON TRACK' : adaptivePath.velocity_assessment.toUpperCase()}
+                          </span>
+                          <span className="font-body text-xs text-on-surface-variant">{adaptivePath.velocity_reasoning}</span>
+                        </div>
+
+                        {/* Bottleneck */}
+                        <div className="flex items-center gap-3">
+                          <span className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant">Bottleneck:</span>
+                          <span className="font-label text-xs px-3 py-1 uppercase tracking-wider"
+                            style={{ border: '1px solid rgba(244,67,54,0.4)', color: '#F44336' }}>
+                            {adaptivePath.bottleneck}
+                          </span>
+                        </div>
+
+                        {/* Week ranges */}
+                        <div className="space-y-4">
+                          {(adaptivePath.week_ranges || []).map((wr, i) => (
+                            <div key={i} className="bg-surface-container-low ghost-border p-5">
+                              <div className="flex items-center justify-between mb-3">
+                                <span className="font-headline font-bold text-primary text-sm">{wr.weeks}</span>
+                                <span className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant">{wr.focus}</span>
+                              </div>
+                              <ul className="space-y-1 mb-3">
+                                {(wr.actions || []).slice(0, 3).map((a, j) => (
+                                  <li key={j} className="font-body text-xs text-on-surface-variant">&#8594; {a}</li>
+                                ))}
+                              </ul>
+                              {(wr.skills_unlocked || []).length > 0 && (
+                                <div className="flex flex-wrap gap-1.5">
+                                  {wr.skills_unlocked.map(s => (
+                                    <span key={s} className="data-chip text-[9px]">{s}</span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Shortcut */}
+                        <div className="p-4 bg-surface-container ghost-border">
+                          <div className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Fastest Path</div>
+                          <p className="font-body text-sm text-primary">{adaptivePath.shortcut}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Job Recommendations */}
                   <div className="mt-12 border-t border-surface-container pt-8">
