@@ -215,6 +215,36 @@ export default function StudentDashboard() {
   interface OrchScore { score: number; level: string; nextMilestone: string }
   const [orchScore, setOrchScore] = useState<OrchScore | null>(null)
 
+  interface OutcomeRow {
+    id: string; job_title: string; company: string; status: string
+    rejection_stage: string | null; skills_i_lacked: string[] | null
+    skills_they_asked_about: string[] | null; learning_signal: Record<string, unknown> | null
+    created_at: string
+  }
+  interface OutcomeStats {
+    total: number; responseRate: number; interviewRate: number
+    topMissingSkills: string[]; topAskedSkills: string[]
+    avgStageReached: string; successPattern: string
+  }
+  interface WeeklySignal {
+    weekFocus: string; topThreeActions: string[]
+    skillToDropEverythingFor: string; encouragement: string
+    projectedOutcomeIfFollowed: string; warningSign: string | null
+  }
+  const [outcomes, setOutcomes] = useState<OutcomeRow[]>([])
+  const [outcomeStats, setOutcomeStats] = useState<OutcomeStats | null>(null)
+  const [weeklySignal, setWeeklySignal] = useState<WeeklySignal | null>(null)
+  const [showLogForm, setShowLogForm] = useState(false)
+  const [logJobTitle, setLogJobTitle] = useState('')
+  const [logCompany, setLogCompany] = useState('')
+  const [logStatus, setLogStatus] = useState('applied')
+  const [logStage, setLogStage] = useState('')
+  const [logAskedSkills, setLogAskedSkills] = useState('')
+  const [logLackedSkills, setLogLackedSkills] = useState('')
+  const [logFeedback, setLogFeedback] = useState('')
+  const [logLoading, setLogLoading] = useState(false)
+  const [lastSignal, setLastSignal] = useState<Record<string, unknown> | null>(null)
+
   const progressPct = (step / 5) * 100
 
   function toggleSkill(skill: string) {
@@ -399,6 +429,50 @@ export default function StudentDashboard() {
     setOfferEval(null); setCvBrief(null); setOfferJobTitle(''); setOfferCompany('')
     setOfferDescription(''); setOfferSalary(''); setOfferCurrency('USD')
     setJobRecs([])
+  }
+
+  async function fetchOutcomes() {
+    if (!user?.id) return
+    try {
+      const res = await fetch(`/api/students/outcomes?userId=${user.id}`)
+      const data = await res.json()
+      setOutcomes(data.outcomes || [])
+      setOutcomeStats(data.stats || null)
+    } catch {}
+    // Fetch weekly signal
+    try {
+      const res = await fetch('/api/students/weekly-signal')
+      const data = await res.json()
+      if (data.recommended_focus) setWeeklySignal(data.recommended_focus)
+    } catch {}
+  }
+
+  async function logOutcome() {
+    setLogLoading(true)
+    setLastSignal(null)
+    try {
+      const res = await fetch('/api/students/outcomes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user?.id,
+          jobTitle: logJobTitle,
+          company: logCompany,
+          status: logStatus,
+          rejectionStage: logStage || undefined,
+          skillsTheyAskedAbout: logAskedSkills ? logAskedSkills.split(',').map(s => s.trim()) : undefined,
+          skillsILacked: logLackedSkills ? logLackedSkills.split(',').map(s => s.trim()) : undefined,
+          feedbackFromEmployer: logFeedback || undefined,
+        }),
+      })
+      const data = await res.json()
+      if (data.learningSignal) setLastSignal(data.learningSignal)
+      setShowLogForm(false)
+      setLogJobTitle(''); setLogCompany(''); setLogStatus('applied')
+      setLogStage(''); setLogAskedSkills(''); setLogLackedSkills(''); setLogFeedback('')
+      fetchOutcomes()
+    } catch {}
+    setLogLoading(false)
   }
 
   async function fetchAdaptivePath() {
@@ -1523,6 +1597,176 @@ export default function StudentDashboard() {
                       )}
                     </div>
                   )}
+
+                  {/* Application Tracker */}
+                  <div className="mt-10 border-t border-surface-container pt-8">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <div className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Feedback Loop</div>
+                        <h2 className="font-headline text-2xl font-bold tracking-tighter text-primary">Application Tracker</h2>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={fetchOutcomes} className="btn-ghost text-xs py-2 px-3"
+                          style={{ background: 'none', border: '1px solid rgba(71,71,71,0.4)', cursor: 'pointer' }}>
+                          Refresh
+                        </button>
+                        <button onClick={() => setShowLogForm(!showLogForm)} className="btn-primary text-xs py-2 px-3">
+                          {showLogForm ? 'Cancel' : '+ Log Outcome'}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Weekly Signal Banner */}
+                    {weeklySignal && (
+                      <div className="bg-surface-container-high ghost-border p-6 mb-6">
+                        <div className="font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">
+                          This Week&apos;s Learning Signal
+                        </div>
+                        <div className="font-headline text-xl font-bold text-primary mb-3">{weeklySignal.weekFocus}</div>
+                        <div className="space-y-2 mb-4">
+                          {(weeklySignal.topThreeActions || []).map((action, i) => (
+                            <div key={i} className="flex gap-3 font-body text-sm text-on-surface-variant">
+                              <span className="text-primary font-bold">{i + 1}.</span> {action}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="ghost-border p-3 bg-surface-container">
+                          <span className="font-label text-label-sm text-on-surface-variant uppercase tracking-widest">Drop everything for:</span>
+                          <span className="font-headline text-base font-bold text-primary ml-3">{weeklySignal.skillToDropEverythingFor}</span>
+                        </div>
+                      </div>
+                    )}
+                    {!weeklySignal && outcomes.length === 0 && (
+                      <div className="bg-surface-container-high ghost-border p-6 mb-6 text-center">
+                        <div className="font-headline text-xl font-bold text-primary">No signal yet</div>
+                        <p className="font-body text-sm text-on-surface-variant mt-2">Log your first application outcome to start building your feedback loop.</p>
+                      </div>
+                    )}
+
+                    {/* Last generated signal */}
+                    {lastSignal && (
+                      <div className="bg-surface-container ghost-border p-4 mb-6" style={{ borderLeftColor: 'rgba(76,175,80,0.5)', borderLeftWidth: 2 }}>
+                        <div className="font-label text-label-sm uppercase tracking-widest text-primary mb-2">Learning Signal Generated</div>
+                        <div className="font-headline text-sm font-bold text-primary mb-1">Priority: {lastSignal.priority_skill_to_learn as string}</div>
+                        <p className="font-body text-xs text-on-surface-variant">{lastSignal.specific_resource as string}</p>
+                      </div>
+                    )}
+
+                    {/* Log form */}
+                    {showLogForm && (
+                      <div className="bg-surface-container-low ghost-border p-6 mb-6 space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Job Title</label>
+                            <input value={logJobTitle} onChange={e => setLogJobTitle(e.target.value)}
+                              className="w-full bg-surface-container text-on-surface font-body text-sm px-3 py-2 focus:outline-none"
+                              style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }} />
+                          </div>
+                          <div>
+                            <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Company</label>
+                            <input value={logCompany} onChange={e => setLogCompany(e.target.value)}
+                              className="w-full bg-surface-container text-on-surface font-body text-sm px-3 py-2 focus:outline-none"
+                              style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }} />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Status</label>
+                            <select value={logStatus} onChange={e => setLogStatus(e.target.value)}
+                              className="w-full bg-surface-container text-on-surface font-body text-sm px-3 py-2 focus:outline-none appearance-none"
+                              style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }}>
+                              {['applied', 'viewed', 'phone_screen', 'interview', 'offer', 'rejected', 'ghosted', 'withdrawn'].map(s => (
+                                <option key={s} value={s}>{s.replace('_', ' ')}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Stage Reached</label>
+                            <select value={logStage} onChange={e => setLogStage(e.target.value)}
+                              className="w-full bg-surface-container text-on-surface font-body text-sm px-3 py-2 focus:outline-none appearance-none"
+                              style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }}>
+                              <option value="">Select stage</option>
+                              {['CV Screen', 'Phone Screen', 'Technical Test', 'First Interview', 'Final Interview', 'Offer Stage'].map(s => (
+                                <option key={s} value={s}>{s}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Skills they asked about <span className="text-outline normal-case tracking-normal">(comma separated)</span></label>
+                          <input value={logAskedSkills} onChange={e => setLogAskedSkills(e.target.value)}
+                            placeholder="e.g. Python, SQL, leadership"
+                            className="w-full bg-surface-container text-on-surface font-body text-sm px-3 py-2 placeholder-outline focus:outline-none"
+                            style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }} />
+                        </div>
+                        <div>
+                          <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Skills I lacked <span className="text-outline normal-case tracking-normal">(comma separated)</span></label>
+                          <input value={logLackedSkills} onChange={e => setLogLackedSkills(e.target.value)}
+                            placeholder="e.g. Docker, cloud deployment"
+                            className="w-full bg-surface-container text-on-surface font-body text-sm px-3 py-2 placeholder-outline focus:outline-none"
+                            style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }} />
+                        </div>
+                        <div>
+                          <label className="block font-label text-label-sm uppercase tracking-widest text-on-surface-variant mb-1">Employer feedback <span className="text-outline normal-case tracking-normal">(optional)</span></label>
+                          <textarea value={logFeedback} onChange={e => setLogFeedback(e.target.value)} rows={2}
+                            className="w-full bg-surface-container text-on-surface font-body text-sm px-3 py-2 placeholder-outline focus:outline-none resize-none"
+                            style={{ border: '1px solid rgba(71,71,71,0.4)', borderRadius: 0 }} />
+                        </div>
+                        <button onClick={logOutcome} disabled={!logJobTitle || !logCompany || logLoading}
+                          className="btn-primary w-full disabled:opacity-30">
+                          {logLoading ? 'Logging...' : 'Log Outcome'}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Outcomes table */}
+                    {outcomes.length > 0 && (
+                      <div className="space-y-2">
+                        {outcomes.map(o => (
+                          <div key={o.id} className="bg-surface-container-low ghost-border p-4 flex items-center justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-3 mb-1">
+                                <span className="font-headline text-sm font-bold text-primary truncate">{o.job_title}</span>
+                                <span className="font-label text-[9px] uppercase tracking-widest px-2 py-0.5"
+                                  style={{
+                                    background: o.status === 'offer' ? 'rgba(76,175,80,0.15)' : o.status === 'interview' ? 'rgba(33,150,243,0.15)' : o.status === 'rejected' ? 'rgba(244,67,54,0.15)' : o.status === 'ghosted' ? 'rgba(71,71,71,0.3)' : 'rgba(255,255,255,0.1)',
+                                    color: o.status === 'offer' ? '#4CAF50' : o.status === 'interview' ? '#2196F3' : o.status === 'rejected' ? '#F44336' : o.status === 'ghosted' ? '#919191' : '#FFFFFF',
+                                  }}>
+                                  {o.status.replace('_', ' ')}
+                                </span>
+                              </div>
+                              <span className="font-body text-xs text-on-surface-variant">{o.company}</span>
+                              {o.rejection_stage && <span className="font-body text-xs text-outline ml-3">Stage: {o.rejection_stage}</span>}
+                            </div>
+                            <div className="flex flex-wrap gap-1 shrink-0">
+                              {(o.skills_i_lacked || []).slice(0, 2).map(s => (
+                                <span key={s} className="font-label text-[8px] px-2 py-0.5 uppercase tracking-wider"
+                                  style={{ border: '1px solid rgba(244,67,54,0.4)', color: '#F44336' }}>{s}</span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Stats summary */}
+                    {outcomeStats && outcomeStats.total > 0 && (
+                      <div className="grid grid-cols-3 gap-4 mt-4">
+                        <div className="text-center">
+                          <div className="font-headline text-2xl font-bold text-primary tabular-nums">{outcomeStats.responseRate}%</div>
+                          <div className="font-label text-label-sm uppercase tracking-widest text-outline">Response Rate</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="font-headline text-2xl font-bold text-primary tabular-nums">{outcomeStats.interviewRate}%</div>
+                          <div className="font-label text-label-sm uppercase tracking-widest text-outline">Interview Rate</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="font-headline text-2xl font-bold text-primary tabular-nums">{outcomeStats.total}</div>
+                          <div className="font-label text-label-sm uppercase tracking-widest text-outline">Total Apps</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   {/* AI Usage Assessment */}
                   <div className="mt-10 border-t border-surface-container pt-8">
