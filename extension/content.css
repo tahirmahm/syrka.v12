@@ -1,0 +1,2 @@
+/* This file is currently not used because the extension uses Shadow DOM for isolation.
+   Styles are injected directly via content.js to the shadow root. */

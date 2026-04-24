@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "SYRKA Extension",
+  "version": "1.0.0",
+  "description": "Course and Job Intelligence for Syrka",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "alarms",
+    "notifications"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["panel.html", "panel.css", "panel.js", "scoring.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
