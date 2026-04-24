@@ -25,24 +25,56 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   const body = await request.json()
 
-  if (body.type === 'job' && user) {
-    const { error } = await supabase
+  if (!user) {
+    return Response.json({ success: true, authenticated: false })
+  }
+
+  if (body.type === 'job') {
+    const { data: job } = await supabase
       .from('job_pipeline')
       .insert({
         user_id: user.id,
         job_title: body.data.title,
         company: body.data.company,
         job_url: body.data.sourceUrl,
-        description: body.data.description,
+        description: (body.data.description || '').substring(0, 2000),
         skills_required: body.data.skills || [],
         offer_score: body.data.score,
         offer_grade: body.data.grade,
         source: 'extension',
       })
-    return Response.json({ success: !error, error: error?.message })
+      .select()
+      .single()
+
+    const { data: patterns } = await supabase
+      .from('application_outcomes')
+      .select('skills_i_lacked, rejection_stage')
+      .eq('user_id', user.id)
+      .eq('status', 'rejected')
+      .limit(20)
+
+    const rejectionSkillCounts: Record<string, number> = {}
+    for (const p of patterns || []) {
+      for (const s of (p.skills_i_lacked as string[]) || []) {
+        rejectionSkillCounts[s] = (rejectionSkillCounts[s] || 0) + 1
+      }
+    }
+    const topRejectionSkills = Object.entries(rejectionSkillCounts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5)
+      .map(([skill]) => skill)
+
+    return Response.json({
+      success: true,
+      jobId: job?.id,
+      rejectionPatternWarning: topRejectionSkills.length > 0 ? {
+        message: 'Based on your past applications, watch out for these gaps',
+        skills: topRejectionSkills,
+      } : null,
+    })
   }
 
-  if (body.type === 'course' && user) {
+  if (body.type === 'course') {
     const { error } = await supabase
       .from('moodle_courses')
       .upsert({
@@ -58,5 +90,15 @@ export async function POST(request: Request) {
     return Response.json({ success: !error, error: error?.message })
   }
 
-  return Response.json({ success: true, authenticated: false })
+  return Response.json({ success: false, error: 'Unknown type' })
+}
+
+export async function OPTIONS() {
+  return new Response(null, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    }
+  })
 }
