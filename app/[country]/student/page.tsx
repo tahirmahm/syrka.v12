@@ -145,31 +145,6 @@ export default function StudentDashboard() {
     })
   }, [])
 
-  useEffect(() => {
-    if (user) {
-      supabase.auth.getSession().then(({ data }) => {
-        const token = data.session?.access_token
-        if (token) {
-          window.dispatchEvent(new CustomEvent('syrka:auth', {
-            detail: {
-              token,
-              userId: user.id,
-              name: user.user_metadata?.full_name,
-              skills: Array.from(confirmedSkills),
-              orchestrationScore: orchScore?.score ?? 0,
-            }
-          }))
-        }
-      })
-    }
-  }, [user, confirmedSkills, orchScore])
-
-  useEffect(() => {
-    const handler = () => setExtensionConnected(true)
-    window.addEventListener('syrka:extension-present', handler)
-    return () => window.removeEventListener('syrka:extension-present', handler)
-  }, [])
-
   const [offerJobTitle, setOfferJobTitle] = useState('')
   const [offerCompany, setOfferCompany] = useState('')
   const [offerDescription, setOfferDescription] = useState('')
@@ -270,6 +245,43 @@ export default function StudentDashboard() {
   const [logLoading, setLogLoading] = useState(false)
   const [lastSignal, setLastSignal] = useState<Record<string, unknown> | null>(null)
   const [extensionConnected, setExtensionConnected] = useState(false)
+  const [trackerTab, setTrackerTab] = useState<'outcomes' | 'extension' | 'moodle'>('outcomes')
+  interface ExtJob {
+    id: string; job_title: string; company: string; job_url: string | null
+    offer_score: number | null; offer_grade: string | null; skills_required: string[] | null
+    created_at: string
+  }
+  interface MoodleCourse {
+    id: string; course_name: string; extracted_skills: string[] | null
+    skill_gaps: string[] | null; synced_at: string | null; course_url: string | null
+  }
+  const [extensionJobs, setExtensionJobs] = useState<ExtJob[]>([])
+  const [moodleCourses, setMoodleCourses] = useState<MoodleCourse[]>([])
+
+  useEffect(() => {
+    if (user) {
+      supabase.auth.getSession().then(({ data }) => {
+        const token = data.session?.access_token
+        if (token) {
+          window.dispatchEvent(new CustomEvent('syrka:auth', {
+            detail: {
+              token,
+              userId: user.id,
+              name: user.user_metadata?.full_name,
+              skills: Array.from(confirmedSkills),
+              orchestrationScore: orchScore?.score ?? 0,
+            }
+          }))
+        }
+      })
+    }
+  }, [user, confirmedSkills, orchScore])
+
+  useEffect(() => {
+    const handler = () => setExtensionConnected(true)
+    window.addEventListener('syrka:extension-present', handler)
+    return () => window.removeEventListener('syrka:extension-present', handler)
+  }, [])
 
   const progressPct = (step / 5) * 100
 
@@ -499,6 +511,18 @@ export default function StudentDashboard() {
       fetchOutcomes()
     } catch {}
     setLogLoading(false)
+  }
+
+  async function fetchExtensionData() {
+    if (!user?.id) return
+    try {
+      const [jobRes, courseRes] = await Promise.all([
+        supabase.from('job_pipeline').select('*').eq('user_id', user.id).eq('source', 'extension').order('created_at', { ascending: false }).limit(20),
+        supabase.from('moodle_courses').select('*').eq('user_id', user.id).order('synced_at', { ascending: false }).limit(20),
+      ])
+      setExtensionJobs((jobRes.data || []) as ExtJob[])
+      setMoodleCourses((courseRes.data || []) as MoodleCourse[])
+    } catch {}
   }
 
   async function fetchAdaptivePath() {
@@ -1648,6 +1672,23 @@ export default function StudentDashboard() {
                       </div>
                     </div>
 
+                    {/* Tracker Tabs */}
+                    <div className="flex gap-1 mb-6">
+                      {(['outcomes', 'extension', 'moodle'] as const).map(tab => (
+                        <button key={tab} onClick={() => { setTrackerTab(tab); if (tab !== 'outcomes') fetchExtensionData() }}
+                          className="font-label text-[9px] uppercase tracking-widest px-3 py-1.5"
+                          style={{
+                            background: trackerTab === tab ? 'rgba(255,255,255,0.1)' : 'transparent',
+                            border: trackerTab === tab ? '1px solid rgba(71,71,71,0.4)' : '1px solid transparent',
+                            color: trackerTab === tab ? '#fff' : '#919191',
+                            cursor: 'pointer',
+                          }}>
+                          {tab === 'outcomes' ? 'Outcomes' : tab === 'extension' ? 'From Extension' : 'From Moodle'}
+                        </button>
+                      ))}
+                    </div>
+
+                    {trackerTab === 'outcomes' && (<>
                     {/* Weekly Signal Banner */}
                     {weeklySignal && (
                       <div className="bg-surface-container-high ghost-border p-6 mb-6">
@@ -1796,6 +1837,95 @@ export default function StudentDashboard() {
                           <div className="font-headline text-2xl font-bold text-primary tabular-nums">{outcomeStats.total}</div>
                           <div className="font-label text-label-sm uppercase tracking-widest text-outline">Total Apps</div>
                         </div>
+                      </div>
+                    )}
+                    </>)}
+
+                    {trackerTab === 'extension' && (
+                      <div className="space-y-2">
+                        {extensionJobs.length === 0 && (
+                          <div className="bg-surface-container-high ghost-border p-6 text-center">
+                            <div className="font-headline text-base font-bold text-primary mb-2">No extension jobs yet</div>
+                            <p className="font-body text-xs text-on-surface-variant">Jobs you save via the Chrome extension on LinkedIn will appear here.</p>
+                          </div>
+                        )}
+                        {extensionJobs.map(j => (
+                          <div key={j.id} className="bg-surface-container-low ghost-border p-4 flex items-center justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-3 mb-1">
+                                <span className="font-headline text-sm font-bold text-primary truncate">{j.job_title}</span>
+                                {j.offer_grade && (
+                                  <span className="font-label text-[9px] uppercase tracking-widest px-2 py-0.5"
+                                    style={{
+                                      background: j.offer_grade === 'A' ? 'rgba(76,175,80,0.15)' : j.offer_grade === 'B' ? 'rgba(33,150,243,0.15)' : 'rgba(255,193,7,0.15)',
+                                      color: j.offer_grade === 'A' ? '#4CAF50' : j.offer_grade === 'B' ? '#2196F3' : '#FFC107',
+                                    }}>
+                                    Grade {j.offer_grade}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="font-body text-xs text-on-surface-variant">{j.company}</span>
+                            </div>
+                            <div className="flex gap-2 shrink-0">
+                              {j.job_url && (
+                                <a href={j.job_url} target="_blank" rel="noopener noreferrer"
+                                  className="font-label text-[9px] uppercase tracking-widest px-2 py-1 text-on-surface-variant"
+                                  style={{ border: '1px solid rgba(71,71,71,0.4)', textDecoration: 'none' }}>
+                                  View &#8599;
+                                </a>
+                              )}
+                              <button onClick={() => { setLogJobTitle(j.job_title); setLogCompany(j.company); setShowLogForm(true); setTrackerTab('outcomes') }}
+                                className="font-label text-[9px] uppercase tracking-widest px-2 py-1"
+                                style={{ border: '1px solid rgba(71,71,71,0.4)', background: 'transparent', color: '#fff', cursor: 'pointer' }}>
+                                Log Outcome
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {trackerTab === 'moodle' && (
+                      <div className="space-y-2">
+                        {moodleCourses.length === 0 && (
+                          <div className="bg-surface-container-high ghost-border p-6 text-center">
+                            <div className="font-headline text-base font-bold text-primary mb-2">No Moodle courses synced</div>
+                            <p className="font-body text-xs text-on-surface-variant">Visit a Moodle course page with the extension installed to auto-sync.</p>
+                          </div>
+                        )}
+                        {moodleCourses.map(c => (
+                          <div key={c.id} className="bg-surface-container-low ghost-border p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-headline text-sm font-bold text-primary">{c.course_name}</span>
+                              {c.synced_at && (
+                                <span className="font-label text-[8px] uppercase tracking-widest text-outline">
+                                  Synced {new Date(c.synced_at).toLocaleDateString()}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex flex-wrap gap-1 mb-2">
+                              {(c.extracted_skills || []).map(s => (
+                                <span key={s} className="font-label text-[8px] px-2 py-0.5 uppercase tracking-wider"
+                                  style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(71,71,71,0.3)', color: '#C9D1D9' }}>{s}</span>
+                              ))}
+                            </div>
+                            {(c.skill_gaps || []).length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {(c.skill_gaps || []).map(s => (
+                                  <span key={s} className="font-label text-[8px] px-2 py-0.5 uppercase tracking-wider"
+                                    style={{ border: '1px solid rgba(244,67,54,0.4)', color: '#F44336' }}>{s}</span>
+                                ))}
+                              </div>
+                            )}
+                            {c.course_url && (
+                              <a href={c.course_url} target="_blank" rel="noopener noreferrer"
+                                className="block mt-2 font-label text-[9px] uppercase tracking-widest text-on-surface-variant"
+                                style={{ textDecoration: 'none' }}>
+                                Open course &#8599;
+                              </a>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
