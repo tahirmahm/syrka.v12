@@ -145,6 +145,31 @@ export default function StudentDashboard() {
     })
   }, [])
 
+  useEffect(() => {
+    if (user) {
+      supabase.auth.getSession().then(({ data }) => {
+        const token = data.session?.access_token
+        if (token) {
+          window.dispatchEvent(new CustomEvent('syrka:auth', {
+            detail: {
+              token,
+              userId: user.id,
+              name: user.user_metadata?.full_name,
+              skills: Array.from(confirmedSkills),
+              orchestrationScore: orchScore?.score ?? 0,
+            }
+          }))
+        }
+      })
+    }
+  }, [user, confirmedSkills, orchScore])
+
+  useEffect(() => {
+    const handler = () => setExtensionConnected(true)
+    window.addEventListener('syrka:extension-present', handler)
+    return () => window.removeEventListener('syrka:extension-present', handler)
+  }, [])
+
   const [offerJobTitle, setOfferJobTitle] = useState('')
   const [offerCompany, setOfferCompany] = useState('')
   const [offerDescription, setOfferDescription] = useState('')
@@ -244,6 +269,7 @@ export default function StudentDashboard() {
   const [logFeedback, setLogFeedback] = useState('')
   const [logLoading, setLogLoading] = useState(false)
   const [lastSignal, setLastSignal] = useState<Record<string, unknown> | null>(null)
+  const [extensionConnected, setExtensionConnected] = useState(false)
 
   const progressPct = (step / 5) * 100
 
@@ -609,6 +635,12 @@ export default function StudentDashboard() {
                           ? '● Profile synced' : '○ Upload resume to build profile'}
                       </div>
                     </div>
+                    {extensionConnected && (
+                      <span className="data-chip text-[9px] flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"/>
+                        Extension Active
+                      </span>
+                    )}
                   </div>
                   <div className="flex gap-3">
                     {typeof userProfile?.linkedin_url === 'string' && userProfile.linkedin_url && (
