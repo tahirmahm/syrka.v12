@@ -148,6 +148,8 @@ export default async function LandingPage() {
         <footer className="px-8 md:px-16 py-8 border-t border-surface-container flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <a href="/" className="font-headline font-bold text-lg text-primary" style={{ letterSpacing: '0.35em', textDecoration: 'none' }}>SYRKA</a>
           <div className="flex gap-8">
+            <a href="/model-cards" className="text-xs font-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors" style={{ textDecoration: 'none' }}>Model Governance</a>
+            <a href="/intelligence" className="text-xs font-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors" style={{ textDecoration: 'none' }}>Intelligence</a>
             {['Privacy', 'Legal', 'Security'].map(item => (
               <span key={item} className="text-xs font-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors cursor-pointer">{item}</span>
             ))}

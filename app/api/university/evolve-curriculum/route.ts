@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { createClient } from '@/lib/supabase'
+import { logAudit } from '@/lib/audit'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,6 +41,7 @@ export async function GET() {
 - why_now: string (one sentence — why this matters right now)
 - esco_skills: string[] (2-3 ESCO skill codes this develops)
 - difficulty: 'foundational' | 'intermediate' | 'advanced'
+- sources: array of { year: number, publication: string, doi_or_url: string, confidence: 'high' | 'medium' | 'low', freshness_signal: string }
 Return ONLY a JSON array of 3 objects.`,
             },
           ],
@@ -55,9 +57,21 @@ Return ONLY a JSON array of 3 objects.`,
           recommendations = []
         }
 
+        const allSources = (recommendations as Record<string, unknown>[]).flatMap(
+          (r) => (r.sources as { year?: number }[]) || []
+        )
+        const currentYear = new Date().getFullYear()
+        const avgAge = allSources.length > 0
+          ? allSources.reduce((sum, s) => sum + (currentYear - (s.year || currentYear)), 0) / allSources.length
+          : 5
+        const freshnessScore = Math.max(0, Math.min(1, 1 - avgAge / 10))
+
         await supabase.from('curriculum_evolution_log').insert({
           course_id: course.id,
           recommendations,
+          sources: allSources,
+          freshness_score: freshnessScore,
+          provenance_verified: false,
           generated_at: new Date().toISOString(),
           model_version: 'deepseek-chat',
         })
@@ -67,6 +81,14 @@ Return ONLY a JSON array of 3 objects.`,
         console.error(`Evolution failed for course ${course.id}:`, err)
       }
     }
+
+    logAudit({
+      endpoint: '/api/university/evolve-curriculum',
+      request_payload: { courseCount: courses.length },
+      response_payload: { evolved },
+      model_used: 'deepseek-chat', latency_ms: 0,
+      tokens_used: 0, track: 'university',
+    })
 
     return NextResponse.json({ evolved })
   } catch (err) {

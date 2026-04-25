@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { createClient } from '@/lib/supabase'
+import { logAudit } from '@/lib/audit'
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
     // Generate learning signal via DeepSeek
     let learningSignal: Record<string, unknown> = {}
     if (process.env.DEEPSEEK_API_KEY) {
+      const outcomeStartTime = Date.now()
       try {
         const client = new OpenAI({
           baseURL: 'https://api.deepseek.com/v1',
@@ -68,6 +70,15 @@ Return ONLY the JSON.`,
         })
         const content = completion.choices[0]?.message?.content || '{}'
         learningSignal = JSON.parse(content.replace(/```json|```/g, '').trim())
+
+        logAudit({
+          endpoint: '/api/students/outcomes',
+          request_payload: { jobTitle, company, status },
+          response_payload: { priority_skill: (learningSignal as Record<string, unknown>).priority_skill_to_learn },
+          model_used: 'deepseek-chat', latency_ms: Date.now() - outcomeStartTime,
+          tokens_used: completion.usage?.total_tokens || 0,
+          track: 'student',
+        })
       } catch {}
     }
 

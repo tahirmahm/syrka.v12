@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { createClient } from '@/lib/supabase'
+import { logAudit } from '@/lib/audit'
 
 const COUNTRY_LABELS: Record<string, string> = {
   saudi: 'Saudi Arabia',
@@ -41,6 +42,7 @@ export async function POST(req: NextRequest) {
 
     const countryLabel = COUNTRY_LABELS[country] || 'Saudi Arabia'
 
+    const startTime = Date.now()
     const completion = await client.chat.completions.create({
       model: 'deepseek-chat',
       messages: [
@@ -79,6 +81,15 @@ Return ONLY a JSON array of 6 objects. No markdown, no preamble.`,
     } catch {
       recommendations = []
     }
+
+    logAudit({
+      endpoint: '/api/students/job-recommendations',
+      request_payload: { skillCount: resolvedSkills.length, country },
+      response_payload: { count: Array.isArray(recommendations) ? recommendations.length : 0 },
+      model_used: 'deepseek-chat', latency_ms: Date.now() - startTime,
+      tokens_used: completion.usage?.total_tokens || 0,
+      country, track: 'student',
+    })
 
     return NextResponse.json(recommendations)
   } catch (err) {

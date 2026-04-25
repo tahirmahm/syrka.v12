@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logAudit } from '@/lib/audit'
 
 const AI_ADJACENT_SKILLS = [
   'python', 'data analysis', 'machine learning', 'ai', 'automation',
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
   try {
     const { skills, aiAssessmentScore } = await req.json()
 
+    const startTime = Date.now()
     const studentSkills = (skills || []) as string[]
     const lowerSkills = studentSkills.map((s: string) => s.toLowerCase())
 
@@ -74,6 +76,14 @@ export async function POST(req: NextRequest) {
     )
 
     const finalScore = Math.min(100, Math.max(0, weightedScore))
+
+    logAudit({
+      endpoint: '/api/students/orchestration-score',
+      request_payload: { skillCount: studentSkills.length },
+      response_payload: { score: finalScore, level: getLevel(finalScore) },
+      model_used: 'local-calculation', latency_ms: Date.now() - startTime,
+      track: 'student',
+    })
 
     return NextResponse.json({
       score: finalScore,

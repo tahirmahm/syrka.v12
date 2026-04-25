@@ -1,12 +1,7 @@
 {
   "crons": [
     {"path": "/api/stats/refresh/worldbank", "schedule": "0 2 * * *"},
-    {"path": "/api/stats/refresh/ilo", "schedule": "0 3 * * *"},
-    {"path": "/api/stats/refresh/oecd", "schedule": "0 4 * * *"},
-    {"path": "/api/stats/refresh/unesco", "schedule": "0 5 * * *"},
-    {"path": "/api/stats/refresh/wef", "schedule": "0 6 * * *"},
-    {"path": "/api/mirofish/ping", "schedule": "0 8 * * *"},
-    {"path": "/api/university/evolve-curriculum", "schedule": "0 1 * * *"},
-    {"path": "/api/students/weekly-signal", "schedule": "0 7 * * 1"}
+    {"path": "/api/students/weekly-signal", "schedule": "0 7 * * 1"},
+    {"path": "/api/admin/fairness-check", "schedule": "0 6 * * *"}
   ]
 }
