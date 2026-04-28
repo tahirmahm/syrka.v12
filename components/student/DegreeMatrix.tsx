@@ -1,9 +1,11 @@
-import { OU_R88, TARGET_VECTOR, SYSTEM_DIRECTIVE } from '@/lib/degree-config'
+import { OU_R88, TARGET_VECTOR, SYSTEM_DIRECTIVE, getBlockedModules, getSystemDirectiveModule } from '@/lib/degree-config'
 import ModuleCard from './ModuleCard'
 import RightPanel from './RightPanel'
 
 export default function DegreeMatrix({ country, selectedModule }: { country: string; selectedModule: string | null }) {
   let globalIndex = 0
+  const blocked = getBlockedModules()
+  const directive = getSystemDirectiveModule()
 
   return (
     <div className="flex" style={{ minHeight: 'calc(100vh - 48px)' }}>
@@ -27,7 +29,7 @@ export default function DegreeMatrix({ country, selectedModule }: { country: str
           <span>Matrix Status: Active</span>
           <div className="flex-1" />
           <span style={{ color: '#73757c' }}>
-            Target: {TARGET_VECTOR.role} · {TARGET_VECTOR.alignment}%
+            Target: {TARGET_VECTOR.role} · {TARGET_VECTOR.alignment_pct}%
           </span>
         </div>
 
@@ -63,45 +65,61 @@ export default function DegreeMatrix({ country, selectedModule }: { country: str
         >
           <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#ee7d77' }}>warning</span>
           <span style={{ fontSize: 10, color: '#ee7d77', fontFamily: 'ui-monospace, monospace', letterSpacing: '0.06em' }}>
-            2 Dependency Conflicts
+            {blocked.length} Dependency Conflict{blocked.length !== 1 ? 's' : ''}
           </span>
           <div style={{ width: 1, height: 10, background: 'rgba(255,255,255,0.1)' }} />
           <span style={{ fontSize: 10, color: '#939eb4' }}>
-            Directive: {SYSTEM_DIRECTIVE.blocker_module} → Unblock {SYSTEM_DIRECTIVE.unblocks}
+            Directive: Initialize {directive?.code ?? SYSTEM_DIRECTIVE.module_code} → Unblock {SYSTEM_DIRECTIVE.unblocks}
           </span>
         </div>
 
         {/* Module list */}
         <div>
-          {OU_R88.stages.map((stage) => (
-            <div key={stage.stage}>
-              {/* Section label */}
-              <div style={{
-                fontFamily: 'ui-monospace, monospace',
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: '#73757c',
-                padding: '12px 16px 6px',
-              }}>
-                Stage {stage.stage} — {stage.name} · {stage.credits} credits
-              </div>
+          {OU_R88.stages.map((stage) => {
+            const completedCount = stage.modules.filter(m => m.status === 'completed' || m.status === 'skipped').length
+            const activeCount = stage.modules.filter(m => m.status !== 'locked' && m.status !== 'completed' && m.status !== 'skipped').length
+            const conflictCount = stage.modules.filter(m => m.status === 'blocked').length
 
-              {stage.modules.map((mod) => {
-                const idx = globalIndex++
-                return (
-                  <ModuleCard
-                    key={mod.code}
-                    module={mod}
-                    country={country}
-                    index={idx}
-                    isSelected={selectedModule === mod.code}
-                  />
-                )
-              })}
-            </div>
-          ))}
+            return (
+              <div key={stage.stage}>
+                {/* Section label */}
+                <div
+                  className="flex items-center gap-3"
+                  style={{
+                    fontFamily: 'ui-monospace, monospace',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: '#73757c',
+                    padding: '12px 16px 6px',
+                  }}
+                >
+                  <span>Stage {stage.stage} — {stage.name} · {stage.credits} credits</span>
+                  <span style={{ color: '#45484e' }}>
+                    {stage.status === 'completed'
+                      ? `${completedCount}/${stage.modules.length} modules · COMPLETED`
+                      : stage.status === 'active'
+                        ? `${activeCount}/${stage.modules.length} active${conflictCount > 0 ? ` · ${conflictCount} conflict${conflictCount > 1 ? 's' : ''}` : ''}`
+                        : `0/${stage.modules.length} modules · LOCKED`}
+                  </span>
+                </div>
+
+                {stage.modules.map((mod) => {
+                  const idx = globalIndex++
+                  return (
+                    <ModuleCard
+                      key={mod.code}
+                      module={mod}
+                      country={country}
+                      index={idx}
+                      isSelected={selectedModule === mod.code}
+                    />
+                  )
+                })}
+              </div>
+            )
+          })}
         </div>
       </div>
 

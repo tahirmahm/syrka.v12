@@ -95,7 +95,7 @@ export default async function StudentPage({
             <div className="flex items-center gap-2">
               <div style={{ width: 6, height: 6, background: '#679cff', animation: 'pulse 2s infinite' }} />
               <span style={{ fontSize: 10, color: '#679cff', fontFamily: 'ui-monospace, monospace' }}>
-                {TARGET_VECTOR.alignment}% aligned
+                {TARGET_VECTOR.alignment_pct}% aligned
               </span>
             </div>
             <span style={{ fontSize: 10, color: '#73757c', fontFamily: 'ui-monospace, monospace' }}>

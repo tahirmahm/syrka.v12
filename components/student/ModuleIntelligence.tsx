@@ -1,4 +1,4 @@
-import { getModule, getStageForModule, TARGET_VECTOR, SYSTEM_DIRECTIVE, ACQUIRED_SKILLS } from '@/lib/degree-config'
+import { getModule, getStageForModule, TARGET_VECTOR, SYSTEM_DIRECTIVE } from '@/lib/degree-config'
 import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
 import RightPanel from './RightPanel'
@@ -9,6 +9,7 @@ const STATUS_TAG: Record<string, { bg: string; color: string; border: string }> 
   active: { bg: 'rgba(103,156,255,0.1)', color: '#679cff', border: 'rgba(103,156,255,0.2)' },
   blocked: { bg: 'rgba(238,125,119,0.1)', color: '#ee7d77', border: 'rgba(238,125,119,0.2)' },
   locked: { bg: 'rgba(69,72,78,0.3)', color: '#45484e', border: 'rgba(69,72,78,0.4)' },
+  skipped: { bg: 'rgba(69,72,78,0.2)', color: '#45484e', border: 'rgba(69,72,78,0.3)' },
 }
 
 function Tag({ status }: { status: string }) {
@@ -26,6 +27,8 @@ function Tag({ status }: { status: string }) {
     </span>
   )
 }
+
+const SKILL_MASTERY = [88, 82, 76, 70]
 
 export default async function ModuleIntelligence({
   moduleCode,
@@ -77,6 +80,7 @@ export default async function ModuleIntelligence({
     }
   } catch { /* demo mode fallback */ }
 
+  const moduleSkills = mod.skills.slice(0, 4)
 
   return (
     <div className="flex" style={{ minHeight: 'calc(100vh - 48px)' }}>
@@ -102,10 +106,18 @@ export default async function ModuleIntelligence({
         >
           {mod.code} {mod.name}
         </h1>
+        <p style={{ fontSize: 12, color: '#73757c', marginTop: 6, lineHeight: 1.5, maxWidth: 600 }}>
+          {mod.description}
+        </p>
         <div className="flex items-center gap-4 mt-2">
           <span style={{ fontSize: 13, color: '#73757c' }}>{mod.credits} credits</span>
-          {mod.mit_equiv && (
-            <span style={{ fontSize: 13, color: '#73757c' }}>MIT equiv: {mod.mit_equiv}</span>
+          {mod.mit && (
+            <span style={{ fontSize: 13, color: '#679cff', fontFamily: 'ui-monospace, monospace' }}>
+              ≡ MIT {mod.mit.number} ALIGNMENT
+            </span>
+          )}
+          {!mod.mit && (
+            <span style={{ fontSize: 13, color: '#45484e' }}>No MIT Equivalent</span>
           )}
           {stage && (
             <span style={{ fontSize: 13, color: '#73757c' }}>Stage {stage.stage}: {stage.name}</span>
@@ -228,6 +240,72 @@ export default async function ModuleIntelligence({
         </div>
       )}
 
+      {/* MIT OpenCourseWare Equivalent */}
+      {mod.mit ? (
+        <div
+          className="mb-6"
+          style={{
+            background: '#121316',
+            padding: '20px 24px',
+            borderLeft: '3px solid #679cff',
+          }}
+        >
+          <div style={{ fontSize: 10, fontFamily: 'ui-monospace, monospace', color: '#679cff', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
+            MIT OpenCourseWare Equivalent
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20 }}>
+            <div>
+              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 16, color: '#e3e5ed', marginBottom: 4 }}>
+                {mod.mit.course_name}
+              </div>
+              <div style={{ fontSize: 13, fontFamily: 'ui-monospace, monospace', color: '#679cff', marginBottom: 8 }}>
+                {mod.mit.number}
+              </div>
+              {mod.mit.note && (
+                <div style={{ fontSize: 12, color: '#a9abb2', lineHeight: 1.5 }}>
+                  {mod.mit.note}
+                </div>
+              )}
+            </div>
+            <div style={{ flexShrink: 0, textAlign: 'right' }}>
+              <div style={{ fontSize: 10, fontFamily: 'ui-monospace, monospace', color: '#a9abb2', textTransform: 'uppercase', marginBottom: 4 }}>Match Quality</div>
+              <div style={{ fontSize: 16 }}>{mod.mit.match}</div>
+              {mod.mit.url && (
+                <a
+                  href={mod.mit.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    marginTop: 8, padding: '6px 12px',
+                    background: 'transparent',
+                    border: '1px solid rgba(103,156,255,0.3)',
+                    color: '#679cff',
+                    fontSize: 10, fontFamily: 'ui-monospace, monospace', fontWeight: 700,
+                    letterSpacing: '0.08em', textTransform: 'uppercase',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Open OCW →
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div
+          className="mb-6"
+          style={{ background: '#121316', padding: '16px 24px', borderLeft: '3px solid #45484e' }}
+        >
+          <div style={{ fontSize: 10, fontFamily: 'ui-monospace, monospace', color: '#a9abb2', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
+            MIT OpenCourseWare Equivalent
+          </div>
+          <div style={{ fontSize: 13, color: '#45484e', fontFamily: 'ui-monospace, monospace' }}>
+            No direct equivalent — self-directed capstone. Use MIT 6.UAT (Oral Communication) alongside your project.
+          </div>
+        </div>
+      )}
+
       {/* Skill Topography grid */}
       <div className="mb-6">
         <span style={{ fontSize: 9, color: '#73757c', letterSpacing: '0.1em', fontFamily: 'ui-monospace, monospace' }} className="font-label uppercase block mb-3">
@@ -265,7 +343,7 @@ export default async function ModuleIntelligence({
             <span style={{ fontSize: 9, color: '#73757c', letterSpacing: '0.08em', fontFamily: 'ui-monospace, monospace' }} className="font-label uppercase block mb-2">
               MIT Alignment
             </span>
-            {mod.mit_equiv ? (
+            {mod.mit ? (
               <>
                 <div className="font-headline font-bold" style={{ fontSize: 28, color: '#4CAF50' }}>
                   {Math.round(alignment * 0.85)}%
@@ -273,7 +351,7 @@ export default async function ModuleIntelligence({
                 <div className="mt-2" style={{ height: 3, background: 'rgba(255,255,255,0.06)' }}>
                   <div style={{ height: 3, background: '#4CAF50', width: `${Math.round(alignment * 0.85)}%` }} />
                 </div>
-                <span style={{ fontSize: 10, color: '#73757c', marginTop: 4 }} className="block">MIT {mod.mit_equiv}</span>
+                <span style={{ fontSize: 10, color: '#73757c', marginTop: 4 }} className="block">MIT {mod.mit.number}</span>
               </>
             ) : (
               <span style={{ fontSize: 12, color: '#45484e' }}>No MIT equivalent</span>
@@ -286,17 +364,20 @@ export default async function ModuleIntelligence({
               Skills Built
             </span>
             <div className="space-y-2">
-              {ACQUIRED_SKILLS.slice(0, 4).map(skill => (
-                <div key={skill.name}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span style={{ fontSize: 11, color: '#a9abb2' }}>{skill.name}</span>
-                    <span style={{ fontSize: 10, color: '#73757c', fontFamily: 'ui-monospace, monospace' }}>{skill.mastery}%</span>
+              {moduleSkills.map((skill, i) => {
+                const mastery = SKILL_MASTERY[i] ?? 70
+                return (
+                  <div key={skill}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span style={{ fontSize: 11, color: '#a9abb2' }}>{skill}</span>
+                      <span style={{ fontSize: 10, color: '#73757c', fontFamily: 'ui-monospace, monospace' }}>{mastery}%</span>
+                    </div>
+                    <div style={{ height: 3, background: 'rgba(255,255,255,0.06)' }}>
+                      <div style={{ height: 3, background: '#679cff', width: `${mastery}%` }} />
+                    </div>
                   </div>
-                  <div style={{ height: 3, background: 'rgba(255,255,255,0.06)' }}>
-                    <div style={{ height: 3, background: '#679cff', width: `${skill.mastery}%` }} />
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>

@@ -52,7 +52,7 @@ export default function RightPanel({ country }: { country: string }) {
 
         {/* Execute CTA */}
         <a
-          href={`/${country}/student?tab=intelligence&module=${SYSTEM_DIRECTIVE.blocker_module}`}
+          href={`/${country}/student?tab=intelligence&module=${SYSTEM_DIRECTIVE.module_code}`}
           className="w-full mt-4 flex items-center justify-center gap-2"
           style={{
             textDecoration: 'none',
@@ -103,11 +103,11 @@ export default function RightPanel({ country }: { country: string }) {
             Alignment
           </span>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#679cff', fontFamily: 'ui-monospace, monospace' }}>
-            {TARGET_VECTOR.alignment}%
+            {TARGET_VECTOR.alignment_pct}%
           </span>
         </div>
         <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', width: '100%' }}>
-          <div style={{ height: 4, background: '#679cff', width: `${TARGET_VECTOR.alignment}%` }} />
+          <div style={{ height: 4, background: '#679cff', width: `${TARGET_VECTOR.alignment_pct}%` }} />
         </div>
         <div className="flex items-center justify-between mt-2">
           <span style={{ fontSize: 10, color: '#73757c' }}>ETA {TARGET_VECTOR.eta}</span>
@@ -135,14 +135,14 @@ export default function RightPanel({ country }: { country: string }) {
             const isDone = stage.status === 'completed'
             const isActive = stage.status === 'active'
             const dotBg = isDone ? '#45484e' : isActive ? 'rgba(103,156,255,0.2)' : 'rgba(255,255,255,0.04)'
-            const dotBorder = isActive ? '1px solid #679cff' : isDone ? 'none' : 'none'
+            const dotBorder = isActive ? '1px solid #679cff' : 'none'
 
             return (
               <div key={stage.stage} className="relative flex items-center gap-3 mb-4 last:mb-0">
                 <div
                   className="absolute shrink-0"
                   style={{
-                    left: -36 + 0, top: 0,
+                    left: -36, top: 0,
                     width: 24, height: 24,
                     background: dotBg,
                     border: dotBorder,
@@ -161,7 +161,7 @@ export default function RightPanel({ country }: { country: string }) {
                     Stage {stage.stage}: {stage.name}
                   </div>
                   <div style={{ fontSize: 10, color: '#73757c' }}>
-                    {isDone ? 'Completed' : isActive ? `${stage.modules.filter(m => m.status !== 'locked').length} modules active` : 'Locked'}
+                    {isDone ? 'Completed' : isActive ? `${stage.modules.filter(m => m.status !== 'locked' && m.status !== 'skipped').length} modules active` : 'Locked'}
                   </div>
                 </div>
               </div>
@@ -188,7 +188,7 @@ export default function RightPanel({ country }: { country: string }) {
               ETA
             </span>
             <span style={{ fontSize: 14, fontWeight: 700, color: '#e3e5ed', fontFamily: "'Space Grotesk', sans-serif" }}>
-              -2 Months
+              {SYSTEM_DIRECTIVE.impact.eta_delta}
             </span>
             <span style={{ fontSize: 10, color: '#73757c', marginLeft: 6 }}>(on completion)</span>
           </div>
@@ -200,7 +200,7 @@ export default function RightPanel({ country }: { country: string }) {
               Career Vector
             </span>
             <span style={{ fontSize: 14, fontWeight: 700, color: '#679cff', fontFamily: "'Space Grotesk', sans-serif" }}>
-              +17% Total Alignment
+              {SYSTEM_DIRECTIVE.impact.career_alignment_delta}
             </span>
           </div>
           <div style={{ background: '#1D2023', padding: '10px 12px' }}>
@@ -211,7 +211,7 @@ export default function RightPanel({ country }: { country: string }) {
               Risk Mitigation
             </span>
             <span style={{ fontSize: 14, fontWeight: 700, color: '#ee7d77', fontFamily: "'Space Grotesk', sans-serif" }}>
-              High
+              {SYSTEM_DIRECTIVE.impact.risk_mitigation}
             </span>
           </div>
         </div>

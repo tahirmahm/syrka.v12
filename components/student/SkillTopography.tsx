@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase'
-import { ACQUIRED_SKILLS } from '@/lib/degree-config'
+import { getAllModules } from '@/lib/degree-config'
 
 interface CriticalSkill {
   name: string
@@ -15,7 +15,27 @@ const TOOLCHAIN = [
   { name: 'TensorFlow', status: 'Locked', statusColor: '#45484e' },
 ]
 
+const MASTERY_LEVELS = [85, 80, 75, 72, 70, 68, 65, 60]
+
 export default async function SkillTopography() {
+  const allModules = getAllModules()
+  const completedSkills = Array.from(
+    new Set(
+      allModules
+        .filter(m => m.status === 'completed')
+        .flatMap(m => m.skills)
+    )
+  ).slice(0, 8)
+
+  const futureSkills = Array.from(
+    new Set(
+      allModules
+        .filter(m => m.status === 'blocked' || m.status === 'locked' || m.status === 'ready')
+        .flatMap(m => m.skills)
+        .filter(s => !completedSkills.includes(s))
+    )
+  ).slice(0, 5)
+
   let criticalSkills: CriticalSkill[] = []
   try {
     const supabase = createClient()
@@ -27,8 +47,8 @@ export default async function SkillTopography() {
     criticalSkills = (data ?? []) as CriticalSkill[]
   } catch { /* demo mode */ }
 
-  const acquiredNames = new Set(ACQUIRED_SKILLS.map(s => s.name.toLowerCase()))
-  const gaps = criticalSkills.filter(s => !acquiredNames.has(s.name.toLowerCase()))
+  const acquiredNames = new Set(completedSkills.map(s => s.toLowerCase()))
+  const dbGaps = criticalSkills.filter(s => !acquiredNames.has(s.name.toLowerCase()))
 
   return (
     <div style={{ padding: '32px 40px', maxWidth: 1000, margin: '0 auto' }}>
@@ -44,20 +64,23 @@ export default async function SkillTopography() {
         {/* Acquired Skills */}
         <div style={{ background: '#191C1F', padding: 20 }}>
           <span style={{ fontSize: 9, color: '#73757c', letterSpacing: '0.1em', fontFamily: 'ui-monospace, monospace' }} className="font-label uppercase block mb-4">
-            Acquired Skills
+            Acquired Skills (Stage 1)
           </span>
           <div className="space-y-3">
-            {ACQUIRED_SKILLS.map(skill => (
-              <div key={skill.name}>
-                <div className="flex items-center justify-between mb-1">
-                  <span style={{ fontSize: 12, color: '#a9abb2' }}>{skill.name}</span>
-                  <span style={{ fontSize: 10, color: '#73757c', fontFamily: 'ui-monospace, monospace' }}>{skill.module}</span>
+            {completedSkills.map((skill, i) => {
+              const mastery = MASTERY_LEVELS[i] ?? 60
+              return (
+                <div key={skill}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span style={{ fontSize: 12, color: '#a9abb2' }}>{skill}</span>
+                    <span style={{ fontSize: 10, color: '#73757c', fontFamily: 'ui-monospace, monospace' }}>{mastery}%</span>
+                  </div>
+                  <div style={{ height: 3, background: 'rgba(255,255,255,0.06)' }}>
+                    <div style={{ height: 3, background: '#679cff', width: `${mastery}%` }} />
+                  </div>
                 </div>
-                <div style={{ height: 3, background: 'rgba(255,255,255,0.06)' }}>
-                  <div style={{ height: 3, background: '#679cff', width: `${skill.mastery}%` }} />
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
@@ -67,7 +90,7 @@ export default async function SkillTopography() {
             Critical Gaps → ML Engineer
           </span>
           <div className="space-y-3">
-            {gaps.length > 0 ? gaps.map(skill => (
+            {dbGaps.length > 0 ? dbGaps.map(skill => (
               <div key={skill.name}>
                 <div className="flex items-center justify-between mb-1">
                   <span style={{ fontSize: 12, color: '#a9abb2' }}>{skill.name}</span>
@@ -79,6 +102,16 @@ export default async function SkillTopography() {
                 </div>
                 <div style={{ height: 3, background: 'rgba(255,255,255,0.06)' }}>
                   <div style={{ height: 3, background: '#ee7d77', width: `${Math.min(100, (skill.gap_score ?? 50))}%` }} />
+                </div>
+              </div>
+            )) : futureSkills.length > 0 ? futureSkills.map(skill => (
+              <div key={skill}>
+                <div className="flex items-center justify-between mb-1">
+                  <span style={{ fontSize: 12, color: '#a9abb2' }}>{skill}</span>
+                  <span style={{ fontSize: 10, color: '#ee7d77', fontFamily: 'ui-monospace, monospace' }}>not acquired</span>
+                </div>
+                <div style={{ height: 3, background: 'rgba(255,255,255,0.06)' }}>
+                  <div style={{ height: 3, background: '#ee7d77', width: '0%' }} />
                 </div>
               </div>
             )) : (

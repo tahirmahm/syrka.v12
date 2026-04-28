@@ -9,6 +9,20 @@ const STATUS_COLORS: Record<string, { accent: string; label: string; tagBg: stri
   active: { accent: '#679cff', label: '#679cff', tagBg: 'rgba(103,156,255,0.1)', tagBorder: 'rgba(103,156,255,0.2)' },
   blocked: { accent: '#ee7d77', label: '#ee7d77', tagBg: 'rgba(238,125,119,0.1)', tagBorder: 'rgba(238,125,119,0.2)' },
   locked: { accent: '#45484e', label: '#45484e', tagBg: 'rgba(69,72,78,0.3)', tagBorder: 'rgba(69,72,78,0.4)' },
+  skipped: { accent: 'transparent', label: '#45484e', tagBg: 'rgba(69,72,78,0.2)', tagBorder: 'rgba(69,72,78,0.3)' },
+}
+
+function Stat({ label, value, color }: { label: string; value: string; color: string }) {
+  return (
+    <div>
+      <div style={{ fontSize: 10, fontFamily: 'ui-monospace, monospace', color: '#a9abb2', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
+        {label}
+      </div>
+      <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'ui-monospace, monospace', color }}>
+        {value}
+      </div>
+    </div>
+  )
 }
 
 interface ModuleCardProps {
@@ -19,8 +33,8 @@ interface ModuleCardProps {
 }
 
 export default function ModuleCard({ module, country, index, isSelected }: ModuleCardProps) {
-  const colors = STATUS_COLORS[module.status]
-  const opacity = module.status === 'completed' ? 0.55 : module.status === 'locked' ? 0.4 : 1
+  const colors = STATUS_COLORS[module.status] ?? STATUS_COLORS.locked
+  const opacity = module.status === 'completed' ? 0.55 : module.status === 'locked' ? 0.4 : module.status === 'skipped' ? 0.3 : 1
   const cardBg = module.status === 'blocked' ? '#0a0807' : isSelected ? 'rgba(103,156,255,0.04)' : '#0d0e10'
 
   return (
@@ -58,6 +72,24 @@ export default function ModuleCard({ module, country, index, isSelected }: Modul
             <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#ee7d77' }}>block</span>
             <span style={{ fontSize: 10, color: '#ee7d77', letterSpacing: '0.06em', fontFamily: 'ui-monospace, monospace' }}>
               Prerequisite: {module.blocker} Required
+            </span>
+          </div>
+        )}
+
+        {/* Skipped notice */}
+        {module.status === 'skipped' && (
+          <div
+            className="flex items-center gap-2"
+            style={{
+              padding: '5px 20px 5px 20px',
+              marginLeft: 3,
+              background: 'rgba(69,72,78,0.06)',
+              borderBottom: '1px solid rgba(69,72,78,0.15)',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#45484e' }}>do_not_disturb_on</span>
+            <span style={{ fontSize: 10, color: '#45484e', letterSpacing: '0.06em', fontFamily: 'ui-monospace, monospace' }}>
+              Student elected MST124 — this module not required
             </span>
           </div>
         )}
@@ -104,26 +136,48 @@ export default function ModuleCard({ module, country, index, isSelected }: Modul
               {module.code} - {module.name}
             </h3>
 
-            {/* Priority / Risk / ROI row */}
-            {(module.risk || module.roi) && (
-              <div className="flex items-center gap-4 mt-2">
-                {module.system_directive && (
-                  <span style={{ fontSize: 10, fontFamily: 'ui-monospace, monospace', color: '#679cff', letterSpacing: '0.06em' }}>
-                    Priority 01
-                  </span>
-                )}
-                {module.risk && (
-                  <span style={{ fontSize: 10, fontFamily: 'ui-monospace, monospace', letterSpacing: '0.06em', color: module.risk === 'high' ? '#ee7d77' : '#73757c' }}>
-                    Risk {module.risk.toUpperCase()}
-                  </span>
-                )}
-                {module.roi && (
-                  <span style={{ fontSize: 10, fontFamily: 'ui-monospace, monospace', letterSpacing: '0.06em', color: module.roi === 'extreme' ? '#679cff' : '#73757c' }}>
-                    ROI {module.roi.toUpperCase()}
-                  </span>
-                )}
-              </div>
-            )}
+            {/* Description line */}
+            <p style={{
+              fontSize: 12,
+              color: '#73757c',
+              margin: '2px 0 0',
+              lineHeight: 1.4,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              maxWidth: '100%',
+            }}>
+              {module.description}
+            </p>
+
+            {/* Stats row — Priority / Risk / ROI / MIT */}
+            <div style={{ display: 'flex', gap: 20, marginTop: 8 }}>
+              {module.priority != null && (
+                <Stat label="Priority" value={`0${module.priority}`} color="#e3e5ed" />
+              )}
+              {module.risk && (
+                <Stat label="Risk" value={module.risk.toUpperCase()} color={module.risk === 'high' ? '#ee7d77' : '#a9abb2'} />
+              )}
+              {module.roi && (
+                <Stat label="ROI" value={module.roi.toUpperCase()} color="#679cff" />
+              )}
+              {module.mit && (
+                <div>
+                  <div style={{ fontSize: 10, fontFamily: 'ui-monospace, monospace', color: '#a9abb2', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
+                    MIT
+                  </div>
+                  <a
+                    href={module.mit.url ?? '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: 12, fontWeight: 600, fontFamily: 'ui-monospace, monospace', color: '#679cff', textDecoration: 'none' }}
+                    onClick={e => e.stopPropagation()}
+                  >
+                    {module.mit.number}
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Right — career contribution panel */}
@@ -148,6 +202,11 @@ export default function ModuleCard({ module, country, index, isSelected }: Modul
             <span style={{ fontSize: 9, color: '#73757c', textAlign: 'center', marginTop: 2, lineHeight: 1.2 }}>
               toward ML Engineer
             </span>
+            {module.mit && (
+              <span style={{ fontSize: 9, color: '#45484e', textAlign: 'center', marginTop: 4, fontFamily: 'ui-monospace, monospace' }}>
+                {module.mit.number}
+              </span>
+            )}
           </div>
         </div>
       </div>
