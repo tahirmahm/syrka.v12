@@ -1,0 +1,47 @@
+MIT 18.650 — Statistics for Applications
+Source: MIT OpenCourseWare
+URL: https://ocw.mit.edu/courses/18-650-statistics-for-applications-fall-2016/
+
+=== COURSE DESCRIPTION ===
+This course offers an in-depth treatment of the fundamentals of statistical methods and their applications. Topics include parametric and non-parametric statistics, estimation, confidence intervals, hypothesis testing, regression analysis, and Bayesian statistics. The emphasis is on understanding the mathematical foundations of statistical methods and applying them to real data.
+
+The course bridges theoretical statistics with practical data analysis, preparing students to apply rigorous statistical reasoning to problems in science, engineering, and data science.
+
+=== LECTURE TOPICS ===
+1. Introduction to Statistics
+2. Parametric Statistical Models
+3. Maximum Likelihood Estimation
+4. Properties of Maximum Likelihood Estimators
+5. Confidence Intervals
+6. Delta Method and Fisher Information
+7. Hypothesis Testing Fundamentals
+8. Testing for Means and Proportions
+9. Chi-Squared Tests
+10. Goodness of Fit Tests
+11. Two-Sample Tests
+12. Bayesian Statistics Introduction
+13. Bayesian Estimation and Conjugate Priors
+14. Linear Regression: Model and Estimation
+15. Linear Regression: Inference
+16. Multiple Linear Regression
+17. Model Selection and Validation
+18. Principal Component Analysis
+19. Generalized Linear Models
+20. Logistic Regression
+21. Kernel Density Estimation
+22. Nonparametric Methods
+23. Bootstrap Methods
+24. Review and Applications
+
+=== SKILLS TAUGHT ===
+- Maximum likelihood estimation
+- Confidence interval construction
+- Hypothesis testing (z-test, t-test, chi-squared)
+- P-value calculation and interpretation
+- Fisher information computation
+- Bayesian posterior estimation
+- Conjugate prior selection
+- Simple linear regression fitting
+- Multiple regression model building
+- Logistic regression for classification
+- Principal component analysis (PCA)

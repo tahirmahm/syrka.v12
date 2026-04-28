@@ -1,0 +1,60 @@
+MIT 6.042J — Mathematics for Computer Science
+Source: MIT OpenCourseWare
+URL: https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/
+
+=== COURSE DESCRIPTION ===
+This course covers elementary discrete mathematics for computer science and engineering. It emphasizes mathematical definitions and proofs as well as applicable methods. Topics include formal logic notation, proof methods; induction, well-ordering; sets, relations; elementary graph theory; integer congruences; asymptotic notation and growth of functions; permutations and combinations, counting principles; discrete probability.
+
+The course provides the mathematical foundation essential for computer science, covering the rigorous reasoning and proof techniques that underpin algorithm analysis, cryptography, and computational theory.
+
+=== LECTURE TOPICS ===
+1. Introduction and Proofs
+2. Proof Methods
+3. Well Ordering Principle
+4. Logic and Propositions
+5. Quantifiers and Predicate Logic
+6. Sets
+7. Binary Relations
+8. Induction
+9. State Machines and Invariants
+10. Recursive Definitions
+11. Infinite Sets
+12. GCD and Modular Arithmetic
+13. Euler's Theorem and RSA
+14. Directed Acyclic Graphs
+15. Partial Orders and Equivalence
+16. Degree-Constrained Spanning Trees
+17. Planar Graphs and Colouring
+18. Communication Networks
+19. Sum and Product Rules
+20. Counting with Bijections
+21. Repetitions and Binomial Theorem
+22. Pigeonhole Principle
+23. Inclusion-Exclusion
+24. Conditional Probability
+25. Independence and Causality
+26. Random Variables and Distribution Functions
+27. Expectation
+28. Deviation and Markov/Chebyshev Bounds
+29. Sampling and Confidence
+30. Random Walks and Pagerank
+31. Recurrences
+32. Asymptotic Notation
+33. Generating Functions
+34. Stable Matching
+35. Review and Applications
+
+=== SKILLS TAUGHT ===
+- Formal proof construction (direct, contradiction, induction)
+- Propositional and predicate logic
+- Set theory operations and reasoning
+- Modular arithmetic and congruences
+- RSA cryptography fundamentals
+- Graph theory (directed, undirected, planar)
+- Combinatorial counting (permutations, combinations)
+- Discrete probability calculation
+- Random variable analysis
+- Expected value and variance computation
+- Asymptotic notation (Big O, Theta, Omega)
+- Recurrence relation solving
+- Generating function application

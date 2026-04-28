@@ -1,0 +1,53 @@
+MIT 6.034 — Artificial Intelligence
+Source: MIT OpenCourseWare
+URL: https://ocw.mit.edu/courses/6-034-artificial-intelligence-fall-2010/
+
+=== COURSE DESCRIPTION ===
+This course introduces students to the basic knowledge representation, problem solving, and learning methods of artificial intelligence. Upon completion, students should be able to develop intelligent systems by assembling solutions to concrete computational problems; understand the role of knowledge representation, problem solving, and learning in intelligent-system engineering; and appreciate the role of problem solving, vision, and language in understanding human intelligence.
+
+The course covers a wide range of classical AI techniques including search algorithms, constraint satisfaction, game playing, logical reasoning, neural networks, and genetic algorithms, providing a comprehensive foundation in AI methodology.
+
+=== LECTURE TOPICS ===
+1. Introduction and Scope of AI
+2. Reasoning: Goal Trees and Problem Solving
+3. Reasoning: Goal Trees (continued)
+4. Search: Depth-First, Breadth-First, Hill Climbing
+5. Search: Beam Search, Optimal Search (Branch and Bound)
+6. Search: A* and Games (Minimax, Alpha-Beta)
+7. Constraints: Interpreting Line Drawings
+8. Constraints: Search and Domain Reduction
+9. Constraints: Visual Object Recognition
+10. Introduction to Learning
+11. Learning: Identification Trees and Disorder
+12. Learning: Neural Nets
+13. Learning: Neural Nets (continued) and Backpropagation
+14. Learning: Genetic Algorithms
+15. Learning: Sparse Spaces and Phonology
+16. Learning: Near Misses and Felicity Conditions
+17. Learning: Support Vector Machines
+18. Learning: Boosting
+19. Representations: Classes, Trajectories, Transitions
+20. Architectures: GPS, SOAR, Subsumption, Society of Mind
+21. The AI Business and Probabilistic Inference
+22. Probabilistic Inference (continued)
+23. Model Merging, Cross-Modal Coupling, Course Summary
+
+=== SKILLS TAUGHT ===
+- Goal tree construction and analysis
+- Depth-first and breadth-first search
+- Hill climbing optimisation
+- Beam search implementation
+- Branch and bound algorithm
+- A* search with heuristics
+- Minimax game tree evaluation
+- Alpha-beta pruning
+- Constraint propagation
+- Domain reduction techniques
+- Decision tree (ID3) construction
+- Information gain and entropy calculation
+- Neural network training
+- Backpropagation implementation
+- Genetic algorithm design
+- Support vector machine classification
+- Boosting (AdaBoost) ensemble method
+- Probabilistic inference and Bayesian reasoning

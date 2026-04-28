@@ -1,0 +1,48 @@
+MIT 6.036 — Introduction to Machine Learning
+Source: MIT OpenCourseWare
+URL: https://ocw.mit.edu/courses/6-036-introduction-to-machine-learning-fall-2020/
+
+=== COURSE DESCRIPTION ===
+This course introduces principles, algorithms, and applications of machine learning from the point of view of modeling and prediction. It covers supervised learning (classification and regression), unsupervised learning, and reinforcement learning. The course includes formulation of learning problems, representation, optimization, and generalization, with topics including linear classifiers, perceptrons, neural networks, support vector machines, decision trees, k-nearest neighbours, clustering, and dimensionality reduction.
+
+Students gain both theoretical understanding of machine learning methods and practical experience implementing algorithms in Python.
+
+=== LECTURE TOPICS ===
+1. Introduction to Machine Learning
+2. Perceptrons and Linear Classifiers
+3. Features and Feature Engineering
+4. Margin Maximization and Regularization
+5. Regression: Linear Regression
+6. Gradient Descent Optimization
+7. Stochastic Gradient Descent
+8. Neural Networks: Forward Propagation
+9. Neural Networks: Backpropagation
+10. Convolutional Neural Networks
+11. Recurrent Neural Networks
+12. State Machines and Markov Decision Processes
+13. Reinforcement Learning: Value Iteration
+14. Reinforcement Learning: Q-Learning
+15. Decision Trees and Random Forests
+16. Recommender Systems and Collaborative Filtering
+
+=== SKILLS TAUGHT ===
+- Linear classification (perceptron algorithm)
+- Feature engineering and selection
+- Margin maximization and SVM concepts
+- Linear regression implementation
+- Gradient descent optimisation
+- Stochastic gradient descent
+- Neural network forward propagation
+- Backpropagation algorithm
+- Convolutional neural network architecture
+- Recurrent neural network design
+- Reinforcement learning (value iteration)
+- Q-learning implementation
+- Decision tree construction
+- Random forest ensemble methods
+- Regularisation techniques (L1, L2)
+- Loss function design and selection
+- Model evaluation (accuracy, precision, recall)
+- Cross-validation methodology
+- Collaborative filtering for recommendations
+- Dimensionality reduction techniques

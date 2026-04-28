@@ -1,0 +1,55 @@
+MIT 6.830 — Database Systems
+Source: MIT OpenCourseWare
+URL: https://ocw.mit.edu/courses/6-830-database-systems-fall-2010/
+
+=== COURSE DESCRIPTION ===
+This course covers topics related to the engineering and design of database systems, including data models, database and schema design, schema normalization, query processing, query optimization, transaction processing, and database recovery. It also covers NoSQL systems, distributed databases, and parallel databases. Students complete a series of programming assignments implementing key components of a relational database management system.
+
+The course provides deep understanding of how database systems work internally, preparing students to make informed decisions about data management architectures and to build data-intensive applications.
+
+=== LECTURE TOPICS ===
+1. Introduction and Relational Model
+2. Schema Design and Entity-Relationship Model
+3. Schema Normalization (1NF, 2NF, 3NF, BCNF)
+4. Relational Algebra
+5. SQL: Basic Queries
+6. SQL: Advanced Queries (subqueries, aggregation, joins)
+7. Database Storage and File Organization
+8. Buffer Management and Memory Hierarchy
+9. B+ Tree Indexing
+10. Hash-Based Indexing
+11. Query Processing: Selection and Projection
+12. Query Processing: Joins (nested loop, hash, sort-merge)
+13. Query Optimization: Cost-Based Planning
+14. Query Optimization: Selectivity Estimation
+15. Transaction Processing: ACID Properties
+16. Concurrency Control: Locking Protocols
+17. Concurrency Control: Optimistic and Timestamp
+18. Database Recovery: Write-Ahead Logging
+19. Database Recovery: ARIES Algorithm
+20. Distributed Databases and Two-Phase Commit
+21. Parallel Query Processing
+22. NoSQL Systems and Key-Value Stores
+23. Column Stores, MapReduce, and Modern Architectures
+
+=== SKILLS TAUGHT ===
+- Relational data modelling
+- Entity-relationship diagram design
+- Schema normalisation (BCNF decomposition)
+- SQL query writing (joins, subqueries, aggregation)
+- Relational algebra operations
+- B+ tree index construction and traversal
+- Hash index implementation
+- Query plan cost estimation
+- Join algorithm selection (nested-loop, hash, sort-merge)
+- Query optimisation strategies
+- Transaction isolation level selection
+- Two-phase locking protocol
+- Write-ahead log (WAL) recovery
+- ARIES recovery algorithm
+- Distributed transaction management (2PC)
+- Parallel query execution planning
+- NoSQL data model design
+- MapReduce programming pattern
+- Buffer pool management
+- Selectivity estimation for query planning
