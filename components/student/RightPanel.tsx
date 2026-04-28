@@ -53,11 +53,23 @@ export default function RightPanel({ country }: { country: string }) {
         {/* Execute CTA */}
         <a
           href={`/${country}/student?tab=intelligence&module=${SYSTEM_DIRECTIVE.blocker_module}`}
-          className="btn-primary w-full mt-4 flex items-center justify-center gap-2"
-          style={{ textDecoration: 'none' }}
+          className="w-full mt-4 flex items-center justify-center gap-2"
+          style={{
+            textDecoration: 'none',
+            background: '#679cff',
+            color: '#000',
+            padding: '12px 24px',
+            fontSize: 12,
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            fontFamily: 'ui-monospace, monospace',
+            border: 'none',
+            cursor: 'pointer',
+          }}
         >
           Execute Directive
-          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#000' }}>arrow_forward</span>
         </a>
       </div>
 
@@ -155,6 +167,53 @@ export default function RightPanel({ country }: { country: string }) {
               </div>
             )
           })}
+        </div>
+      </div>
+
+      {/* Impact Analysis */}
+      <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <span
+          className="font-label uppercase block mb-3"
+          style={{ fontFamily: 'ui-monospace, monospace', fontSize: 9, letterSpacing: '0.1em', color: '#73757c' }}
+        >
+          Impact Analysis
+        </span>
+
+        <div className="space-y-px">
+          <div style={{ background: '#1D2023', padding: '10px 12px' }}>
+            <span
+              className="font-label uppercase block"
+              style={{ fontSize: 9, color: '#73757c', letterSpacing: '0.08em', fontFamily: 'ui-monospace, monospace', marginBottom: 4 }}
+            >
+              ETA
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#e3e5ed', fontFamily: "'Space Grotesk', sans-serif" }}>
+              -2 Months
+            </span>
+            <span style={{ fontSize: 10, color: '#73757c', marginLeft: 6 }}>(on completion)</span>
+          </div>
+          <div style={{ background: '#1D2023', padding: '10px 12px' }}>
+            <span
+              className="font-label uppercase block"
+              style={{ fontSize: 9, color: '#73757c', letterSpacing: '0.08em', fontFamily: 'ui-monospace, monospace', marginBottom: 4 }}
+            >
+              Career Vector
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#679cff', fontFamily: "'Space Grotesk', sans-serif" }}>
+              +17% Total Alignment
+            </span>
+          </div>
+          <div style={{ background: '#1D2023', padding: '10px 12px' }}>
+            <span
+              className="font-label uppercase block"
+              style={{ fontSize: 9, color: '#73757c', letterSpacing: '0.08em', fontFamily: 'ui-monospace, monospace', marginBottom: 4 }}
+            >
+              Risk Mitigation
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#ee7d77', fontFamily: "'Space Grotesk', sans-serif" }}>
+              High
+            </span>
+          </div>
         </div>
       </div>
 

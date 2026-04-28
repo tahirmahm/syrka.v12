@@ -2,95 +2,107 @@ import { OU_R88, TARGET_VECTOR, SYSTEM_DIRECTIVE } from '@/lib/degree-config'
 import ModuleCard from './ModuleCard'
 import RightPanel from './RightPanel'
 
-const STAGE_TAG_STYLES: Record<string, { bg: string; color: string; border: string }> = {
-  completed: { bg: 'rgba(169,171,178,0.1)', color: '#a9abb2', border: 'rgba(169,171,178,0.2)' },
-  active: { bg: 'rgba(103,156,255,0.1)', color: '#679cff', border: 'rgba(103,156,255,0.2)' },
-  locked: { bg: 'rgba(69,72,78,0.3)', color: '#45484e', border: 'rgba(69,72,78,0.4)' },
-}
-
 export default function DegreeMatrix({ country, selectedModule }: { country: string; selectedModule: string | null }) {
+  let globalIndex = 0
+
   return (
     <div className="flex" style={{ minHeight: 'calc(100vh - 48px)' }}>
       {/* Left column — 65% */}
       <div className="flex-1" style={{ maxWidth: '65%' }}>
-        {/* System status bar */}
+        {/* Matrix status bar */}
+        <div
+          className="flex items-center gap-2"
+          style={{
+            background: '#000',
+            padding: '6px 16px',
+            fontFamily: 'ui-monospace, monospace',
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            color: '#679cff',
+            textTransform: 'uppercase',
+          }}
+        >
+          <div style={{ width: 6, height: 6, background: '#679cff', animation: 'pulse 2s infinite' }} />
+          <span>Matrix Status: Active</span>
+          <div className="flex-1" />
+          <span style={{ color: '#73757c' }}>
+            Target: {TARGET_VECTOR.role} · {TARGET_VECTOR.alignment}%
+          </span>
+        </div>
+
+        {/* Hero heading */}
+        <div style={{ padding: '24px 16px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+          <h1
+            className="font-headline"
+            style={{
+              fontSize: 'clamp(28px, 4vw, 38px)',
+              fontWeight: 900,
+              letterSpacing: '-0.02em',
+              textTransform: 'uppercase',
+              color: '#e3e5ed',
+              lineHeight: 1,
+              marginBottom: 12,
+            }}
+          >
+            Degree Execution<br />Matrix
+          </h1>
+          <p style={{ fontSize: 12, color: '#939eb4', lineHeight: 1.5, maxWidth: 500 }}>
+            Analyzing active academic modules. Dependency conflicts detected. Prioritization override recommended for optimal career vector alignment.
+          </p>
+        </div>
+
+        {/* Conflict status bar */}
         <div
           className="flex items-center gap-3 flex-wrap"
           style={{
             background: '#000',
-            padding: '8px 24px',
+            padding: '6px 16px',
             borderBottom: '1px solid rgba(255,255,255,0.04)',
           }}
         >
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#ee7d77' }}>warning</span>
-            <span style={{ fontSize: 11, color: '#ee7d77', fontFamily: 'ui-monospace, monospace' }}>
-              2 Dependency Conflicts Detected
-            </span>
-          </div>
-          <div style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.1)' }} />
-          <span style={{ fontSize: 11, color: '#939eb4' }}>
-            Directive: Initialize {SYSTEM_DIRECTIVE.blocker_module} → Unblock {SYSTEM_DIRECTIVE.unblocks}
+          <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#ee7d77' }}>warning</span>
+          <span style={{ fontSize: 10, color: '#ee7d77', fontFamily: 'ui-monospace, monospace', letterSpacing: '0.06em' }}>
+            2 Dependency Conflicts
           </span>
-          <div className="flex-1" />
-          <span style={{ fontSize: 10, color: '#73757c', fontFamily: 'ui-monospace, monospace' }}>
-            Target: {TARGET_VECTOR.role} · {TARGET_VECTOR.alignment}% aligned
+          <div style={{ width: 1, height: 10, background: 'rgba(255,255,255,0.1)' }} />
+          <span style={{ fontSize: 10, color: '#939eb4' }}>
+            Directive: {SYSTEM_DIRECTIVE.blocker_module} → Unblock {SYSTEM_DIRECTIVE.unblocks}
           </span>
         </div>
 
-        {/* Stages + Modules */}
-        {OU_R88.stages.map((stage) => {
-          const tagStyle = STAGE_TAG_STYLES[stage.status]
-          return (
+        {/* Module list */}
+        <div>
+          {OU_R88.stages.map((stage) => (
             <div key={stage.stage}>
-              {/* Stage header */}
-              <div
-                className="flex items-center gap-3"
-                style={{
-                  background: '#000',
-                  borderBottom: '1px solid rgba(255,255,255,0.04)',
-                  padding: '8px 24px',
-                }}
-              >
-                <span
-                  className="font-label uppercase"
-                  style={{
-                    padding: '2px 8px', fontSize: 10, fontWeight: 700,
-                    letterSpacing: '0.08em', fontFamily: 'ui-monospace, monospace',
-                    background: tagStyle.bg, color: tagStyle.color,
-                    border: `1px solid ${tagStyle.border}`,
-                  }}
-                >
-                  Stage {stage.stage}
-                </span>
-                <span className="font-headline font-bold" style={{ fontSize: 13, color: '#e3e5ed' }}>
-                  {stage.name}
-                </span>
-                <span style={{ fontSize: 11, color: '#73757c' }}>{stage.credits} credits</span>
-                <span
-                  className="font-label uppercase"
-                  style={{ fontSize: 10, letterSpacing: '0.06em', color: tagStyle.color }}
-                >
-                  {stage.status}
-                </span>
-                <div className="flex-1" />
-                <span style={{ fontSize: 10, color: '#73757c', fontFamily: 'ui-monospace, monospace' }}>
-                  {stage.modules.length} modules
-                </span>
+              {/* Section label */}
+              <div style={{
+                fontFamily: 'ui-monospace, monospace',
+                fontSize: 10,
+                fontWeight: 600,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: '#73757c',
+                padding: '12px 16px 6px',
+              }}>
+                Stage {stage.stage} — {stage.name} · {stage.credits} credits
               </div>
 
-              {/* Module cards */}
-              {stage.modules.map((mod) => (
-                <ModuleCard
-                  key={mod.code}
-                  module={mod}
-                  country={country}
-                  isSelected={selectedModule === mod.code}
-                />
-              ))}
+              {stage.modules.map((mod) => {
+                const idx = globalIndex++
+                return (
+                  <ModuleCard
+                    key={mod.code}
+                    module={mod}
+                    country={country}
+                    index={idx}
+                    isSelected={selectedModule === mod.code}
+                  />
+                )
+              })}
             </div>
-          )
-        })}
+          ))}
+        </div>
       </div>
 
       {/* Right column — 35% */}

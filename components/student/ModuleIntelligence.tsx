@@ -1,6 +1,7 @@
 import { getModule, getStageForModule, TARGET_VECTOR, SYSTEM_DIRECTIVE, ACQUIRED_SKILLS } from '@/lib/degree-config'
 import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
+import RightPanel from './RightPanel'
 
 const STATUS_TAG: Record<string, { bg: string; color: string; border: string }> = {
   completed: { bg: 'rgba(169,171,178,0.1)', color: '#a9abb2', border: 'rgba(169,171,178,0.2)' },
@@ -37,14 +38,22 @@ export default async function ModuleIntelligence({
 
   if (!mod) {
     return (
-      <div style={{ padding: '32px 40px', maxWidth: 900, margin: '0 auto' }}>
-        <p style={{ color: '#939eb4', fontSize: 14 }}>
-          Select a module from the{' '}
-          <Link href={`/${country}/student?tab=matrix`} style={{ color: '#679cff', textDecoration: 'underline' }}>
-            Degree Matrix
-          </Link>{' '}
-          to view intelligence.
-        </p>
+      <div className="flex" style={{ minHeight: 'calc(100vh - 48px)' }}>
+        <div className="flex-1" style={{ maxWidth: '65%', padding: '32px 40px' }}>
+          <p style={{ color: '#939eb4', fontSize: 14 }}>
+            Select a module from the{' '}
+            <Link href={`/${country}/student?tab=matrix`} style={{ color: '#679cff', textDecoration: 'underline' }}>
+              Degree Matrix
+            </Link>{' '}
+            to view intelligence.
+          </p>
+        </div>
+        <div
+          className="hidden md:block shrink-0"
+          style={{ width: '35%', borderLeft: '1px solid rgba(255,255,255,0.05)' }}
+        >
+          <RightPanel country={country} />
+        </div>
       </div>
     )
   }
@@ -70,7 +79,8 @@ export default async function ModuleIntelligence({
 
 
   return (
-    <div style={{ padding: '32px 40px', maxWidth: 900, margin: '0 auto' }}>
+    <div className="flex" style={{ minHeight: 'calc(100vh - 48px)' }}>
+    <div className="flex-1 overflow-y-auto" style={{ maxWidth: '65%', padding: '32px 40px' }}>
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
@@ -365,6 +375,15 @@ export default async function ModuleIntelligence({
           Execute Hybrid Plan
         </button>
       </div>
+    </div>
+
+    {/* Right column — 35% persistent */}
+    <div
+      className="hidden md:block shrink-0"
+      style={{ width: '35%', borderLeft: '1px solid rgba(255,255,255,0.05)' }}
+    >
+      <RightPanel country={country} />
+    </div>
     </div>
   )
 }
