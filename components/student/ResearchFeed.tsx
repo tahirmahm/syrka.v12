@@ -23,14 +23,50 @@ interface FeedData {
 export default function ResearchFeed({ moduleCode }: { moduleCode: string }) {
   const [feed, setFeed] = useState<FeedData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [live, setLive] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
     setLoading(true)
+    setLive(false)
+
     fetch(`/api/research/feed?module=${moduleCode}`)
       .then(r => r.json())
-      .then(data => setFeed(data))
-      .catch(() => setFeed(null))
-      .finally(() => setLoading(false))
+      .then(async (data: FeedData) => {
+        if (cancelled) return
+        const hasCached = data.papers && data.papers.length > 0
+        if (hasCached) {
+          setFeed(data)
+          setLoading(false)
+          return
+        }
+        setLive(true)
+        try {
+          const arxivRes = await fetch(`/api/research/arxiv?module=${moduleCode}`)
+          if (cancelled) return
+          const arxivData = await arxivRes.json()
+          setFeed({
+            papers: arxivData.papers ?? [],
+            field_velocity: 0,
+            cached: false,
+          })
+        } catch {
+          if (!cancelled) setFeed(null)
+        }
+        if (!cancelled) setLoading(false)
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setLive(true)
+          fetch(`/api/research/arxiv?module=${moduleCode}`)
+            .then(r => r.json())
+            .then(data => { if (!cancelled) setFeed({ papers: data.papers ?? [], field_velocity: 0, cached: false }) })
+            .catch(() => { if (!cancelled) setFeed(null) })
+            .finally(() => { if (!cancelled) setLoading(false) })
+        }
+      })
+
+    return () => { cancelled = true }
   }, [moduleCode])
 
   const papers = feed?.papers ?? []
@@ -43,6 +79,17 @@ export default function ResearchFeed({ moduleCode }: { moduleCode: string }) {
           <span style={{ fontSize: 10, fontFamily: 'ui-monospace, monospace', color: '#679cff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             Research Feed
           </span>
+          {live && !loading && papers.length > 0 && (
+            <span style={{
+              padding: '2px 8px', fontSize: 10, fontWeight: 700,
+              fontFamily: 'ui-monospace, monospace', letterSpacing: '0.06em',
+              background: 'rgba(103,156,255,0.1)',
+              color: '#679cff',
+              border: '1px solid rgba(103,156,255,0.2)',
+            }}>
+              LIVE
+            </span>
+          )}
           {velocity > 0 && (
             <span style={{
               padding: '2px 8px', fontSize: 10, fontWeight: 700,
@@ -55,11 +102,15 @@ export default function ResearchFeed({ moduleCode }: { moduleCode: string }) {
             </span>
           )}
         </div>
-        {feed?.last_updated && (
+        {feed?.last_updated ? (
           <span style={{ fontSize: 10, color: '#45484e', fontFamily: 'ui-monospace, monospace' }}>
             {new Date(feed.last_updated).toLocaleDateString()}
           </span>
-        )}
+        ) : live && !loading && papers.length > 0 ? (
+          <span style={{ fontSize: 10, color: '#45484e', fontFamily: 'ui-monospace, monospace' }}>
+            arXiv · just now
+          </span>
+        ) : null}
       </div>
 
       {loading ? (
@@ -67,12 +118,14 @@ export default function ResearchFeed({ moduleCode }: { moduleCode: string }) {
           <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
             <div style={{ height: 3, background: '#679cff', width: '40%', animation: 'pulse 1.5s infinite' }} />
           </div>
-          <span style={{ fontSize: 11, color: '#45484e', marginTop: 8 }} className="block">Loading research feed...</span>
+          <span style={{ fontSize: 11, color: '#45484e', marginTop: 8 }} className="block">
+            {live ? 'Fetching live from arXiv...' : 'Loading research feed...'}
+          </span>
         </div>
       ) : papers.length === 0 ? (
         <div style={{ padding: '12px 0' }}>
           <span style={{ fontSize: 12, color: '#45484e' }}>
-            No papers cached yet. The nightly cron will populate this feed.
+            No papers found for this module&apos;s topics.
           </span>
         </div>
       ) : (
