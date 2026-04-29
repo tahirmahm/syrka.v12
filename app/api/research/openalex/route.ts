@@ -33,7 +33,6 @@ export async function GET(req: NextRequest) {
     const papers: ResearchPaper[] = (json.results ?? []).map((w: Record<string, unknown>) => {
       const authorships = (w.authorships as { author: { display_name: string } }[] | null) ?? []
       const ids = w.ids as Record<string, string> | null
-      const biblio = w.biblio as Record<string, string> | null
       const doi = (w.doi as string | null)?.replace('https://doi.org/', '')
       return {
         title: (w.display_name as string) ?? '',

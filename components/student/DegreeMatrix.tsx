@@ -6,7 +6,7 @@ import RightPanel from './RightPanel'
 export default async function DegreeMatrix({ country, selectedModule }: { country: string; selectedModule: string | null }) {
   let globalIndex = 0
 
-  let velocityMap: Record<string, number> = {}
+  const velocityMap: Record<string, number> = {}
   try {
     const supabase = createClient()
     const { data } = await supabase
