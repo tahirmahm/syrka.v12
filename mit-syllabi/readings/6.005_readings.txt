@@ -1,0 +1,25 @@
+MIT COURSE: 6.005 — Software Construction
+SECTION: Readings | FETCHED: April 28, 2026
+
+=== TEXTBOOKS ===
+No textbook. All readings are course online notes at: https://web.mit.edu/6.005/www/fa16/
+27 standalone technical articles.
+
+=== READING LIST BY SESSION ===
+R1: Static Checking | R2: Basic Java | R3: Testing (test-first programming)
+R4: Code Review | R5: Version Control (Git) | R6: Specifications (preconditions, postconditions)
+R7: Designing Specifications | R8: Avoiding Debugging (assertions)
+R9: Mutability and Immutability | R10: Recursion | R11: Debugging
+R12: Abstract Data Types | R13: Abstraction Functions and Rep Invariants
+R14: Interfaces | R15: Equality | R16: Recursive Data Types
+R17: Regular Expressions and Grammars | R18: Parser Generators
+R19: Concurrency | R20: Thread Safety | R21: Sockets and Networking
+R22: Queues and Message Passing | R23: Locks and Synchronization
+R24: Graphical User Interfaces | R25: Map/Filter/Reduce
+R26: Little Languages | R27: Team Version Control
+
+=== KEY CONCEPTS ===
+Safe from bugs / easy to understand / ready for change, test-first programming,
+specifications as contracts, representation independence, immutability as safety,
+rep invariants, abstraction functions, recursive data types, grammar-based parsing,
+thread safety via confinement and synchronization, deadlock prevention, functional programming

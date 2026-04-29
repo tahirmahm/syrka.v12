@@ -1,0 +1,35 @@
+MIT COURSE: RES-15-004 — Systems Thinking and Modeling for a Complex World
+SECTION: Readings | FETCHED: April 28, 2026
+
+=== TEXTBOOKS ===
+Primary: Sterman, John. Business Dynamics. McGraw-Hill, 2000. ISBN: 9780072311358.
+Secondary: Meadows, Donella. Thinking in Systems. Chelsea Green, 2008. ISBN: 9781603580557.
+
+=== READING LIST BY SESSION ===
+Ses 1: Sterman Ch 1 (Limits to growth); Meadows Ch 1 (The basics)
+Ses 2: Sterman Ch 5 (Causal loop diagrams); Meadows Ch 2 (Systems zoo)
+Ses 3: Sterman Ch 6 (Stock and flow networks)
+Ses 4: Sterman Appendix (Vensim tutorial)
+Ses 5: Sterman Ch 4 (Structure and behaviour); Meadows Ch 3
+Ses 6: Sterman Ch 11 (Supply chain and bullwhip effect)
+Ses 7: Sterman Ch 17–18 (Boom and bust; commodity cycles)
+Ses 8: Sterman Ch 7 (Dynamics of growth)
+Ses 9: Sterman Ch 8 (Path dependence, technology lock-in)
+Ses 10: Sterman Ch 9; Meadows Ch 5 (System traps)
+Ses 11: Sterman Ch 2; Meadows Ch 6 (Leverage points)
+Ses 12: Sterman Ch 21 (Model testing and validation)
+Ses 13: Sterman Ch 3 (Management flight simulators)
+Ses 14: SIR epidemic model readings
+Ses 15: Santa Fe Institute readings on complex adaptive systems
+Ses 16: Meadows Ch 7 (Living in a world of systems)
+
+=== LANDMARK REFERENCES ===
+Senge (1990) The Fifth Discipline — system archetypes
+Forrester (1971) World Dynamics — system dynamics foundations
+Kermack & McKendrick (1927) — SIR epidemic model
+
+=== KEY CONCEPTS ===
+Reinforcing vs balancing feedback loops, stock and flow diagram construction,
+system archetypes (limits to growth, shifting the burden, tragedy of the commons),
+delays causing oscillation, bullwhip effect, tipping points, policy resistance,
+Meadows leverage points, SIR epidemic dynamics, model validation, emergence

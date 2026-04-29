@@ -1,0 +1,22 @@
+MIT COURSE: 6.005 — Software Construction
+SECTION: Assignments | FETCHED: April 28, 2026
+
+=== ASSIGNMENT LIST ===
+PS0: Turtle Graphics (Java warmup)
+PS1: Tweet Tweet (text processing, specs, testing)
+PS2: Multiplayer Minesweeper (concurrency, thread safety)
+PS3: Expression Evaluator (recursive data types, parsers)
+PS4: Music Language (DSL design)
+Final Project: 3-person team, 3 weeks
+
+=== SKILLS DEMONSTRATED ===
+- Write JUnit test suites before implementing (test-first)
+- Document specs with preconditions, postconditions, exceptions
+- Implement ADTs with rep invariants and abstraction functions
+- Build thread-safe concurrent servers with multiple simultaneous clients
+- Implement correct lock ordering to prevent deadlock
+- Design and implement recursive data type hierarchies (ASTs)
+- Write context-free grammars and implement recursive descent parsers
+- Design a small DSL from grammar to interpreter
+- Use Git branching, merging, and code review workflows
+- Complete substantial team project with code review

@@ -1,0 +1,19 @@
+MIT COURSE: 6.042J — Mathematics for Computer Science
+SECTION: Assignments | FETCHED: April 28, 2026
+
+=== ASSIGNMENT LIST ===
+Problem Sets 1–12 covering all 4 units. 4–6 problems each.
+In-class exams after each unit (4 total).
+
+=== SKILLS DEMONSTRATED ===
+- Write rigorous proofs by simple and strong mathematical induction
+- Prove program correctness using state machine invariants
+- Apply number theory (GCD, modular arithmetic) to RSA cryptography
+- Analyse graph properties: connectivity, coloring, Euler paths, spanning trees
+- Solve and prove recurrence relations using Master theorem
+- Apply asymptotic analysis (Big-O, Theta) to algorithm comparison
+- Count using permutations, combinations, inclusion-exclusion, generating functions
+- Apply pigeonhole principle to existence proofs
+- Calculate conditional probability using Bayes theorem
+- Compute expected values and variances for discrete distributions
+- Apply Markov and Chebyshev inequalities to bound tail probabilities

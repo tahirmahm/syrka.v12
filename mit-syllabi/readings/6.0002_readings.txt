@@ -1,0 +1,27 @@
+MIT COURSE: 6.0002 — Computational Thinking and Data Science
+SECTION: Readings | FETCHED: April 28, 2026
+
+=== TEXTBOOKS ===
+Guttag, John. Introduction to Computation and Programming Using Python, 2nd ed. MIT Press, 2016. ISBN: 9780262529624.
+
+=== READING LIST BY SESSION ===
+SES 1: Optimization Problems — Ch 12.1, Ch 5.4
+SES 2: Optimization Problems — Ch 13
+SES 3: Graph-theoretic Models — Ch 12.2
+SES 4: Stochastic Thinking — Ch 14
+SES 5: Random Walks — Ch 11, Ch 14
+SES 6: Monte Carlo Simulation — Ch 15.1–15.4, Ch 16
+SES 7: Confidence Intervals — Ch 16.4, Ch 17
+SES 8: Sampling and Standard Error — Ch 17
+SES 9: Understanding Experimental Data — Ch 18
+SES 10: Experimental Data cont. — Ch 18
+SES 11: Introduction to Machine Learning — Ch 22
+SES 12: Clustering — Ch 23
+SES 13: Classification — Ch 24
+SES 14: Classification and Statistical Sins — Ch 21
+SES 15: Statistical Sins and Wrap Up — Ch 21
+
+=== KEY CONCEPTS ===
+Knapsack optimization, dynamic programming, graph shortest-path, random walks,
+Monte Carlo simulation, confidence intervals, sampling, standard error, curve fitting,
+k-means clustering, classification algorithms, statistical pitfalls

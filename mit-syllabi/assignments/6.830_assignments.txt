@@ -1,0 +1,24 @@
+MIT COURSE: 6.830 / 6.814 — Database Systems
+SECTION: Labs | FETCHED: April 28, 2026
+
+=== ASSIGNMENT LIST ===
+Lab 1: SimpleDB — Buffer Pool and Heap Files
+Lab 2: SimpleDB — B+ Tree Index
+Lab 3: SimpleDB — Query Operators
+Lab 4: SimpleDB — B+ Tree Transactions (2PL)
+Lab 5: Query Optimisation (cost-based, DP join ordering)
+Lab 6: Rollback and Recovery (ARIES)
+
+=== SKILLS DEMONSTRATED ===
+- Implement LRU buffer pool manager with dirty page eviction in Java
+- Implement slotted page layout with header and free space tracking
+- Implement B+ tree with correct split/merge/redistribute on insert/delete
+- Implement relational algebra operators: scan, filter, join, aggregation, insert, delete
+- Add two-phase locking to concurrent data structure, deadlock-free
+- Implement cost-based join order optimisation using dynamic programming
+- Estimate query selectivity using histogram statistics
+- Implement write-ahead logging with structured log records per operation
+- Implement ARIES: analysis, redo, and undo recovery phases
+- Write correct SQL: joins, aggregations, subqueries
+- Design normalised schemas (BCNF decomposition)
+- Analyse transaction schedules for conflict serializability

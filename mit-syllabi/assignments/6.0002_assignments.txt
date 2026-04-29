@@ -1,0 +1,19 @@
+MIT COURSE: 6.0002 — Computational Thinking and Data Science
+SECTION: Assignments | FETCHED: April 28, 2026
+
+=== ASSIGNMENT LIST ===
+PS1: Space Cows Transportation (knapsack optimization)
+PS2: Fastest Way Around MIT (graph shortest-path)
+PS3: Robot Simulation (Monte Carlo, OOP)
+PS4: Disease and Bacteria Simulation (agent-based epidemic model)
+PS5: Modeling Global Warming (CSV data, curve fitting)
+
+=== SKILLS DEMONSTRATED ===
+- Implement greedy and dynamic programming knapsack algorithms
+- Apply graph shortest-path to real-world routing
+- Build OOP simulations with domain entity classes
+- Use Monte Carlo methods for stochastic simulation
+- Model epidemic spread with agent-based simulation
+- Parse real CSV data files
+- Implement polynomial curve fitting for time-series prediction
+- Write comprehensive unit tests

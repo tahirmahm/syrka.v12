@@ -1,0 +1,27 @@
+MIT COURSE: 18.650 — Statistics for Applications
+SECTION: Readings | FETCHED: April 28, 2026
+
+=== TEXTBOOKS ===
+Lecture notes by instructor.
+Supplementary: All of Statistics — Larry Wasserman (Springer). ISBN: 9780387402727.
+Supplementary: Introduction to Mathematical Statistics — Hogg, McKean, Craig (7th ed).
+
+=== READING LIST BY LECTURE ===
+Lec 1–2: Introduction — parametric models, exponential families, identifiability
+Lec 3: Parametric estimation — method of moments
+Lec 4–5: Maximum likelihood estimation — consistency, asymptotic normality
+Lec 6: Fisher information and Cramér-Rao lower bound
+Lec 7–10: Hypothesis testing — Type I/II errors, p-values, level and power
+Lec 10–11: Wald test, likelihood ratio test, chi-squared test
+Lec 11–12: Goodness of fit — chi-squared GOF, Kolmogorov-Smirnov
+Lec 13–14: Regression — simple OLS, R², residual diagnostics
+Lec 15–16: Multiple regression — matrix form, F-test, AIC/BIC
+Lec 17–18: Bayesian statistics — prior, posterior, conjugate priors
+Lec 18–19: Bayesian inference — MAP, credible intervals, MCMC intro
+Lec 19–20: PCA — covariance matrix, eigendecomposition
+Lec 21–24: GLMs — logistic regression, Poisson regression, link functions
+
+=== KEY CONCEPTS ===
+Parametric models, MLE consistency and asymptotic normality, Fisher information,
+Cramér-Rao bound, hypothesis testing, p-values, goodness-of-fit, OLS regression,
+multiple regression, Bayesian inference, conjugate priors, PCA, GLMs

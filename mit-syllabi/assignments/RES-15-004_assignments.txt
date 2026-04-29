@@ -1,0 +1,24 @@
+MIT COURSE: RES-15-004 — Systems Thinking and Modeling for a Complex World
+SECTION: Assignments | FETCHED: April 28, 2026
+
+=== ASSIGNMENT LIST ===
+A1: Causal loop diagram for a real-world system of your choice
+A2: Quantitative stock and flow model in Vensim
+A3: Policy analysis — test 3 interventions in your model
+Group Project: Build and present a full system dynamics model on a complex problem
+Reflection Paper: How systems thinking reveals what conventional analysis misses
+
+=== SKILLS DEMONSTRATED ===
+- Identify feedback loop structure in real-world situations
+- Draw causal loop diagrams with correct polarity (+/-) notation
+- Distinguish reinforcing from balancing feedback loops
+- Build quantitative stock-and-flow models in Vensim PLE
+- Write Vensim equations (INTEG, DELAY, SMOOTH, IF THEN ELSE)
+- Calibrate model parameters to historical reference data
+- Run simulations and interpret output graphs vs reference modes
+- Design 3 policy interventions and test system-level impact in simulation
+- Identify unintended consequences of policies
+- Apply system archetypes to diagnose recurring failure patterns
+- Build SIR epidemic model and run vaccination policy scenarios
+- Present model-based insights to non-technical stakeholders
+- Write model validation report (structural and behaviour validity)

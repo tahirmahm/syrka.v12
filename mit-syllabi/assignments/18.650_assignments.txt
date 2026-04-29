@@ -1,0 +1,26 @@
+MIT COURSE: 18.650 — Statistics for Applications
+SECTION: Assignments | FETCHED: April 28, 2026
+
+=== ASSIGNMENT LIST ===
+HW1: Parametric models and method of moments
+HW2: Maximum likelihood estimation
+HW3: Hypothesis testing
+HW4: Goodness of fit and regression
+HW5: Bayesian statistics and PCA
+HW6: Generalized linear models
+Midterm + Final Exam
+
+=== SKILLS DEMONSTRATED ===
+- Derive method of moments estimators for standard distributions
+- Compute MLE analytically and verify asymptotic properties
+- Prove consistency and asymptotic normality of MLE
+- Calculate Fisher information and verify Cramér-Rao bound
+- Design hypothesis tests with specified Type I error rate
+- Compute p-values and interpret statistical significance
+- Perform chi-squared and Kolmogorov-Smirnov goodness-of-fit tests
+- Fit OLS regression: estimate coefficients, compute R², diagnose residuals
+- Apply Bayesian inference: conjugate priors, compute posteriors analytically
+- Reduce dimensionality with PCA: eigenvectors, explained variance ratio
+- Fit logistic regression and interpret log-odds, predicted probabilities
+- Apply Poisson regression for count data
+- Use R or Python for statistical computing
