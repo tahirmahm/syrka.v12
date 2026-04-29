@@ -2,6 +2,8 @@ import { getModule, getStageForModule, TARGET_VECTOR, SYSTEM_DIRECTIVE } from '@
 import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
 import RightPanel from './RightPanel'
+import ResearchFeed from './ResearchFeed'
+import WeeklyDigest from './WeeklyDigest'
 
 const STATUS_TAG: Record<string, { bg: string; color: string; border: string }> = {
   completed: { bg: 'rgba(169,171,178,0.1)', color: '#a9abb2', border: 'rgba(169,171,178,0.2)' },
@@ -305,6 +307,14 @@ export default async function ModuleIntelligence({
           </div>
         </div>
       )}
+
+      {/* Research Feed */}
+      <ResearchFeed moduleCode={moduleCode} />
+
+      {/* Weekly Digest */}
+      <div className="mb-6">
+        <WeeklyDigest />
+      </div>
 
       {/* Skill Topography grid */}
       <div className="mb-6">

@@ -30,9 +30,10 @@ interface ModuleCardProps {
   country: string
   index: number
   isSelected?: boolean
+  fieldVelocity?: number
 }
 
-export default function ModuleCard({ module, country, index, isSelected }: ModuleCardProps) {
+export default function ModuleCard({ module, country, index, isSelected, fieldVelocity }: ModuleCardProps) {
   const colors = STATUS_COLORS[module.status] ?? STATUS_COLORS.locked
   const opacity = module.status === 'completed' ? 0.55 : module.status === 'locked' ? 0.4 : module.status === 'skipped' ? 0.3 : 1
   const cardBg = module.status === 'blocked' ? '#0a0807' : isSelected ? 'rgba(103,156,255,0.04)' : '#0d0e10'
@@ -176,6 +177,13 @@ export default function ModuleCard({ module, country, index, isSelected }: Modul
                     {module.mit.number}
                   </a>
                 </div>
+              )}
+              {fieldVelocity != null && fieldVelocity > 0 && (
+                <Stat
+                  label="Velocity"
+                  value={`${fieldVelocity}/30d`}
+                  color={fieldVelocity > 5 ? '#679cff' : '#73757c'}
+                />
               )}
             </div>
           </div>

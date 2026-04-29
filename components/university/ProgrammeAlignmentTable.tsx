@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Programme } from '@/lib/types'
 import type { CurriculumAnalysisResult } from '@/lib/types'
 import CurriculumRecommendations from './CurriculumRecommendations'
@@ -8,6 +8,18 @@ import CurriculumRecommendations from './CurriculumRecommendations'
 interface ProgrammeAlignmentTableProps {
   programmes: Programme[]
   accentColor: string
+}
+
+function freshnessColor(score: number): string {
+  if (score >= 80) return '#16A34A'
+  if (score >= 50) return '#D97706'
+  return '#DC2626'
+}
+
+function freshnessLabel(score: number): string {
+  if (score >= 80) return 'Current'
+  if (score >= 50) return 'Aging'
+  return 'Stale'
 }
 
 const levelColors: Record<string, { bg: string; text: string }> = {
@@ -33,6 +45,14 @@ export default function ProgrammeAlignmentTable({
   const [loading, setLoading] = useState(false)
   const [analysis, setAnalysis] = useState<CurriculumAnalysisResult | null>(null)
   const [analysisProgrammeName, setAnalysisProgrammeName] = useState('')
+  const [freshnessScores, setFreshnessScores] = useState<Record<string, number>>({})
+
+  useEffect(() => {
+    fetch('/api/research/freshness')
+      .then(r => r.json())
+      .then(data => setFreshnessScores(data.scores ?? {}))
+      .catch(() => {})
+  }, [])
 
   async function handleAnalyse(programme: Programme) {
     setLoading(true)
@@ -83,6 +103,9 @@ export default function ProgrammeAlignmentTable({
               </th>
               <th className="text-right px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58]">
                 Employment Rate
+              </th>
+              <th className="text-center px-4 py-3 text-[11px] font-medium tracking-[0.08em] uppercase text-[#484F58]">
+                Freshness
               </th>
               <th className="px-4 py-3" />
             </tr>
@@ -158,6 +181,21 @@ export default function ProgrammeAlignmentTable({
                       ? `${prog.employment_rate_6months}%`
                       : '--'}
                   </td>
+                  <td className="px-4 py-3.5 text-center">
+                    {freshnessScores[prog.id] != null ? (
+                      <span
+                        className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold tabular-nums"
+                        style={{
+                          backgroundColor: `${freshnessColor(freshnessScores[prog.id])}18`,
+                          color: freshnessColor(freshnessScores[prog.id]),
+                        }}
+                      >
+                        {freshnessScores[prog.id]}% {freshnessLabel(freshnessScores[prog.id])}
+                      </span>
+                    ) : (
+                      <span className="text-[#484F58]">--</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3.5 text-right">
                     <button
                       type="button"
@@ -181,7 +219,7 @@ export default function ProgrammeAlignmentTable({
             })}
             {programmes.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-[#484F58] text-sm">
+                <td colSpan={8} className="px-4 py-12 text-center text-[#484F58] text-sm">
                   No programmes found for this institution.
                 </td>
               </tr>

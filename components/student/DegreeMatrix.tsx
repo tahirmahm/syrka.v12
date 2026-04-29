@@ -1,9 +1,23 @@
 import { OU_R88, TARGET_VECTOR, SYSTEM_DIRECTIVE, getBlockedModules, getSystemDirectiveModule } from '@/lib/degree-config'
+import { createClient } from '@/lib/supabase'
 import ModuleCard from './ModuleCard'
 import RightPanel from './RightPanel'
 
-export default function DegreeMatrix({ country, selectedModule }: { country: string; selectedModule: string | null }) {
+export default async function DegreeMatrix({ country, selectedModule }: { country: string; selectedModule: string | null }) {
   let globalIndex = 0
+
+  let velocityMap: Record<string, number> = {}
+  try {
+    const supabase = createClient()
+    const { data } = await supabase
+      .from('research_feed_cache')
+      .select('module_code, field_velocity')
+    if (data) {
+      for (const row of data) {
+        velocityMap[row.module_code] = row.field_velocity
+      }
+    }
+  } catch { /* table may not exist yet */ }
   const blocked = getBlockedModules()
   const directive = getSystemDirectiveModule()
 
@@ -114,6 +128,7 @@ export default function DegreeMatrix({ country, selectedModule }: { country: str
                       country={country}
                       index={idx}
                       isSelected={selectedModule === mod.code}
+                      fieldVelocity={velocityMap[mod.code]}
                     />
                   )
                 })}
