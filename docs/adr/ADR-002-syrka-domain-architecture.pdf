@@ -1,0 +1,4112 @@
+%PDF-1.4
+%
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R 30 0 R 32 0 R 34 0 R 36 0 R 38 0 R 40 0 R 42 0 R 44 0 R 46 0 R 48 0 R 50 0 R 52 0 R 54 0 R 56 0 R 58 0 R 60 0 R 62 0 R 64 0 R 66 0 R 68 0 R 70 0 R] /Count 34 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 2881 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(ADR-002 - Syrka Domain Architecture, Bounded Contexts & System Ownership) Tj
+T*
+() Tj
+T*
+(Status: Accepted) Tj
+T*
+(Date: 2026-07-07) Tj
+T*
+(Builds on: ADR-001 - Selection of the Open-Source LMS Foundation for Syrka) Tj
+T*
+(Decision owners: Architecture / Engineering / Product) Tj
+T*
+(Scope: Permanent Syrka domain architecture, system ownership, data ownership, event contracts,) Tj
+T*
+( and Open edX boundary) Tj
+T*
+() Tj
+T*
+(1. Executive Summary) Tj
+T*
+() Tj
+T*
+(ADR-001 selected an Open edX Hybrid approach: Open edX is a bounded operational LMS/runtime ) Tj
+T*
+(substrate, not the strategic product core. ADR-002 defines the permanent architecture that ) Tj
+T*
+(makes that decision safe.) Tj
+T*
+() Tj
+T*
+(Open edX is not Syrka. Open edX delivers learning experiences and captures educational ) Tj
+T*
+(activity. Syrka transforms those activities into human capability intelligence, career ) Tj
+T*
+(mobility, institutional analytics, workforce planning, and cross-border capability corridors.) Tj
+T*
+() Tj
+T*
+(The architectural philosophy is:) Tj
+T*
+() Tj
+T*
+(1. Syrka owns all intelligence. Ontologies, capability graphs, inference, career intent, ) Tj
+T*
+(market signals, national strategy alignment, recommendations, passports, and workforce ) Tj
+T*
+(mobility are Syrka-owned systems.) Tj
+T*
+(2. The LMS is replaceable. Open edX must remain behind an anti-corruption layer. Syrka must ) Tj
+T*
+(never depend directly on Open edX tables, internal APIs, event names, or implementation-) Tj
+T*
+(specific identifiers.) Tj
+T*
+(3. Events are the backbone. Learning activity becomes canonical Syrka events. Canonical events) Tj
+T*
+( become evidence. Evidence becomes capability claims. Capability claims become ) Tj
+T*
+(recommendations, credentials, job passports, and mobility decisions.) Tj
+T*
+(4. Each domain has one owner. No entity, table, event, or API may have shared ownership. ) Tj
+T*
+(Domains may reference each other by stable identifiers and consume each other's events, but ) Tj
+T*
+(they do not mutate each other's data.) Tj
+T*
+(5. AI decisions require provenance. No capability inference, opportunity recommendation, ) Tj
+T*
+(curriculum recommendation, or mobility judgment is accepted without evidence, confidence, ) Tj
+T*
+(explanation, model/version metadata, and bias/safety review.) Tj
+T*
+(6. Syrka protects its IP by owning the semantic layer. The proprietary value is not course ) Tj
+T*
+(delivery. It is the capability ontology, graph, inference engine, market alignment, career ) Tj
+T*
+(intelligence, passport, and corridor logic.) Tj
+T*
+() Tj
+T*
+(The permanent flow is:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Student Learning) Tj
+T*
+(  v) Tj
+T*
+(Educational Evidence) Tj
+T*
+(  v) Tj
+T*
+(Canonical Syrka Event Bus) Tj
+T*
+(  v) Tj
+T*
+(Syrka Ontology) Tj
+T*
+(  v) Tj
+T*
+(Human Capability Graph) Tj
+T*
+(  v) Tj
+T*
+(Capability Inference Engine) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 1525 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(  v) Tj
+T*
+(Career Intent Engine) Tj
+T*
+(  v) Tj
+T*
+(Market Signal Engine) Tj
+T*
+(  v) Tj
+T*
+(National Vision Layer) Tj
+T*
+(  v) Tj
+T*
+(Syrka Odyssey) Tj
+T*
+(  v) Tj
+T*
+(Capability Dashboard) Tj
+T*
+(  v) Tj
+T*
+(Job Passport) Tj
+T*
+(  v) Tj
+T*
+(Employer Platform) Tj
+T*
+(  v) Tj
+T*
+(Government Platform) Tj
+T*
+(  v) Tj
+T*
+(Workforce Mobility Engine) Tj
+T*
+(  v) Tj
+T*
+(Cross-Border Capability Corridors) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(2. Domain-Driven Design) Tj
+T*
+() Tj
+T*
+(2.1 Domain boundaries) Tj
+T*
+() Tj
+T*
+(Syrka is a domain-driven platform composed of bounded contexts. Each bounded context owns a ) Tj
+T*
+(business capability, a domain model, persistence boundaries, APIs, events, and team ) Tj
+T*
+(accountability.) Tj
+T*
+() Tj
+T*
+(The primary bounded contexts are:) Tj
+T*
+() Tj
+T*
+(1. Learning Management) Tj
+T*
+(2. Identity & Access) Tj
+T*
+(3. Syrka Ontology) Tj
+T*
+(4. Human Capability Graph) Tj
+T*
+(5. Capability Inference Engine) Tj
+T*
+(6. Career Intent Engine) Tj
+T*
+(7. Market Signal Engine) Tj
+T*
+(8. National Vision Layer) Tj
+T*
+(9. Research Intelligence) Tj
+T*
+(10. GitHub Intelligence) Tj
+T*
+(11. LinkedIn Intelligence) Tj
+T*
+(12. Capability Dashboard) Tj
+T*
+(13. Portfolio Generator) Tj
+T*
+(14. Opportunity Engine) Tj
+T*
+(15. Employer Platform) Tj
+T*
+(16. Faculty Platform) Tj
+T*
+(17. Institutional Analytics) Tj
+T*
+(18. Curriculum Intelligence) Tj
+T*
+(19. Job Passport) Tj
+T*
+(20. Verified Credential Ledger) Tj
+T*
+(21. Workforce Mobility Engine) Tj
+T*
+(22. Syrka Corridors) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 3213 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(23. Public Capability Profile) Tj
+T*
+(24. AI-Native Learning Analytics) Tj
+T*
+(25. Platform/Event Infrastructure) Tj
+T*
+() Tj
+T*
+(2.2 Context map) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    LMS[Learning Management\\nOpen edX bounded context] --> ACL[Learning Anti-Corruption Layer]) Tj
+T*
+(    ACL --> BUS[Canonical Syrka Event Bus]) Tj
+T*
+(    ID[Identity & Access] --> BUS) Tj
+T*
+(    BUS --> ONT[Syrka Ontology]) Tj
+T*
+(    BUS --> ANALYTICS[AI-Native Learning Analytics]) Tj
+T*
+(    ONT --> GRAPH[Human Capability Graph]) Tj
+T*
+(    BUS --> GRAPH) Tj
+T*
+(    GRAPH --> INF[Capability Inference Engine]) Tj
+T*
+(    INF --> DASH[Capability Dashboard]) Tj
+T*
+(    INF --> ODYSSEY[Syrka Odyssey]) Tj
+T*
+(    CAREER[Career Intent Engine] --> ODYSSEY) Tj
+T*
+(    MARKET[Market Signal Engine] --> OPPS[Opportunity Engine]) Tj
+T*
+(    NATIONAL[National Vision Layer] --> CURR[Curriculum Intelligence]) Tj
+T*
+(    RESEARCH[Research Intelligence] --> GRAPH) Tj
+T*
+(    GITHUB[GitHub Intelligence] --> GRAPH) Tj
+T*
+(    LINKEDIN[LinkedIn Intelligence] --> GRAPH) Tj
+T*
+(    OPPS --> EMP[Employer Platform]) Tj
+T*
+(    OPPS --> PASSPORT[Job Passport]) Tj
+T*
+(    CRED[Verified Credential Ledger] --> PASSPORT) Tj
+T*
+(    PASSPORT --> PUBLIC[Public Capability Profile]) Tj
+T*
+(    PASSPORT --> MOBILITY[Workforce Mobility Engine]) Tj
+T*
+(    MOBILITY --> CORRIDORS[Syrka Corridors]) Tj
+T*
+(    FACULTY[Faculty Platform] --> CURR) Tj
+T*
+(    INSTITUTION[Institutional Analytics] --> FACULTY) Tj
+T*
+(    ANALYTICS --> INSTITUTION) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(2.3 Bounded context summary) Tj
+T*
+() Tj
+T*
+(| Bounded context | Purpose | Data owner | Public APIs | Consumed events | Produced events | Integrations | Team) Tj
+T*
+( owner |) Tj
+T*
+(|---|---|---|---|---|---|---|---|) Tj
+T*
+(| Learning Management | Deliver courses and assessments | Open edX bounded context | LMS adapter APIs only | ) Tj
+T*
+(IdentityProvisioned, EnrollmentRequested | LearningActivityObserved via ACL | Open edX, LTI tools | Learning ) Tj
+T*
+(Platform Team |) Tj
+T*
+(| Identity & Access | Unified identity, authn, authz, federation | Syrka Identity | Auth/session/user APIs | ) Tj
+T*
+(InstitutionCreated | IdentityCreated, RoleAssigned | Supabase Auth, SSO, OIDC, SAML | Platform Team |) Tj
+T*
+(| Syrka Ontology | Canonical semantic model of skills, knowledge, occupations, curricula | Syrka Ontology | ) Tj
+T*
+(Ontology query/admin APIs | LabourMarketSignalIngested, CurriculumMapped | OntologyTermCreated, ) Tj
+T*
+(OntologyVersionPublished | ESCO/O*NET/SOC/ISCO/custom taxonomies | Ontology Team |) Tj
+T*
+(| Human Capability Graph | Evidence-linked capability graph | Syrka Graph | Graph query/mutation APIs | ) Tj
+T*
+(CapabilityEvidenceObserved, OntologyVersionPublished | CapabilityGraphUpdated | Graph DB/vector store | ) Tj
+T*
+(Capability Intelligence Team |) Tj
+T*
+(| Capability Inference Engine | Infer capabilities from evidence | Syrka AI | Inference APIs | EvidenceObserved,) Tj
+T*
+( GraphUpdated | CapabilityObserved, CapabilityUpdated | LLMs, ML models | AI Platform Team |) Tj
+T*
+(| Career Intent Engine | Model learner aspirations and constraints | Syrka Career | Intent APIs | StudentUpdated) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 4829 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+( | CareerIntentUpdated | Profile, dashboards | Student Intelligence Team |) Tj
+T*
+(| Market Signal Engine | Labour market ingestion and forecasting | Syrka Market | Market APIs | External market ) Tj
+T*
+(feeds | LabourMarketSignalIngested | Job boards, salary data, public data | Market Intelligence Team |) Tj
+T*
+(| National Vision Layer | Country strategy and workforce policy model | Syrka Government | Country/strategy APIs) Tj
+T*
+( | GovernmentStrategyUpdated | NationalPriorityMapped | Ministries, public plans | Government Intelligence Team ) Tj
+T*
+(|) Tj
+T*
+(| Research Intelligence | Research output ingestion and mapping | Syrka Research | Research APIs | ) Tj
+T*
+(ResearchImported | ResearchCapabilityMapped | OpenAlex, Semantic Scholar, arXiv | Research Intelligence Team |) Tj
+T*
+(| GitHub Intelligence | Code/project evidence ingestion | Syrka Engineering Evidence | GitHub evidence APIs | ) Tj
+T*
+(GitHubRepositoryLinked | CodeCapabilityEvidenceObserved | GitHub | Evidence Integrations Team |) Tj
+T*
+(| LinkedIn Intelligence | Professional profile and signal ingestion | Syrka Professional Evidence | LinkedIn ) Tj
+T*
+(evidence APIs | LinkedInProfileLinked | ProfessionalSignalObserved | LinkedIn/exported data | Evidence ) Tj
+T*
+(Integrations Team |) Tj
+T*
+(| Capability Dashboard | Explain learner/institution capability state | Syrka Product | Dashboard APIs | ) Tj
+T*
+(CapabilityUpdated | DashboardViewed | Web apps | Product Experience Team |) Tj
+T*
+(| Portfolio Generator | Generate evidence-backed portfolios | Syrka Portfolio | Portfolio APIs | ) Tj
+T*
+(CapabilityUpdated, ProjectCompleted | PortfolioGenerated | Object storage, profiles | Product Experience Team |) Tj
+T*
+(| Opportunity Engine | Match people to jobs/projects/research/mobility | Syrka Opportunities | Recommendation ) Tj
+T*
+(APIs | CapabilityUpdated, CareerIntentUpdated, JobPosted | OpportunityMatched | Employers, markets | Opportunity) Tj
+T*
+( Team |) Tj
+T*
+(| Employer Platform | Employer jobs, interest, verification | Syrka Employer | Employer/job APIs | ) Tj
+T*
+(OpportunityMatched | EmployerInterested, JobPosted | ATS/CRM | Employer Team |) Tj
+T*
+(| Faculty Platform | Faculty workflows and intervention tools | Syrka Faculty | Faculty APIs | ) Tj
+T*
+(LearningRiskDetected | FacultyInterventionCreated | LMS, dashboards | Academic Experience Team |) Tj
+T*
+(| Institutional Analytics | Institutional intelligence and benchmarking | Syrka Institution | Institution ) Tj
+T*
+(analytics APIs | LearningActivityObserved, CapabilityUpdated | InstitutionalInsightGenerated | BI/export | ) Tj
+T*
+(Institutional Team |) Tj
+T*
+(| Curriculum Intelligence | Map curriculum to skills/jobs/national priorities | Syrka Curriculum | Curriculum ) Tj
+T*
+(APIs | OntologyVersionPublished, LabourMarketSignalIngested | CurriculumGapDetected | LMS, faculty tools | ) Tj
+T*
+(Curriculum Team |) Tj
+T*
+(| Job Passport | Portable capability and credential artifact | Syrka Passport | Passport APIs | ) Tj
+T*
+(CredentialVerified, CapabilityUpdated | PassportIssued, PassportUpdated | Employers/governments | Passport Team ) Tj
+T*
+(|) Tj
+T*
+(| Verified Credential Ledger | Verifiable credential lifecycle | Syrka Credential | Credential APIs | ) Tj
+T*
+(AssessmentGraded, ExternalCredentialSubmitted | CredentialVerified, CredentialRevoked | VC/DID/blockchain ) Tj
+T*
+(optional | Trust Team |) Tj
+T*
+(| Workforce Mobility Engine | Determine mobility readiness and route | Syrka Mobility | Mobility APIs | ) Tj
+T*
+(PassportIssued, OpportunityMatched | MobilityApproved, MobilityBlocked | Governments/employers | Mobility Team |) Tj
+T*
+(| Syrka Corridors | Cross-border capability corridor orchestration | Syrka Corridors | Corridor APIs | ) Tj
+T*
+(MobilityApproved, NationalPriorityMapped | CorridorOpened, CorridorMatched | Governments/institutions | Corridor) Tj
+T*
+( Team |) Tj
+T*
+(| Public Capability Profile | User-controlled public proof profile | Syrka Public Profile | Public profile APIs ) Tj
+T*
+(| PassportUpdated, PortfolioGenerated | PublicProfilePublished | Web, sharing, SEO | Public Platform Team |) Tj
+T*
+(| AI-Native Learning Analytics | Predict risk, mastery, engagement, quality | Syrka Analytics | Analytics APIs |) Tj
+T*
+( LearningActivityObserved | LearningRiskDetected, MasterySignalDetected | LMS, dashboards | Analytics Team |) Tj
+T*
+(| Platform/Event Infrastructure | Event contracts, schemas, delivery, observability | Syrka Platform | ) Tj
+T*
+(Event/admin APIs | All domain events | EventAccepted, EventRejected | Kafka/NATS/Supabase queues | Platform Team) Tj
+T*
+( |) Tj
+T*
+() Tj
+T*
+(3. Complete Bounded Context Catalogue) Tj
+T*
+() Tj
+T*
+(3.1 Learning Management - Open edX bounded context) Tj
+T*
+() Tj
+T*
+(Purpose. Deliver structured learning experiences and collect raw educational activity.) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 3243 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(Business responsibility. Open edX owns operational LMS workflows only: course ) Tj
+T*
+(authoring/runtime, modules, lessons, assignments, assessments, quizzes, discussions, ) Tj
+T*
+(attendance adapters, content delivery, gradebook, and enrolments. It does not own Syrka ) Tj
+T*
+(capability semantics.) Tj
+T*
+() Tj
+T*
+(Data ownership. Open edX owns LMS-local operational data. Syrka stores only canonical ) Tj
+T*
+(projections and evidence derived through the anti-corruption layer.) Tj
+T*
+() Tj
+T*
+(Internal models. Course, course run, unit, block, problem, assessment, submission, grade, ) Tj
+T*
+(discussion item, enrollment, cohort, content asset, learning sequence.) Tj
+T*
+() Tj
+T*
+(Public APIs. None directly exposed to strategic Syrka consumers. All access goes through ) Tj
+T*
+(learning-management-adapter APIs and canonical event streams.) Tj
+T*
+() Tj
+T*
+(Consumed events. IdentityProvisioned, EnrollmentRequested, CourseSyncRequested, ) Tj
+T*
+(ContentImportRequested.) Tj
+T*
+() Tj
+T*
+(Produced events. Open edX-native events are private. The anti-corruption layer emits canonical) Tj
+T*
+( LearningActivityObserved, AssignmentSubmitted, AssignmentGraded, QuizCompleted, ) Tj
+T*
+(DiscussionParticipationObserved, AttendanceRecorded, and GradebookUpdated.) Tj
+T*
+() Tj
+T*
+(External integrations. LTI 1.3 tools, SCORM/xAPI bridge where needed, video/content storage, ) Tj
+T*
+(proctoring, attendance tools, AI tutors as LTI/XBlock tools.) Tj
+T*
+() Tj
+T*
+(Dependencies. Identity & Access for identity; Platform/Event Infrastructure for event ) Tj
+T*
+(publication; Object Storage for exported evidence artifacts.) Tj
+T*
+() Tj
+T*
+(Team ownership. Learning Platform Team.) Tj
+T*
+() Tj
+T*
+(What remains inside Open edX. Course content, course delivery, assessment delivery, LMS ) Tj
+T*
+(gradebook, discussion integration, enrolment mechanics, instructor LMS operations, and ) Tj
+T*
+(learning activity capture remain inside Open edX. Syrka does not place ontology, graph, ) Tj
+T*
+(inference, career, employer, passport, or mobility logic inside Open edX.) Tj
+T*
+() Tj
+T*
+(3.2 Identity & Access) Tj
+T*
+() Tj
+T*
+(Decision. Identity belongs to Syrka, implemented initially using Supabase Auth as the ) Tj
+T*
+(authentication provider. Open edX receives provisioned identities and SSO assertions; it is ) Tj
+T*
+(not the source of truth.) Tj
+T*
+() Tj
+T*
+(Purpose. Provide universal user identity across student, faculty, employer, institution, ) Tj
+T*
+(ministry, and public-profile surfaces.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Authentication, authorization, tenant membership, institution ) Tj
+T*
+(federation, government federation, API access, service accounts, user lifecycle, consent, and ) Tj
+T*
+(audit.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Identity owns person identity, organization identity, tenant membership,) Tj
+T*
+( roles, permissions, identity links, and consent records. Supabase Auth stores authentication ) Tj
+T*
+(credentials and sessions as an implementation component.) Tj
+T*
+() Tj
+T*
+(Internal models. User, person, organization, institution, government agency, employer, tenant,) Tj
+T*
+( role, permission, policy, identity provider, federation link, consent grant, service account.) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 2916 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(Public APIs. /identity/users, /identity/organizations, /identity/memberships, /identity/roles,) Tj
+T*
+( /identity/consents, OIDC/SAML federation endpoints, token introspection.) Tj
+T*
+() Tj
+T*
+(Consumed events. InstitutionCreated, EmployerCreated, GovernmentAgencyCreated, UserInvited.) Tj
+T*
+() Tj
+T*
+(Produced events. StudentCreated, StudentUpdated, IdentityProvisioned, RoleAssigned, ) Tj
+T*
+(RoleRevoked, ConsentGranted, ConsentRevoked, FederationLinked.) Tj
+T*
+() Tj
+T*
+(External integrations. Supabase Auth, OIDC, SAML, university identity providers, government ) Tj
+T*
+(identity providers, employer SSO, Open edX SSO.) Tj
+T*
+() Tj
+T*
+(Dependencies. Platform/Event Infrastructure; Supabase PostgreSQL; Redis for sessions/rate ) Tj
+T*
+(limits.) Tj
+T*
+() Tj
+T*
+(Team ownership. Platform Team.) Tj
+T*
+() Tj
+T*
+(Authentication design. Supabase Auth handles passwordless, OAuth/OIDC, SAML via enterprise ) Tj
+T*
+(extensions or identity broker, MFA, and session tokens. Syrka issues domain authorization ) Tj
+T*
+(claims and short-lived service tokens.) Tj
+T*
+() Tj
+T*
+(Authorization design. Syrka uses policy-based RBAC/ABAC. RBAC grants coarse roles such as ) Tj
+T*
+(student, faculty, employer admin, ministry analyst, institutional admin, platform admin. ABAC ) Tj
+T*
+(constrains access by institution, country, consent, relationship, data sensitivity, and ) Tj
+T*
+(purpose.) Tj
+T*
+() Tj
+T*
+(Institution and government federation. Institutions and governments federate through ) Tj
+T*
+(OIDC/SAML. Syrka maps external groups to tenant-scoped roles; no external IdP may directly ) Tj
+T*
+(grant global Syrka privileges.) Tj
+T*
+() Tj
+T*
+(3.3 Syrka Ontology) Tj
+T*
+() Tj
+T*
+(Purpose. Define the canonical semantic model for human capability, knowledge, skills, ) Tj
+T*
+(occupations, curricula, credentials, industries, tools, and evidence types.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Maintain versioned taxonomies and semantic relationships that all ) Tj
+T*
+(intelligence systems use.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Ontology owns terms, definitions, relationships, mappings, versions, ) Tj
+T*
+(deprecations, and alignment to external standards.) Tj
+T*
+() Tj
+T*
+(Internal models. OntologyTerm, Skill, KnowledgeArea, Capability, Occupation, Industry, Tool, ) Tj
+T*
+(CurriculumOutcome, CredentialType, EvidenceType, Relationship, Mapping, Version, ) Tj
+T*
+(JurisdictionProfile.) Tj
+T*
+() Tj
+T*
+(Public APIs. /ontology/terms, /ontology/skills, /ontology/capabilities, /ontology/occupations,) Tj
+T*
+( /ontology/mappings, /ontology/versions, GraphQL semantic query API.) Tj
+T*
+() Tj
+T*
+(Consumed events. LabourMarketSignalIngested, CurriculumImported, CredentialFrameworkImported, ) Tj
+T*
+(NationalPriorityMapped.) Tj
+T*
+() Tj
+T*
+(Produced events. OntologyTermCreated, OntologyRelationshipCreated, OntologyVersionPublished, ) Tj
+T*
+(OntologyMappingDeprecated.) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 2821 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(External integrations. ESCO, O*NET, SOC, ISCO, national qualification frameworks, university ) Tj
+T*
+(catalogs, professional bodies.) Tj
+T*
+() Tj
+T*
+(Dependencies. PostgreSQL for governance metadata; graph database for semantic relationships; ) Tj
+T*
+(vector database for semantic similarity.) Tj
+T*
+() Tj
+T*
+(Team ownership. Ontology Team.) Tj
+T*
+() Tj
+T*
+(Entity model. Terms are immutable within a version. Relationships include is_a, part_of, ) Tj
+T*
+(requires, enables, evidenced_by, maps_to, emerging_from, replaces, aligned_with, and ) Tj
+T*
+(regulated_by.) Tj
+T*
+() Tj
+T*
+(Taxonomy design. Syrka supports global base taxonomy plus country/institution overlays. ) Tj
+T*
+(Overlays may add local terms and mappings but may not mutate global term meaning.) Tj
+T*
+() Tj
+T*
+(Skill hierarchy. Skills decompose into capabilities, procedures, tools, knowledge ) Tj
+T*
+(prerequisites, proficiency levels, and evidence requirements.) Tj
+T*
+() Tj
+T*
+(Knowledge hierarchy. Knowledge areas map to concepts, topics, learning outcomes, evidence ) Tj
+T*
+(forms, and assessment patterns.) Tj
+T*
+() Tj
+T*
+(Occupation hierarchy. Occupations map to industries, roles, tasks, required capabilities, ) Tj
+T*
+(regulation constraints, salary bands, and market signals.) Tj
+T*
+() Tj
+T*
+(Curriculum hierarchy. Institutions map programs, courses, modules, outcomes, assessments, and ) Tj
+T*
+(rubrics to ontology terms.) Tj
+T*
+() Tj
+T*
+(3.4 Human Capability Graph) Tj
+T*
+() Tj
+T*
+(Purpose. Store the evolving, evidence-backed graph of what a person, cohort, institution, ) Tj
+T*
+(region, or workforce can credibly do.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Maintain capability state, relationships, temporal evolution, ) Tj
+T*
+(evidence provenance, and confidence.) Tj
+T*
+() Tj
+T*
+(Data ownership. Entirely Syrka-owned. No LMS owns capabilities. An LMS only produces raw ) Tj
+T*
+(learning evidence.) Tj
+T*
+() Tj
+T*
+(Internal models. PersonNode, CapabilityNode, EvidenceNode, AssessmentNode, ProjectNode, ) Tj
+T*
+(CredentialNode, OccupationNode, InstitutionNode, EmployerNode, ConfidenceEdge, ProvenanceEdge,) Tj
+T*
+( TemporalState.) Tj
+T*
+() Tj
+T*
+(Public APIs. /graph/person/{id}, /graph/capabilities, /graph/evidence, /graph/paths, ) Tj
+T*
+(/graph/cohorts, graph query API.) Tj
+T*
+() Tj
+T*
+(Consumed events. CapabilityEvidenceObserved, CapabilityObserved, CredentialVerified, ) Tj
+T*
+(ProjectCompleted, ResearchCapabilityMapped, CodeCapabilityEvidenceObserved.) Tj
+T*
+() Tj
+T*
+(Produced events. CapabilityGraphUpdated, CapabilityPathCreated, EvidenceAttached, ) Tj
+T*
+(CapabilityConfidenceChanged.) Tj
+T*
+() Tj
+T*
+(External integrations. Graph DB, vector DB, BI projections, privacy/consent service.) Tj
+T*
+() Tj
+T*
+(Dependencies. Ontology, Identity, Capability Inference Engine, Event Infrastructure.) Tj
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 2876 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(Team ownership. Capability Intelligence Team.) Tj
+T*
+() Tj
+T*
+(Nodes. Person, capability, skill, knowledge concept, evidence item, assignment, project, ) Tj
+T*
+(repository, research output, credential, occupation, opportunity, institution, employer, ) Tj
+T*
+(jurisdiction.) Tj
+T*
+() Tj
+T*
+(Edges. has_evidence, demonstrates, requires, supports, contradicts, verified_by, derived_from,) Tj
+T*
+( aligned_to, expires_at, observed_in, recommended_for.) Tj
+T*
+() Tj
+T*
+(Confidence. Confidence is stored as a first-class edge/property with score, model version, ) Tj
+T*
+(evidence count, evidence quality, recency, assessor credibility, and uncertainty.) Tj
+T*
+() Tj
+T*
+(Provenance. Every capability assertion points to source event IDs, evidence artifacts, ) Tj
+T*
+(evaluator identity/model, timestamp, jurisdiction, and consent basis.) Tj
+T*
+() Tj
+T*
+(Temporal relationships. Capability state changes over time. The graph stores observations and ) Tj
+T*
+(projections, never only the latest value.) Tj
+T*
+() Tj
+T*
+(Capability evolution. The graph supports progression, decay, reinforcement, transferability, ) Tj
+T*
+(specialization, and adjacent-skill inference.) Tj
+T*
+() Tj
+T*
+(3.5 Capability Inference Engine) Tj
+T*
+() Tj
+T*
+(Purpose. Convert evidence into capability observations, updates, explanations, and ) Tj
+T*
+(recommendations.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Evaluate whether evidence supports specific capabilities and at what ) Tj
+T*
+(confidence/proficiency.) Tj
+T*
+() Tj
+T*
+(Data ownership. Owns inference runs, model outputs, explanations, evaluation metadata, bias ) Tj
+T*
+(checks, and audit records. It does not own source evidence or ontology terms.) Tj
+T*
+() Tj
+T*
+(Internal models. InferenceRun, EvidenceBundle, CapabilityHypothesis, ModelDecision, ) Tj
+T*
+(ConfidenceScore, Explanation, BiasCheck, HumanReview, EvaluationSet.) Tj
+T*
+() Tj
+T*
+(Public APIs. /inference/evaluate, /inference/explain/{runId}, /inference/models, ) Tj
+T*
+(/inference/review-queue.) Tj
+T*
+() Tj
+T*
+(Consumed events. LearningActivityObserved, AssignmentGraded, QuizCompleted, ProjectCompleted, ) Tj
+T*
+(ResearchPublished, GitHubRepositoryLinked, CredentialVerified, OntologyVersionPublished.) Tj
+T*
+() Tj
+T*
+(Produced events. CapabilityObserved, CapabilityUpdated, CapabilityRejected, ) Tj
+T*
+(InferenceReviewRequired, InferenceModelEvaluated.) Tj
+T*
+() Tj
+T*
+(External integrations. OpenAI/Claude-compatible LLMs, embedding models, rules engines, model ) Tj
+T*
+(registry, evaluation datasets.) Tj
+T*
+() Tj
+T*
+(Dependencies. Ontology, Human Capability Graph, Event Infrastructure, Vector DB.) Tj
+T*
+() Tj
+T*
+(Team ownership. AI Platform Team.) Tj
+T*
+() Tj
+T*
+(Inputs. Canonical events, assessment results, rubrics, artifacts, code repositories, research ) Tj
+T*
+(outputs, credential claims, market ontology, historical graph state.) Tj
+ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 2799 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(Outputs. Capability observations, confidence deltas, proficiency estimates, gap assessments, ) Tj
+T*
+(explanations, human-review tasks, model evaluation metrics.) Tj
+T*
+() Tj
+T*
+(Algorithms. Rules for deterministic mappings, rubric-to-capability scoring, Bayesian ) Tj
+T*
+(confidence update, graph propagation, embedding similarity, supervised classifiers, LLM rubric) Tj
+T*
+( reasoning with structured outputs, and ensemble adjudication.) Tj
+T*
+() Tj
+T*
+(Confidence scoring. Confidence combines evidence relevance, assessor quality, recency, ) Tj
+T*
+(difficulty, independence, consistency, authenticity, and model uncertainty.) Tj
+T*
+() Tj
+T*
+(Explainability. Every output includes evidence references, reasoning summary, ontology ) Tj
+T*
+(version, model version, counterfactual missing evidence, and limitations.) Tj
+T*
+() Tj
+T*
+(Bias mitigation. Protected attributes are excluded unless legally required for fairness ) Tj
+T*
+(measurement. Models are evaluated across cohorts, countries, languages, institutions, and ) Tj
+T*
+(accessibility contexts. High-impact decisions require human review and appeal.) Tj
+T*
+() Tj
+T*
+(3.6 Career Intent Engine) Tj
+T*
+() Tj
+T*
+(Purpose. Model what a learner wants to become and the constraints under which recommendations ) Tj
+T*
+(should be made.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Capture aspirations, pathways, preferences, geographies, industries, ) Tj
+T*
+(salary expectations, risk tolerance, mobility intent, and life constraints.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Career owns career intent records and preference history.) Tj
+T*
+() Tj
+T*
+(Internal models. CareerIntent, Aspiration, Pathway, PreferredIndustry, PreferredLocation, ) Tj
+T*
+(SalaryExpectation, Constraint, MobilityPreference, WorkModePreference, TimeHorizon.) Tj
+T*
+() Tj
+T*
+(Public APIs. /career-intent, /career-pathways, /career-fit, /intent-history.) Tj
+T*
+() Tj
+T*
+(Consumed events. StudentCreated, CapabilityUpdated, OpportunityViewed, OpportunityAccepted, ) Tj
+T*
+(PassportIssued.) Tj
+T*
+() Tj
+T*
+(Produced events. CareerIntentUpdated, CareerPathwaySelected, CareerConstraintUpdated, ) Tj
+T*
+(MobilityIntentDeclared.) Tj
+T*
+() Tj
+T*
+(External integrations. Student profile UX, career advisors, labour market data, employer ) Tj
+T*
+(platform.) Tj
+T*
+() Tj
+T*
+(Dependencies. Identity, Ontology, Market Signal Engine, Human Capability Graph.) Tj
+T*
+() Tj
+T*
+(Team ownership. Student Intelligence Team.) Tj
+T*
+() Tj
+T*
+(3.7 Market Signal Engine) Tj
+T*
+() Tj
+T*
+(Purpose. Ingest and model labour market demand, salaries, skills, occupations, emerging ) Tj
+T*
+(sectors, and disruption risk.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Convert market data into normalized, explainable, jurisdiction-aware ) Tj
+T*
+(market signals.) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 2592 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(Data ownership. Syrka Market owns labour market signals, forecasts, source metadata, and ) Tj
+T*
+(demand models.) Tj
+T*
+() Tj
+T*
+(Internal models. JobPosting, SkillDemandSignal, SalaryBand, DemandForecast, EmergingIndustry, ) Tj
+T*
+(DisplacementRisk, RegionalLabourMarket, EmployerDemandProfile, SourceReliability.) Tj
+T*
+() Tj
+T*
+(Public APIs. /market/signals, /market/skills, /market/jobs, /market/salaries, ) Tj
+T*
+(/market/forecasts, /market/displacement.) Tj
+T*
+() Tj
+T*
+(Consumed events. JobPosted, EmployerInterested, NationalPriorityMapped, external ingestion ) Tj
+T*
+(events.) Tj
+T*
+() Tj
+T*
+(Produced events. LabourMarketSignalIngested, SkillDemandChanged, SalaryBandUpdated, ) Tj
+T*
+(EmergingIndustryDetected, AIDisplacementRiskUpdated.) Tj
+T*
+() Tj
+T*
+(External integrations. Job boards, government statistics, employer APIs, salary datasets, ) Tj
+T*
+(economic data, web crawlers where permitted.) Tj
+T*
+() Tj
+T*
+(Dependencies. Ontology, Event Infrastructure, Vector DB for job/skill matching.) Tj
+T*
+() Tj
+T*
+(Team ownership. Market Intelligence Team.) Tj
+T*
+() Tj
+T*
+(3.8 National Vision Layer) Tj
+T*
+() Tj
+T*
+(Purpose. Model country strategies, national development plans, strategic sectors, workforce ) Tj
+T*
+(policy, and capability priorities.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Translate national strategies into computable priority models that ) Tj
+T*
+(influence curriculum intelligence and workforce planning.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Government owns country strategy profiles and priority mappings.) Tj
+T*
+() Tj
+T*
+(Internal models. CountryProfile, NationalStrategy, StrategicSector, WorkforceTarget, ) Tj
+T*
+(PolicyPriority, JurisdictionRule, CapabilityPriority, ProgramAlignment.) Tj
+T*
+() Tj
+T*
+(Public APIs. /national/countries, /national/strategies, /national/priorities, ) Tj
+T*
+(/national/workforce-targets.) Tj
+T*
+() Tj
+T*
+(Consumed events. GovernmentStrategyImported, LabourMarketSignalIngested, ) Tj
+T*
+(CurriculumGapDetected.) Tj
+T*
+() Tj
+T*
+(Produced events. NationalPriorityMapped, StrategicSectorUpdated, WorkforceTargetUpdated.) Tj
+T*
+() Tj
+T*
+(External integrations. Government portals, policy documents, ministries, international ) Tj
+T*
+(organizations.) Tj
+T*
+() Tj
+T*
+(Dependencies. Ontology, Market Signal Engine, Research Intelligence.) Tj
+T*
+() Tj
+T*
+(Team ownership. Government Intelligence Team.) Tj
+T*
+() Tj
+T*
+(3.9 Research Intelligence) Tj
+T*
+() Tj
+T*
+(Purpose. Transform research publications, projects, grants, labs, and collaborations into ) Tj
+T*
+(capability and opportunity signals.) Tj
+ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 2459 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(Business responsibility. Ingest research metadata, map research themes to ontology, identify ) Tj
+T*
+(faculty/student capabilities, and surface collaboration opportunities.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Research owns normalized research records and research-capability ) Tj
+T*
+(mappings.) Tj
+T*
+() Tj
+T*
+(Internal models. Publication, Author, Affiliation, ResearchTopic, CitationSignal, Grant, Lab, ) Tj
+T*
+(CollaborationOpportunity, ResearchCapabilityMapping.) Tj
+T*
+() Tj
+T*
+(Public APIs. /research/publications, /research/topics, /research/collaborations, ) Tj
+T*
+(/research/capability-map.) Tj
+T*
+() Tj
+T*
+(Consumed events. ResearchImported, FacultyProfileUpdated, StudentProjectCompleted, ) Tj
+T*
+(OntologyVersionPublished.) Tj
+T*
+() Tj
+T*
+(Produced events. ResearchPublished, ResearchCapabilityMapped, ResearchCollaborationSuggested.) Tj
+T*
+() Tj
+T*
+(External integrations. OpenAlex, Semantic Scholar, arXiv, Crossref, ORCID, institutional ) Tj
+T*
+(repositories.) Tj
+T*
+() Tj
+T*
+(Dependencies. Ontology, Human Capability Graph, Vector DB.) Tj
+T*
+() Tj
+T*
+(Team ownership. Research Intelligence Team.) Tj
+T*
+() Tj
+T*
+(3.10 GitHub Intelligence) Tj
+T*
+() Tj
+T*
+(Purpose. Convert code repositories, commits, pull requests, issues, tests, and reviews into ) Tj
+T*
+(software capability evidence.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Link user-controlled repositories, analyze contribution quality, and ) Tj
+T*
+(emit code capability evidence.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Engineering Evidence owns normalized GitHub evidence records, not ) Tj
+T*
+(GitHub's source data.) Tj
+T*
+() Tj
+T*
+(Internal models. RepositoryLink, CommitSignal, PullRequestSignal, ReviewSignal, TestSignal, ) Tj
+T*
+(LanguageProfile, CodeQualitySignal, ProjectEvidence.) Tj
+T*
+() Tj
+T*
+(Public APIs. /github/link, /github/repositories, /github/evidence, /github/capability-signals.) Tj
+T*
+() Tj
+T*
+(Consumed events. GitHubRepositoryLinked, ConsentGranted, ProjectCompleted.) Tj
+T*
+() Tj
+T*
+(Produced events. CodeCapabilityEvidenceObserved, RepositoryAnalyzed, GitHubRepositoryLinked, ) Tj
+T*
+(GitHubEvidenceRevoked.) Tj
+T*
+() Tj
+T*
+(External integrations. GitHub OAuth/API/webhooks, optional GitLab/Bitbucket adapters.) Tj
+T*
+() Tj
+T*
+(Dependencies. Identity, Consent, Ontology, Capability Inference Engine.) Tj
+T*
+() Tj
+T*
+(Team ownership. Evidence Integrations Team.) Tj
+T*
+() Tj
+T*
+(3.11 LinkedIn Intelligence) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 2512 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(Purpose. Normalize user-consented professional profile signals into career and capability ) Tj
+T*
+(evidence.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Import profile data, experience, endorsements, certifications, and ) Tj
+T*
+(role history where legally and contractually permitted.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Professional Evidence owns normalized professional signals and consent ) Tj
+T*
+(state.) Tj
+T*
+() Tj
+T*
+(Internal models. ProfessionalProfileLink, ExperienceSignal, CertificationSignal, ) Tj
+T*
+(EndorsementSignal, RoleHistory, OrganizationSignal.) Tj
+T*
+() Tj
+T*
+(Public APIs. /linkedin/link, /professional-profile/imports, /professional-signals.) Tj
+T*
+() Tj
+T*
+(Consumed events. ConsentGranted, LinkedInProfileLinked, CareerIntentUpdated.) Tj
+T*
+() Tj
+T*
+(Produced events. ProfessionalSignalObserved, LinkedInProfileLinked, ProfessionalSignalRevoked.) Tj
+T*
+() Tj
+T*
+(External integrations. LinkedIn APIs where available, user-uploaded exports, employer ) Tj
+T*
+(verification.) Tj
+T*
+() Tj
+T*
+(Dependencies. Identity, Consent, Ontology, Career Intent Engine.) Tj
+T*
+() Tj
+T*
+(Team ownership. Evidence Integrations Team.) Tj
+T*
+() Tj
+T*
+(3.12 Capability Dashboard) Tj
+T*
+() Tj
+T*
+(Purpose. Present capability state, evidence, confidence, gaps, and recommendations to ) Tj
+T*
+(students, faculty, institutions, employers, and governments.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Explain what Syrka believes, why it believes it, how confident it is,) Tj
+T*
+( and what action should happen next.) Tj
+T*
+() Tj
+T*
+(Data ownership. Owns dashboard layouts, saved views, user annotations, and insight ) Tj
+T*
+(presentation state. Does not own capability facts.) Tj
+T*
+() Tj
+T*
+(Internal models. DashboardView, CapabilityCard, EvidenceTimeline, GapInsight, ) Tj
+T*
+(RecommendationPanel, ExplanationView, SavedFilter.) Tj
+T*
+() Tj
+T*
+(Public APIs. /dashboards/capabilities, /dashboards/evidence, /dashboards/gaps, ) Tj
+T*
+(/dashboards/explanations.) Tj
+T*
+() Tj
+T*
+(Consumed events. CapabilityUpdated, CapabilityGraphUpdated, RecommendationGenerated, ) Tj
+T*
+(LearningRiskDetected.) Tj
+T*
+() Tj
+T*
+(Produced events. DashboardViewed, InsightAcknowledged, CapabilityDisputed.) Tj
+T*
+() Tj
+T*
+(External integrations. Web apps, PDF/export service, profile service.) Tj
+T*
+() Tj
+T*
+(Dependencies. Human Capability Graph, Inference Engine, Opportunity Engine, Identity.) Tj
+T*
+() Tj
+T*
+(Team ownership. Product Experience Team.) Tj
+T*
+() Tj
+T*
+(3.13 Portfolio Generator) Tj
+ET
+endstream
+endobj
+28 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 29 0 R >>
+endobj
+29 0 obj
+<< /Length 2553 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(Purpose. Generate human-readable and machine-verifiable portfolios from evidence-backed ) Tj
+T*
+(capabilities.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Assemble projects, credentials, reflections, artifacts, and ) Tj
+T*
+(capability claims into audience-specific portfolios.) Tj
+T*
+() Tj
+T*
+(Data ownership. Owns portfolio documents, templates, exports, share links, and presentation ) Tj
+T*
+(metadata.) Tj
+T*
+() Tj
+T*
+(Internal models. Portfolio, PortfolioSection, EvidenceReference, Artifact, Template, ) Tj
+T*
+(ShareLink, AudienceProfile.) Tj
+T*
+() Tj
+T*
+(Public APIs. /portfolios, /portfolios/generate, /portfolios/share, /portfolios/export.) Tj
+T*
+() Tj
+T*
+(Consumed events. CapabilityUpdated, ProjectCompleted, CredentialVerified, ) Tj
+T*
+(PublicProfilePublished.) Tj
+T*
+() Tj
+T*
+(Produced events. PortfolioGenerated, PortfolioShared, PortfolioRevoked.) Tj
+T*
+() Tj
+T*
+(External integrations. Object storage, PDF generation, public profile, employer platform.) Tj
+T*
+() Tj
+T*
+(Dependencies. Human Capability Graph, Job Passport, Verified Credential Ledger.) Tj
+T*
+() Tj
+T*
+(Team ownership. Product Experience Team.) Tj
+T*
+() Tj
+T*
+(3.14 Opportunity Engine) Tj
+T*
+() Tj
+T*
+(Purpose. Match people to jobs, internships, research projects, scholarships, courses, mentors,) Tj
+T*
+( and mobility routes.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Produce explainable opportunity recommendations using capabilities, ) Tj
+T*
+(intent, market signals, and constraints.) Tj
+T*
+() Tj
+T*
+(Data ownership. Owns recommendation runs, match scores, recommendation explanations, and ) Tj
+T*
+(opportunity matching state. Opportunity entities are owned by their domain of origin.) Tj
+T*
+() Tj
+T*
+(Internal models. Opportunity, MatchRun, MatchScore, Recommendation, EligibilityRule, ) Tj
+T*
+(ConstraintViolation, Explanation, FeedbackSignal.) Tj
+T*
+() Tj
+T*
+(Public APIs. /opportunities, /opportunities/match, /recommendations, ) Tj
+T*
+(/recommendations/feedback.) Tj
+T*
+() Tj
+T*
+(Consumed events. CapabilityUpdated, CareerIntentUpdated, LabourMarketSignalIngested, ) Tj
+T*
+(JobPosted, ResearchCollaborationSuggested, MobilityApproved.) Tj
+T*
+() Tj
+T*
+(Produced events. OpportunityMatched, RecommendationGenerated, RecommendationAccepted, ) Tj
+T*
+(RecommendationRejected.) Tj
+T*
+() Tj
+T*
+(External integrations. Employer platform, faculty platform, market data, public profile.) Tj
+T*
+() Tj
+T*
+(Dependencies. Capability Graph, Career Intent, Market Signal, National Vision.) Tj
+T*
+() Tj
+T*
+(Team ownership. Opportunity Team.) Tj
+ET
+endstream
+endobj
+30 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 31 0 R >>
+endobj
+31 0 obj
+<< /Length 2477 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(3.15 Employer Platform) Tj
+T*
+() Tj
+T*
+(Purpose. Allow employers to publish demand, discover candidates, express interest, verify job-) Tj
+T*
+(passport claims, and close feedback loops.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Employer identity, jobs, projects, talent searches, candidate ) Tj
+T*
+(interest, hiring feedback, and demand validation.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Employer owns employer profiles, job postings, employer users, interest ) Tj
+T*
+(records, and hiring feedback.) Tj
+T*
+() Tj
+T*
+(Internal models. Employer, EmployerUser, Job, ProjectBrief, TalentSearch, EmployerInterest, ) Tj
+T*
+(HiringFeedback, VerificationRequest.) Tj
+T*
+() Tj
+T*
+(Public APIs. /employers, /employers/jobs, /employers/search, /employers/interests, ) Tj
+T*
+(/employers/verification.) Tj
+T*
+() Tj
+T*
+(Consumed events. PublicProfilePublished, OpportunityMatched, PassportIssued, ) Tj
+T*
+(CredentialVerified.) Tj
+T*
+() Tj
+T*
+(Produced events. EmployerCreated, JobPosted, EmployerInterested, HiringFeedbackSubmitted, ) Tj
+T*
+(VerificationRequested.) Tj
+T*
+() Tj
+T*
+(External integrations. ATS, CRM, email/calendar, government employment portals.) Tj
+T*
+() Tj
+T*
+(Dependencies. Identity, Job Passport, Opportunity Engine, Public Capability Profile.) Tj
+T*
+() Tj
+T*
+(Team ownership. Employer Team.) Tj
+T*
+() Tj
+T*
+(3.16 Faculty Platform) Tj
+T*
+() Tj
+T*
+(Purpose. Support faculty with capability-aware teaching, intervention, assessment design, and ) Tj
+T*
+(curriculum improvement.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Faculty dashboards, cohort monitoring, intervention workflows, rubric) Tj
+T*
+( insights, assessment feedback, and course-improvement loops.) Tj
+T*
+() Tj
+T*
+(Data ownership. Owns faculty-specific workflows, notes, interventions, recommendations, and ) Tj
+T*
+(teaching analytics views.) Tj
+T*
+() Tj
+T*
+(Internal models. FacultyView, CohortInsight, Intervention, RubricInsight, ) Tj
+T*
+(AssessmentQualitySignal, TeachingRecommendation.) Tj
+T*
+() Tj
+T*
+(Public APIs. /faculty/cohorts, /faculty/interventions, /faculty/rubrics, ) Tj
+T*
+(/faculty/recommendations.) Tj
+T*
+() Tj
+T*
+(Consumed events. LearningRiskDetected, MasterySignalDetected, CurriculumGapDetected, ) Tj
+T*
+(CapabilityUpdated.) Tj
+T*
+() Tj
+T*
+(Produced events. FacultyInterventionCreated, InterventionResolved, ) Tj
+T*
+(AssessmentImprovementRequested.) Tj
+T*
+() Tj
+T*
+(External integrations. LMS adapter, institutional systems, notification service.) Tj
+ET
+endstream
+endobj
+32 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 33 0 R >>
+endobj
+33 0 obj
+<< /Length 2575 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(Dependencies. Institutional Analytics, AI-Native Learning Analytics, Curriculum Intelligence.) Tj
+T*
+() Tj
+T*
+(Team ownership. Academic Experience Team.) Tj
+T*
+() Tj
+T*
+(3.17 Institutional Analytics) Tj
+T*
+() Tj
+T*
+(Purpose. Provide institution-level intelligence over capabilities, programs, cohorts, ) Tj
+T*
+(outcomes, equity, and market alignment.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Aggregate institutional insights without owning underlying student ) Tj
+T*
+(capability facts.) Tj
+T*
+() Tj
+T*
+(Data ownership. Owns institutional metrics, aggregates, reports, benchmarks, and authorized ) Tj
+T*
+(exports.) Tj
+T*
+() Tj
+T*
+(Internal models. InstitutionMetric, CohortAggregate, ProgramBenchmark, EquityMetric, ) Tj
+T*
+(OutcomeMetric, AnalyticsReport, ExportJob.) Tj
+T*
+() Tj
+T*
+(Public APIs. /institutional/metrics, /institutional/cohorts, /institutional/reports, ) Tj
+T*
+(/institutional/exports.) Tj
+T*
+() Tj
+T*
+(Consumed events. LearningActivityObserved, CapabilityUpdated, CredentialVerified, ) Tj
+T*
+(OpportunityMatched, LearningRiskDetected.) Tj
+T*
+() Tj
+T*
+(Produced events. InstitutionalInsightGenerated, OutcomeBenchmarkUpdated, EquityRiskDetected.) Tj
+T*
+() Tj
+T*
+(External integrations. BI tools, accreditation reporting, ministry exports.) Tj
+T*
+() Tj
+T*
+(Dependencies. Identity, Analytics, Graph, Data Warehouse/PostgreSQL projections.) Tj
+T*
+() Tj
+T*
+(Team ownership. Institutional Team.) Tj
+T*
+() Tj
+T*
+(3.18 Curriculum Intelligence) Tj
+T*
+() Tj
+T*
+(Purpose. Evaluate and improve curricula by aligning courses, assessments, outcomes, ) Tj
+T*
+(capabilities, market signals, and national priorities.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Detect gaps, duplication, outdated content, assessment misalignment, ) Tj
+T*
+(and strategic opportunities.) Tj
+T*
+() Tj
+T*
+(Data ownership. Owns curriculum maps, gap analyses, recommendations, and alignment reports. ) Tj
+T*
+(LMS owns course delivery; Curriculum Intelligence owns semantic curriculum understanding.) Tj
+T*
+() Tj
+T*
+(Internal models. CurriculumMap, CourseOutcomeMapping, AssessmentMapping, SkillCoverageMatrix, ) Tj
+T*
+(GapAnalysis, CurriculumRecommendation, AccreditationMapping.) Tj
+T*
+() Tj
+T*
+(Public APIs. /curriculum/maps, /curriculum/gaps, /curriculum/recommendations, ) Tj
+T*
+(/curriculum/alignment.) Tj
+T*
+() Tj
+T*
+(Consumed events. OntologyVersionPublished, CourseImported, AssessmentGraded, ) Tj
+T*
+(LabourMarketSignalIngested, NationalPriorityMapped.) Tj
+T*
+() Tj
+T*
+(Produced events. CurriculumGapDetected, CurriculumRecommendationGenerated, ) Tj
+ET
+endstream
+endobj
+34 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 35 0 R >>
+endobj
+35 0 obj
+<< /Length 2432 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(CourseOutcomeMapped.) Tj
+T*
+() Tj
+T*
+(External integrations. Open edX adapter, catalogs, accreditation bodies, ministry frameworks.) Tj
+T*
+() Tj
+T*
+(Dependencies. Ontology, Market Signal, National Vision, Learning Management adapter.) Tj
+T*
+() Tj
+T*
+(Team ownership. Curriculum Team.) Tj
+T*
+() Tj
+T*
+(3.19 Job Passport) Tj
+T*
+() Tj
+T*
+(Purpose. Produce a portable, evidence-backed representation of a person's capabilities, ) Tj
+T*
+(credentials, preferences, and mobility readiness.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Package verified capability claims for employers, governments, and ) Tj
+T*
+(cross-border mobility workflows.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Passport owns passport records, versions, shares, revocations, and ) Tj
+T*
+(disclosure policies.) Tj
+T*
+() Tj
+T*
+(Internal models. Passport, PassportVersion, CapabilityClaim, CredentialReference, ) Tj
+T*
+(MobilityReadiness, DisclosurePolicy, VerificationStatus, ShareToken.) Tj
+T*
+() Tj
+T*
+(Public APIs. /passports, /passports/issue, /passports/share, /passports/revoke, ) Tj
+T*
+(/passports/verify.) Tj
+T*
+() Tj
+T*
+(Consumed events. CapabilityUpdated, CredentialVerified, CareerIntentUpdated, ) Tj
+T*
+(MobilityIntentDeclared.) Tj
+T*
+() Tj
+T*
+(Produced events. PassportIssued, PassportUpdated, PassportShared, PassportRevoked.) Tj
+T*
+() Tj
+T*
+(External integrations. Employer platform, government platform, public profile, credential ) Tj
+T*
+(ledger.) Tj
+T*
+() Tj
+T*
+(Dependencies. Capability Graph, Credential Ledger, Identity, Consent.) Tj
+T*
+() Tj
+T*
+(Team ownership. Passport Team.) Tj
+T*
+() Tj
+T*
+(3.20 Verified Credential Ledger) Tj
+T*
+() Tj
+T*
+(Purpose. Manage credential claims, verification, revocation, issuer trust, and portable proof.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Ensure credential assertions are verifiable, auditable, revocable, ) Tj
+T*
+(and tied to evidence.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Credential owns credential records, issuer registry, verification ) Tj
+T*
+(status, revocation state, and trust policies.) Tj
+T*
+() Tj
+T*
+(Internal models. Credential, CredentialClaim, Issuer, Verification, Revocation, TrustPolicy, ) Tj
+T*
+(EvidenceReference, VCExport.) Tj
+T*
+() Tj
+T*
+(Public APIs. /credentials, /credentials/verify, /credentials/issue, /credentials/revoke, ) Tj
+T*
+(/issuers.) Tj
+T*
+() Tj
+T*
+(Consumed events. AssessmentGraded, CredentialSubmitted, IssuerApproved, PassportIssued.) Tj
+ET
+endstream
+endobj
+36 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 37 0 R >>
+endobj
+37 0 obj
+<< /Length 2544 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(Produced events. CredentialVerified, CredentialIssued, CredentialRevoked, IssuerTrustChanged.) Tj
+T*
+() Tj
+T*
+(External integrations. W3C Verifiable Credentials, DID providers, credential issuers, optional) Tj
+T*
+( blockchain anchoring.) Tj
+T*
+() Tj
+T*
+(Dependencies. Identity, Capability Graph, Object Storage, optional ledger infrastructure.) Tj
+T*
+() Tj
+T*
+(Team ownership. Trust Team.) Tj
+T*
+() Tj
+T*
+(3.21 Workforce Mobility Engine) Tj
+T*
+() Tj
+T*
+(Purpose. Determine whether a person, cohort, or talent pool is ready for internal, regional, ) Tj
+T*
+(or cross-border mobility.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Match capability passports to mobility routes, visa/regulatory ) Tj
+T*
+(requirements, employer demand, government priorities, and readiness gaps.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Mobility owns mobility assessments, route decisions, readiness gaps, ) Tj
+T*
+(approvals, and case status.) Tj
+T*
+() Tj
+T*
+(Internal models. MobilityRoute, MobilityAssessment, ReadinessGap, EligibilityRule, ) Tj
+T*
+(RegulatoryRequirement, MobilityCase, ApprovalDecision.) Tj
+T*
+() Tj
+T*
+(Public APIs. /mobility/routes, /mobility/assess, /mobility/cases, /mobility/approvals.) Tj
+T*
+() Tj
+T*
+(Consumed events. PassportIssued, OpportunityMatched, CredentialVerified, ) Tj
+T*
+(NationalPriorityMapped, EmployerInterested.) Tj
+T*
+() Tj
+T*
+(Produced events. MobilityApproved, MobilityBlocked, MobilityGapDetected, MobilityCaseOpened.) Tj
+T*
+() Tj
+T*
+(External integrations. Government agencies, immigration/regulatory datasets, employer ) Tj
+T*
+(platform, corridor service.) Tj
+T*
+() Tj
+T*
+(Dependencies. Passport, National Vision, Market Signal, Credential Ledger.) Tj
+T*
+() Tj
+T*
+(Team ownership. Mobility Team.) Tj
+T*
+() Tj
+T*
+(3.22 Syrka Corridors) Tj
+T*
+() Tj
+T*
+(Purpose. Operate cross-border capability corridors between countries, institutions, employers,) Tj
+T*
+( and sectors.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Coordinate demand, supply, standards, credentials, mobility rules, ) Tj
+T*
+(and reporting across jurisdictions.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Corridors owns corridor definitions, agreements, eligibility mappings, ) Tj
+T*
+(pipeline status, and corridor analytics.) Tj
+T*
+() Tj
+T*
+(Internal models. Corridor, CorridorPartner, CorridorAgreement, CapabilityStandard, ) Tj
+T*
+(CandidatePipeline, CorridorMatch, JurisdictionMapping.) Tj
+T*
+() Tj
+T*
+(Public APIs. /corridors, /corridors/partners, /corridors/pipelines, /corridors/matches, ) Tj
+T*
+(/corridors/reports.) Tj
+ET
+endstream
+endobj
+38 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 39 0 R >>
+endobj
+39 0 obj
+<< /Length 2404 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(Consumed events. MobilityApproved, NationalPriorityMapped, WorkforceTargetUpdated, ) Tj
+T*
+(EmployerInterested.) Tj
+T*
+() Tj
+T*
+(Produced events. CorridorOpened, CorridorMatched, CorridorCapacityUpdated, ) Tj
+T*
+(CorridorOutcomeReported.) Tj
+T*
+() Tj
+T*
+(External integrations. Governments, institutions, employers, credential authorities.) Tj
+T*
+() Tj
+T*
+(Dependencies. Mobility Engine, National Vision, Employer Platform, Credential Ledger.) Tj
+T*
+() Tj
+T*
+(Team ownership. Corridor Team.) Tj
+T*
+() Tj
+T*
+(3.23 Public Capability Profile) Tj
+T*
+() Tj
+T*
+(Purpose. Provide user-controlled public profiles that expose selected capability evidence, ) Tj
+T*
+(portfolios, passports, and credentials.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Manage public presentation, privacy, consent, sharing, SEO, ) Tj
+T*
+(verification views, and revocation.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Public Profile owns profile pages, slugs, visibility settings, shared ) Tj
+T*
+(claims, and access logs.) Tj
+T*
+() Tj
+T*
+(Internal models. PublicProfile, ProfileSection, VisibilityPolicy, SharedClaim, ) Tj
+T*
+(VerificationView, AccessLog.) Tj
+T*
+() Tj
+T*
+(Public APIs. /profiles/public, /profiles/{slug}, /profiles/share, /profiles/visibility.) Tj
+T*
+() Tj
+T*
+(Consumed events. PassportUpdated, PortfolioGenerated, CredentialVerified, ConsentRevoked.) Tj
+T*
+() Tj
+T*
+(Produced events. PublicProfilePublished, PublicProfileViewed, PublicProfileRevoked.) Tj
+T*
+() Tj
+T*
+(External integrations. Web, social sharing, employer verification, search indexing where ) Tj
+T*
+(allowed.) Tj
+T*
+() Tj
+T*
+(Dependencies. Identity, Portfolio, Passport, Consent.) Tj
+T*
+() Tj
+T*
+(Team ownership. Public Platform Team.) Tj
+T*
+() Tj
+T*
+(3.24 AI-Native Learning Analytics) Tj
+T*
+() Tj
+T*
+(Purpose. Analyze learning activity for mastery, risk, engagement, assessment quality, and ) Tj
+T*
+(pedagogical effectiveness.) Tj
+T*
+() Tj
+T*
+(Business responsibility. Produce learning analytics signals from canonical events while ) Tj
+T*
+(respecting privacy and explainability.) Tj
+T*
+() Tj
+T*
+(Data ownership. Syrka Analytics owns analytics models, aggregates, risk signals, mastery ) Tj
+T*
+(signals, and explainability metadata.) Tj
+T*
+() Tj
+T*
+(Internal models. LearningSession, EngagementSignal, MasterySignal, RiskPrediction, ) Tj
+T*
+(AssessmentQualityMetric, CohortPattern, AnalyticsModelRun.) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+40 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 41 0 R >>
+endobj
+41 0 obj
+<< /Length 3957 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(Public APIs. /analytics/learning, /analytics/mastery, /analytics/risk, /analytics/quality, ) Tj
+T*
+(/analytics/models.) Tj
+T*
+() Tj
+T*
+(Consumed events. LearningActivityObserved, AssignmentSubmitted, AssignmentGraded, ) Tj
+T*
+(QuizCompleted, DiscussionParticipationObserved, AttendanceRecorded.) Tj
+T*
+() Tj
+T*
+(Produced events. LearningRiskDetected, MasterySignalDetected, ) Tj
+T*
+(AssessmentQualitySignalGenerated, EngagementChanged.) Tj
+T*
+() Tj
+T*
+(External integrations. Faculty platform, institutional analytics, capability inference engine.) Tj
+T*
+() Tj
+T*
+(Dependencies. Event Infrastructure, Learning Management adapter, Graph, Inference Engine.) Tj
+T*
+() Tj
+T*
+(Team ownership. Analytics Team.) Tj
+T*
+() Tj
+T*
+(4. Data Ownership Matrix) Tj
+T*
+() Tj
+T*
+(No entity may have shared ownership. Other domains may hold read models, projections, ) Tj
+T*
+(references, or cached views only.) Tj
+T*
+() Tj
+T*
+(| Entity | Single owner | Storage of record | Notes |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| Student | Syrka Identity | Supabase PostgreSQL/Auth | Open edX receives provisioned LMS account only |) Tj
+T*
+(| Person profile | Syrka Identity | Supabase PostgreSQL | Public profile is a separate presentation entity |) Tj
+T*
+(| Institution | Syrka Identity | Supabase PostgreSQL | Institution analytics consumes it |) Tj
+T*
+(| Government agency | Syrka Identity | Supabase PostgreSQL | National Vision references it |) Tj
+T*
+(| Employer | Employer Platform | Supabase PostgreSQL | Identity owns employer users/memberships |) Tj
+T*
+(| Course | Learning Management | Open edX DB | Curriculum Intelligence stores mappings only |) Tj
+T*
+(| Module/lesson | Learning Management | Open edX DB | Canonical IDs are mapped in ACL |) Tj
+T*
+(| Assignment | Learning Management | Open edX DB | Syrka stores evidence projection only |) Tj
+T*
+(| Assessment/quiz | Learning Management | Open edX DB | Results become canonical events |) Tj
+T*
+(| Grade | Learning Management | Open edX DB | Syrka stores evidence and derived capability claims |) Tj
+T*
+(| Enrollment | Learning Management | Open edX DB plus Syrka projection | Source of LMS enrollment remains Open ) Tj
+T*
+(edX |) Tj
+T*
+(| Skill | Syrka Ontology | Ontology DB/Graph | Versioned semantic object |) Tj
+T*
+(| Knowledge concept | Syrka Ontology | Ontology DB/Graph | Versioned semantic object |) Tj
+T*
+(| Capability | Human Capability Graph | Graph DB | References ontology terms |) Tj
+T*
+(| Capability observation | Capability Inference Engine | PostgreSQL + Graph projection | Graph consumes accepted) Tj
+T*
+( observations |) Tj
+T*
+(| Evidence item | Human Capability Graph | Graph DB + object storage refs | Source artifact remains in source ) Tj
+T*
+(system |) Tj
+T*
+(| Career intent | Career Intent Engine | Supabase PostgreSQL | User-controlled and versioned |) Tj
+T*
+(| Research output | Research Intelligence | PostgreSQL/object refs/vector | Mapped to graph as evidence |) Tj
+T*
+(| Project | Portfolio Generator or source domain | Supabase PostgreSQL/object storage | Learning project from ) Tj
+T*
+(LMS remains LMS-owned until normalized as evidence |) Tj
+T*
+(| GitHub repository link | GitHub Intelligence | Supabase PostgreSQL | GitHub owns repository; Syrka owns ) Tj
+T*
+(normalized evidence |) Tj
+T*
+(| LinkedIn profile link | LinkedIn Intelligence | Supabase PostgreSQL | User consent required |) Tj
+T*
+(| Credential | Verified Credential Ledger | Credential DB/ledger | Passport references verified credentials |) Tj
+T*
+(| Job | Employer Platform | Supabase PostgreSQL | Opportunity Engine recommends jobs |) Tj
+T*
+(| Opportunity match | Opportunity Engine | Supabase PostgreSQL | Does not own underlying opportunity entity |) Tj
+T*
+(| Passport | Job Passport | Supabase PostgreSQL/object storage | Versioned, revocable |) Tj
+T*
+(| Public capability profile | Public Capability Profile | Supabase PostgreSQL/object storage | User-controlled ) Tj
+T*
+(disclosure |) Tj
+ET
+endstream
+endobj
+42 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 43 0 R >>
+endobj
+43 0 obj
+<< /Length 3093 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(| Government strategy | National Vision Layer | PostgreSQL/vector/object refs | Parsed from official sources |) Tj
+T*
+(| Labour market signal | Market Signal Engine | PostgreSQL/vector/time-series | Versioned by source and ) Tj
+T*
+(timestamp |) Tj
+T*
+(| Curriculum map | Curriculum Intelligence | Supabase PostgreSQL/Graph | Does not own LMS course content |) Tj
+T*
+(| Institutional report | Institutional Analytics | Warehouse/PostgreSQL/object storage | Aggregate projection ) Tj
+T*
+(only |) Tj
+T*
+(| Mobility case | Workforce Mobility Engine | Supabase PostgreSQL | References passport/opportunity |) Tj
+T*
+(| Corridor | Syrka Corridors | Supabase PostgreSQL | Cross-jurisdiction orchestration |) Tj
+T*
+(| Event schema | Platform/Event Infrastructure | Schema registry | Canonical contract owner |) Tj
+T*
+() Tj
+T*
+(5. Canonical Event Architecture) Tj
+T*
+() Tj
+T*
+(5.1 Universal event envelope) Tj
+T*
+() Tj
+T*
+(Every canonical event uses the same envelope:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "event_id": "uuid",) Tj
+T*
+(  "event_type": "AssignmentSubmitted",) Tj
+T*
+(  "event_version": "1.0.0",) Tj
+T*
+(  "occurred_at": "2026-07-07T00:00:00Z",) Tj
+T*
+(  "published_at": "2026-07-07T00:00:01Z",) Tj
+T*
+(  "producer": "learning-management-adapter",) Tj
+T*
+(  "source_system": "openedx",) Tj
+T*
+(  "tenant_id": "uuid",) Tj
+T*
+(  "country_code": "SA",) Tj
+T*
+(  "institution_id": "uuid",) Tj
+T*
+(  "subject": { "type": "student", "id": "uuid" },) Tj
+T*
+(  "correlation_id": "uuid",) Tj
+T*
+(  "causation_id": "uuid",) Tj
+T*
+(  "idempotency_key": "source-system:source-event-id:version",) Tj
+T*
+(  "privacy": { "classification": "restricted", "consent_basis": "education" },) Tj
+T*
+(  "payload": {},) Tj
+T*
+(  "provenance": { "source_event_id": "...", "source_url": "...", "adapter_version": "..." },) Tj
+T*
+(  "schema_url": "https://schemas.syrka.ai/events/AssignmentSubmitted/1.0.0") Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(5.2 Event catalogue) Tj
+T*
+() Tj
+T*
+(| Event | Producer | Primary consumers | Payload summary | Retention/replay |) Tj
+T*
+(|---|---|---|---|---|) Tj
+T*
+(| StudentCreated | Identity | LMS adapter, Graph, Dashboards | student_id, tenant, institution, role metadata | ) Tj
+T*
+(Permanent identity audit; replay to provision services |) Tj
+T*
+(| StudentUpdated | Identity | Career, Dashboards, Analytics | changed profile fields, tenant scope | Permanent ) Tj
+T*
+(audit with PII controls |) Tj
+T*
+(| AssignmentSubmitted | Learning ACL | Analytics, Inference, Graph | assignment_id, attempt_id, artifact refs, ) Tj
+T*
+(timestamps | Long-term educational evidence; replayable |) Tj
+T*
+(| AssignmentGraded | Learning ACL | Inference, Graph, Faculty, Analytics | grade, rubric, feedback, assessor, ) Tj
+T*
+(attempt | Long-term evidence; replayable |) Tj
+T*
+(| QuizCompleted | Learning ACL | Analytics, Inference | quiz_id, score, attempts, duration, item-level summary |) Tj
+T*
+( Long-term evidence with sensitive detail controls |) Tj
+T*
+(| ProjectCompleted | Learning ACL/Portfolio/GitHub | Graph, Portfolio, Inference | project_id, artifacts, ) Tj
+ET
+endstream
+endobj
+44 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 45 0 R >>
+endobj
+45 0 obj
+<< /Length 3378 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(collaborators, rubric | Long-term portfolio/evidence |) Tj
+T*
+(| ResearchPublished | Research Intelligence | Graph, Portfolio, Opportunity | publication metadata, authors, ) Tj
+T*
+(topics | Permanent scholarly evidence |) Tj
+T*
+(| GitHubRepositoryLinked | GitHub Intelligence | Inference, Graph | repo link, consent, ownership proof | ) Tj
+T*
+(Retained while consent active |) Tj
+T*
+(| CapabilityObserved | Inference Engine | Graph, Dashboard, Passport | capability_id, evidence refs, confidence,) Tj
+T*
+( explanation | Permanent with model provenance |) Tj
+T*
+(| CapabilityUpdated | Graph | Dashboard, Opportunity, Passport | capability state delta, confidence, timestamp |) Tj
+T*
+( Permanent graph history |) Tj
+T*
+(| CareerIntentUpdated | Career Intent | Opportunity, Mobility, Odyssey | aspirations, preferences, constraints |) Tj
+T*
+( User-controlled history |) Tj
+T*
+(| RecommendationGenerated | Opportunity/Odyssey | Dashboard, Audit | recommendation, score, explanation, model |) Tj
+T*
+( Retain for audit and learning |) Tj
+T*
+(| PassportIssued | Job Passport | Employer, Mobility, Public Profile | passport_id, version, claims, disclosure ) Tj
+T*
+(policy | Permanent/revocable versions |) Tj
+T*
+(| CredentialVerified | Credential Ledger | Graph, Passport, Employer | credential_id, issuer, verification ) Tj
+T*
+(result | Permanent trust audit |) Tj
+T*
+(| OpportunityMatched | Opportunity Engine | Student, Employer, Mobility | opportunity_id, match score, reasons |) Tj
+T*
+( Retain for audit and feedback |) Tj
+T*
+(| EmployerInterested | Employer Platform | Opportunity, Mobility, Analytics | employer_id, profile/passport ) Tj
+T*
+(target, job | Retain under consent and policy |) Tj
+T*
+(| MobilityApproved | Mobility Engine | Corridors, Passport, Government dashboards | route, eligibility, ) Tj
+T*
+(conditions, expiry | Permanent case history |) Tj
+T*
+() Tj
+T*
+(5.3 Versioning) Tj
+T*
+() Tj
+T*
+(- Event names are stable business facts, not implementation names.) Tj
+T*
+(- Schema versions use semantic versioning.) Tj
+T*
+(- Consumers must tolerate additive fields.) Tj
+T*
+(- Breaking changes create a new major version and dual-publish during migration.) Tj
+T*
+(- A schema registry stores JSON Schema/OpenAPI/AsyncAPI definitions.) Tj
+T*
+() Tj
+T*
+(5.4 Retry and idempotency) Tj
+T*
+() Tj
+T*
+(- Producers attach deterministic idempotency_key values.) Tj
+T*
+(- Event ingestion is at-least-once; consumers must be idempotent.) Tj
+T*
+(- Failed deliveries go to dead-letter queues with replay tooling.) Tj
+T*
+(- Consumer checkpoints are stored per consumer group.) Tj
+T*
+() Tj
+T*
+(5.5 Security) Tj
+T*
+() Tj
+T*
+(- Events are signed by producers or delivered through authenticated infrastructure.) Tj
+T*
+(- Event payloads are classified: public, internal, restricted, highly restricted.) Tj
+T*
+(- PII is minimized; sensitive artifacts are referenced by secure object IDs rather than ) Tj
+T*
+(embedded.) Tj
+T*
+(- Domain authorization applies to event subscriptions.) Tj
+T*
+() Tj
+T*
+(5.6 Retention and replay) Tj
+T*
+() Tj
+T*
+(- Canonical events are immutable.) Tj
+T*
+(- Long-term evidence events are retained for the lifetime required by product, legal, and ) Tj
+T*
+(institutional policy.) Tj
+T*
+(- Retention is domain-specific and country-aware.) Tj
+T*
+(- Replay can rebuild graph projections, dashboards, analytics aggregates, and passports.) Tj
+ET
+endstream
+endobj
+46 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 47 0 R >>
+endobj
+47 0 obj
+<< /Length 3147 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(6. Anti-Corruption Layer) Tj
+T*
+() Tj
+T*
+(The Learning Anti-Corruption Layer is the permanent translation boundary between Open edX and ) Tj
+T*
+(Syrka.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    OEX[Open edX native DB/APIs/events] --> EXTRACT[Extractors]) Tj
+T*
+(    EXTRACT --> MAP[Mapping Registry]) Tj
+T*
+(    MAP --> VALIDATE[Validation]) Tj
+T*
+(    VALIDATE --> TRANSFORM[Transformation]) Tj
+T*
+(    TRANSFORM --> CANON[Canonical Event Builder]) Tj
+T*
+(    CANON --> BUS[Syrka Event Bus]) Tj
+T*
+(    VALIDATE --> DLQ[Dead Letter Queue]) Tj
+T*
+(    DLQ --> OPS[Ops Review & Replay]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Mapping. Open edX courses, blocks, submissions, grades, discussions, and enrollment records ) Tj
+T*
+(are mapped to Syrka canonical identifiers using a mapping registry. The registry stores ) Tj
+T*
+(source_system, source_id, canonical_id, entity_type, valid_from, and valid_to.) Tj
+T*
+() Tj
+T*
+(Validation. The ACL validates source completeness, tenant ownership, consent/policy basis, ) Tj
+T*
+(schema compatibility, timestamp sanity, duplicate status, and required evidence references.) Tj
+T*
+() Tj
+T*
+(Transformation. The ACL converts Open edX concepts into canonical Syrka facts. Example: an ) Tj
+T*
+(Open edX problem attempt becomes QuizCompleted or AssessmentAttempted, not an Open edX-) Tj
+T*
+(specific event.) Tj
+T*
+() Tj
+T*
+(Error handling. Invalid records are rejected into a dead-letter queue with source pointer, ) Tj
+T*
+(validation errors, adapter version, and replay eligibility. Poison messages are quarantined.) Tj
+T*
+() Tj
+T*
+(Monitoring. Metrics include extraction lag, transform error rate, event publish success, ) Tj
+T*
+(unmapped entity rate, duplicate rate, DLQ volume, and per-tenant throughput.) Tj
+T*
+() Tj
+T*
+(Logging. Logs must not contain student submissions or PII beyond stable IDs. Sensitive ) Tj
+T*
+(payloads are stored in secure object storage and referenced.) Tj
+T*
+() Tj
+T*
+(Versioning. Each adapter has a version. Mapping changes are migration-controlled. Source ) Tj
+T*
+(version and adapter version are written into event provenance.) Tj
+T*
+() Tj
+T*
+(Migration strategy. If Open edX is replaced, only this ACL changes. Canonical event contracts,) Tj
+T*
+( ontology, graph, dashboards, inference, passport, and mobility systems remain unchanged.) Tj
+T*
+() Tj
+T*
+(7. API Ownership) Tj
+T*
+() Tj
+T*
+(| Domain | Public APIs | Internal APIs | Protocols | AuthN/AuthZ | Rate limiting | Consumers | Provider/owner |) Tj
+T*
+(|---|---|---|---|---|---|---|---|) Tj
+T*
+(| Learning Management Adapter | course projections, enrollment requests, evidence exports | Open edX connector ) Tj
+T*
+(APIs | REST/events | Syrka service tokens + RBAC | tenant/service limits | Web, Curriculum, Analytics | Learning) Tj
+T*
+( Platform Team |) Tj
+T*
+(| Identity | users, orgs, roles, consents, federation | policy evaluation, token introspection | REST/OIDC/SAML ) Tj
+T*
+(| Supabase Auth + Syrka policies | per user/org/IP | all domains | Platform Team |) Tj
+T*
+(| Ontology | terms, mappings, versions | ontology admin/versioning | REST/GraphQL | service/user policies | per ) Tj
+ET
+endstream
+endobj
+48 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 49 0 R >>
+endobj
+49 0 obj
+<< /Length 4354 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(tenant and API key | graph, inference, curriculum | Ontology Team |) Tj
+T*
+(| Graph | capability graph, evidence, paths | graph mutation/event consumers | GraphQL/REST/events | consent + ) Tj
+T*
+(purpose policy | strict per purpose | dashboards, passport, opportunity | Capability Intelligence Team |) Tj
+T*
+(| Inference | evaluate, explain, review | model adapters, batch jobs | REST/events/workers | service identity + ) Tj
+T*
+(policy | cost/model budgets | graph, analytics | AI Platform Team |) Tj
+T*
+(| Career Intent | intent, pathways, constraints | scoring features | REST/events | user-owned + advisor scopes |) Tj
+T*
+( per user | opportunity, mobility | Student Intelligence Team |) Tj
+T*
+(| Market | signals, salaries, forecasts | ingestion jobs | REST/events | service/user policies | per org/API key) Tj
+T*
+( | opportunity, curriculum, national | Market Intelligence Team |) Tj
+T*
+(| National Vision | country strategies, priorities | policy ingestion | REST/events | government/institution ) Tj
+T*
+(scopes | per tenant | curriculum, mobility | Government Intelligence Team |) Tj
+T*
+(| Research | publications, topics, collaborations | source ingestion | REST/events | institution/user scopes | ) Tj
+T*
+(per source | graph, portfolio | Research Team |) Tj
+T*
+(| Evidence Integrations | GitHub/LinkedIn links and signals | webhook handlers | REST/webhooks/events | OAuth + ) Tj
+T*
+(consent | provider-specific | inference, graph | Evidence Integrations Team |) Tj
+T*
+(| Dashboard | capability views and explanations | saved-view service | REST/GraphQL | user/tenant roles | per ) Tj
+T*
+(user | web apps | Product Experience Team |) Tj
+T*
+(| Portfolio | portfolio generate/share/export | template renderer | REST/events | user consent | per user/export) Tj
+T*
+( | public profile, employer | Product Experience Team |) Tj
+T*
+(| Opportunity | matches/recommendations | scorer workers | REST/events | user/employer roles | per user/org | ) Tj
+T*
+(web, employer, mobility | Opportunity Team |) Tj
+T*
+(| Employer | employers/jobs/search/interests | ATS connectors | REST/webhooks | employer RBAC | per employer | ) Tj
+T*
+(opportunity, passport | Employer Team |) Tj
+T*
+(| Faculty | cohort/intervention/rubric APIs | LMS/faculty projections | REST/events | faculty/institution roles ) Tj
+T*
+(| per institution | faculty app | Academic Experience Team |) Tj
+T*
+(| Institutional Analytics | metrics/reports/exports | aggregate builders | REST/events | institution roles | ) Tj
+T*
+(export quotas | admin/ministry | Institutional Team |) Tj
+T*
+(| Curriculum | maps/gaps/recommendations | mapping workers | REST/events | faculty/admin roles | per institution) Tj
+T*
+( | faculty, ministry | Curriculum Team |) Tj
+T*
+(| Passport | issue/share/verify | claim builder | REST/events | user consent + verifier scopes | per verifier | ) Tj
+T*
+(employer, mobility | Passport Team |) Tj
+T*
+(| Credential Ledger | issue/verify/revoke | issuer registry | REST/events/VC | issuer trust policy | per issuer ) Tj
+T*
+(| passport, employer | Trust Team |) Tj
+T*
+(| Mobility | routes/assess/cases | rule engine | REST/events | government/employer/user scopes | case quotas | ) Tj
+T*
+(corridors | Mobility Team |) Tj
+T*
+(| Corridors | corridors/pipelines/reports | partner integrations | REST/events | corridor partner roles | per ) Tj
+T*
+(partner | governments | Corridor Team |) Tj
+T*
+(| Public Profile | publish/share/view | rendering/cache | REST | public + signed URLs | public abuse limits | ) Tj
+T*
+(web/employers | Public Platform Team |) Tj
+T*
+(| Analytics | mastery/risk/quality | model workers | REST/events | institution/faculty scopes | per tenant | ) Tj
+T*
+(faculty/institution | Analytics Team |) Tj
+T*
+() Tj
+T*
+(REST is the default for transactional APIs. GraphQL is appropriate for graph/dashboard read ) Tj
+T*
+(composition. gRPC is reserved for high-throughput internal model or scoring calls. Events are ) Tj
+T*
+(required for domain state propagation.) Tj
+T*
+() Tj
+T*
+(8. Database Ownership) Tj
+T*
+() Tj
+T*
+(8.1 Supabase PostgreSQL) Tj
+T*
+() Tj
+T*
+(Purpose. Primary application relational store for Syrka-owned transactional domains, tenant ) Tj
+T*
+(models, API projections, audit metadata, and operational read models.) Tj
+T*
+() Tj
+T*
+(Owner. Platform Team owns the cluster and standards; each domain owns its schema.) Tj
+ET
+endstream
+endobj
+50 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 51 0 R >>
+endobj
+51 0 obj
+<< /Length 2595 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(Schema strategy. Use schema-per-domain: identity, ontology, career, market, national, ) Tj
+T*
+(portfolio, opportunity, employer, faculty, institutional, curriculum, passport, credentials, ) Tj
+T*
+(mobility, corridors, public_profile, analytics, events.) Tj
+T*
+() Tj
+T*
+(Indexes. All tenant-scoped tables index tenant_id; all event projections index event_id, ) Tj
+T*
+(occurred_at, subject_id; all user-owned tables index user_id plus consent_state where ) Tj
+T*
+(relevant.) Tj
+T*
+() Tj
+T*
+(Relationships. Cross-domain references use stable IDs only. No cross-domain foreign keys that ) Tj
+T*
+(create deployment coupling.) Tj
+T*
+() Tj
+T*
+(Partitioning. Event projections and analytics aggregates partition by tenant/country/time ) Tj
+T*
+(depending on query patterns.) Tj
+T*
+() Tj
+T*
+(Scaling. Read replicas for dashboards; logical replication into warehouse; row-level security ) Tj
+T*
+(for user/tenant access; connection pooling.) Tj
+T*
+() Tj
+T*
+(8.2 Graph Database) Tj
+T*
+() Tj
+T*
+(Purpose. Capability graph, ontology relationships, evidence-to-capability relationships, ) Tj
+T*
+(occupation paths, and mobility routes.) Tj
+T*
+() Tj
+T*
+(Owner. Capability Intelligence Team for capability graph; Ontology Team for ontology subgraph.) Tj
+T*
+( Platform owns infrastructure standards.) Tj
+T*
+() Tj
+T*
+(Data. Nodes and edges described in sections 3.3 and 3.4.) Tj
+T*
+() Tj
+T*
+(Indexes. Node IDs, ontology term IDs, person IDs, capability IDs, temporal validity, ) Tj
+T*
+(relationship types, confidence ranges.) Tj
+T*
+() Tj
+T*
+(Scaling. Partition by tenant/person/country as needed; materialize read models for common ) Tj
+T*
+(dashboard queries.) Tj
+T*
+() Tj
+T*
+(8.3 Vector Database) Tj
+T*
+() Tj
+T*
+(Purpose. Semantic retrieval over evidence artifacts, course descriptions, resumes, ) Tj
+T*
+(publications, job postings, national strategies, and ontology terms.) Tj
+T*
+() Tj
+T*
+(Owner. AI Platform Team, with domain-owned collections.) Tj
+T*
+() Tj
+T*
+(Collections. evidence_embeddings, job_embeddings, research_embeddings, curriculum_embeddings, ) Tj
+T*
+(policy_embeddings, ontology_embeddings, portfolio_embeddings.) Tj
+T*
+() Tj
+T*
+(Indexes. ANN indexes by collection; metadata filters for tenant, country, language, source, ) Tj
+T*
+(consent, and freshness.) Tj
+T*
+() Tj
+T*
+(Scaling. Store embeddings with model/version metadata. Re-embed on model upgrades with dual-) Tj
+T*
+(index migration.) Tj
+T*
+() Tj
+T*
+(8.4 Redis) Tj
+T*
+() Tj
+T*
+(Purpose. Caching, rate limiting, short-lived sessions, job locks, idempotency windows, and ) Tj
+T*
+(queue coordination.) Tj
+ET
+endstream
+endobj
+52 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 53 0 R >>
+endobj
+53 0 obj
+<< /Length 3469 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(Owner. Platform Team.) Tj
+T*
+() Tj
+T*
+(Data. No durable domain state. All Redis data must be rebuildable.) Tj
+T*
+() Tj
+T*
+(8.5 Object Storage) Tj
+T*
+() Tj
+T*
+(Purpose. Store artifacts: submissions, portfolios, PDFs, research files, credential proofs, ) Tj
+T*
+(profile media, exports, and evidence snapshots.) Tj
+T*
+() Tj
+T*
+(Owner. Platform Team infrastructure; domains own buckets/prefixes and retention policy.) Tj
+T*
+() Tj
+T*
+(Security. Signed URLs, encryption, classification metadata, virus/malware scanning, retention ) Tj
+T*
+(tags, legal hold where required.) Tj
+T*
+() Tj
+T*
+(8.6 Open edX database) Tj
+T*
+() Tj
+T*
+(Purpose. LMS-local operational persistence only.) Tj
+T*
+() Tj
+T*
+(Owner. Learning Platform Team.) Tj
+T*
+() Tj
+T*
+(Rule. Syrka services may not query Open edX databases directly. Only the ACL may ) Tj
+T*
+(read/translate Open edX state.) Tj
+T*
+() Tj
+T*
+(9. Service Architecture) Tj
+T*
+() Tj
+T*
+(| Bounded context | Service form | Justification |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Learning Management | External bounded platform + adapter service | Open edX remains isolated and replaceable ) Tj
+T*
+(|) Tj
+T*
+(| Identity & Access | Modular platform service | Shared dependency with strong security boundary |) Tj
+T*
+(| Syrka Ontology | Modular service + graph-backed admin | Versioned domain used by many services |) Tj
+T*
+(| Human Capability Graph | Dedicated service + event consumer | Central strategic graph with specialized ) Tj
+T*
+(persistence |) Tj
+T*
+(| Capability Inference Engine | AI service + background workers | Model orchestration, batch scoring, human ) Tj
+T*
+(review |) Tj
+T*
+(| Career Intent Engine | Modular service | User-owned profile/intention workflows |) Tj
+T*
+(| Market Signal Engine | Ingestion workers + API service | External feeds, forecasts, scheduled jobs |) Tj
+T*
+(| National Vision Layer | Ingestion workers + API service | Policy document parsing and government workflows |) Tj
+T*
+(| Research Intelligence | Ingestion workers + API service | External APIs and semantic mapping |) Tj
+T*
+(| GitHub Intelligence | Integration service + webhook workers | Provider OAuth/webhooks and code analysis |) Tj
+T*
+(| LinkedIn Intelligence | Integration service + ingestion workers | Consent-heavy professional signal ingestion ) Tj
+T*
+(|) Tj
+T*
+(| Capability Dashboard | Web/BFF module | Presentation composition over graph/inference APIs |) Tj
+T*
+(| Portfolio Generator | Background worker + API service | Document generation and object storage exports |) Tj
+T*
+(| Opportunity Engine | Recommendation AI service + API | Scoring, ranking, feedback learning |) Tj
+T*
+(| Employer Platform | Modular service + web app | Employer workflows and job lifecycle |) Tj
+T*
+(| Faculty Platform | Web/BFF module + workflow service | Institution/faculty UX and interventions |) Tj
+T*
+(| Institutional Analytics | Event consumers + aggregate API | Heavy read models and reports |) Tj
+T*
+(| Curriculum Intelligence | AI service + mapping workers | Semantic curriculum analysis and recommendations |) Tj
+T*
+(| Job Passport | Dedicated service | Trust, versioning, sharing, revocation |) Tj
+T*
+(| Verified Credential Ledger | Dedicated trust service | Security-critical credential lifecycle |) Tj
+T*
+(| Workforce Mobility Engine | Rule engine + workflow service | Eligibility, routes, cases, approvals |) Tj
+T*
+(| Syrka Corridors | Workflow/orchestration service | Multi-party cross-border operations |) Tj
+ET
+endstream
+endobj
+54 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 55 0 R >>
+endobj
+55 0 obj
+<< /Length 2263 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(| Public Capability Profile | Public web service + cache | Public traffic, privacy, SEO/security boundary |) Tj
+T*
+(| AI-Native Learning Analytics | Event consumers + AI service | Predictive analytics over canonical learning ) Tj
+T*
+(events |) Tj
+T*
+(| Platform/Event Infrastructure | Shared platform services | Event bus, schema registry, observability |) Tj
+T*
+() Tj
+T*
+(10. Repository Architecture) Tj
+T*
+() Tj
+T*
+(Recommended future monorepo layout:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(apps/) Tj
+T*
+(  web/                    # student and public Syrka web app) Tj
+T*
+(  admin/                  # platform administration) Tj
+T*
+(  employer/               # employer portal) Tj
+T*
+(  faculty/                # faculty workflows) Tj
+T*
+(  ministry/               # government/ministry platform) Tj
+T*
+(  public-profile/         # public capability profile surface) Tj
+T*
+() Tj
+T*
+(services/) Tj
+T*
+(  learning-management-adapter/) Tj
+T*
+(  identity/) Tj
+T*
+(  ontology/) Tj
+T*
+(  capability-graph/) Tj
+T*
+(  capability-inference/) Tj
+T*
+(  career-intent/) Tj
+T*
+(  market-signals/) Tj
+T*
+(  national-vision/) Tj
+T*
+(  research-intelligence/) Tj
+T*
+(  github-intelligence/) Tj
+T*
+(  linkedin-intelligence/) Tj
+T*
+(  opportunity-engine/) Tj
+T*
+(  portfolio-generator/) Tj
+T*
+(  employer-platform/) Tj
+T*
+(  faculty-platform/) Tj
+T*
+(  institutional-analytics/) Tj
+T*
+(  curriculum-intelligence/) Tj
+T*
+(  job-passport/) Tj
+T*
+(  credential-ledger/) Tj
+T*
+(  workforce-mobility/) Tj
+T*
+(  syrka-corridors/) Tj
+T*
+(  learning-analytics/) Tj
+T*
+() Tj
+T*
+(packages/) Tj
+T*
+(  ui/                     # shared design system) Tj
+T*
+(  auth/                   # client/server auth helpers) Tj
+T*
+(  sdk/                    # generated API clients) Tj
+T*
+(  events/                 # canonical event types, schemas, publishers) Tj
+T*
+(  database/               # DB clients and migration helpers) Tj
+T*
+(  types/                  # shared TypeScript types) Tj
+T*
+(  telemetry/              # logging, tracing, metrics helpers) Tj
+T*
+(  policy/                 # authorization policy helpers) Tj
+T*
+(  ai/                     # model client abstractions, not business logic) Tj
+T*
+(  testing/                # test utilities and fixtures) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+56 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 57 0 R >>
+endobj
+57 0 obj
+<< /Length 2652 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(infrastructure/) Tj
+T*
+(  terraform/) Tj
+T*
+(  docker/) Tj
+T*
+(  k8s/) Tj
+T*
+(  observability/) Tj
+T*
+(  event-bus/) Tj
+T*
+(  secrets/) Tj
+T*
+() Tj
+T*
+(supabase/) Tj
+T*
+(  migrations/) Tj
+T*
+(  seed/) Tj
+T*
+(  policies/) Tj
+T*
+(  functions/) Tj
+T*
+() Tj
+T*
+(docs/) Tj
+T*
+(  adr/) Tj
+T*
+(  architecture/) Tj
+T*
+(  schemas/) Tj
+T*
+(  runbooks/) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Ownership rules.) Tj
+T*
+() Tj
+T*
+(- apps/* are owned by Product Experience teams but may not contain domain business logic ) Tj
+T*
+(beyond presentation orchestration.) Tj
+T*
+(- services/* are owned by the named domain teams.) Tj
+T*
+(- packages/events is owned by Platform/Event Infrastructure and reviewed by affected domain ) Tj
+T*
+(owners.) Tj
+T*
+(- packages/ai owns model-provider abstractions only; inference rules belong in domain ) Tj
+T*
+(services.) Tj
+T*
+(- supabase/migrations are schema-per-domain and reviewed by the owning domain team plus ) Tj
+T*
+(Platform.) Tj
+T*
+(- infrastructure is owned by Platform/SRE.) Tj
+T*
+() Tj
+T*
+(11. Technology Ownership) Tj
+T*
+() Tj
+T*
+(| Technology | Owning domain/use | Why |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Next.js | User-facing apps and BFF routes | Fits current Syrka web architecture and modern UX |) Tj
+T*
+(| TypeScript | Apps, API surfaces, event contracts | Strong contracts and Claude-assisted maintainability |) Tj
+T*
+(| Supabase Auth | Identity implementation provider | Fast, secure auth foundation while Syrka owns identity ) Tj
+T*
+(model |) Tj
+T*
+(| Supabase PostgreSQL | Transactional app persistence | Strong relational source for Syrka-owned data |) Tj
+T*
+(| PostgreSQL RLS | Identity/tenant security | Enforces row-level tenant and user boundaries |) Tj
+T*
+(| Redis | Platform cache/session/rate limits | Ephemeral performance and coordination |) Tj
+T*
+(| Graph Database | Ontology and capability graph | Natural fit for semantic capability relationships |) Tj
+T*
+(| Vector Database | AI retrieval and semantic matching | Required for LLM grounding, similarity, recommendations) Tj
+T*
+( |) Tj
+T*
+(| Open edX | Learning Management bounded context | Course/runtime/assessment foundation selected in ADR-001 |) Tj
+T*
+(| Python | AI, inference, ingestion, graph workflows | Best ecosystem for ML/LLM/data pipelines |) Tj
+T*
+(| TypeScript workers | Event adapters and product-adjacent jobs | Shared types and integration speed |) Tj
+T*
+(| Claude/OpenAI-compatible LLMs | AI services through provider abstraction | Model vendors are replaceable; ) Tj
+T*
+(prompts/evals are Syrka IP |) Tj
+T*
+(| Object Storage | Evidence artifacts, exports, passports | Durable binary/object evidence storage |) Tj
+ET
+endstream
+endobj
+58 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 59 0 R >>
+endobj
+59 0 obj
+<< /Length 3010 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(| Event Bus | Platform/Event Infrastructure | Backbone for replaceability and domain decoupling |) Tj
+T*
+(| Mermaid/ADR docs | Architecture governance | Makes decisions reviewable and enforceable |) Tj
+T*
+() Tj
+T*
+(12. Replaceability Analysis) Tj
+T*
+() Tj
+T*
+(12.1 If Open edX disappears tomorrow) Tj
+T*
+() Tj
+T*
+(Services that continue operating: Identity, Ontology, Capability Graph, Inference over ) Tj
+T*
+(existing evidence, Career Intent, Market Signal, National Vision, Research Intelligence, ) Tj
+T*
+(GitHub Intelligence, LinkedIn Intelligence, Dashboards over existing projections, Portfolio, ) Tj
+T*
+(Opportunity, Employer Platform, Institutional Analytics over existing projections, Curriculum ) Tj
+T*
+(Intelligence over existing mappings, Job Passport, Credential Ledger, Mobility, Corridors, ) Tj
+T*
+(Public Profiles, and AI-Native Analytics over historical events.) Tj
+T*
+() Tj
+T*
+(Services that fail or degrade: New LMS course delivery, new LMS assignment submissions, new ) Tj
+T*
+(LMS quizzes, LMS gradebook sync, LMS-native discussions, attendance capture tied to Open edX, ) Tj
+T*
+(and any Open edX-specific authoring workflow.) Tj
+T*
+() Tj
+T*
+(Why Syrka survives. Canonical events, graph state, passports, credentials, and intelligence ) Tj
+T*
+(services are not stored in Open edX. Historical evidence remains replayable from Syrka event ) Tj
+T*
+(storage and object storage.) Tj
+T*
+() Tj
+T*
+(12.2 Replacing Open edX with Canvas) Tj
+T*
+() Tj
+T*
+(Required work. Build a Canvas ACL adapter, map Canvas ) Tj
+T*
+(courses/assignments/submissions/grades/users to canonical IDs, integrate Canvas SSO, validate ) Tj
+T*
+(LTI behavior, replay backfills, and dual-run during migration.) Tj
+T*
+() Tj
+T*
+(Estimated effort. 3-6 months for parity with core LMS activity events; 6-12 months for deep ) Tj
+T*
+(feature parity, depending on institution workflows.) Tj
+T*
+() Tj
+T*
+(12.3 Replacing Open edX with Moodle) Tj
+T*
+() Tj
+T*
+(Required work. Build Moodle ACL adapter, map Moodle plugin/activity events, implement SSO, ) Tj
+T*
+(migrate course structures where required, map gradebook and activity modules, validate event ) Tj
+T*
+(coverage.) Tj
+T*
+() Tj
+T*
+(Estimated effort. 4-8 months for core event parity; 9-15 months for broad plugin-heavy ) Tj
+T*
+(deployments.) Tj
+T*
+() Tj
+T*
+(12.4 Replacing Open edX with custom LMS) Tj
+T*
+() Tj
+T*
+(Required work. Build course runtime, content authoring, assessments, gradebook, enrolments, ) Tj
+T*
+(discussions/attendance integrations, LTI support, and canonical event producer natively.) Tj
+T*
+() Tj
+T*
+(Estimated effort. 12-24 months for credible institutional LMS parity; less if the custom LMS ) Tj
+T*
+(is intentionally narrow and Syrka controls all content formats.) Tj
+T*
+() Tj
+T*
+(13. Intellectual Property Boundary) Tj
+T*
+() Tj
+T*
+(Syrka's proprietary IP is concentrated in:) Tj
+T*
+() Tj
+T*
+(1. Syrka Ontology - the semantic model connecting education, capability, occupations, markets,) Tj
+T*
+( and national strategies.) Tj
+ET
+endstream
+endobj
+60 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 61 0 R >>
+endobj
+61 0 obj
+<< /Length 3748 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(2. Human Capability Graph - the evidence-backed representation of human potential and verified) Tj
+T*
+( capability evolution.) Tj
+T*
+(3. Capability Inference Engine - algorithms, prompts, evaluations, confidence models, ) Tj
+T*
+(explainability, and bias controls.) Tj
+T*
+(4. Career Intent Engine - aspiration and pathway intelligence.) Tj
+T*
+(5. Market Signal Engine - normalized demand, salary, emerging-industry, and AI-displacement ) Tj
+T*
+(signals.) Tj
+T*
+(6. National Vision Layer - computable strategy alignment for governments.) Tj
+T*
+(7. Opportunity Engine - matching and recommendation logic.) Tj
+T*
+(8. Job Passport - portable, trustworthy, evidence-backed capability artifact.) Tj
+T*
+(9. Verified Credential Ledger - credential trust, verification, revocation, and issuer logic.) Tj
+T*
+(10. Workforce Mobility Engine and Syrka Corridors - cross-border capability mobility rules and) Tj
+T*
+( orchestration.) Tj
+T*
+(11. AI-native Learning Analytics - predictive and explanatory learning intelligence.) Tj
+T*
+(12. Canonical Event Schemas and Anti-Corruption Layer - the abstraction that makes every LMS ) Tj
+T*
+(replaceable.) Tj
+T*
+() Tj
+T*
+(These components must remain independent of LMS implementation details. Open edX, Canvas, ) Tj
+T*
+(Moodle, or any future LMS may feed the system; none may define Syrka's core semantics.) Tj
+T*
+() Tj
+T*
+(14. Architecture Principles) Tj
+T*
+() Tj
+T*
+(1. LMSs are replaceable. No strategic Syrka domain may depend on LMS-specific schemas or APIs.) Tj
+T*
+(2. Syrka owns all intelligence. Capabilities, inference, graphs, recommendations, passports, ) Tj
+T*
+(and mobility decisions are Syrka-owned.) Tj
+T*
+(3. Events are immutable. Corrections are new events, not mutations of history.) Tj
+T*
+(4. Every capability must have evidence. Capability claims without evidence are drafts or ) Tj
+T*
+(hypotheses, never verified facts.) Tj
+T*
+(5. No AI decision without provenance. Model outputs require evidence references, model ) Tj
+T*
+(version, confidence, explanation, and audit record.) Tj
+T*
+(6. Every domain has one owner. Shared ownership is forbidden. Read models and references are ) Tj
+T*
+(allowed.) Tj
+T*
+(7. APIs are contracts. Domains integrate through versioned APIs/events, not database access.) Tj
+T*
+(8. Domain models are independent of implementation. Supabase, Open edX, graph DBs, and LLM ) Tj
+T*
+(providers are implementation choices.) Tj
+T*
+(9. Consent is a product primitive. User-controlled data sharing must be explicit, revocable, ) Tj
+T*
+(and auditable.) Tj
+T*
+(10. Privacy is designed in. Minimize data, classify payloads, and separate artifacts from ) Tj
+T*
+(event metadata.) Tj
+T*
+(11. Security follows the data. Authorization is based on user, tenant, role, purpose, consent,) Tj
+T*
+( and jurisdiction.) Tj
+T*
+(12. Country independence is mandatory. Country overlays may specialize policy, but global ) Tj
+T*
+(architecture remains stable.) Tj
+T*
+(13. Institution independence is mandatory. Institutions configure mappings and policies; they ) Tj
+T*
+(do not fork Syrka semantics.) Tj
+T*
+(14. AI vendors are replaceable. Prompt templates, evaluations, schemas, and provenance are ) Tj
+T*
+(Syrka IP; providers are adapters.) Tj
+T*
+(15. Reproducibility matters. Inference runs must be replayable or explainably non-replayable ) Tj
+T*
+(when models are deprecated.) Tj
+T*
+(16. Observability is required. Every event, API, worker, model run, and adapter must emit ) Tj
+T*
+(logs, metrics, and traces.) Tj
+T*
+(17. Human review exists for high-impact decisions. Mobility, credential disputes, and adverse ) Tj
+T*
+(opportunity decisions require appeal paths.) Tj
+T*
+(18. Data lineage is non-negotiable. Every derived object must point to source events and ) Tj
+ET
+endstream
+endobj
+62 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 63 0 R >>
+endobj
+63 0 obj
+<< /Length 2195 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(evidence artifacts.) Tj
+T*
+(19. Open standards are preferred. Use OIDC, SAML, LTI, W3C VC, OpenAPI, AsyncAPI, and portable) Tj
+T*
+( data formats where possible.) Tj
+T*
+(20. Architecture is governed by ADRs. Future deviations require new ADRs that explicitly ) Tj
+T*
+(update or supersede this constitution.) Tj
+T*
+() Tj
+T*
+(15. Architecture Diagrams) Tj
+T*
+() Tj
+T*
+(15.1 System Context Diagram) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    Student[Student] --> Syrka[Syrka Platform]) Tj
+T*
+(    Faculty[Faculty] --> Syrka) Tj
+T*
+(    Employer[Employer] --> Syrka) Tj
+T*
+(    Institution[Institution Admin] --> Syrka) Tj
+T*
+(    Government[Government / Ministry] --> Syrka) Tj
+T*
+(    Syrka --> LMS[Open edX LMS bounded context]) Tj
+T*
+(    Syrka --> Market[Labour market sources]) Tj
+T*
+(    Syrka --> Research[Research sources]) Tj
+T*
+(    Syrka --> GitHub[GitHub]) Tj
+T*
+(    Syrka --> LinkedIn[LinkedIn / professional data]) Tj
+T*
+(    Syrka --> LLM[LLM and AI providers]) Tj
+T*
+(    Syrka --> Credential[Credential issuers/verifiers]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.2 Bounded Context Map) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Learning[Learning Management] --> ACL[Anti-Corruption Layer]) Tj
+T*
+(    ACL --> Events[Canonical Event Bus]) Tj
+T*
+(    Identity[Identity & Access] --> Events) Tj
+T*
+(    Events --> Ontology[Syrka Ontology]) Tj
+T*
+(    Ontology --> Graph[Human Capability Graph]) Tj
+T*
+(    Events --> Graph) Tj
+T*
+(    Graph --> Inference[Capability Inference]) Tj
+T*
+(    Inference --> Career[Career Intent]) Tj
+T*
+(    Market[Market Signal] --> Opportunity[Opportunity Engine]) Tj
+T*
+(    Career --> Opportunity) Tj
+T*
+(    Graph --> Opportunity) Tj
+T*
+(    National[National Vision] --> Curriculum[Curriculum Intelligence]) Tj
+T*
+(    Curriculum --> Faculty[Faculty Platform]) Tj
+T*
+(    Graph --> Passport[Job Passport]) Tj
+T*
+(    Credentials[Credential Ledger] --> Passport) Tj
+T*
+(    Passport --> Mobility[Workforce Mobility]) Tj
+T*
+(    Mobility --> Corridors[Syrka Corridors]) Tj
+T*
+(    Opportunity --> Employer[Employer Platform]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.3 Container Diagram) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+ET
+endstream
+endobj
+64 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 65 0 R >>
+endobj
+65 0 obj
+<< /Length 1818 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(    subgraph Apps) Tj
+T*
+(        Web[Next.js Student Web]) Tj
+T*
+(        FacultyApp[Next.js Faculty App]) Tj
+T*
+(        EmployerApp[Next.js Employer App]) Tj
+T*
+(        MinistryApp[Next.js Ministry App]) Tj
+T*
+(        PublicApp[Public Profile App]) Tj
+T*
+(    end) Tj
+T*
+(    subgraph Platform) Tj
+T*
+(        API[API Gateway / BFF]) Tj
+T*
+(        Auth[Identity Service + Supabase Auth]) Tj
+T*
+(        Bus[Event Bus + Schema Registry]) Tj
+T*
+(        Obs[Observability]) Tj
+T*
+(    end) Tj
+T*
+(    subgraph Learning) Tj
+T*
+(        OpenEdX[Open edX]) Tj
+T*
+(        Adapter[Learning Adapter / ACL]) Tj
+T*
+(    end) Tj
+T*
+(    subgraph Intelligence) Tj
+T*
+(        Ont[Ontology Service]) Tj
+T*
+(        GraphSvc[Capability Graph Service]) Tj
+T*
+(        Infer[Inference Service]) Tj
+T*
+(        Analytics[Learning Analytics]) Tj
+T*
+(        Opp[Opportunity Engine]) Tj
+T*
+(    end) Tj
+T*
+(    subgraph TrustMobility) Tj
+T*
+(        Passport[Job Passport]) Tj
+T*
+(        Cred[Credential Ledger]) Tj
+T*
+(        Mobility[Mobility Engine]) Tj
+T*
+(        Corridors[Corridors]) Tj
+T*
+(    end) Tj
+T*
+(    Web --> API) Tj
+T*
+(    FacultyApp --> API) Tj
+T*
+(    EmployerApp --> API) Tj
+T*
+(    MinistryApp --> API) Tj
+T*
+(    PublicApp --> API) Tj
+T*
+(    API --> Auth) Tj
+T*
+(    OpenEdX --> Adapter) Tj
+T*
+(    Adapter --> Bus) Tj
+T*
+(    Bus --> Ont) Tj
+T*
+(    Bus --> GraphSvc) Tj
+T*
+(    Bus --> Analytics) Tj
+T*
+(    Ont --> GraphSvc) Tj
+T*
+(    GraphSvc --> Infer) Tj
+T*
+(    Infer --> Opp) Tj
+T*
+(    GraphSvc --> Passport) Tj
+T*
+(    Cred --> Passport) Tj
+T*
+(    Passport --> Mobility) Tj
+T*
+(    Mobility --> Corridors) Tj
+T*
+(    Obs -. monitors .- API) Tj
+T*
+(    Obs -. monitors .- Bus) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.4 Component Diagram - Capability Inference) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+66 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 67 0 R >>
+endobj
+67 0 obj
+<< /Length 2254 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Events[Canonical Events] --> Evidence[Evidence Bundler]) Tj
+T*
+(    Evidence --> Retriever[Vector/Graph Retriever]) Tj
+T*
+(    Retriever --> Rules[Deterministic Rules]) Tj
+T*
+(    Retriever --> LLM[LLM Rubric Reasoner]) Tj
+T*
+(    Rules --> Ensemble[Decision Ensemble]) Tj
+T*
+(    LLM --> Ensemble) Tj
+T*
+(    Ensemble --> Confidence[Confidence Scorer]) Tj
+T*
+(    Confidence --> Explain[Explanation Builder]) Tj
+T*
+(    Explain --> Review{Human review required?}) Tj
+T*
+(    Review -- yes --> Queue[Review Queue]) Tj
+T*
+(    Review -- no --> Publish[Publish CapabilityObserved]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.5 Event Flow Diagram) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(sequenceDiagram) Tj
+T*
+(    participant LMS as Open edX) Tj
+T*
+(    participant ACL as Learning ACL) Tj
+T*
+(    participant Bus as Syrka Event Bus) Tj
+T*
+(    participant Analytics as Learning Analytics) Tj
+T*
+(    participant Infer as Capability Inference) Tj
+T*
+(    participant Graph as Capability Graph) Tj
+T*
+(    participant Dash as Capability Dashboard) Tj
+T*
+(    LMS->>ACL: Native submission/grade event) Tj
+T*
+(    ACL->>ACL: Map + validate + transform) Tj
+T*
+(    ACL->>Bus: AssignmentSubmitted v1) Tj
+T*
+(    Bus->>Analytics: Deliver event) Tj
+T*
+(    Bus->>Infer: Deliver event) Tj
+T*
+(    Infer->>Graph: Read evidence/context) Tj
+T*
+(    Infer->>Bus: CapabilityObserved v1) Tj
+T*
+(    Bus->>Graph: Update capability edge) Tj
+T*
+(    Graph->>Bus: CapabilityUpdated v1) Tj
+T*
+(    Bus->>Dash: Refresh user view) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.6 Data Flow Diagram) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    LMS[Open edX activity] --> ACL[ACL transformation]) Tj
+T*
+(    ACL --> EventStore[\(Immutable Event Store\)]) Tj
+T*
+(    EventStore --> Projections[\(Supabase PostgreSQL projections\)]) Tj
+T*
+(    EventStore --> Graph[\(Capability Graph DB\)]) Tj
+T*
+(    EventStore --> Vector[\(Vector DB\)]) Tj
+T*
+(    Artifacts[Evidence artifacts] --> Object[\(Object Storage\)]) Tj
+T*
+(    Object --> Vector) Tj
+T*
+(    Graph --> Dashboards[Dashboards]) Tj
+T*
+(    Vector --> Inference[Inference Engine]) Tj
+T*
+(    Graph --> Inference) Tj
+T*
+(    Inference --> EventStore) Tj
+T*
+(    Projections --> Apps[Next.js Apps]) Tj
+ET
+endstream
+endobj
+68 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 69 0 R >>
+endobj
+69 0 obj
+<< /Length 1895 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+() Tj
+T*
+() Tj
+T*
+(15.7 Sequence Diagram - Replacing Open edX) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(sequenceDiagram) Tj
+T*
+(    participant Canvas as New LMS Adapter) Tj
+T*
+(    participant Registry as Mapping Registry) Tj
+T*
+(    participant Bus as Canonical Event Bus) Tj
+T*
+(    participant Graph as Capability Graph) Tj
+T*
+(    participant Passport as Job Passport) Tj
+T*
+(    Canvas->>Registry: Register Canvas source IDs to canonical IDs) Tj
+T*
+(    Canvas->>Bus: Publish AssignmentSubmitted v1) Tj
+T*
+(    Bus->>Graph: Existing consumer receives unchanged event) Tj
+T*
+(    Graph->>Bus: CapabilityUpdated v1) Tj
+T*
+(    Bus->>Passport: Existing consumer receives unchanged event) Tj
+T*
+(    Note over Graph,Passport: No domain service changes because canonical contract is stable) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.8 Deployment Diagram) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    subgraph Edge) Tj
+T*
+(        CDN[CDN/WAF]) Tj
+T*
+(    end) Tj
+T*
+(    subgraph Vercel) Tj
+T*
+(        Apps[Next.js Apps]) Tj
+T*
+(        BFF[API Routes / BFF]) Tj
+T*
+(    end) Tj
+T*
+(    subgraph CloudPlatform) Tj
+T*
+(        Services[Domain Services]) Tj
+T*
+(        Workers[Background Workers]) Tj
+T*
+(        Bus[Event Bus]) Tj
+T*
+(        Redis[\(Redis\)]) Tj
+T*
+(        Obs[Logs/Metrics/Traces]) Tj
+T*
+(    end) Tj
+T*
+(    subgraph Data) Tj
+T*
+(        PG[\(Supabase PostgreSQL\)]) Tj
+T*
+(        GraphDB[\(Graph DB\)]) Tj
+T*
+(        VectorDB[\(Vector DB\)]) Tj
+T*
+(        ObjectStore[\(Object Storage\)]) Tj
+T*
+(    end) Tj
+T*
+(    subgraph LearningRuntime) Tj
+T*
+(        OpenEdX[Open edX Deployment]) Tj
+T*
+(        Adapter[Learning ACL Adapter]) Tj
+T*
+(    end) Tj
+T*
+(    CDN --> Apps) Tj
+T*
+(    Apps --> BFF) Tj
+T*
+(    BFF --> Services) Tj
+T*
+(    Services --> PG) Tj
+T*
+(    Services --> GraphDB) Tj
+T*
+(    Services --> VectorDB) Tj
+T*
+(    Services --> ObjectStore) Tj
+ET
+endstream
+endobj
+70 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 71 0 R >>
+endobj
+71 0 obj
+<< /Length 1335 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+45 748 Td
+(    Services --> Redis) Tj
+T*
+(    Services --> Bus) Tj
+T*
+(    Workers --> Bus) Tj
+T*
+(    OpenEdX --> Adapter) Tj
+T*
+(    Adapter --> Bus) Tj
+T*
+(    Obs -. monitors .- Services) Tj
+T*
+(    Obs -. monitors .- Workers) Tj
+T*
+(    Obs -. monitors .- Adapter) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(16. Final Decision) Tj
+T*
+() Tj
+T*
+(Syrka's permanent architecture is a domain-driven, event-driven, AI-native platform in which ) Tj
+T*
+(Open edX is only the Learning Management bounded context. Open edX stops at course delivery, ) Tj
+T*
+(assessment operations, gradebook mechanics, enrolments, discussions, attendance capture, and ) Tj
+T*
+(raw educational activity.) Tj
+T*
+() Tj
+T*
+(Syrka begins at canonical event ownership, ontology, graph, inference, career intent, market ) Tj
+T*
+(intelligence, national vision alignment, dashboards, portfolios, opportunities, passports, ) Tj
+T*
+(credentials, mobility, public profiles, and cross-border corridors.) Tj
+T*
+() Tj
+T*
+(All future engineering work must preserve the replaceability of Open edX. Any proposal that ) Tj
+T*
+(places Syrka ontology, capability inference, graph state, job passport logic, employer ) Tj
+T*
+(intelligence, workforce mobility, or national strategy logic inside Open edX violates this ADR) Tj
+T*
+( unless superseded by a later accepted ADR.) Tj
+ET
+endstream
+endobj
+xref
+0 72
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000351 00000 n 
+0000000421 00000 n 
+0000000547 00000 n 
+0000003480 00000 n 
+0000003606 00000 n 
+0000005183 00000 n 
+0000005309 00000 n 
+0000008574 00000 n 
+0000008702 00000 n 
+0000013584 00000 n 
+0000013712 00000 n 
+0000017008 00000 n 
+0000017136 00000 n 
+0000020105 00000 n 
+0000020233 00000 n 
+0000023107 00000 n 
+0000023235 00000 n 
+0000026164 00000 n 
+0000026292 00000 n 
+0000029144 00000 n 
+0000029272 00000 n 
+0000031917 00000 n 
+0000032045 00000 n 
+0000034557 00000 n 
+0000034685 00000 n 
+0000037250 00000 n 
+0000037378 00000 n 
+0000039984 00000 n 
+0000040112 00000 n 
+0000042642 00000 n 
+0000042770 00000 n 
+0000045398 00000 n 
+0000045526 00000 n 
+0000048011 00000 n 
+0000048139 00000 n 
+0000050736 00000 n 
+0000050864 00000 n 
+0000053321 00000 n 
+0000053449 00000 n 
+0000057459 00000 n 
+0000057587 00000 n 
+0000060733 00000 n 
+0000060861 00000 n 
+0000064292 00000 n 
+0000064420 00000 n 
+0000067620 00000 n 
+0000067748 00000 n 
+0000072155 00000 n 
+0000072283 00000 n 
+0000074931 00000 n 
+0000075059 00000 n 
+0000078581 00000 n 
+0000078709 00000 n 
+0000081025 00000 n 
+0000081153 00000 n 
+0000083858 00000 n 
+0000083986 00000 n 
+0000087049 00000 n 
+0000087177 00000 n 
+0000090978 00000 n 
+0000091106 00000 n 
+0000093354 00000 n 
+0000093482 00000 n 
+0000095353 00000 n 
+0000095481 00000 n 
+0000097788 00000 n 
+0000097916 00000 n 
+0000099864 00000 n 
+0000099992 00000 n 
+trailer
+<< /Size 72 /Root 1 0 R /Info << /Title (ADR-002 - Syrka Domain Architecture) /Author (Syrka Architecture) >> >>
+startxref
+101380
+%%EOF

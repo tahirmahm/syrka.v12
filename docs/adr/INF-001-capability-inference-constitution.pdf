@@ -1,0 +1,1700 @@
+%PDF-1.4
+%
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R 30 0 R] /Count 14 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 3585 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+(INF-001 - Syrka Capability Inference Constitution) Tj
+T*
+() Tj
+T*
+(Status: Constitutional Engineering Specification) Tj
+T*
+(Version: 1.0) Tj
+T*
+(Date: 2026-07-08) Tj
+T*
+(Builds upon: Product Suite; ADR-001 - Open Source LMS Foundation; ADR-002 - Domain Architecture ) Tj
+T*
+(& Bounded Contexts; CEA-001 - Canonical Event Architecture; ONT-001 - Ontology Constitution; ) Tj
+T*
+(GRAPH-001 - Human Capability Graph Specification; REASON-001 - Evidence & Reasoning Constitution) Tj
+T*
+(Decision owners: AI Science / Knowledge Engineering / Ontology / ML Architecture / Platform ) Tj
+T*
+(Architecture / Research) Tj
+T*
+(Scope: Capability definitions, lifecycle, inference pipeline, evidence aggregation, evolution, ) Tj
+T*
+(dependencies, similarity, transfer, decay, verification, AI independence, human oversight, ) Tj
+T*
+(explainability, examples, and governance) Tj
+T*
+() Tj
+T*
+(1. Executive Overview) Tj
+T*
+() Tj
+T*
+(Capability inference is Syrka's central intelligence layer. It is the process that transforms ) Tj
+T*
+(educational activity, assessments, projects, research, professional evidence, credentials, ) Tj
+T*
+(employer signals, and canonical events into evidence-backed capability assertions that can power) Tj
+T*
+( learning recommendations, career intelligence, employer matching, workforce planning, ) Tj
+T*
+(government analytics, and the Syrka Job Passport.) Tj
+T*
+() Tj
+T*
+(Capability inference is distinct from adjacent layers:) Tj
+T*
+() Tj
+T*
+(| Layer | Responsibility | What it does not do |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Ontology | Defines what concepts mean. | Does not decide whether a person has a capability. |) Tj
+T*
+(| Evidence & Reasoning | Defines how Syrka reasons from evidence. | Does not own capability lifecycle state. |) Tj
+T*
+(| Human Capability Graph | Represents semantic relationships over time. | Does not independently invent conclusions. |) Tj
+T*
+(| Capability Inference | Converts evidence into capability observations, confidence updates, recommendations, and ) Tj
+T*
+(passport-eligible claims. | Does not redefine ontology or bypass reasoning rules. |) Tj
+T*
+(| AI models | Assist extraction, classification, mapping, scoring, and explanation. | Are not constitutional sources ) Tj
+T*
+(of truth. |) Tj
+T*
+() Tj
+T*
+(The inference layer transforms educational data into workforce intelligence by converting raw ) Tj
+T*
+(learning and activity events into portable, context-aware, evidence-backed capability claims. A ) Tj
+T*
+(course completion is not a capability. A grade is not a capability. A GitHub repository is not a) Tj
+T*
+( capability. A capability emerges only when evidence is mapped to ontology concepts, evaluated ) Tj
+T*
+(for relevance and quality, placed in graph context, scored for confidence, checked for ) Tj
+T*
+(contradiction, and published as a canonical capability event.) Tj
+T*
+() Tj
+T*
+(Constitutional premise:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Evidence + Ontology + Graph Context + Reasoning Rules + Confidence Model + Review Policy) Tj
+T*
+(  -> Capability Observation / Capability Update / Recommendation / Passport Claim) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(2. Capability Definition) Tj
+T*
+() Tj
+T*
+(| Term | Canonical definition | Example | Counterexample |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| Capability | Evidence-backed, context-aware ability to perform actions, solve problems, produce outcomes, or ) Tj
+T*
+(exercise judgment at stated confidence. | Can design normalized relational database schemas in academic project ) Tj
+T*
+(context. | "Completed Database 101" without assessed evidence. |) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 4522 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+(| Capability Observation | A temporal evidence-backed observation that a subject demonstrates or may demonstrate a ) Tj
+T*
+(capability. | CapabilityObserved from graded schema project. | A static skill label on a profile. |) Tj
+T*
+(| Capability Assertion | Accepted claim that a subject has a capability in a context with confidence/provenance. | ) Tj
+T*
+(Passport claim for SQL data modeling at Strong confidence. | LLM free-text claim with no evidence. |) Tj
+T*
+(| Capability State | Current graph projection of capability confidence, evidence, validity, and status. | active, ) Tj
+T*
+(strong, verified, stale, revoked. | Raw event stream. |) Tj
+T*
+(| Capability Confidence | Calibrated support level for a capability assertion under uncertainty. | 0.84 Strong. | ) Tj
+T*
+(Grade percentage copied as confidence. |) Tj
+T*
+(| Capability Strength | Practical robustness of capability across difficulty, contexts, and evidence diversity. | ) Tj
+T*
+(Strong across coursework, project, and internship. | One easy quiz result. |) Tj
+T*
+(| Capability Context | Conditions under which capability is believed to hold. | academic, production, clinical, ) Tj
+T*
+(regulated jurisdiction. | Universal claim without boundaries. |) Tj
+T*
+(| Capability Freshness | Current relevance of evidence supporting a capability. | Cloud certification renewed this ) Tj
+T*
+(year. | Five-year-old framework knowledge in obsolete version. |) Tj
+T*
+(| Capability Evolution | Change in capability state over time. | Emerging -> Supported -> Strong. | Overwriting old ) Tj
+T*
+(state. |) Tj
+T*
+(| Capability Decay | Reduction in confidence due to time, disuse, obsolescence, contradiction, or context shift. | ) Tj
+T*
+(Legacy AngularJS skill decays for modern frontend roles. | Deleting prior evidence. |) Tj
+T*
+(| Capability Revocation | Invalidation or removal of current positive support due to revoked evidence, fraud, policy, ) Tj
+T*
+(or review. | Revoked credential removes passport support. | Hiding inconvenient evidence. |) Tj
+T*
+(| Capability Transferability | Degree to which capability in one context supports another context. | Military ) Tj
+T*
+(logistics supports supply-chain operations. | Assuming all leadership transfers equally. |) Tj
+T*
+(| Capability Similarity | Semantic closeness between capabilities based on ontology, evidence, tasks, tools, and ) Tj
+T*
+(outcomes. | Python and Java share programming foundations but differ ecosystems. | Treating Python and accounting as ) Tj
+T*
+(similar due to same course. |) Tj
+T*
+(| Capability Hierarchy | Parent/child organization of capabilities. | Data engineering contains pipeline design. | Job) Tj
+T*
+( title hierarchy. |) Tj
+T*
+(| Capability Dependency | Required or supporting capability relationship. | Machine learning requires statistics and ) Tj
+T*
+(programming. | Skill popularity correlation. |) Tj
+T*
+(| Capability Composite | Capability composed of multiple capabilities, skills, knowledge, and behaviors. | Product ) Tj
+T*
+(management combines research, prioritization, communication. | Single isolated task. |) Tj
+T*
+(| Capability Gap | Difference between observed capability state and required target state. | Missing clinical license ) Tj
+T*
+(for residency pathway. | Low self-esteem. |) Tj
+T*
+(| Capability Potential | Plausible future capability under defined support and learning conditions. | High potential ) Tj
+T*
+(for AI after math/programming evidence. | Verified capability. |) Tj
+T*
+(| Capability Readiness | Degree to which capability/profile satisfies requirements for action, role, credential, or ) Tj
+T*
+(mobility route. | Ready for junior data analyst role. | Interest in data science. |) Tj
+T*
+(| Capability Risk | Risk that a capability claim is overstated, stale, biased, context-mismatched, or unsupported. | ) Tj
+T*
+(High risk from self-report-only claim. | Low confidence itself without reason. |) Tj
+T*
+(| Capability Verification | Confirmation of evidence/claim by trusted process, issuer, employer, expert, or ) Tj
+T*
+(government. | Professional license verified. | Course page viewed. |) Tj
+T*
+(| Capability Validation | Check that inference conforms to ontology, evidence rules, schemas, thresholds, and policy. ) Tj
+T*
+(| Schema and rule validation before CapabilityObserved. | Model output accepted directly. |) Tj
+T*
+() Tj
+T*
+(3. Capability Lifecycle) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Observation) Tj
+T*
+(  v) Tj
+T*
+(Evidence) Tj
+T*
+(  v) Tj
+T*
+(Hypothesis) Tj
+T*
+(  v) Tj
+T*
+(Candidate Capability) Tj
+T*
+(  v) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 3017 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+(Confidence Evaluation) Tj
+T*
+(  v) Tj
+T*
+(Conflict Resolution) Tj
+T*
+(  v) Tj
+T*
+(Capability Assertion) Tj
+T*
+(  v) Tj
+T*
+(Capability Evolution) Tj
+T*
+(  v) Tj
+T*
+(Capability Strengthening) Tj
+T*
+(  v) Tj
+T*
+(Capability Decay) Tj
+T*
+(  v) Tj
+T*
+(Capability Revocation) Tj
+T*
+(  v) Tj
+T*
+(Historical Archive) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(| Stage | Meaning | Events/graph objects | Rule |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| Observation | Syrka captures something that happened. | canonical events, observation nodes | Not a conclusion. |) Tj
+T*
+(| Evidence | Observation/artifact becomes relevant to a claim. | Evidence node, DERIVED_FROM | Must have provenance. |) Tj
+T*
+(| Hypothesis | System proposes possible capability. | candidate inference object | Not user-facing as verified claim. ) Tj
+T*
+(|) Tj
+T*
+(| Candidate Capability | Hypothesis mapped to ontology concept/context. | capability concept, context | Requires ) Tj
+T*
+(ontology version. |) Tj
+T*
+(| Confidence Evaluation | Evidence is scored and aggregated. | ConfidenceScore | Must be calibrated and explainable. |) Tj
+T*
+(| Conflict Resolution | Contradictions are represented and evaluated. | CONTRADICTS, review flags | Conflicts never ) Tj
+T*
+(hidden. |) Tj
+T*
+(| Capability Assertion | Accepted capability observation is published. | CapabilityObserved, HCG assertion | Requires ) Tj
+T*
+(evidence and provenance. |) Tj
+T*
+(| Capability Evolution | State changes with new evidence. | CapabilityUpdated, supersession edges | Append-only ) Tj
+T*
+(history. |) Tj
+T*
+(| Capability Strengthening | Confidence/strength increases through evidence. | updated confidence | Requires non-) Tj
+T*
+(redundant support. |) Tj
+T*
+(| Capability Decay | Confidence decreases due to staleness/change. | decay event/update | Capability-specific decay ) Tj
+T*
+(rules. |) Tj
+T*
+(| Capability Revocation | Current assertion invalidated. | revocation/correction event | History preserved. |) Tj
+T*
+(| Historical Archive | Past state retained for audit/explanation. | snapshots/events | Reproducible from event store. ) Tj
+T*
+(|) Tj
+T*
+() Tj
+T*
+(4. Inference Pipeline) Tj
+T*
+() Tj
+T*
+(4.1 Inputs) Tj
+T*
+() Tj
+T*
+(| Input | Purpose |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Canonical Events | Immutable facts such as AssignmentGraded, GitHubRepositoryLinked, CredentialVerified. |) Tj
+T*
+(| Human Capability Graph | Existing capability, evidence, ontology, occupation, and opportunity context. |) Tj
+T*
+(| Ontology | Canonical meaning of capabilities, dependencies, similarity, hierarchy, and standards. |) Tj
+T*
+(| Evidence | Validated artifacts, assessments, credentials, reviews, research, projects, work signals. |) Tj
+T*
+(| Market Signals | Demand, salary, occupation requirements, emerging skills, disruption signals. |) Tj
+T*
+(| Career Intent | User goals, preferences, geography, industry, salary, constraints. |) Tj
+T*
+(| Human Review | Faculty, employer, peer, expert, government, or student challenge outcomes. |) Tj
+T*
+() Tj
+T*
+(4.2 Outputs) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 2614 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+() Tj
+T*
+(| Output | Meaning |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Capability Assertions | Accepted evidence-backed claims with context/confidence/provenance. |) Tj
+T*
+(| Confidence Updates | Changes to capability confidence, strength, decay, or risk. |) Tj
+T*
+(| Recommendations | Learning, career, evidence collection, opportunity, or mobility suggestions. |) Tj
+T*
+(| Job Passport Claims | Portable claims that meet passport inclusion thresholds and disclosure policy. |) Tj
+T*
+(| Learning Path Suggestions | Actions to close capability gaps or increase confidence. |) Tj
+T*
+() Tj
+T*
+(4.3 Pipeline stages) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(1. Ingest canonical event) Tj
+T*
+(2. Validate event and evidence references) Tj
+T*
+(3. Extract evidence features) Tj
+T*
+(4. Map evidence to ontology concepts) Tj
+T*
+(5. Retrieve graph neighborhood) Tj
+T*
+(6. Generate capability hypotheses) Tj
+T*
+(7. Score evidence and confidence) Tj
+T*
+(8. Detect conflicts and decay) Tj
+T*
+(9. Apply policy/human-review gates) Tj
+T*
+(10. Publish capability events) Tj
+T*
+(11. Update graph projections) Tj
+T*
+(12. Trigger recommendations/passport updates) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(No stage may bypass canonical events, ontology, graph provenance, or reasoning rules.) Tj
+T*
+() Tj
+T*
+(5. Evidence Aggregation) Tj
+T*
+() Tj
+T*
+(5.1 Combination rules) Tj
+T*
+() Tj
+T*
+(| Pattern | Effect on confidence |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Multiple independent strong evidence items | Significant confidence increase. |) Tj
+T*
+(| Repeated identical weak signals | Small increase, quickly saturates. |) Tj
+T*
+(| Duplicate evidence from same source | Deduplicated or heavily discounted. |) Tj
+T*
+(| Evidence across contexts | Increases transferability and strength. |) Tj
+T*
+(| Evidence covering all required sub-capabilities | Increases composite capability confidence. |) Tj
+T*
+(| Missing required component | Caps confidence for composite capability. |) Tj
+T*
+(| Strong contradiction | Reduces confidence and may trigger review. |) Tj
+T*
+(| Revoked evidence | Removed from positive support; may create contradiction. |) Tj
+T*
+(| Expired evidence | Supports history, weakens current confidence. |) Tj
+T*
+(| Refreshed evidence | Restores or increases freshness/confidence. |) Tj
+T*
+() Tj
+T*
+(5.2 Aggregation formula family) Tj
+T*
+() Tj
+T*
+(A capability confidence function must be versioned and reproducible:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(C\(capability, subject, context, t\) = aggregate\() Tj
+T*
+(  weighted_supporting_evidence,) Tj
+T*
+(  weighted_conflicting_evidence,) Tj
+T*
+(  required_component_coverage,) Tj
+T*
+(  source_trust,) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 3258 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+(  evidence_independence,) Tj
+T*
+(  freshness,) Tj
+T*
+(  context_match,) Tj
+T*
+(  calibration_adjustment,) Tj
+T*
+(  human_review_adjustment) Tj
+T*
+(\)) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Aggregation is not a naive average. It must account for the weakest required component, evidence) Tj
+T*
+( diversity, contradiction, and uncertainty.) Tj
+T*
+() Tj
+T*
+(5.3 Evidence expiry and refresh) Tj
+T*
+() Tj
+T*
+(- Evidence expiry is capability-specific and jurisdiction-specific where required.) Tj
+T*
+(- Expiry does not delete historical capability; it lowers current confidence.) Tj
+T*
+(- Refresh occurs when new evidence confirms continued capability in a relevant context.) Tj
+T*
+(- Refreshed evidence must be independent enough to avoid artificial confidence inflation.) Tj
+T*
+() Tj
+T*
+(6. Capability Evolution) Tj
+T*
+() Tj
+T*
+(| Evolution driver | Effect | Example |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Practice | Increases confidence/strength if practice is relevant and non-trivial. | repeated clinical simulations. |) Tj
+T*
+(| Feedback | Improves capability when followed by better evidence. | rubric feedback then improved project. |) Tj
+T*
+(| Work experience | Strengthens context-specific capability. | production incidents resolved. |) Tj
+T*
+(| Research output | Strengthens research/analytical capability. | publication with clear contribution. |) Tj
+T*
+(| Forgetting/disuse | Causes decay when capability requires active practice. | unused language fluency. |) Tj
+T*
+(| Technological change | Obsoletes or narrows capability. | old framework version. |) Tj
+T*
+(| Industry evolution | Changes capability relevance or requirements. | AI changes data analyst role. |) Tj
+T*
+(| Credential renewal | Refreshes verified support. | safety certification renewed. |) Tj
+T*
+(| Revocation/fraud | Reduces or invalidates support. | plagiarized project discovered. |) Tj
+T*
+() Tj
+T*
+(Capability maturity bands:) Tj
+T*
+() Tj
+T*
+(| Maturity | Meaning |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Exposed | Person has encountered concept; no performance evidence. |) Tj
+T*
+(| Emerging | Early evidence exists; limited context. |) Tj
+T*
+(| Developing | Multiple evidence items; gaps remain. |) Tj
+T*
+(| Proficient | Reliable performance in defined context. |) Tj
+T*
+(| Advanced | Strong performance across varied contexts. |) Tj
+T*
+(| Expert | Sustained high-confidence capability with transfer, judgment, and recognition. |) Tj
+T*
+(| Stale | Historical evidence exists but current confidence decayed. |) Tj
+T*
+(| Revoked | Positive assertion invalidated for current use. |) Tj
+T*
+() Tj
+T*
+(7. Capability Dependencies) Tj
+T*
+() Tj
+T*
+(| Dependency type | Definition | Rule |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Prerequisite capability | Required before target can be credibly performed. | Caps target confidence if missing. |) Tj
+T*
+(| Supporting capability | Increases likelihood/quality but not strictly required. | Adds support but does not cap ) Tj
+T*
+(alone. |) Tj
+T*
+(| Composite capability | Capability composed of multiple capabilities/skills/knowledge. | Confidence depends on ) Tj
+T*
+(coverage and weakest critical component. |) Tj
+T*
+(| Transferable capability | Capability reusable across contexts. | Requires context similarity and transfer evidence. ) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 3103 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+(|) Tj
+T*
+(| Specialized capability | Capability tied to narrow domain/tool/jurisdiction. | Transfer is limited. |) Tj
+T*
+(| General capability | Broad capability applicable across many contexts. | Requires diverse evidence to avoid ) Tj
+T*
+(vagueness. |) Tj
+T*
+(| Hidden capability | Capability suggested indirectly by evidence. | Must remain hypothesis until direct/strong ) Tj
+T*
+(support exists. |) Tj
+T*
+(| Latent capability | Potential capability not yet demonstrated. | Cannot be passport claim; can guide ) Tj
+T*
+(recommendations. |) Tj
+T*
+() Tj
+T*
+(Dependency rules:) Tj
+T*
+() Tj
+T*
+(1. Required dependencies may cap confidence.) Tj
+T*
+(2. Supporting dependencies may increase confidence but cannot prove target alone.) Tj
+T*
+(3. Composite capabilities require explicit component coverage.) Tj
+T*
+(4. Latent/hidden capabilities must not be represented as verified capability.) Tj
+T*
+(5. Dependency graphs are ontology-versioned.) Tj
+T*
+() Tj
+T*
+(8. Capability Similarity) Tj
+T*
+() Tj
+T*
+(Similarity is semantic, not label-based. It uses ontology distance, shared prerequisites, shared) Tj
+T*
+( tools, task overlap, evidence transfer, industry context, and historical transition outcomes.) Tj
+T*
+() Tj
+T*
+(| Pair | Similarity rationale | Transfer caution |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Python ? Java | Shared programming concepts, OOP, debugging, software design. | Syntax/ecosystem/tooling differ. |) Tj
+T*
+(| Statistics ? Econometrics | Shared probability, regression, inference. | Econometrics has domain assumptions and ) Tj
+T*
+(causal methods. |) Tj
+T*
+(| Leadership ? Team Management | Shared coordination, communication, accountability. | Leadership scope may exceed ) Tj
+T*
+(team operations. |) Tj
+T*
+(| OSINT ? Intelligence Analysis | Shared evidence collection, source evaluation, inference. | Legal/security context ) Tj
+T*
+(differs. |) Tj
+T*
+(| Urban Planning ? Urban Regeneration | Shared spatial, policy, community, infrastructure concepts. | Regeneration ) Tj
+T*
+(includes finance, redevelopment, stakeholder delivery. |) Tj
+T*
+() Tj
+T*
+(Similarity metrics:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(similarity = ontology_overlap + prerequisite_overlap + task_overlap + tool_overlap + evidence_transfer_rate + ) Tj
+T*
+(market_transition_success - context_penalty) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Similarity must produce explanation, not only score.) Tj
+T*
+() Tj
+T*
+(9. Capability Transfer) Tj
+T*
+() Tj
+T*
+(Capability transfer is inference that evidence in one context supports capability in another ) Tj
+T*
+(context.) Tj
+T*
+() Tj
+T*
+(| Transfer example | Transferable elements | Required caution |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Military logistics -> Supply Chain | planning, coordination, inventory, risk, operations. | civilian systems, ) Tj
+T*
+(commercial metrics, software tools. |) Tj
+T*
+(| Academic research -> Market Research | literature review, methods, data analysis, writing. | customer/business ) Tj
+T*
+(context and speed. |) Tj
+T*
+(| Software Engineering -> Quantitative Development | programming, algorithms, testing, systems thinking. | finance ) Tj
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 3367 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+(math, risk, low-latency or quant methods. |) Tj
+T*
+(| Political Science -> Geopolitical Risk | institutions, policy analysis, qualitative reasoning. | market/security ) Tj
+T*
+(forecasting and data sources. |) Tj
+T*
+(| Civil Engineering -> Infrastructure Consulting | infrastructure systems, project constraints, regulation. | client ) Tj
+T*
+(advisory, finance, strategy consulting. |) Tj
+T*
+() Tj
+T*
+(Transfer rules:) Tj
+T*
+() Tj
+T*
+(1. Transfer never creates verified capability by itself.) Tj
+T*
+(2. Transfer creates hypotheses or lower-confidence support unless direct evidence exists.) Tj
+T*
+(3. Transfer confidence decays with context distance.) Tj
+T*
+(4. Transfer requires ontology path and evidence path.) Tj
+T*
+(5. High-impact transfer claims require human/expert review.) Tj
+T*
+() Tj
+T*
+(10. Capability Decay) Tj
+T*
+() Tj
+T*
+(| Decay type | Trigger | Effect |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Time decay | Evidence age exceeds freshness window. | Confidence decreases gradually or sharply by capability. |) Tj
+T*
+(| Practice decay | No recent performance/practice. | Practical capability weakens. |) Tj
+T*
+(| Knowledge obsolescence | Domain knowledge changes. | Older evidence loses relevance. |) Tj
+T*
+(| Certification expiry | Credential expires. | Verified support removed for current claims. |) Tj
+T*
+(| Industry disruption | Market requirements change. | Context match decreases. |) Tj
+T*
+(| Technology shift | Tools/frameworks/languages change. | Tool-specific capability decays. |) Tj
+T*
+(| Skill atrophy | Human performance declines without use. | Confidence and readiness decrease. |) Tj
+T*
+(| Context change | New jurisdiction/role/domain. | Transferability and readiness decrease. |) Tj
+T*
+() Tj
+T*
+(Decay rule:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(current_confidence = prior_confidence  freshness_factor  practice_factor  context_factor  technology_relevance  ) Tj
+T*
+(contradiction_factor) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Decay must be explainable and reversible through refreshed evidence.) Tj
+T*
+() Tj
+T*
+(11. Capability Verification) Tj
+T*
+() Tj
+T*
+(Verification strength ranking from weakest to strongest by default:) Tj
+T*
+() Tj
+T*
+(| Rank | Verification type | Strength | Notes |) Tj
+T*
+(|---:|---|---|---|) Tj
+T*
+(| 1 | Self-reported capability | Very weak | Can seed hypotheses only. |) Tj
+T*
+(| 2 | Behavioral/passive evidence | Weak | Attendance/views/discussion need caution. |) Tj
+T*
+(| 3 | Portfolio-backed capability | Medium | Depends on authenticity and review. |) Tj
+T*
+(| 4 | Assessment-backed capability | Medium-strong | Depends on assessment validity and difficulty. |) Tj
+T*
+(| 5 | Peer-reviewed capability | Medium-strong | Depends on peer trust and bias controls. |) Tj
+T*
+(| 6 | Research-backed capability | Strong | Requires authorship/contribution clarity. |) Tj
+T*
+(| 7 | Employer-verified capability | Strong | Context-specific; bias checks required. |) Tj
+T*
+(| 8 | Government-recognized capability | Very strong for regulated context | Jurisdiction-specific. |) Tj
+T*
+(| 9 | Professional-license capability | Very strong when current | Strong for regulated practice; may not cover all ) Tj
+T*
+(capabilities. |) Tj
+T*
+() Tj
+T*
+(Verification is claim-specific. A professional license may strongly verify legal eligibility but) Tj
+T*
+( only partially support a specific technical capability.) Tj
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 3275 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+() Tj
+T*
+(12. AI Independence) Tj
+T*
+() Tj
+T*
+(AI providers may participate in inference by extracting evidence, mapping ontology concepts, ) Tj
+T*
+(proposing hypotheses, summarizing artifacts, detecting conflicts, estimating similarity, or ) Tj
+T*
+(drafting explanations. Providers remain subordinate to this constitution.) Tj
+T*
+() Tj
+T*
+(Rules:) Tj
+T*
+() Tj
+T*
+(1. GLM, Claude, GPT, Gemini, and future models are interchangeable adapters.) Tj
+T*
+(2. Model output is candidate evidence/reasoning, not accepted capability.) Tj
+T*
+(3. Model-specific confidence is not Syrka confidence.) Tj
+T*
+(4. Every model output must cite evidence IDs and ontology concept IDs.) Tj
+T*
+(5. Provider replacement requires regression tests on capability inference benchmarks.) Tj
+T*
+(6. No downstream passport, graph, or recommendation service may require provider-specific opaque) Tj
+T*
+( fields.) Tj
+T*
+(7. AI-derived high-impact claims require policy gates and possibly human review.) Tj
+T*
+() Tj
+T*
+(13. Human Oversight) Tj
+T*
+() Tj
+T*
+(| Oversight type | Purpose | Constitutional rule |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Faculty review | Validate educational evidence and assessment interpretation. | Review event required; cannot erase ) Tj
+T*
+(history. |) Tj
+T*
+(| Employer review | Validate workplace evidence and role performance. | Must record employer context and potential ) Tj
+T*
+(bias. |) Tj
+T*
+(| Student appeal | Allow challenge of evidence/inference/passport claim. | Must provide resolution and graph update. |) Tj
+T*
+(| Government review | Validate regulated mobility/credential recognition. | Jurisdiction overlay applies. |) Tj
+T*
+(| Expert adjudication | Resolve domain-specific ambiguity. | Expert identity and rationale recorded. |) Tj
+T*
+(| Capability correction | Correct mapping, evidence, or confidence error. | Publish correction/supersession event. |) Tj
+T*
+(| Capability revocation | Invalidate current claim. | Preserve historical assertion with revoked status. |) Tj
+T*
+(| Human override | Override model/rule output. | Must include rationale and reviewer authority. |) Tj
+T*
+() Tj
+T*
+(Oversight preserves provenance by creating new canonical events and graph assertions. It never ) Tj
+T*
+(deletes inconvenient history.) Tj
+T*
+() Tj
+T*
+(14. Explainability) Tj
+T*
+() Tj
+T*
+(Every inferred capability must answer:) Tj
+T*
+() Tj
+T*
+(| Question | Required content |) Tj
+T*
+(|---|---|) Tj
+T*
+(| What evidence created it? | Evidence IDs, artifacts, assessments, credentials, reviews. |) Tj
+T*
+(| What evidence contradicts it? | Contradictory evidence IDs and handling rationale. |) Tj
+T*
+(| Why does Syrka believe it exists? | Reasoning summary, evidence weights, ontology mapping. |) Tj
+T*
+(| What ontology concepts were used? | Concept IDs and ontology version. |) Tj
+T*
+(| Which graph paths were traversed? | HCG path summary or query trace. |) Tj
+T*
+(| What confidence exists? | Score, band, model/rule version, calibration status. |) Tj
+T*
+(| What uncertainty remains? | Missing evidence, stale evidence, context limitations, model disagreement. |) Tj
+T*
+(| What review history exists? | Human review, appeal, correction, revocation events. |) Tj
+T*
+() Tj
+T*
+(Minimum capability inference record:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 2341 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+(  "capability_observation_id": "cap_obs_001",) Tj
+T*
+(  "subject_id": "person_123",) Tj
+T*
+(  "capability_id": "capability:sql_data_modeling",) Tj
+T*
+(  "context": "academic database project",) Tj
+T*
+(  "confidence": { "score": 0.84, "band": "Strong", "model": "confidence@1.0.0" },) Tj
+T*
+(  "evidence_ids": ["evidence_assignment_789", "artifact_schema_project"],) Tj
+T*
+(  "contradictions": [],) Tj
+T*
+(  "ontology_version": "1.0.0",) Tj
+T*
+(  "graph_paths": ["Person->CapabilityObservation->Evidence->CanonicalEvent"],) Tj
+T*
+(  "source_event_ids": ["AssignmentSubmitted:abc", "AssignmentGraded:def"],) Tj
+T*
+(  "uncertainty": ["academic context, not production setting"],) Tj
+T*
+(  "review_history": []) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15. Mermaid Diagrams) Tj
+T*
+() Tj
+T*
+(15.1 Capability lifecycle) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(stateDiagram-v2) Tj
+T*
+(    [*] --> Observation) Tj
+T*
+(    Observation --> Evidence) Tj
+T*
+(    Evidence --> Hypothesis) Tj
+T*
+(    Hypothesis --> CandidateCapability) Tj
+T*
+(    CandidateCapability --> ConfidenceEvaluation) Tj
+T*
+(    ConfidenceEvaluation --> ConflictResolution) Tj
+T*
+(    ConflictResolution --> CapabilityAssertion) Tj
+T*
+(    CapabilityAssertion --> CapabilityEvolution) Tj
+T*
+(    CapabilityEvolution --> Strengthening) Tj
+T*
+(    CapabilityEvolution --> Decay) Tj
+T*
+(    Decay --> Revocation) Tj
+T*
+(    Strengthening --> HistoricalArchive) Tj
+T*
+(    Revocation --> HistoricalArchive) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.2 Inference pipeline) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    Events[Canonical Events] --> Evidence[Evidence Extraction]) Tj
+T*
+(    Evidence --> Validation[Evidence Validation]) Tj
+T*
+(    Validation --> Ontology[Ontology Mapping]) Tj
+T*
+(    Ontology --> Graph[Graph Neighborhood Retrieval]) Tj
+T*
+(    Graph --> Hypothesis[Capability Hypotheses]) Tj
+T*
+(    Hypothesis --> Scoring[Confidence Scoring]) Tj
+T*
+(    Scoring --> Conflicts[Conflict Detection]) Tj
+T*
+(    Conflicts --> Review{Human review required?}) Tj
+T*
+(    Review -- yes --> HumanReview[Human Review]) Tj
+T*
+(    Review -- no --> Publish[Publish CapabilityObserved]) Tj
+T*
+(    HumanReview --> Publish) Tj
+T*
+(    Publish --> HCG[Human Capability Graph]) Tj
+T*
+(    Publish --> Recommendations) Tj
+T*
+(    Publish --> Passport[Job Passport]) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 1792 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+() Tj
+T*
+(15.3 Capability evolution) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Emerging --> Developing) Tj
+T*
+(    Developing --> Proficient) Tj
+T*
+(    Proficient --> Advanced) Tj
+T*
+(    Advanced --> Expert) Tj
+T*
+(    Proficient --> Stale) Tj
+T*
+(    Stale --> Refreshed) Tj
+T*
+(    Refreshed --> Proficient) Tj
+T*
+(    Stale --> Revoked) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.4 Evidence aggregation) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    EvidenceA[Assessment Evidence] --> Weighting) Tj
+T*
+(    EvidenceB[Portfolio Evidence] --> Weighting) Tj
+T*
+(    EvidenceC[Employer Evidence] --> Weighting) Tj
+T*
+(    EvidenceD[Research Evidence] --> Weighting) Tj
+T*
+(    Contradiction[Conflicting Evidence] --> Weighting) Tj
+T*
+(    Weighting --> Aggregation) Tj
+T*
+(    Aggregation --> ConfidenceScore) Tj
+T*
+(    ConfidenceScore --> CapabilityAssertion) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.5 Capability dependency graph) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Statistics --> MachineLearning) Tj
+T*
+(    Python --> MachineLearning) Tj
+T*
+(    DataCleaning --> MachineLearning) Tj
+T*
+(    MachineLearning --> AIProductDevelopment) Tj
+T*
+(    Communication --> ProductManagement) Tj
+T*
+(    Prioritization --> ProductManagement) Tj
+T*
+(    UserResearch --> ProductManagement) Tj
+T*
+(    ProductManagement --> AIProductDevelopment) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.6 Capability transfer graph) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    MilitaryLogistics --> SupplyChain) Tj
+T*
+(    AcademicResearch --> MarketResearch) Tj
+T*
+(    SoftwareEngineering --> QuantDevelopment) Tj
+T*
+(    PoliticalScience --> GeopoliticalRisk) Tj
+T*
+(    CivilEngineering --> InfrastructureConsulting) Tj
+T*
+(    SupplyChain --> OperationsManagement) Tj
+T*
+() Tj
+T*
+() Tj
+ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 2493 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+(15.7 Capability decay model) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    PriorConfidence --> TimeDecay) Tj
+T*
+(    PriorConfidence --> PracticeDecay) Tj
+T*
+(    PriorConfidence --> TechnologyObsolescence) Tj
+T*
+(    PriorConfidence --> CertificationExpiry) Tj
+T*
+(    PriorConfidence --> ContextChange) Tj
+T*
+(    TimeDecay --> CurrentConfidence) Tj
+T*
+(    PracticeDecay --> CurrentConfidence) Tj
+T*
+(    TechnologyObsolescence --> CurrentConfidence) Tj
+T*
+(    CertificationExpiry --> CurrentConfidence) Tj
+T*
+(    ContextChange --> CurrentConfidence) Tj
+T*
+(    RefreshedEvidence --> CurrentConfidence) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.8 Human review workflow) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    ReviewRequired --> EvidencePacket) Tj
+T*
+(    EvidencePacket --> Reviewer) Tj
+T*
+(    Reviewer --> Decision{Decision}) Tj
+T*
+(    Decision --> Approve[Approve]) Tj
+T*
+(    Decision --> Downgrade[Downgrade]) Tj
+T*
+(    Decision --> Reject[Reject]) Tj
+T*
+(    Decision --> RequestMore[Request more evidence]) Tj
+T*
+(    Approve --> ReviewEvent) Tj
+T*
+(    Downgrade --> ReviewEvent) Tj
+T*
+(    Reject --> ReviewEvent) Tj
+T*
+(    RequestMore --> EvidenceRequest) Tj
+T*
+(    ReviewEvent --> CapabilityUpdated) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(16. Constitutional Examples) Tj
+T*
+() Tj
+T*
+(16.1 Student completing an economics degree) Tj
+T*
+() Tj
+T*
+(| Step | Example |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Canonical events | CourseCompleted, AssignmentGraded, ResearchPublished, CredentialVerified. |) Tj
+T*
+(| Evidence | econometrics exams, thesis, data analysis project, degree credential. |) Tj
+T*
+(| Ontology mappings | statistics, econometrics, policy analysis, research methods. |) Tj
+T*
+(| Graph mutations | Evidence nodes link to CapabilityObservations for statistical analysis and economic reasoning. |) Tj
+T*
+(| Reasoning | Strong assessed evidence supports academic economics capability; limited workplace evidence creates ) Tj
+T*
+(uncertainty. |) Tj
+T*
+(| Inference | CapabilityObserved: econometric_modeling at Strong confidence. |) Tj
+T*
+(| Confidence evolution | increases after thesis/project; decays if no recent analytical work. |) Tj
+T*
+(| Recommendations | market research internship, policy analyst role, data analytics bridge. |) Tj
+T*
+(| Passport updates | include verified degree and econometrics capability with evidence trail. |) Tj
+T*
+() Tj
+T*
+(16.2 Software engineer building open-source projects) Tj
+T*
+() Tj
+T*
+(| Step | Example |) Tj
+ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 3763 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+(|---|---|) Tj
+T*
+(| Canonical events | GitHubRepositoryLinked, CommitObserved, PullRequestMerged, ProjectCompleted. |) Tj
+T*
+(| Evidence | merged PRs, tests, architecture docs, issue discussions. |) Tj
+T*
+(| Ontology mappings | software design, testing, collaboration, API design. |) Tj
+T*
+(| Graph mutations | repositories and artifacts evidence engineering capabilities. |) Tj
+T*
+(| Reasoning | Independent code evidence supports applied engineering; lack of employer review limits production ) Tj
+T*
+(confidence. |) Tj
+T*
+(| Inference | API design and testing capabilities Supported/Strong depending project quality. |) Tj
+T*
+(| Confidence evolution | strengthens with reviews, stars not treated as direct capability evidence. |) Tj
+T*
+(| Recommendations | backend role, open-source fellowship, production internship. |) Tj
+T*
+(| Passport updates | include selected repositories with contribution provenance. |) Tj
+T*
+() Tj
+T*
+(16.3 Medical student entering residency) Tj
+T*
+() Tj
+T*
+(| Step | Example |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Canonical events | AssessmentGraded, ClinicalRotationCompleted, CredentialVerified. |) Tj
+T*
+(| Evidence | exams, OSCEs, supervised rotations, medical degree. |) Tj
+T*
+(| Ontology mappings | clinical reasoning, patient communication, procedural knowledge. |) Tj
+T*
+(| Graph mutations | supervised evidence links to clinical capability observations. |) Tj
+T*
+(| Reasoning | Regulated context requires verified credentials and jurisdiction rules. |) Tj
+T*
+(| Inference | clinical readiness capability only after supervised/verified evidence. |) Tj
+T*
+(| Confidence evolution | decays for procedures without recent practice. |) Tj
+T*
+(| Recommendations | residency pathways, remediation for weak rotations. |) Tj
+T*
+(| Passport updates | include regulated credential claims only if verified. |) Tj
+T*
+() Tj
+T*
+(16.4 Researcher publishing papers) Tj
+T*
+() Tj
+T*
+(| Step | Example |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Canonical events | ResearchPublished, ResearchCapabilityMapped, ORCIDLinked. |) Tj
+T*
+(| Evidence | publications, datasets, citations, coauthor roles. |) Tj
+T*
+(| Ontology mappings | research design, methodology, domain knowledge. |) Tj
+T*
+(| Graph mutations | publication evidence supports research capability with authorship confidence. |) Tj
+T*
+(| Reasoning | Authorship contribution must be clear; citations are impact signals, not capability proof alone. |) Tj
+T*
+(| Inference | research design capability Strong if repeated and reviewed. |) Tj
+T*
+(| Confidence evolution | strengthens with independent publications and grants. |) Tj
+T*
+(| Recommendations | lab collaborations, grants, expert roles. |) Tj
+T*
+(| Passport updates | include selected publications and mapped research capabilities. |) Tj
+T*
+() Tj
+T*
+(16.5 Construction worker gaining certifications) Tj
+T*
+() Tj
+T*
+(| Step | Example |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Canonical events | CredentialVerified, EmployerEvidenceVerified, ProjectCompleted. |) Tj
+T*
+(| Evidence | safety certificates, site supervisor review, completed projects. |) Tj
+T*
+(| Ontology mappings | safety compliance, equipment operation, site coordination. |) Tj
+T*
+(| Graph mutations | credential and employer evidence support regulated capability. |) Tj
+T*
+(| Reasoning | Certification expiry sharply affects current verified capability. |) Tj
+T*
+(| Inference | safety compliance capability Verified while credential current. |) Tj
+T*
+(| Confidence evolution | decays at expiry; refreshed by renewal. |) Tj
+T*
+(| Recommendations | renewal training, higher-responsibility roles. |) Tj
+T*
+(| Passport updates | include license/cert with expiry and verification status. |) Tj
+T*
+() Tj
+T*
+(16.6 Military officer transitioning to civilian employment) Tj
+ET
+endstream
+endobj
+28 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 29 0 R >>
+endobj
+29 0 obj
+<< /Length 3735 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+() Tj
+T*
+(| Step | Example |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Canonical events | ProfessionalExperienceObserved, CredentialVerified, EmployerInterested. |) Tj
+T*
+(| Evidence | service record, logistics projects, leadership reviews. |) Tj
+T*
+(| Ontology mappings | operations planning, logistics, leadership, risk management. |) Tj
+T*
+(| Graph mutations | military capabilities linked to civilian transfer hypotheses. |) Tj
+T*
+(| Reasoning | Transfer to supply chain is plausible but context gap remains. |) Tj
+T*
+(| Inference | logistics planning Strong; civilian supply-chain readiness Supported until direct evidence. |) Tj
+T*
+(| Confidence evolution | strengthens with civilian certifications/projects. |) Tj
+T*
+(| Recommendations | supply-chain certification, operations roles. |) Tj
+T*
+(| Passport updates | include transfer explanation and context limitations. |) Tj
+T*
+() Tj
+T*
+(16.7 Entrepreneur building startups) Tj
+T*
+() Tj
+T*
+(| Step | Example |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Canonical events | ProjectCompleted, EmployerEvidenceVerified, PortfolioGenerated. |) Tj
+T*
+(| Evidence | product launches, revenue, customer interviews, team building. |) Tj
+T*
+(| Ontology mappings | product strategy, sales, leadership, financial planning. |) Tj
+T*
+(| Graph mutations | startup artifacts and outcomes support composite capabilities. |) Tj
+T*
+(| Reasoning | Outcomes matter but attribution and survivorship bias considered. |) Tj
+T*
+(| Inference | entrepreneurial execution capability Strong with validated outcomes. |) Tj
+T*
+(| Confidence evolution | strengthens across multiple ventures or reviewed outcomes. |) Tj
+T*
+(| Recommendations | venture roles, product leadership, incubators. |) Tj
+T*
+(| Passport updates | include projects and measurable outcomes. |) Tj
+T*
+() Tj
+T*
+(16.8 Career switch from finance to AI) Tj
+T*
+() Tj
+T*
+(| Step | Example |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Canonical events | CourseCompleted, AssignmentGraded, ProjectCompleted, CareerIntentUpdated. |) Tj
+T*
+(| Evidence | statistics background, Python projects, ML coursework, portfolio. |) Tj
+T*
+(| Ontology mappings | finance analytics, statistics, Python, machine learning. |) Tj
+T*
+(| Graph mutations | finance capabilities connected to AI transfer hypotheses. |) Tj
+T*
+(| Reasoning | Statistical reasoning transfers; ML production evidence still required. |) Tj
+T*
+(| Inference | data analysis Strong; ML engineering Emerging/Supported depending projects. |) Tj
+T*
+(| Confidence evolution | strengthens with deployed AI projects and reviews. |) Tj
+T*
+(| Recommendations | ML portfolio projects, AI analyst roles, bridge curriculum. |) Tj
+T*
+(| Passport updates | include transferable analytics capabilities and AI learning evidence. |) Tj
+T*
+() Tj
+T*
+(17. Governance) Tj
+T*
+() Tj
+T*
+(| Governance area | Rule |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Inference rule ownership | AI Platform Team owns implementation; Ontology, Graph, Reasoning, Security, and domain ) Tj
+T*
+(owners approve constitutional semantics. |) Tj
+T*
+(| Rule evolution | Rules are versioned and require regression tests before production. |) Tj
+T*
+(| Versioning | Inference models, confidence functions, evidence weights, prompts, and policy gates have independent ) Tj
+T*
+(versions. |) Tj
+T*
+(| Regression testing | Test sets cover evidence sufficiency, contradiction, decay, transfer, jurisdiction, bias, and ) Tj
+T*
+(revocation. |) Tj
+T*
+(| Bias monitoring | Evaluate outcomes by cohort, institution, country, language, accessibility, gender where ) Tj
+T*
+(legally/ethically permitted, and socioeconomic proxy where appropriate. |) Tj
+T*
+(| Fairness evaluation | High-impact inference must measure disparate error, false positives, false negatives, and ) Tj
+ET
+endstream
+endobj
+30 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 31 0 R >>
+endobj
+31 0 obj
+<< /Length 1667 >>
+stream
+BT
+/F1 8.3 Tf
+12.2 TL
+41 752 Td
+(appeal outcomes. |) Tj
+T*
+(| Jurisdiction overlays | Local regulations affect verification/readiness, not global concept definitions. |) Tj
+T*
+(| Institution overlays | Institutional rubrics and mappings may specialize evidence, not redefine capability. |) Tj
+T*
+(| Policy overrides | Overrides publish canonical events and preserve prior history. |) Tj
+T*
+() Tj
+T*
+(Change process:) Tj
+T*
+() Tj
+T*
+(1. Propose inference rule/model change.) Tj
+T*
+(2. Identify affected capabilities, evidence types, graph paths, and products.) Tj
+T*
+(3. Run regression and fairness tests.) Tj
+T*
+(4. Review with Ontology, Graph, Reasoning, Security/Privacy, and domain owners.) Tj
+T*
+(5. Dual-run against prior version where high-impact.) Tj
+T*
+(6. Publish versioned release notes and migration/replay plan.) Tj
+T*
+(7. Monitor drift, appeals, and outcome quality.) Tj
+T*
+() Tj
+T*
+(18. Final Decision) Tj
+T*
+() Tj
+T*
+(INF-001 establishes how Syrka infers human capability. Capabilities are never declared by users,) Tj
+T*
+( courses, LMSs, credentials, or AI models alone. They emerge through evidence-backed, ontology-) Tj
+T*
+(grounded, graph-aware, confidence-scored, reviewable, reproducible inference.) Tj
+T*
+() Tj
+T*
+(This constitution governs capability inference, learning recommendations, career intelligence, ) Tj
+T*
+(employer matching, workforce planning, government analytics, and Job Passport generation. Every ) Tj
+T*
+(capability can be challenged, reviewed, strengthened, weakened, transferred, decayed, or revoked) Tj
+T*
+( while preserving historical provenance and independence from any AI provider or LMS ) Tj
+T*
+(implementation.) Tj
+ET
+endstream
+endobj
+xref
+0 32
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000211 00000 n 
+0000000281 00000 n 
+0000000407 00000 n 
+0000004044 00000 n 
+0000004170 00000 n 
+0000008744 00000 n 
+0000008870 00000 n 
+0000011939 00000 n 
+0000012067 00000 n 
+0000014734 00000 n 
+0000014862 00000 n 
+0000018173 00000 n 
+0000018301 00000 n 
+0000021457 00000 n 
+0000021585 00000 n 
+0000025005 00000 n 
+0000025133 00000 n 
+0000028461 00000 n 
+0000028589 00000 n 
+0000030983 00000 n 
+0000031111 00000 n 
+0000032956 00000 n 
+0000033084 00000 n 
+0000035630 00000 n 
+0000035758 00000 n 
+0000039574 00000 n 
+0000039702 00000 n 
+0000043490 00000 n 
+0000043618 00000 n 
+trailer
+<< /Size 32 /Root 1 0 R /Info << /Title (INF-001 - Syrka Capability Inference Constitution) /Author (Syrka Architecture) >> >>
+startxref
+45338
+%%EOF

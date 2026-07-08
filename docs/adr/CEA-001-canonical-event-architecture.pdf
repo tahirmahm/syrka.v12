@@ -1,0 +1,3884 @@
+%PDF-1.4
+%
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R 30 0 R 32 0 R 34 0 R 36 0 R 38 0 R 40 0 R 42 0 R 44 0 R 46 0 R 48 0 R 50 0 R 52 0 R 54 0 R 56 0 R 58 0 R 60 0 R 62 0 R 64 0 R 66 0 R] /Count 32 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 3426 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(CEA-001 - Syrka Canonical Event Architecture) Tj
+T*
+() Tj
+T*
+(Status: Accepted) Tj
+T*
+(Date: 2026-07-07) Tj
+T*
+(Builds on: ADR-001 - Selection of the Open-Source LMS Foundation for Syrka; ADR-002 - Syrka ) Tj
+T*
+(Domain Architecture, Bounded Contexts & System Ownership) Tj
+T*
+(Decision owners: Architecture / Platform Engineering / AI Engineering / Security) Tj
+T*
+(Scope: Canonical event language, envelope, taxonomy, event bus, event store, projections, ) Tj
+T*
+(connector mappings, AI consumption, security, privacy, versioning, testing, and governance) Tj
+T*
+() Tj
+T*
+(1. Executive Overview) Tj
+T*
+() Tj
+T*
+(Syrka is an event-driven Human Capital Infrastructure platform. Every meaningful business fact ) Tj
+T*
+(is represented as an immutable, canonical Syrka event. These events are the universal language ) Tj
+T*
+(used by the LMS boundary, identity, ontology, capability graph, inference engine, career ) Tj
+T*
+(engine, market intelligence, national vision layer, dashboards, passports, credentials, ) Tj
+T*
+(employers, governments, and cross-border workforce corridors.) Tj
+T*
+() Tj
+T*
+(The Canonical Event Architecture exists because Syrka must never be coupled to Open edX, ) Tj
+T*
+(Canvas, Moodle, Sakai, Chamilo, ILIAS, GitHub, LinkedIn, ORCID, OpenAlex, Semantic Scholar, an ) Tj
+T*
+(employer API, a government system, or any AI provider. External systems may produce signals. ) Tj
+T*
+(They do not define Syrka's facts.) Tj
+T*
+() Tj
+T*
+(Every subsystem communicates through canonical events rather than direct database access ) Tj
+T*
+(because:) Tj
+T*
+() Tj
+T*
+(1. Replaceability. Open edX can be replaced by Canvas, Moodle, a custom LMS, or a future ) Tj
+T*
+(platform by changing only the connector/anti-corruption layer.) Tj
+T*
+(2. Auditability. Events create a chronological, immutable record of what happened, who/what ) Tj
+T*
+(produced it, when it occurred, and which evidence supports it.) Tj
+T*
+(3. AI explainability. AI systems reason over canonical, provenance-rich evidence rather than ) Tj
+T*
+(opaque third-party schemas.) Tj
+T*
+(4. Domain ownership. Each bounded context owns its own model and projections. No service ) Tj
+T*
+(reaches into another service's database.) Tj
+T*
+(5. Replayability. Syrka can rebuild projections, dashboards, capability graph state, analytics,) Tj
+T*
+( passports, and recommendations from the event store.) Tj
+T*
+(6. Scalability. Producers and consumers evolve independently through versioned schemas and ) Tj
+T*
+(asynchronous delivery.) Tj
+T*
+(7. Compliance. Consent, privacy classification, retention, jurisdiction, and lineage travel ) Tj
+T*
+(with every event.) Tj
+T*
+() Tj
+T*
+(Events protect Syrka from LMS lock-in by turning LMS-specific activity into LMS-independent ) Tj
+T*
+(facts. For example, Open edX problem_check, Canvas quiz_submission, Moodle ) Tj
+T*
+(mod_quiz_attempt_submitted, and Sakai assessment submission events can all become canonical ) Tj
+T*
+(QuizCompleted or AssessmentSubmitted events. Downstream intelligence systems consume only the ) Tj
+T*
+(canonical event and therefore remain unchanged when the upstream LMS changes.) Tj
+T*
+() Tj
+T*
+(2. Event Philosophy) Tj
+T*
+() Tj
+T*
+(2.1 Event) Tj
+T*
+() Tj
+T*
+(An event is an immutable record that something happened at a specific time. Events are append-) Tj
+T*
+(only. They are not updated. If a correction is required, a new correcting event is published.) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 2672 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(2.2 Business Event) Tj
+T*
+() Tj
+T*
+(A business event is an event that has domain meaning to Syrka. It describes a fact the business) Tj
+T*
+( cares about, such as AssignmentSubmitted, CapabilityObserved, PassportIssued, or ) Tj
+T*
+(EmployerInterested.) Tj
+T*
+() Tj
+T*
+(2.3 Canonical Event) Tj
+T*
+() Tj
+T*
+(A canonical event is a business event expressed in Syrka's platform-independent language, ) Tj
+T*
+(envelope, schema, privacy model, and versioning rules. Canonical events are independent of any ) Tj
+T*
+(source system's internal event names or database schemas.) Tj
+T*
+() Tj
+T*
+(2.4 Observation) Tj
+T*
+() Tj
+T*
+(An observation is a captured signal that may indicate a capability, behavior, preference, risk,) Tj
+T*
+( or market condition. Observations are not necessarily conclusions. CommitObserved, ) Tj
+T*
+(AttendanceRecorded, and DiscussionParticipated are observations.) Tj
+T*
+() Tj
+T*
+(2.5 Evidence) Tj
+T*
+() Tj
+T*
+(Evidence is an observation, artifact, assessment, credential, or verified external signal that ) Tj
+T*
+(can support a claim. Evidence must have provenance and must be referenceable. Evidence may be ) Tj
+T*
+(strong, weak, conflicting, stale, or revoked.) Tj
+T*
+() Tj
+T*
+(2.6 Provenance) Tj
+T*
+() Tj
+T*
+(Provenance describes where an event came from, which system produced it, which source ) Tj
+T*
+(record/artifact it references, what adapter/model version transformed it, and how it can be ) Tj
+T*
+(verified or replayed.) Tj
+T*
+() Tj
+T*
+(2.7 Fact) Tj
+T*
+() Tj
+T*
+(A fact is a canonical event accepted by the event platform after validation. A fact may later ) Tj
+T*
+(be superseded or corrected, but the original fact remains part of the audit history.) Tj
+T*
+() Tj
+T*
+(2.8 Projection) Tj
+T*
+() Tj
+T*
+(A projection is derived state built from events. Examples include a student's current ) Tj
+T*
+(capability summary, an institutional dashboard aggregate, or a passport read model. Projections) Tj
+T*
+( are rebuildable.) Tj
+T*
+() Tj
+T*
+(2.9 Read Model) Tj
+T*
+() Tj
+T*
+(A read model is an optimized query representation of one or more projections. Read models are ) Tj
+T*
+(built for product surfaces and analytics. They are not sources of truth.) Tj
+T*
+() Tj
+T*
+(2.10 Distinctions) Tj
+T*
+() Tj
+T*
+(| Concept | Source of truth? | Mutable? | Example | Notes |) Tj
+T*
+(|---|---:|---:|---|---|) Tj
+T*
+(| Event | Yes, for the fact it records | No | AssignmentSubmitted | Append-only |) Tj
+T*
+(| Observation | Yes, for observed signal | No | CommitObserved | May support inference |) Tj
+T*
+(| Evidence | Yes, as support for claims | No or revocable by new event | Submission artifact | Linked to ) Tj
+T*
+(provenance |) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 4702 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(| Fact | Yes | No | Accepted canonical event | Validated event |) Tj
+T*
+(| Projection | No | Rebuildable | current capability score | Derived from events |) Tj
+T*
+(| Read model | No | Rebuildable | dashboard table | Optimized for queries |) Tj
+T*
+(| Command | No event | N/A | SubmitAssignment | Request to do something, not a fact |) Tj
+T*
+() Tj
+T*
+(3. Event Taxonomy) Tj
+T*
+() Tj
+T*
+(Canonical events are grouped into categories. Categories determine ownership, governance, ) Tj
+T*
+(retention defaults, sensitivity, topic naming, and consumer expectations.) Tj
+T*
+() Tj
+T*
+(| Category | Purpose | Owning domain | Typical producers | Typical consumers | Examples |) Tj
+T*
+(|---|---|---|---|---|---|) Tj
+T*
+(| Identity Events | Lifecycle of people, organizations, roles, consent, federation | Identity & Access | Auth, ) Tj
+T*
+(admin apps, SSO | LMS adapter, graph, dashboards | IdentityCreated, StudentCreated, ConsentGranted |) Tj
+T*
+(| Learning Events | Course/content interaction and progress | Learning Management ACL | Open edX/Canvas/Moodle ) Tj
+T*
+(adapters | Analytics, inference, graph | LessonViewed, ModuleCompleted |) Tj
+T*
+(| Assessment Events | Assignment, quiz, rubric, grade, feedback facts | Learning Management ACL, faculty tools | ) Tj
+T*
+(LMS adapters, assessment tools | Inference, analytics, graph | AssignmentSubmitted, QuizCompleted |) Tj
+T*
+(| Collaboration Events | Discussions, peer review, teams, attendance, group work | Learning Management ACL, ) Tj
+T*
+(collaboration tools | LMS, LTI tools | Analytics, inference | DiscussionParticipated, PeerReviewCompleted |) Tj
+T*
+(| Research Events | Publications, research projects, grants, collaborations | Research Intelligence | OpenAlex, ) Tj
+T*
+(ORCID, Semantic Scholar | Graph, portfolio, opportunity | ResearchPublished |) Tj
+T*
+(| Engineering Evidence Events | Code/project signals | GitHub Intelligence | GitHub webhooks/API | Inference, ) Tj
+T*
+(graph, portfolio | GitHubRepositoryLinked, CommitObserved |) Tj
+T*
+(| Professional Profile Events | Professional/social career evidence | LinkedIn Intelligence | LinkedIn/export ) Tj
+T*
+(imports | Career, graph | LinkedInProfileLinked |) Tj
+T*
+(| Ontology Events | Semantic model and taxonomy changes | Syrka Ontology | Ontology admin/ingestion | Inference, ) Tj
+T*
+(graph, curriculum | OntologyVersionPublished |) Tj
+T*
+(| Capability Events | Capability observations and graph updates | Inference, Graph | AI/rules/graph services | ) Tj
+T*
+(Dashboards, passport, opportunity | CapabilityObserved, CapabilityUpdated |) Tj
+T*
+(| Career Events | User intent, preferences, constraints, aspirations | Career Intent | Student app, advisor app | ) Tj
+T*
+(Opportunity, mobility | CareerIntentUpdated |) Tj
+T*
+(| Market Events | Labour-market and employer demand signals | Market Signal, Employer | Job boards, employers | ) Tj
+T*
+(Opportunity, curriculum, national | MarketSignalObserved, JobPosted |) Tj
+T*
+(| Government Events | National strategies and policy priorities | National Vision | Ministry apps, policy ) Tj
+T*
+(ingestion | Curriculum, mobility, corridors | NationalPriorityMapped |) Tj
+T*
+(| Portfolio Events | Portfolio creation, sharing, revocation | Portfolio Generator | Portfolio service | Public ) Tj
+T*
+(profile, employer | PortfolioGenerated |) Tj
+T*
+(| Passport Events | Job passport lifecycle and disclosure | Job Passport | Passport service | Employer, mobility, ) Tj
+T*
+(public profile | PassportIssued, PassportUpdated |) Tj
+T*
+(| Credential Events | Issuance, verification, revocation | Credential Ledger | Issuers, ledger service | Passport,) Tj
+T*
+( graph, employer | CredentialVerified |) Tj
+T*
+(| Employer Events | Employer lifecycle, jobs, interest, feedback | Employer Platform | Employer portal/API | ) Tj
+T*
+(Opportunity, mobility | EmployerInterested |) Tj
+T*
+(| Mobility Events | Mobility assessment, approvals, corridor readiness | Mobility Engine | Mobility service | ) Tj
+T*
+(Corridors, government | MobilityApproved |) Tj
+T*
+(| Corridor Events | Cross-border corridor setup and matching | Syrka Corridors | Corridor service | Government, ) Tj
+T*
+(employer | CorridorMatched |) Tj
+T*
+(| Analytics Events | Risk, mastery, engagement, quality signals | AI-native Learning Analytics | Analytics workers) Tj
+T*
+( | Faculty, institution, inference | LearningRiskDetected |) Tj
+T*
+(| AI Events | Model runs, decisions, reviews, evaluations | AI Platform | Inference/recommendation services | ) Tj
+T*
+(Audit, graph, dashboards | InferenceRunCompleted |) Tj
+T*
+(| Recommendation Events | Recommendations and feedback | Opportunity/Odyssey | Recommenders | Dashboards, audit | ) Tj
+T*
+(RecommendationGenerated |) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 3981 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(| Notification Events | Delivery lifecycle of user communications | Notification service | Email/SMS/in-app ) Tj
+T*
+(service | Audit, UX | NotificationDelivered |) Tj
+T*
+(| Audit Events | Security, admin, policy, data access | Platform/Security | All services | Compliance/audit | ) Tj
+T*
+(DataAccessed, PolicyDenied |) Tj
+T*
+(| System Events | Operational lifecycle, schema, replay, health | Platform | Event platform, services | SRE, ) Tj
+T*
+(governance | SchemaPublished, ReplayCompleted |) Tj
+T*
+() Tj
+T*
+(4. Event Catalogue) Tj
+T*
+() Tj
+T*
+(4.1 Catalogue format) Tj
+T*
+() Tj
+T*
+(Each event is documented with a compact implementation row. Full universal requirements are ) Tj
+T*
+(defined in sections 5 and 6 and apply to every event unless overridden.) Tj
+T*
+() Tj
+T*
+(Legend:) Tj
+T*
+() Tj
+T*
+(- Producer is the authoritative producer of the canonical event.) Tj
+T*
+(- Consumers are primary consumers, not an exhaustive subscription list.) Tj
+T*
+(- Privacy defaults: public, internal, restricted, highly_restricted.) Tj
+T*
+(- Retention defaults: short, standard, long, permanent, jurisdictional.) Tj
+T*
+() Tj
+T*
+(4.2 Identity events) Tj
+T*
+() Tj
+T*
+(| Event | Purpose/business meaning | Producer | Consumers | Required payload fields | Optional fields | Validation) Tj
+T*
+( | Privacy | Retention | Replay/idempotency |) Tj
+T*
+(|---|---|---|---|---|---|---|---|---|---|) Tj
+T*
+(| IdentityCreated | A platform identity was created | Identity | all domain provisioners | identity_id, ) Tj
+T*
+(identity_type, tenant_id | external_ids | unique identity_id; tenant valid | restricted | permanent | replay ) Tj
+T*
+(provisions read models; idempotency by identity_id |) Tj
+T*
+(| IdentityUpdated | Identity attributes changed | Identity | dashboards, ACLs | identity_id, changed_fields | ) Tj
+T*
+(previous_hash | identity exists; allowed fields | restricted | permanent | latest projection rebuilt by order |) Tj
+T*
+(| StudentCreated | A learner identity was created | Identity | LMS adapter, graph, analytics | student_id, ) Tj
+T*
+(identity_id, institution_id | program_id, cohort_id | identity exists; role student | restricted | permanent | ) Tj
+T*
+(idempotency by student_id |) Tj
+T*
+(| StudentUpdated | Learner profile changed | Identity | career, dashboards | student_id, changed_fields | ) Tj
+T*
+(profile_completeness | student exists | restricted | permanent | replay updates profile projection |) Tj
+T*
+(| StudentEnrolled | Student was enrolled in a learning offering | Learning Adapter | analytics, graph, faculty | ) Tj
+T*
+(student_id, course_id, enrollment_id | section_id, cohort_id | course/student mapped | restricted | long | ) Tj
+T*
+(idempotency by enrollment_id |) Tj
+T*
+(| RoleAssigned | Role granted to identity | Identity | all authz consumers | identity_id, role, scope | expires_at) Tj
+T*
+( | role/scope valid | restricted | permanent | authorization projections replayed |) Tj
+T*
+(| RoleRevoked | Role removed | Identity | all authz consumers | identity_id, role, scope | reason | assignment ) Tj
+T*
+(exists | restricted | permanent | revocation ordered after assignment |) Tj
+T*
+(| ConsentGranted | User granted data processing/sharing consent | Identity/Consent | connectors, public profile | ) Tj
+T*
+(subject_id, consent_type, scope | expires_at | consent text/version valid | highly_restricted | jurisdictional | ) Tj
+T*
+(idempotency by consent grant id |) Tj
+T*
+(| ConsentRevoked | User revoked consent | Identity/Consent | connectors, profile, graph | subject_id, ) Tj
+T*
+(consent_type, scope | effective_at | prior grant exists | highly_restricted | jurisdictional | consumers stop ) Tj
+T*
+(future processing |) Tj
+T*
+(| FederationLinked | External identity provider linked | Identity | LMS adapter, institutions | identity_id, ) Tj
+T*
+(provider, external_subject | assurance_level | provider trusted | highly_restricted | permanent | idempotency by ) Tj
+T*
+(provider subject |) Tj
+T*
+() Tj
+T*
+(4.3 Learning events) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 5120 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+() Tj
+T*
+(| Event | Purpose/business meaning | Producer | Consumers | Required payload fields | Optional fields | Validation) Tj
+T*
+( | Privacy | Retention | Replay/idempotency |) Tj
+T*
+(|---|---|---|---|---|---|---|---|---|---|) Tj
+T*
+(| CourseCreated | Canonical course projection exists | Learning Adapter | curriculum, analytics | course_id, ) Tj
+T*
+(title, source_system | start_at, end_at | mapped source id unique | internal | long | idempotency by ) Tj
+T*
+(course_id/source |) Tj
+T*
+(| CourseUpdated | Course metadata changed | Learning Adapter | curriculum, dashboards | course_id, changed_fields ) Tj
+T*
+(| syllabus_ref | course exists | internal | long | rebuild course projection |) Tj
+T*
+(| ModuleCompleted | Student completed module/unit | Learning Adapter | analytics, inference | student_id, ) Tj
+T*
+(course_id, module_id, completed_at | duration_seconds | enrollment exists | restricted | long | idempotency by ) Tj
+T*
+(student+module+attempt |) Tj
+T*
+(| LessonViewed | Student viewed lesson/content | Learning Adapter | analytics | student_id, lesson_id, viewed_at |) Tj
+T*
+( duration_seconds, device_type | content mapped | restricted | standard | high-volume compaction allowed |) Tj
+T*
+(| ContentDownloaded | Student downloaded course content | Learning Adapter | analytics, audit | student_id, ) Tj
+T*
+(content_id, downloaded_at | file_type | content exists | restricted | standard | idempotency source event id |) Tj
+T*
+(| LearningSessionStarted | Learning session started | Learning Adapter/Web | analytics | student_id, session_id, ) Tj
+T*
+(started_at | device, ip_region | session unique | restricted | standard | session ordered by timestamp |) Tj
+T*
+(| LearningSessionEnded | Learning session ended | Learning Adapter/Web | analytics | student_id, session_id, ) Tj
+T*
+(ended_at | duration_seconds | start exists or inferred | restricted | standard | updates session projection |) Tj
+T*
+(| AttendanceRecorded | Attendance/participation recorded | LMS/Attendance Adapter | faculty, analytics, graph | ) Tj
+T*
+(student_id, activity_id, status, recorded_at | location, method | valid status | restricted | long | idempotency ) Tj
+T*
+(by attendance record |) Tj
+T*
+() Tj
+T*
+(4.4 Assessment and collaboration events) Tj
+T*
+() Tj
+T*
+(| Event | Purpose/business meaning | Producer | Consumers | Required payload fields | Optional fields | Validation) Tj
+T*
+( | Privacy | Retention | Replay/idempotency |) Tj
+T*
+(|---|---|---|---|---|---|---|---|---|---|) Tj
+T*
+(| AssignmentOpened | Student opened an assignment | Learning Adapter | analytics | student_id, assignment_id, ) Tj
+T*
+(opened_at | attempt_id | assignment mapped | restricted | standard | high-volume event; source id |) Tj
+T*
+(| AssignmentSubmitted | Student submitted assignment evidence | Learning Adapter/LTI | inference, graph, analytics) Tj
+T*
+( | student_id, assignment_id, submission_id, submitted_at, artifact_refs | attempt_number, word_count | artifact ) Tj
+T*
+(exists; enrollment valid | highly_restricted | long | idempotency by submission_id |) Tj
+T*
+(| AssignmentGraded | Assignment received grade/rubric | Learning Adapter/Faculty | inference, graph, faculty | ) Tj
+T*
+(submission_id, grade, graded_at, assessor_id | rubric_scores, feedback_ref | submission mapped; grade valid | ) Tj
+T*
+(highly_restricted | long | ordering after submission preferred |) Tj
+T*
+(| QuizStarted | Quiz attempt started | Learning Adapter | analytics | student_id, quiz_id, attempt_id, started_at ) Tj
+T*
+(| time_limit | attempt unique | restricted | standard | idempotency by attempt_id |) Tj
+T*
+(| QuizCompleted | Quiz attempt completed | Learning Adapter | inference, analytics | student_id, quiz_id, ) Tj
+T*
+(attempt_id, completed_at, score | item_summary, duration | attempt exists; score range valid | highly_restricted |) Tj
+T*
+( long | idempotency by attempt_id+completed |) Tj
+T*
+(| DiscussionCreated | Discussion topic created | Learning Adapter | analytics, faculty | discussion_id, course_id,) Tj
+T*
+( creator_id | title | course mapped | restricted | standard | source event id |) Tj
+T*
+(| DiscussionParticipated | User posted/replied/reacted | Learning Adapter | analytics, inference | participant_id,) Tj
+T*
+( discussion_id, action, occurred_at | content_ref, sentiment_features | action valid | highly_restricted | ) Tj
+T*
+(standard | content minimized |) Tj
+T*
+(| PeerReviewCompleted | Peer review submitted | Learning Adapter/LTI | inference, faculty | reviewer_id, ) Tj
+T*
+(target_submission_id, review_id | rubric_scores, feedback_ref | reviewer authorized | highly_restricted | long | ) Tj
+T*
+(idempotency review_id |) Tj
+T*
+(| FeedbackReceived | Learner received feedback | Learning Adapter/Faculty | dashboard, inference | recipient_id, ) Tj
+T*
+(feedback_id, source_type | feedback_ref | recipient exists | highly_restricted | long | idempotency feedback_id |) Tj
+T*
+(| ProjectStarted | Project work began | Learning/Portfolio/GitHub | graph, portfolio | project_id, owner_id, ) Tj
+T*
+(started_at | collaborators, repo_id | owner valid | restricted | long | idempotency project_id |) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 4686 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(| ProjectCompleted | Project reached completion | Learning/Portfolio/GitHub | inference, graph, portfolio | ) Tj
+T*
+(project_id, owner_id, completed_at, artifact_refs | collaborators, rubric | artifacts exist | highly_restricted | ) Tj
+T*
+(long | idempotency project_id+version |) Tj
+T*
+() Tj
+T*
+(4.5 Research and engineering evidence events) Tj
+T*
+() Tj
+T*
+(| Event | Purpose/business meaning | Producer | Consumers | Required payload fields | Optional fields | Validation) Tj
+T*
+( | Privacy | Retention | Replay/idempotency |) Tj
+T*
+(|---|---|---|---|---|---|---|---|---|---|) Tj
+T*
+(| ResearchPublished | Research output published/imported | Research Intelligence | graph, portfolio, opportunity |) Tj
+T*
+( research_id, title, authors, published_at | doi, abstract_ref, topics | source trusted or user verified | ) Tj
+T*
+(internal/restricted | permanent | idempotency DOI/source id |) Tj
+T*
+(| ResearchCapabilityMapped | Research mapped to capabilities | Research Intelligence | graph, dashboard | ) Tj
+T*
+(research_id, capability_ids, confidence | model_version | ontology version valid | restricted | long | replay on ) Tj
+T*
+(ontology versions |) Tj
+T*
+(| GitHubRepositoryLinked | User linked repository as evidence source | GitHub Intelligence | inference, graph | ) Tj
+T*
+(user_id, repository_id, provider, linked_at | visibility, default_branch | consent valid; ownership verified | ) Tj
+T*
+(restricted | jurisdictional | idempotency provider repo id |) Tj
+T*
+(| CommitObserved | Commit/contribution observed | GitHub Intelligence | inference, graph | repository_id, ) Tj
+T*
+(commit_sha, author_id, committed_at | files_changed, languages | repository linked | restricted | standard | ) Tj
+T*
+(idempotency commit_sha |) Tj
+T*
+(| PullRequestMerged | PR merged as collaboration/code signal | GitHub Intelligence | inference, graph | ) Tj
+T*
+(repository_id, pull_request_id, merged_at, author_id | reviewers, checks | repo linked; merged true | restricted |) Tj
+T*
+( standard | idempotency PR id+merged |) Tj
+T*
+(| CodeReviewCompleted | Code review completed | GitHub Intelligence | inference, graph | repository_id, review_id,) Tj
+T*
+( reviewer_id, submitted_at | outcome | repo linked | restricted | standard | idempotency review_id |) Tj
+T*
+(| LinkedInProfileLinked | User linked professional profile | LinkedIn Intelligence | career, graph | user_id, ) Tj
+T*
+(provider_profile_id, linked_at | headline, consent_scope | consent valid | highly_restricted | jurisdictional | ) Tj
+T*
+(idempotency provider profile |) Tj
+T*
+(| ProfessionalExperienceObserved | Experience/certification imported | LinkedIn Intelligence | career, graph | ) Tj
+T*
+(user_id, experience_id, organization, role | dates, description_ref | consent valid | highly_restricted | ) Tj
+T*
+(jurisdictional | revoke on consent |) Tj
+T*
+() Tj
+T*
+(4.6 Ontology, capability, AI, recommendation events) Tj
+T*
+() Tj
+T*
+(| Event | Purpose/business meaning | Producer | Consumers | Required payload fields | Optional fields | Validation) Tj
+T*
+( | Privacy | Retention | Replay/idempotency |) Tj
+T*
+(|---|---|---|---|---|---|---|---|---|---|) Tj
+T*
+(| OntologyTermCreated | New semantic term created | Ontology | inference, graph, curriculum | term_id, term_type, ) Tj
+T*
+(label, version | description | unique in version | internal | permanent | idempotency term_id+version |) Tj
+T*
+(| OntologyVersionPublished | Ontology version became active | Ontology | all intelligence domains | version, ) Tj
+T*
+(published_at, changeset_ref | migration_notes | version monotonic | internal | permanent | triggers ) Tj
+T*
+(remapping/replay |) Tj
+T*
+(| SkillObserved | Evidence suggests a skill | Inference/Analytics | graph, dashboard | subject_id, skill_id, ) Tj
+T*
+(evidence_refs, confidence | explanation | ontology version valid | restricted | long | idempotency evidence+skill ) Tj
+T*
+(|) Tj
+T*
+(| CapabilityObserved | Evidence supports capability claim | Inference | graph, passport, dashboard | subject_id, ) Tj
+T*
+(capability_id, evidence_refs, confidence, model_version | explanation_ref | confidence range valid | restricted | ) Tj
+T*
+(permanent | idempotency evidence+capability+model |) Tj
+T*
+(| CapabilityUpdated | Capability graph state changed | Graph | dashboard, opportunity, passport | subject_id, ) Tj
+T*
+(capability_id, previous_state, new_state | confidence_delta | graph transition valid | restricted | permanent | ) Tj
+T*
+(ordered per subject+capability |) Tj
+T*
+(| InferenceRunStarted | AI/rules inference run began | Inference | audit, ops | run_id, model_version, ) Tj
+T*
+(input_event_ids | purpose | authorized purpose | restricted | standard | idempotency run_id |) Tj
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 4816 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(| InferenceRunCompleted | AI/rules inference run completed | Inference | audit, graph | run_id, output_event_ids, ) Tj
+T*
+(metrics | cost, latency | run exists | restricted | standard | idempotency run_id |) Tj
+T*
+(| InferenceReviewRequired | Human review required | Inference | review queue | run_id, subject_id, reason | ) Tj
+T*
+(risk_flags | high-impact rules valid | highly_restricted | long | idempotency run_id+reason |) Tj
+T*
+(| RecommendationGenerated | Recommendation produced | Opportunity/Odyssey | dashboard, audit | recommendation_id, ) Tj
+T*
+(subject_id, type, score, reasons | alternatives | model/policy valid | restricted | long | idempotency ) Tj
+T*
+(recommendation_id |) Tj
+T*
+(| RecommendationAccepted | User accepted recommendation | Product app | opportunity, analytics | ) Tj
+T*
+(recommendation_id, subject_id, accepted_at | action | recommendation exists | restricted | standard | idempotency ) Tj
+T*
+(recommendation+action |) Tj
+T*
+() Tj
+T*
+(4.7 Career, market, employer, opportunity events) Tj
+T*
+() Tj
+T*
+(| Event | Purpose/business meaning | Producer | Consumers | Required payload fields | Optional fields | Validation) Tj
+T*
+( | Privacy | Retention | Replay/idempotency |) Tj
+T*
+(|---|---|---|---|---|---|---|---|---|---|) Tj
+T*
+(| CareerIntentUpdated | User career goals/preferences changed | Career Intent | opportunity, mobility | ) Tj
+T*
+(subject_id, intent_id, changed_fields | salary, geography, industry | user authorized | highly_restricted | ) Tj
+T*
+(jurisdictional | latest projection replayed |) Tj
+T*
+(| MarketSignalObserved | Labour-market signal captured | Market Signal | opportunity, curriculum, national | ) Tj
+T*
+(signal_id, signal_type, source, observed_at | geography, confidence | source recorded | internal | long | ) Tj
+T*
+(idempotency source signal id |) Tj
+T*
+(| SkillDemandChanged | Skill demand materially changed | Market Signal | curriculum, opportunity | skill_id, ) Tj
+T*
+(geography, change_metric | forecast_window | ontology valid | internal | long | ordered by skill/geography |) Tj
+T*
+(| JobPosted | Employer published job/opportunity | Employer | opportunity, market | job_id, employer_id, title, ) Tj
+T*
+(location | salary, skills | employer verified | internal | standard | idempotency job_id |) Tj
+T*
+(| JobUpdated | Job details changed | Employer | opportunity | job_id, changed_fields | close_at | job exists | ) Tj
+T*
+(internal | standard | projection update |) Tj
+T*
+(| EmployerInterested | Employer expressed interest in candidate/profile | Employer | opportunity, mobility, audit ) Tj
+T*
+(| employer_id, subject_id, context_id, occurred_at | message_ref | consent/disclosure valid | highly_restricted | ) Tj
+T*
+(jurisdictional | idempotency interest_id |) Tj
+T*
+(| OpportunityMatched | Subject matched to opportunity | Opportunity | dashboard, employer, mobility | match_id, ) Tj
+T*
+(subject_id, opportunity_id, score, reasons | constraints | opportunity valid | restricted | long | idempotency ) Tj
+T*
+(match_id |) Tj
+T*
+(| OpportunityAccepted | Subject accepted opportunity | Product app | employer, mobility | match_id, subject_id, ) Tj
+T*
+(accepted_at | notes | match exists | restricted | standard | ordered after match |) Tj
+T*
+() Tj
+T*
+(4.8 Portfolio, passport, credential, mobility, corridor events) Tj
+T*
+() Tj
+T*
+(| Event | Purpose/business meaning | Producer | Consumers | Required payload fields | Optional fields | Validation) Tj
+T*
+( | Privacy | Retention | Replay/idempotency |) Tj
+T*
+(|---|---|---|---|---|---|---|---|---|---|) Tj
+T*
+(| PortfolioGenerated | Evidence-backed portfolio created | Portfolio | public profile, employer | portfolio_id, ) Tj
+T*
+(subject_id, generated_at, evidence_refs | template_id | evidence accessible | restricted | long | idempotency ) Tj
+T*
+(portfolio version |) Tj
+T*
+(| PortfolioShared | Portfolio shared with audience | Portfolio | audit, employer | portfolio_id, share_id, ) Tj
+T*
+(audience, shared_at | expires_at | consent valid | highly_restricted | jurisdictional | idempotency share_id |) Tj
+T*
+(| CredentialIssued | Credential issued by trusted issuer | Credential Ledger | graph, passport | credential_id, ) Tj
+T*
+(issuer_id, subject_id, issued_at | vc_ref | issuer trusted | restricted | permanent | idempotency credential_id |) Tj
+T*
+(| CredentialVerified | Credential verification succeeded/failed | Credential Ledger | graph, passport, employer | ) Tj
+T*
+(credential_id, verification_status, verified_at | verifier_id | credential exists | restricted | permanent | ) Tj
+T*
+(verification events append-only |) Tj
+T*
+(| CredentialRevoked | Credential revoked | Credential Ledger | graph, passport, employer | credential_id, ) Tj
+T*
+(revoked_at, reason | issuer_signature | issuer authorized | restricted | permanent | ordered after issue |) Tj
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 4670 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(| PassportIssued | Job Passport issued | Job Passport | employer, mobility, public profile | passport_id, ) Tj
+T*
+(subject_id, version, issued_at, claim_refs | disclosure_policy | claims verified | highly_restricted | permanent |) Tj
+T*
+( idempotency passport version |) Tj
+T*
+(| PassportUpdated | Passport version/claims updated | Job Passport | employer, mobility, public profile | ) Tj
+T*
+(passport_id, version, changed_claims | reason | version monotonic | highly_restricted | permanent | ordered by ) Tj
+T*
+(passport version |) Tj
+T*
+(| PassportRevoked | Passport revoked or disabled | Job Passport | employer, mobility, public profile | ) Tj
+T*
+(passport_id, revoked_at, reason | replacement_id | owner authorized | highly_restricted | permanent | invalidates ) Tj
+T*
+(shares |) Tj
+T*
+(| MobilityApproved | Mobility assessment approved | Mobility | corridors, passport, government | mobility_case_id,) Tj
+T*
+( subject_id, route_id, approved_at | conditions, expiry | eligibility rules satisfied | highly_restricted | ) Tj
+T*
+(permanent | idempotency case+decision |) Tj
+T*
+(| MobilityBlocked | Mobility assessment blocked | Mobility | dashboard, government | mobility_case_id, subject_id,) Tj
+T*
+( reasons | remediation | case exists | highly_restricted | long | append-only decision |) Tj
+T*
+(| CorridorMatched | Candidate matched to corridor | Corridors | government, employer, mobility | corridor_id, ) Tj
+T*
+(subject_id, match_id, matched_at | stage | corridor active | highly_restricted | long | idempotency corridor match) Tj
+T*
+( |) Tj
+T*
+(| CorridorOutcomeReported | Corridor outcome reported | Corridors | government, analytics | corridor_id, ) Tj
+T*
+(outcome_type, reported_at | metrics | partner authorized | restricted | permanent | aggregate replayable |) Tj
+T*
+() Tj
+T*
+(4.9 Analytics, notification, audit, system events) Tj
+T*
+() Tj
+T*
+(| Event | Purpose/business meaning | Producer | Consumers | Required payload fields | Optional fields | Validation) Tj
+T*
+( | Privacy | Retention | Replay/idempotency |) Tj
+T*
+(|---|---|---|---|---|---|---|---|---|---|) Tj
+T*
+(| DashboardViewed | User viewed dashboard/insight | Product app | analytics, audit | viewer_id, dashboard_id, ) Tj
+T*
+(viewed_at | filters | viewer authorized | restricted | short | high-volume compaction |) Tj
+T*
+(| LearningRiskDetected | Analytics detected learning risk | Analytics | faculty, dashboard | subject_id, ) Tj
+T*
+(risk_type, confidence, evidence_refs | recommended_actions | threshold met | highly_restricted | long | ) Tj
+T*
+(idempotency subject+risk+window |) Tj
+T*
+(| MasterySignalDetected | Analytics detected mastery signal | Analytics | inference, faculty | subject_id, ) Tj
+T*
+(concept_id, confidence | evidence_refs | ontology valid | restricted | long | idempotency subject+concept+window |) Tj
+T*
+(| NotificationRequested | Domain requested notification | Any domain | notification service | notification_id, ) Tj
+T*
+(recipient_id, channel, template | context | recipient allowed | restricted | standard | idempotency ) Tj
+T*
+(notification_id |) Tj
+T*
+(| NotificationDelivered | Notification delivered | Notification | audit, product | notification_id, delivered_at, ) Tj
+T*
+(channel | provider_id | request exists | restricted | standard | provider idempotency |) Tj
+T*
+(| DataAccessed | Sensitive data accessed | Platform/Security | audit | actor_id, resource_type, resource_id, ) Tj
+T*
+(purpose | query_hash | authorized access | highly_restricted | permanent | append-only audit |) Tj
+T*
+(| PolicyDenied | Authorization/policy denied action | Platform/Security | security/audit | actor_id, action, ) Tj
+T*
+(resource, reason | risk_score | policy engine result | restricted | long | append-only audit |) Tj
+T*
+(| SchemaPublished | Event schema published | Event Governance | all producers/consumers | schema_name, version, ) Tj
+T*
+(published_at | compatibility | approvals complete | internal | permanent | idempotency schema+version |) Tj
+T*
+(| ReplayStarted | Replay job started | Event Platform | SRE/audit | replay_id, event_range, consumers | reason | ) Tj
+T*
+(authorized job | internal | long | idempotency replay_id |) Tj
+T*
+(| ReplayCompleted | Replay job completed | Event Platform | SRE/audit | replay_id, status, counts | errors_ref | ) Tj
+T*
+(replay exists | internal | long | append-only |) Tj
+T*
+(| DeadLetterRecorded | Event moved to DLQ | Event Platform | SRE/domain owner | event_id, consumer, error_code | ) Tj
+T*
+(payload_ref | failure classified | restricted | long | idempotency event+consumer |) Tj
+T*
+() Tj
+T*
+(5. Event Specification) Tj
+T*
+() Tj
+T*
+(5.1 Mandatory specification fields) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 3043 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(Every event schema must define:) Tj
+T*
+() Tj
+T*
+(1. Purpose - why the event exists.) Tj
+T*
+(2. Business meaning - the fact it records.) Tj
+T*
+(3. Producer - exactly one canonical producer domain.) Tj
+T*
+(4. Consumers - primary expected consumers.) Tj
+T*
+(5. Required fields - payload fields required in addition to the universal envelope.) Tj
+T*
+(6. Optional fields - additive payload fields.) Tj
+T*
+(7. Validation rules - schema, domain, authorization, and referential checks.) Tj
+T*
+(8. Privacy classification - public/internal/restricted/highly restricted.) Tj
+T*
+(9. Security requirements - signing, encryption, scopes, tenant boundaries.) Tj
+T*
+(10. Versioning rules - compatibility and migration requirements.) Tj
+T*
+(11. Retention policy - short/standard/long/permanent/jurisdictional.) Tj
+T*
+(12. Replay policy - whether replay is safe, constrained, or forbidden.) Tj
+T*
+(13. Example payload - canonical JSON example.) Tj
+T*
+(14. Failure handling - validation, retry, DLQ, quarantine.) Tj
+T*
+(15. Idempotency strategy - deterministic keys and duplicate handling.) Tj
+T*
+(16. Ordering guarantees - partition key and expected order.) Tj
+T*
+() Tj
+T*
+(5.2 Default validation rules) Tj
+T*
+() Tj
+T*
+(- Envelope validates against the universal JSON Schema.) Tj
+T*
+(- event_type must match the schema name.) Tj
+T*
+(- event_version must be registered.) Tj
+T*
+(- tenant_id, source_system, producer, occurred_at, and idempotency_key are required.) Tj
+T*
+(- actor, subject, and resource must use canonical ID formats where applicable.) Tj
+T*
+(- Required payload fields must be present and type-valid.) Tj
+T*
+(- Payload must not contain raw secrets, passwords, tokens, or unclassified large artifacts.) Tj
+T*
+(- Evidence artifacts must be referenced through secure evidence_refs, not embedded.) Tj
+T*
+(- Events from connectors must include source provenance.) Tj
+T*
+() Tj
+T*
+(5.3 Default privacy classifications) Tj
+T*
+() Tj
+T*
+(| Classification | Meaning | Examples | Handling |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| public | Intended for public disclosure | published public profile event | signed; no sensitive data |) Tj
+T*
+(| internal | Syrka internal operational data | schema published, market aggregate | tenant-aware access |) Tj
+T*
+(| restricted | Personal, institutional, or business-sensitive | course progress, job matches | encrypted, scoped ) Tj
+T*
+(authorization |) Tj
+T*
+(| highly_restricted | High-impact personal/evidence data | grades, passport, consent, mobility | strict ) Tj
+T*
+(authorization, audit, minimization |) Tj
+T*
+() Tj
+T*
+(5.4 Example event payload - AssignmentSubmitted) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "event_id": "01JZCEA000000000000000001",) Tj
+T*
+(  "event_type": "AssignmentSubmitted",) Tj
+T*
+(  "event_version": "1.0.0",) Tj
+T*
+(  "schema_version": "1.0.0",) Tj
+T*
+(  "occurred_at": "2026-07-07T10:15:00Z",) Tj
+T*
+(  "published_at": "2026-07-07T10:15:03Z",) Tj
+T*
+(  "correlation_id": "01JZCORR0000000000000001",) Tj
+T*
+(  "causation_id": "01JZCAUSE00000000000001",) Tj
+ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 2658 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(  "trace_id": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00",) Tj
+T*
+(  "tenant_id": "tenant_sa_001",) Tj
+T*
+(  "institution_id": "inst_ksu_001",) Tj
+T*
+(  "country_code": "SA",) Tj
+T*
+(  "source_system": "openedx",) Tj
+T*
+(  "producer": "learning-management-adapter",) Tj
+T*
+(  "actor": { "type": "student", "id": "stu_123" },) Tj
+T*
+(  "subject": { "type": "student", "id": "stu_123" },) Tj
+T*
+(  "resource": { "type": "assignment", "id": "assign_456" },) Tj
+T*
+(  "evidence_refs": [) Tj
+T*
+(    { "type": "object", "uri": "s3://syrka-evidence/tenant_sa_001/submissions/sub_789.pdf", "hash": "sha256:..." }) Tj
+T*
+(  ],) Tj
+T*
+(  "privacy": { "classification": "highly_restricted", "consent_basis": "education", "jurisdiction": "SA" },) Tj
+T*
+(  "security": { "signature": "base64url-jws", "signature_alg": "EdDSA", "key_id": "kid_2026_01" },) Tj
+T*
+(  "metadata": { "adapter_version": "openedx-acl@1.4.0" },) Tj
+T*
+(  "payload": {) Tj
+T*
+(    "submission_id": "sub_789",) Tj
+T*
+(    "assignment_id": "assign_456",) Tj
+T*
+(    "course_id": "course_101",) Tj
+T*
+(    "attempt_number": 1,) Tj
+T*
+(    "submitted_at": "2026-07-07T10:15:00Z",) Tj
+T*
+(    "artifact_count": 1) Tj
+T*
+(  },) Tj
+T*
+(  "provenance": {) Tj
+T*
+(    "source_event_id": "openedx:event:abc123",) Tj
+T*
+(    "source_record_id": "openedx_submission_987",) Tj
+T*
+(    "source_event_type": "submission_created",) Tj
+T*
+(    "transformer": "openedx-assignment-submission-mapper",) Tj
+T*
+(    "transformer_version": "1.4.0") Tj
+T*
+(  },) Tj
+T*
+(  "idempotency_key": "openedx:openedx_submission_987:AssignmentSubmitted:1.0.0") Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(5.5 Failure handling defaults) Tj
+T*
+() Tj
+T*
+(- Producer validation failure: reject before publish and log EventRejected internally.) Tj
+T*
+(- Broker publish failure: retry with exponential backoff and jitter.) Tj
+T*
+(- Consumer transient failure: retry according to consumer policy.) Tj
+T*
+(- Consumer permanent failure: move to DLQ with error classification.) Tj
+T*
+(- Privacy/security failure: quarantine, alert Security, and block replay until reviewed.) Tj
+T*
+(- Schema mismatch: reject and notify schema owner and producer owner.) Tj
+T*
+() Tj
+T*
+(5.6 Ordering guarantees) Tj
+T*
+() Tj
+T*
+(Syrka provides ordering within a partition key, not globally. Recommended partition keys:) Tj
+T*
+() Tj
+T*
+(| Event family | Partition key |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Identity | identity_id |) Tj
+T*
+(| Learning/assessment | student_id or student_id:course_id |) Tj
+T*
+(| Capability | subject_id:capability_id |) Tj
+T*
+(| Passport | passport_id |) Tj
+T*
+(| Credential | credential_id |) Tj
+ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 2882 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(| Mobility | mobility_case_id |) Tj
+T*
+(| Corridor | corridor_id |) Tj
+T*
+(| Market | geography:occupation_or_skill_id |) Tj
+T*
+() Tj
+T*
+(6. Universal Event Envelope) Tj
+T*
+() Tj
+T*
+(6.1 Required envelope fields) Tj
+T*
+() Tj
+T*
+(| Field | Required | Meaning |) Tj
+T*
+(|---|---:|---|) Tj
+T*
+(| event_id | yes | Globally unique immutable event identifier, preferably UUIDv7/ULID |) Tj
+T*
+(| event_type | yes | Canonical PascalCase business event name |) Tj
+T*
+(| event_version | yes | Version of this event type |) Tj
+T*
+(| schema_version | yes | Envelope/schema registry version |) Tj
+T*
+(| occurred_at | yes | Time the business fact occurred |) Tj
+T*
+(| published_at | yes | Time event was accepted/published |) Tj
+T*
+(| correlation_id | yes | Groups related workflow events |) Tj
+T*
+(| causation_id | no | Event/command that caused this event |) Tj
+T*
+(| trace_id | yes | Distributed tracing ID |) Tj
+T*
+(| tenant_id | yes | Tenant boundary |) Tj
+T*
+(| institution_id | conditional | Institution when applicable |) Tj
+T*
+(| country_code | conditional | ISO country/jurisdiction when applicable |) Tj
+T*
+(| source_system | yes | Original source, e.g. openedx, canvas, syrka |) Tj
+T*
+(| producer | yes | Canonical producer service/domain |) Tj
+T*
+(| actor | conditional | Entity that performed action |) Tj
+T*
+(| subject | conditional | Entity the event is about |) Tj
+T*
+(| resource | conditional | Entity/resource acted upon |) Tj
+T*
+(| evidence_refs | no | Evidence artifact references |) Tj
+T*
+(| privacy | yes | Classification, consent, jurisdiction |) Tj
+T*
+(| security | yes | Signature and verification metadata |) Tj
+T*
+(| metadata | no | Non-domain operational metadata |) Tj
+T*
+(| payload | yes | Event-specific body |) Tj
+T*
+(| provenance | yes | Source and transformation details |) Tj
+T*
+(| idempotency_key | yes | Deterministic duplicate detection key |) Tj
+T*
+() Tj
+T*
+(6.2 Canonical JSON Schema - envelope) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "$schema": "https://json-schema.org/draft/2020-12/schema",) Tj
+T*
+(  "$id": "https://schemas.syrka.ai/events/envelope/1.0.0",) Tj
+T*
+(  "title": "SyrkaCanonicalEventEnvelope",) Tj
+T*
+(  "type": "object",) Tj
+T*
+(  "required": [) Tj
+T*
+(    "event_id", "event_type", "event_version", "schema_version",) Tj
+T*
+(    "occurred_at", "published_at", "correlation_id", "trace_id",) Tj
+T*
+(    "tenant_id", "source_system", "producer", "privacy", "security",) Tj
+T*
+(    "payload", "provenance", "idempotency_key") Tj
+T*
+(  ],) Tj
+T*
+(  "properties": {) Tj
+T*
+(    "event_id": { "type": "string", "minLength": 10 },) Tj
+T*
+(    "event_type": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$" },) Tj
+T*
+(    "event_version": { "type": "string", "pattern": "^[0-9]+\\\\.[0-9]+\\\\.[0-9]+$" },) Tj
+T*
+(    "schema_version": { "type": "string", "pattern": "^[0-9]+\\\\.[0-9]+\\\\.[0-9]+$" },) Tj
+ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 2528 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(    "occurred_at": { "type": "string", "format": "date-time" },) Tj
+T*
+(    "published_at": { "type": "string", "format": "date-time" },) Tj
+T*
+(    "correlation_id": { "type": "string" },) Tj
+T*
+(    "causation_id": { "type": ["string", "null"] },) Tj
+T*
+(    "trace_id": { "type": "string" },) Tj
+T*
+(    "tenant_id": { "type": "string" },) Tj
+T*
+(    "institution_id": { "type": ["string", "null"] },) Tj
+T*
+(    "country_code": { "type": ["string", "null"], "pattern": "^[A-Z]{2}$" },) Tj
+T*
+(    "source_system": { "type": "string" },) Tj
+T*
+(    "producer": { "type": "string" },) Tj
+T*
+(    "actor": { "$ref": "#/$defs/entityRef" },) Tj
+T*
+(    "subject": { "$ref": "#/$defs/entityRef" },) Tj
+T*
+(    "resource": { "$ref": "#/$defs/entityRef" },) Tj
+T*
+(    "evidence_refs": { "type": "array", "items": { "$ref": "#/$defs/evidenceRef" } },) Tj
+T*
+(    "privacy": { "$ref": "#/$defs/privacy" },) Tj
+T*
+(    "security": { "$ref": "#/$defs/security" },) Tj
+T*
+(    "metadata": { "type": "object", "additionalProperties": true },) Tj
+T*
+(    "payload": { "type": "object" },) Tj
+T*
+(    "provenance": { "$ref": "#/$defs/provenance" },) Tj
+T*
+(    "idempotency_key": { "type": "string", "minLength": 8 }) Tj
+T*
+(  },) Tj
+T*
+(  "$defs": {) Tj
+T*
+(    "entityRef": {) Tj
+T*
+(      "type": "object",) Tj
+T*
+(      "required": ["type", "id"],) Tj
+T*
+(      "properties": {) Tj
+T*
+(        "type": { "type": "string" },) Tj
+T*
+(        "id": { "type": "string" }) Tj
+T*
+(      },) Tj
+T*
+(      "additionalProperties": false) Tj
+T*
+(    },) Tj
+T*
+(    "evidenceRef": {) Tj
+T*
+(      "type": "object",) Tj
+T*
+(      "required": ["type", "uri"],) Tj
+T*
+(      "properties": {) Tj
+T*
+(        "type": { "type": "string" },) Tj
+T*
+(        "uri": { "type": "string" },) Tj
+T*
+(        "hash": { "type": "string" },) Tj
+T*
+(        "content_type": { "type": "string" },) Tj
+T*
+(        "created_at": { "type": "string", "format": "date-time" }) Tj
+T*
+(      }) Tj
+T*
+(    },) Tj
+T*
+(    "privacy": {) Tj
+T*
+(      "type": "object",) Tj
+T*
+(      "required": ["classification"],) Tj
+T*
+(      "properties": {) Tj
+T*
+(        "classification": { "enum": ["public", "internal", "restricted", "highly_restricted"] },) Tj
+T*
+(        "consent_basis": { "type": ["string", "null"] },) Tj
+T*
+(        "jurisdiction": { "type": ["string", "null"] },) Tj
+T*
+(        "retention_policy": { "type": ["string", "null"] }) Tj
+T*
+(      }) Tj
+T*
+(    },) Tj
+T*
+(    "security": {) Tj
+T*
+(      "type": "object",) Tj
+ET
+endstream
+endobj
+28 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 29 0 R >>
+endobj
+29 0 obj
+<< /Length 1599 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(      "required": ["signature", "signature_alg", "key_id"],) Tj
+T*
+(      "properties": {) Tj
+T*
+(        "signature": { "type": "string" },) Tj
+T*
+(        "signature_alg": { "type": "string" },) Tj
+T*
+(        "key_id": { "type": "string" }) Tj
+T*
+(      }) Tj
+T*
+(    },) Tj
+T*
+(    "provenance": {) Tj
+T*
+(      "type": "object",) Tj
+T*
+(      "required": ["source_event_type", "transformer", "transformer_version"],) Tj
+T*
+(      "properties": {) Tj
+T*
+(        "source_event_id": { "type": ["string", "null"] },) Tj
+T*
+(        "source_record_id": { "type": ["string", "null"] },) Tj
+T*
+(        "source_event_type": { "type": "string" },) Tj
+T*
+(        "source_url": { "type": ["string", "null"] },) Tj
+T*
+(        "transformer": { "type": "string" },) Tj
+T*
+(        "transformer_version": { "type": "string" }) Tj
+T*
+(      }) Tj
+T*
+(    }) Tj
+T*
+(  }) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(7. Event Relationships) Tj
+T*
+() Tj
+T*
+(7.1 Learning-to-mobility chain) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(AssignmentSubmitted) Tj
+T*
+(  v) Tj
+T*
+(AssignmentGraded) Tj
+T*
+(  v) Tj
+T*
+(CapabilityObserved) Tj
+T*
+(  v) Tj
+T*
+(CapabilityUpdated) Tj
+T*
+(  v) Tj
+T*
+(RecommendationGenerated) Tj
+T*
+(  v) Tj
+T*
+(PassportUpdated) Tj
+T*
+(  v) Tj
+T*
+(OpportunityMatched) Tj
+T*
+(  v) Tj
+T*
+(EmployerInterested) Tj
+T*
+(  v) Tj
+T*
+(MobilityApproved) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(7.2 Sequence diagram) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(sequenceDiagram) Tj
+T*
+(    participant LMS as LMS / Learning Tool) Tj
+T*
+(    participant ACL as Connector ACL) Tj
+T*
+(    participant Bus as Canonical Event Bus) Tj
+ET
+endstream
+endobj
+30 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 31 0 R >>
+endobj
+31 0 obj
+<< /Length 2782 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(    participant AI as Capability Inference) Tj
+T*
+(    participant Graph as Capability Graph) Tj
+T*
+(    participant Rec as Opportunity Engine) Tj
+T*
+(    participant Pass as Job Passport) Tj
+T*
+(    participant Emp as Employer Platform) Tj
+T*
+(    participant Mob as Mobility Engine) Tj
+T*
+(    LMS->>ACL: Native submission/grade event) Tj
+T*
+(    ACL->>Bus: AssignmentSubmitted) Tj
+T*
+(    ACL->>Bus: AssignmentGraded) Tj
+T*
+(    Bus->>AI: Deliver assessment evidence) Tj
+T*
+(    AI->>Bus: CapabilityObserved) Tj
+T*
+(    Bus->>Graph: Update capability state) Tj
+T*
+(    Graph->>Bus: CapabilityUpdated) Tj
+T*
+(    Bus->>Rec: Trigger recommendation update) Tj
+T*
+(    Rec->>Bus: RecommendationGenerated) Tj
+T*
+(    Bus->>Pass: Refresh passport claims) Tj
+T*
+(    Pass->>Bus: PassportUpdated) Tj
+T*
+(    Bus->>Rec: Match opportunities) Tj
+T*
+(    Rec->>Bus: OpportunityMatched) Tj
+T*
+(    Emp->>Bus: EmployerInterested) Tj
+T*
+(    Bus->>Mob: Evaluate mobility case) Tj
+T*
+(    Mob->>Bus: MobilityApproved) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(7.3 Causation and correlation rules) Tj
+T*
+() Tj
+T*
+(- correlation_id remains constant across a business workflow.) Tj
+T*
+(- causation_id points to the event that directly caused another event.) Tj
+T*
+(- trace_id follows runtime request/worker execution.) Tj
+T*
+(- Capability events must include evidence event IDs.) Tj
+T*
+(- Recommendation and passport events must include upstream capability event IDs or graph ) Tj
+T*
+(version references.) Tj
+T*
+() Tj
+T*
+(8. Canonical Event Mapping - LMS Platforms) Tj
+T*
+() Tj
+T*
+(Mapping is owned by the connector anti-corruption layer. Downstream systems never consume ) Tj
+T*
+(native LMS events.) Tj
+T*
+() Tj
+T*
+(8.1 Open edX mapping) Tj
+T*
+() Tj
+T*
+(| Native Open edX signal | Canonical event | Notes |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| enrollment created | StudentEnrolled | Map course run and learner IDs |) Tj
+T*
+(| course published/imported | CourseCreated / CourseUpdated | Studio metadata to course projection |) Tj
+T*
+(| sequential/vertical completed | ModuleCompleted | Normalize block IDs |) Tj
+T*
+(| page/block viewed | LessonViewed | High-volume analytics event |) Tj
+T*
+(| problem_check | QuizCompleted or AssessmentSubmitted | Depends on assessment type |) Tj
+T*
+(| submission_created | AssignmentSubmitted | Artifact refs required |) Tj
+T*
+(| score_changed / grade updated | AssignmentGraded | Include rubric if available |) Tj
+T*
+(| discussion post/reply | DiscussionParticipated | Content stored by reference |) Tj
+T*
+(| certificate generated | CredentialIssued candidate | Verified by Credential Ledger before CredentialVerified |) Tj
+T*
+(| team activity | ProjectStarted / ProjectCompleted | Requires project mapping |) Tj
+T*
+() Tj
+T*
+(8.2 Canvas mapping) Tj
+ET
+endstream
+endobj
+32 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 33 0 R >>
+endobj
+33 0 obj
+<< /Length 3324 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+() Tj
+T*
+(| Native Canvas signal | Canonical event | Notes |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| user/account created | IdentityCreated candidate or StudentCreated via Identity | Identity remains Syrka-owned |) Tj
+T*
+(| enrollment_created | StudentEnrolled | Section/course mapped |) Tj
+T*
+(| course_created | CourseCreated | Canvas course ID mapped |) Tj
+T*
+(| module_item_completed | ModuleCompleted | Module progress |) Tj
+T*
+(| page_view | LessonViewed | High-volume compactable |) Tj
+T*
+(| assignment_created | CourseUpdated or curriculum event | Assignment entity projection |) Tj
+T*
+(| submission_created | AssignmentSubmitted | Submission artifact refs |) Tj
+T*
+(| submission_graded | AssignmentGraded | Grade/rubric/feedback |) Tj
+T*
+(| quiz_submission_created | QuizStarted | Attempt begins |) Tj
+T*
+(| quiz_submission_completed | QuizCompleted | Attempt completes |) Tj
+T*
+(| discussion_entry_created | DiscussionParticipated | Post/reply action |) Tj
+T*
+() Tj
+T*
+(8.3 Moodle mapping) Tj
+T*
+() Tj
+T*
+(| Native Moodle signal | Canonical event | Notes |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| user_created | IdentityCreated candidate | Prefer Syrka Identity as source |) Tj
+T*
+(| role_assigned | RoleAssigned candidate | Tenant scoped |) Tj
+T*
+(| user_enrolment_created | StudentEnrolled | Map enrolment plugin source |) Tj
+T*
+(| course_created | CourseCreated | Moodle course ID mapped |) Tj
+T*
+(| course_module_completion_updated | ModuleCompleted | Activity completion |) Tj
+T*
+(| course_viewed | LessonViewed | Context determines resource |) Tj
+T*
+(| mod_assign_submission_created | AssignmentSubmitted | Normalize files/text |) Tj
+T*
+(| assign_submission_graded | AssignmentGraded | Gradebook mapping |) Tj
+T*
+(| mod_quiz_attempt_started | QuizStarted | Attempt ID required |) Tj
+T*
+(| mod_quiz_attempt_submitted | QuizCompleted | Score may arrive separately |) Tj
+T*
+(| mod_forum_post_created | DiscussionParticipated | Content by reference |) Tj
+T*
+() Tj
+T*
+(8.4 Sakai mapping) Tj
+T*
+() Tj
+T*
+(| Native Sakai signal | Canonical event | Notes |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| site membership added | StudentEnrolled | Site/course mapping |) Tj
+T*
+(| content resource viewed | LessonViewed | Resource ID mapped |) Tj
+T*
+(| assignment submission | AssignmentSubmitted | Submission refs |) Tj
+T*
+(| assignment grade released | AssignmentGraded | Gradebook integration |) Tj
+T*
+(| assessment started | QuizStarted | Samigo/tests mapping |) Tj
+T*
+(| assessment submitted | QuizCompleted | Scores normalized |) Tj
+T*
+(| forum message created | DiscussionParticipated | Topic/reply action |) Tj
+T*
+(| calendar/attendance event | AttendanceRecorded | Tool-specific mapping |) Tj
+T*
+() Tj
+T*
+(8.5 Chamilo mapping) Tj
+T*
+() Tj
+T*
+(| Native Chamilo signal | Canonical event | Notes |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| course subscription | StudentEnrolled | User/course mapped |) Tj
+T*
+(| learning path item completed | ModuleCompleted | Learning path normalized |) Tj
+T*
+(| document viewed/downloaded | LessonViewed / ContentDownloaded | Content type determines event |) Tj
+T*
+(| assignment submitted | AssignmentSubmitted | Artifact refs |) Tj
+T*
+(| exercise attempt started | QuizStarted | Attempt ID synthesized if needed |) Tj
+T*
+(| exercise completed | QuizCompleted | Score normalized |) Tj
+ET
+endstream
+endobj
+34 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 35 0 R >>
+endobj
+35 0 obj
+<< /Length 2656 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(| forum post created | DiscussionParticipated | Content by reference |) Tj
+T*
+(| attendance entry | AttendanceRecorded | Status normalized |) Tj
+T*
+() Tj
+T*
+(8.6 ILIAS mapping) Tj
+T*
+() Tj
+T*
+(| Native ILIAS signal | Canonical event | Notes |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| course membership assigned | StudentEnrolled | Role and object mapping |) Tj
+T*
+(| learning module progress | ModuleCompleted | Repository object mapped |) Tj
+T*
+(| content object viewed | LessonViewed | High-volume analytics |) Tj
+T*
+(| exercise submitted | AssignmentSubmitted | File/text refs |) Tj
+T*
+(| exercise graded | AssignmentGraded | Feedback/grade normalized |) Tj
+T*
+(| test started | QuizStarted | Test attempt ID |) Tj
+T*
+(| test finished | QuizCompleted | Score normalized |) Tj
+T*
+(| forum posting created | DiscussionParticipated | Content reference |) Tj
+T*
+() Tj
+T*
+(8.7 Future LMS mapping contract) Tj
+T*
+() Tj
+T*
+(Any future LMS must implement:) Tj
+T*
+() Tj
+T*
+(1. Identity mapping to Syrka canonical identities.) Tj
+T*
+(2. Course/resource mapping registry.) Tj
+T*
+(3. Enrollment event production.) Tj
+T*
+(4. Learning activity event production.) Tj
+T*
+(5. Assessment/submission/grade event production.) Tj
+T*
+(6. Evidence artifact reference export.) Tj
+T*
+(7. Connector provenance and idempotency keys.) Tj
+T*
+(8. Replay/backfill support.) Tj
+T*
+(9. DLQ and monitoring hooks.) Tj
+T*
+(10. Versioned adapter contract tests.) Tj
+T*
+() Tj
+T*
+(9. External Connector Events) Tj
+T*
+() Tj
+T*
+(9.1 GitHub) Tj
+T*
+() Tj
+T*
+(| GitHub signal | Canonical event | Required normalization |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| OAuth app installed/link approved | GitHubRepositoryLinked | consent, owner proof, repo identity |) Tj
+T*
+(| push/commit webhook | CommitObserved | author mapping, SHA, files/languages |) Tj
+T*
+(| pull_request closed+merged | PullRequestMerged | PR ID, reviewers, checks |) Tj
+T*
+(| pull_request_review submitted | CodeReviewCompleted | reviewer, outcome, comments ref |) Tj
+T*
+(| workflow_run completed | ProjectCompleted or quality signal | checks/tests as evidence |) Tj
+T*
+() Tj
+T*
+(9.2 LinkedIn) Tj
+T*
+() Tj
+T*
+(| LinkedIn/export signal | Canonical event | Required normalization |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| profile linked | LinkedInProfileLinked | consent, profile proof |) Tj
+T*
+(| experience imported | ProfessionalExperienceObserved | role, organization, dates |) Tj
+T*
+(| certification imported | CredentialIssued candidate | verified later by Credential Ledger |) Tj
+T*
+(| skill/endorsement imported | SkillObserved candidate | low confidence unless verified |) Tj
+T*
+() Tj
+T*
+(9.3 ORCID) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+36 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 37 0 R >>
+endobj
+37 0 obj
+<< /Length 2818 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(| ORCID signal | Canonical event | Required normalization |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| ORCID linked | ProfessionalExperienceObserved or identity link event | researcher identity proof |) Tj
+T*
+(| work added | ResearchPublished | DOI/source mapping |) Tj
+T*
+(| affiliation added | ProfessionalExperienceObserved | institution mapping |) Tj
+T*
+() Tj
+T*
+(9.4 OpenAlex and Semantic Scholar) Tj
+T*
+() Tj
+T*
+(| Source signal | Canonical event | Required normalization |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| work discovered | ResearchPublished | DOI/OpenAlex/S2 IDs, authors |) Tj
+T*
+(| citation update | MarketSignalObserved or research metric projection | citations are signals, not capability ) Tj
+T*
+(facts |) Tj
+T*
+(| topic classification | ResearchCapabilityMapped | ontology version/model provenance |) Tj
+T*
+(| collaboration pattern | RecommendationGenerated candidate | research collaboration suggestions |) Tj
+T*
+() Tj
+T*
+(9.5 Employer APIs) Tj
+T*
+() Tj
+T*
+(| Employer API signal | Canonical event | Required normalization |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| job created | JobPosted | occupation/skill mapping |) Tj
+T*
+(| job updated/closed | JobUpdated | status, dates |) Tj
+T*
+(| candidate shortlisted | EmployerInterested | consent/disclosure validation |) Tj
+T*
+(| hire/feedback submitted | OpportunityAccepted or hiring feedback event | outcome and feedback refs |) Tj
+T*
+() Tj
+T*
+(9.6 Government APIs) Tj
+T*
+() Tj
+T*
+(| Government signal | Canonical event | Required normalization |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| strategy document published | NationalPriorityMapped after parsing | source document and policy refs |) Tj
+T*
+(| priority sector updated | NationalPriorityMapped | sector/occupation/capability mapping |) Tj
+T*
+(| workforce target changed | MarketSignalObserved / government event | country/jurisdiction metadata |) Tj
+T*
+(| mobility rule changed | mobility rule event | legal/policy source required |) Tj
+T*
+() Tj
+T*
+(9.7 Future connectors) Tj
+T*
+() Tj
+T*
+(Future connectors must publish only canonical events, pass contract tests, support consent ) Tj
+T*
+(enforcement, provide provenance, and include replay/backfill tooling before production ) Tj
+T*
+(approval.) Tj
+T*
+() Tj
+T*
+(10. Event Bus Architecture) Tj
+T*
+() Tj
+T*
+(10.1 Broker choice) Tj
+T*
+() Tj
+T*
+(The architecture is broker-agnostic. Recommended progression:) Tj
+T*
+() Tj
+T*
+(1. Early stage: managed Postgres/Supabase queues or a managed message broker for simplicity.) Tj
+T*
+(2. Scale stage: Kafka-compatible broker or NATS JetStream for durable streams, partitions, ) Tj
+T*
+(replay, and consumer groups.) Tj
+T*
+(3. Enterprise stage: multi-region Kafka-compatible event platform with schema registry, tiered ) Tj
+T*
+(storage, and strict governance.) Tj
+T*
+() Tj
+T*
+(10.2 Topic design) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+38 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 39 0 R >>
+endobj
+39 0 obj
+<< /Length 2001 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(Topic names use lowercase dotted domains:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(syrka.identity.v1) Tj
+T*
+(syrka.learning.v1) Tj
+T*
+(syrka.assessment.v1) Tj
+T*
+(syrka.collaboration.v1) Tj
+T*
+(syrka.research.v1) Tj
+T*
+(syrka.engineering_evidence.v1) Tj
+T*
+(syrka.ontology.v1) Tj
+T*
+(syrka.capability.v1) Tj
+T*
+(syrka.career.v1) Tj
+T*
+(syrka.market.v1) Tj
+T*
+(syrka.government.v1) Tj
+T*
+(syrka.portfolio.v1) Tj
+T*
+(syrka.passport.v1) Tj
+T*
+(syrka.credential.v1) Tj
+T*
+(syrka.employer.v1) Tj
+T*
+(syrka.mobility.v1) Tj
+T*
+(syrka.corridor.v1) Tj
+T*
+(syrka.analytics.v1) Tj
+T*
+(syrka.ai.v1) Tj
+T*
+(syrka.recommendation.v1) Tj
+T*
+(syrka.notification.v1) Tj
+T*
+(syrka.audit.v1) Tj
+T*
+(syrka.system.v1) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(10.3 Queues and consumers) Tj
+T*
+() Tj
+T*
+(- Consumers belong to named consumer groups.) Tj
+T*
+(- Each bounded context owns its consumer group names.) Tj
+T*
+(- Retry queues are per topic or per consumer group.) Tj
+T*
+(- DLQs preserve original event, error metadata, consumer, attempt count, and last exception ) Tj
+T*
+(class.) Tj
+T*
+() Tj
+T*
+(10.4 Partitions and ordering) Tj
+T*
+() Tj
+T*
+(Partition by stable business key, not random event ID. Partition keys are defined in section ) Tj
+T*
+(5.6. Global ordering is not guaranteed and must not be required.) Tj
+T*
+() Tj
+T*
+(10.5 Delivery semantics) Tj
+T*
+() Tj
+T*
+(Syrka uses at-least-once delivery with idempotent producers and consumers. Exactly-once end-to-) Tj
+T*
+(end delivery is not assumed. Exactly-once-like behavior is implemented through idempotency ) Tj
+T*
+(keys, transactional outbox, consumer checkpoints, and deterministic projections.) Tj
+T*
+() Tj
+T*
+(10.6 Retry and back-pressure) Tj
+T*
+() Tj
+T*
+(- Use exponential backoff with jitter.) Tj
+T*
+(- Use bounded retries before DLQ.) Tj
+T*
+(- Consumers must expose lag metrics.) Tj
+T*
+(- Producers must support back-pressure and circuit breakers.) Tj
+T*
+(- High-volume analytics events may be sampled only if explicitly declared and not used as ) Tj
+ET
+endstream
+endobj
+40 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 41 0 R >>
+endobj
+41 0 obj
+<< /Length 2241 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(durable evidence.) Tj
+T*
+() Tj
+T*
+(10.7 Throughput and horizontal scaling) Tj
+T*
+() Tj
+T*
+(- Partition counts scale by tenant/institution volume.) Tj
+T*
+(- Consumers scale horizontally within consumer groups.) Tj
+T*
+(- Heavy AI consumers should decouple event ingestion from model execution with work queues.) Tj
+T*
+(- Batch replays should use isolated consumer groups to avoid starving live processing.) Tj
+T*
+() Tj
+T*
+(10.8 Observability) Tj
+T*
+() Tj
+T*
+(Required metrics:) Tj
+T*
+() Tj
+T*
+(- event publish rate) Tj
+T*
+(- publish latency) Tj
+T*
+(- validation failures) Tj
+T*
+(- consumer lag) Tj
+T*
+(- retry count) Tj
+T*
+(- DLQ volume) Tj
+T*
+(- replay throughput) Tj
+T*
+(- schema rejection count) Tj
+T*
+(- partition skew) Tj
+T*
+(- end-to-end workflow latency) Tj
+T*
+(- PII/security policy violations) Tj
+T*
+() Tj
+T*
+(11. Event Store) Tj
+T*
+() Tj
+T*
+(11.1 Purpose) Tj
+T*
+() Tj
+T*
+(The event store is the immutable source of canonical business facts. It must support audit, ) Tj
+T*
+(replay, projection rebuilds, compliance review, model reproducibility, and disaster recovery.) Tj
+T*
+() Tj
+T*
+(11.2 Storage model) Tj
+T*
+() Tj
+T*
+(Recommended layers:) Tj
+T*
+() Tj
+T*
+(1. Hot stream store: broker retention for recent operational replay.) Tj
+T*
+(2. Canonical event lake: append-only object storage partitioned by date/topic/tenant/country.) Tj
+T*
+(3. Event index: PostgreSQL index of event metadata for discovery and audit.) Tj
+T*
+(4. Schema registry: versioned schema definitions and compatibility metadata.) Tj
+T*
+() Tj
+T*
+(11.3 Retention) Tj
+T*
+() Tj
+T*
+(| Retention class | Default period | Examples |) Tj
+T*
+(|---|---:|---|) Tj
+T*
+(| short | 30-90 days | dashboard views, transient notifications |) Tj
+T*
+(| standard | 1-3 years | content views, sessions |) Tj
+T*
+(| long | 7-10 years | learning evidence, analytics decisions |) Tj
+T*
+(| permanent | indefinite unless law requires deletion/anonymization | credentials, passports, audit facts |) Tj
+T*
+(| jurisdictional | policy-specific | consent, minors, country-specific education records |) Tj
+T*
+() Tj
+T*
+(11.4 Snapshots and compaction) Tj
+T*
+() Tj
+T*
+(- Snapshots speed up replay for large aggregates such as capability graph and passport state.) Tj
+ET
+endstream
+endobj
+42 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 43 0 R >>
+endobj
+43 0 obj
+<< /Length 2515 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(- Snapshots are derived and replaceable, not sources of truth.) Tj
+T*
+(- Compactable events must be explicitly marked; evidence events are not compacted away from the) Tj
+T*
+( canonical event lake.) Tj
+T*
+() Tj
+T*
+(11.5 Archiving) Tj
+T*
+() Tj
+T*
+(Cold events move to lower-cost storage with searchable metadata indexes. Archive format must ) Tj
+T*
+(remain open and documented: JSON Lines or Parquet with schema version metadata.) Tj
+T*
+() Tj
+T*
+(11.6 Disaster recovery and multi-region) Tj
+T*
+() Tj
+T*
+(- Event lake replicated across regions according to customer/jurisdiction policy.) Tj
+T*
+(- Recovery point objective target: <= 15 minutes for canonical events.) Tj
+T*
+(- Recovery time objective target: <= 4 hours for event ingestion core.) Tj
+T*
+(- Multi-region active-active requires deterministic event IDs and regional conflict policy.) Tj
+T*
+() Tj
+T*
+(12. Read Models) Tj
+T*
+() Tj
+T*
+(12.1 Projection construction) Tj
+T*
+() Tj
+T*
+(Projections are built by consumers that subscribe to canonical events and write domain-owned ) Tj
+T*
+(read models. Projection code must be deterministic, idempotent, observable, and replayable.) Tj
+T*
+() Tj
+T*
+(12.2 Dashboards) Tj
+T*
+() Tj
+T*
+(Dashboards consume read models from Graph, Analytics, Opportunity, Passport, and Institutional ) Tj
+T*
+(Analytics. Dashboard services must not recompute facts from raw LMS tables.) Tj
+T*
+() Tj
+T*
+(12.3 Analytics) Tj
+T*
+() Tj
+T*
+(Analytics projections aggregate learning events by learner, cohort, course, institution, ) Tj
+T*
+(capability, time window, and jurisdiction. Aggregates retain pointers to source event IDs.) Tj
+T*
+() Tj
+T*
+(12.4 Job Passport) Tj
+T*
+() Tj
+T*
+(The Job Passport is built from CapabilityUpdated, CredentialVerified, CareerIntentUpdated, and ) Tj
+T*
+(selected portfolio/public-profile events. Passport versions include claim references and ) Tj
+T*
+(provenance.) Tj
+T*
+() Tj
+T*
+(12.5 Capability Graph) Tj
+T*
+() Tj
+T*
+(The graph updates from CapabilityObserved, CapabilityUpdated, CredentialVerified, ) Tj
+T*
+(ResearchCapabilityMapped, CodeCapabilityEvidenceObserved-style events, and ontology version ) Tj
+T*
+(events. Every edge references evidence events.) Tj
+T*
+() Tj
+T*
+(12.6 AI projections) Tj
+T*
+() Tj
+T*
+(AI services may consume vectorized evidence projections, graph neighborhoods, and feature ) Tj
+T*
+(stores, but model outputs must reference original canonical event IDs.) Tj
+T*
+() Tj
+T*
+(13. AI Integration) Tj
+T*
+() Tj
+T*
+(13.1 AI processing pipeline) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+44 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 45 0 R >>
+endobj
+45 0 obj
+<< /Length 2175 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+() Tj
+T*
+(AssignmentSubmitted) Tj
+T*
+(  v) Tj
+T*
+(Evidence Extraction) Tj
+T*
+(  v) Tj
+T*
+(Ontology Mapping) Tj
+T*
+(  v) Tj
+T*
+(Capability Inference) Tj
+T*
+(  v) Tj
+T*
+(Confidence Scoring) Tj
+T*
+(  v) Tj
+T*
+(Human Review when required) Tj
+T*
+(  v) Tj
+T*
+(CapabilityObserved) Tj
+T*
+(  v) Tj
+T*
+(CapabilityUpdated) Tj
+T*
+(  v) Tj
+T*
+(Career Intelligence) Tj
+T*
+(  v) Tj
+T*
+(RecommendationGenerated) Tj
+T*
+(  v) Tj
+T*
+(PassportUpdated) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(13.2 Stages) Tj
+T*
+() Tj
+T*
+(1. Evidence extraction. Extract text, metadata, rubric scores, code metrics, citations, or ) Tj
+T*
+(artifacts from evidence references.) Tj
+T*
+(2. Normalization. Convert raw evidence into feature records with source event IDs.) Tj
+T*
+(3. Ontology mapping. Match evidence to skills, knowledge, occupations, and capabilities using ) Tj
+T*
+(ontology version metadata.) Tj
+T*
+(4. Retrieval. Pull relevant graph context, prior evidence, rubric definitions, and market ) Tj
+T*
+(signals.) Tj
+T*
+(5. Inference. Apply deterministic rules, statistical models, and LLM reasoning through provider) Tj
+T*
+( adapters.) Tj
+T*
+(6. Confidence scoring. Combine evidence quality, recency, difficulty, assessor trust, model ) Tj
+T*
+(uncertainty, and corroboration.) Tj
+T*
+(7. Explainability. Generate evidence-linked explanations and limitations.) Tj
+T*
+(8. Policy and bias checks. Apply fairness, safety, and high-impact decision gates.) Tj
+T*
+(9. Publication. Publish CapabilityObserved, RecommendationGenerated, or review events.) Tj
+T*
+(10. Feedback loop. Consume user/faculty/employer feedback as new events.) Tj
+T*
+() Tj
+T*
+(13.3 AI-provider independence) Tj
+T*
+() Tj
+T*
+(AI providers are adapters. Canonical events must not include provider-specific opaque ) Tj
+T*
+(structures as required fields. Provider outputs are stored with model name, version, ) Tj
+T*
+(prompt/template ID, evaluation version, and evidence references.) Tj
+T*
+() Tj
+T*
+(14. Security Model) Tj
+T*
+() Tj
+T*
+(14.1 Encryption) Tj
+T*
+() Tj
+T*
+(- Transport encryption is mandatory for all producers, brokers, consumers, and storage.) Tj
+T*
+(- Sensitive event lake partitions are encrypted at rest.) Tj
+ET
+endstream
+endobj
+46 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 47 0 R >>
+endobj
+47 0 obj
+<< /Length 2605 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(- Highly restricted evidence artifacts use object-level encryption where supported.) Tj
+T*
+() Tj
+T*
+(14.2 Signing and verification) Tj
+T*
+() Tj
+T*
+(- Producers sign events or publish through infrastructure that signs accepted events.) Tj
+T*
+(- Consumers verify event signatures for high-impact domains.) Tj
+T*
+(- Key rotation is mandatory and tracked by key_id.) Tj
+T*
+() Tj
+T*
+(14.3 Replay protection) Tj
+T*
+() Tj
+T*
+(- Event IDs and idempotency keys prevent duplicate acceptance.) Tj
+T*
+(- Replay jobs use new replay metadata; they do not mint new business event IDs.) Tj
+T*
+(- Consumers distinguish live delivery from replay context.) Tj
+T*
+() Tj
+T*
+(14.4 Tamper detection) Tj
+T*
+() Tj
+T*
+(- Event lake objects include hashes/manifests.) Tj
+T*
+(- Append-only storage and audit logs detect unauthorized mutation.) Tj
+T*
+(- Credential/passport events may be anchored in external verification systems where required.) Tj
+T*
+() Tj
+T*
+(14.5 Authorization and multi-tenancy) Tj
+T*
+() Tj
+T*
+(- Producers require domain-specific publish scopes.) Tj
+T*
+(- Consumers require domain-specific subscribe scopes.) Tj
+T*
+(- Tenant boundaries are enforced at broker, consumer, projection, and API layers.) Tj
+T*
+(- Cross-tenant aggregation requires explicit policy and anonymization.) Tj
+T*
+() Tj
+T*
+(14.6 Audit and compliance) Tj
+T*
+() Tj
+T*
+(Every sensitive event access emits DataAccessed or equivalent audit records. Security policies ) Tj
+T*
+(must support FERPA, GDPR, local education regulations, labour-market privacy, credential law, ) Tj
+T*
+(and government data-sharing agreements.) Tj
+T*
+() Tj
+T*
+(15. Privacy Model) Tj
+T*
+() Tj
+T*
+(15.1 Consent) Tj
+T*
+() Tj
+T*
+(Consent is evented. ConsentGranted and ConsentRevoked determine whether connectors, public ) Tj
+T*
+(profiles, employer sharing, and professional data processing are allowed.) Tj
+T*
+() Tj
+T*
+(15.2 GDPR compatibility) Tj
+T*
+() Tj
+T*
+(- Data minimization is mandatory.) Tj
+T*
+(- Processing basis is recorded in the privacy block.) Tj
+T*
+(- Right to access is served through projections and event index search.) Tj
+T*
+(- Right to deletion is implemented through deletion/anonymization workflows where legally ) Tj
+T*
+(allowed; immutable event history may be cryptographically tombstoned or anonymized according to) Tj
+T*
+( policy.) Tj
+T*
+() Tj
+T*
+(15.3 FERPA compatibility) Tj
+T*
+() Tj
+T*
+(- Education records are restricted or highly restricted.) Tj
+T*
+(- Access requires legitimate educational interest or explicit consent.) Tj
+T*
+(- Disclosure to employers/governments requires purpose, consent, and audit.) Tj
+ET
+endstream
+endobj
+48 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 49 0 R >>
+endobj
+49 0 obj
+<< /Length 2453 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+() Tj
+T*
+(15.4 Jurisdiction overlays) Tj
+T*
+() Tj
+T*
+(Jurisdiction-specific policies may override retention, processing basis, data residency, cross-) Tj
+T*
+(border transfer, and minor-student rules. The event envelope carries jurisdiction metadata.) Tj
+T*
+() Tj
+T*
+(15.5 Sensitive and public events) Tj
+T*
+() Tj
+T*
+(Sensitive events include grades, submissions, capability inferences, passports, credentials, ) Tj
+T*
+(mobility decisions, consent, identity federation, and employer interest. Public events are rare) Tj
+T*
+( and normally represent user-published profile updates or public research metadata.) Tj
+T*
+() Tj
+T*
+(16. Event Versioning) Tj
+T*
+() Tj
+T*
+(16.1 Schema evolution) Tj
+T*
+() Tj
+T*
+(- Minor versions may add optional fields.) Tj
+T*
+(- Patch versions clarify validation without changing compatible structure.) Tj
+T*
+(- Major versions introduce breaking changes.) Tj
+T*
+(- Field removal is breaking.) Tj
+T*
+(- Semantic meaning changes are breaking even if JSON shape is unchanged.) Tj
+T*
+() Tj
+T*
+(16.2 Backward compatibility) Tj
+T*
+() Tj
+T*
+(Consumers must ignore unknown optional fields. Producers must continue publishing previous ) Tj
+T*
+(major versions during migration windows.) Tj
+T*
+() Tj
+T*
+(16.3 Breaking changes) Tj
+T*
+() Tj
+T*
+(Breaking changes require:) Tj
+T*
+() Tj
+T*
+(1. Schema proposal.) Tj
+T*
+(2. Impact analysis.) Tj
+T*
+(3. Approval by event governance board and affected domain owners.) Tj
+T*
+(4. Dual-publish or transform plan.) Tj
+T*
+(5. Replay/backfill plan.) Tj
+T*
+(6. Deprecation date.) Tj
+T*
+(7. ADR if the meaning or ownership changes.) Tj
+T*
+() Tj
+T*
+(16.4 Deprecation) Tj
+T*
+() Tj
+T*
+(Deprecated events remain documented. Producers stop publishing only after all consumers migrate) Tj
+T*
+( and replay strategy is validated.) Tj
+T*
+() Tj
+T*
+(17. Performance Targets) Tj
+T*
+() Tj
+T*
+(Initial targets are planning estimates and must be validated during load testing.) Tj
+T*
+() Tj
+T*
+(| Scale stage | Institutions | Learners | Peak events/sec | P95 publish-to-consume latency | Replay target |) Tj
+T*
+(|---|---:|---:|---:|---:|---|) Tj
+T*
+(| Pilot | 1-5 | 1k-25k | 100-500 | < 5s | 1 day in < 1 hour |) Tj
+T*
+(| Regional | 10-100 | 25k-1M | 1k-10k | < 10s | 30 days in < 8 hours |) Tj
+T*
+(| National | 100-1k | 1M-20M | 10k-100k | < 30s | 90 days in < 24 hours |) Tj
+T*
+(| Multi-country | 1k+ | 20M+ | 100k+ | < 60s by priority class | partitioned replay by tenant/country |) Tj
+ET
+endstream
+endobj
+50 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 51 0 R >>
+endobj
+51 0 obj
+<< /Length 2680 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+() Tj
+T*
+(Storage growth estimate:) Tj
+T*
+() Tj
+T*
+(- Average envelope event: 2-8 KB excluding artifacts.) Tj
+T*
+(- High-volume view/session events dominate count.) Tj
+T*
+(- Evidence artifacts stored separately in object storage.) Tj
+T*
+(- Event lake should plan for TB-scale at national stage and PB-scale at multi-country stage.) Tj
+T*
+() Tj
+T*
+(Scaling strategy:) Tj
+T*
+() Tj
+T*
+(- Partition by tenant, subject, capability, or geography.) Tj
+T*
+(- Separate high-volume analytics topics from durable evidence topics.) Tj
+T*
+(- Use tiered storage for older events.) Tj
+T*
+(- Use read-model rebuild clusters for replay.) Tj
+T*
+(- Isolate AI processing queues to protect core ingestion.) Tj
+T*
+() Tj
+T*
+(18. Testing Strategy) Tj
+T*
+() Tj
+T*
+(| Test type | Purpose | Required coverage |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Unit tests | Validate mappers, schema validators, idempotency code | every producer/consumer |) Tj
+T*
+(| Integration tests | Validate publish/consume with broker and store | every event family |) Tj
+T*
+(| Contract tests | Ensure producers and consumers obey schemas | every schema version |) Tj
+T*
+(| Replay tests | Rebuild projections from event history | graph, passport, dashboards, analytics |) Tj
+T*
+(| Chaos tests | Validate broker/consumer failure behavior | critical consumers |) Tj
+T*
+(| Load tests | Validate throughput, lag, back-pressure | scale milestones |) Tj
+T*
+(| Failure injection | Validate retries, DLQ, poison events | connectors and AI consumers |) Tj
+T*
+(| Schema validation tests | Reject invalid event payloads | CI and runtime |) Tj
+T*
+(| Consumer validation tests | Ensure idempotent/ordered behavior | all stateful consumers |) Tj
+T*
+(| Privacy/security tests | Validate classification, consent, scopes | sensitive events |) Tj
+T*
+() Tj
+T*
+(Minimum CI requirements for event producers:) Tj
+T*
+() Tj
+T*
+(1. Schema validation passes.) Tj
+T*
+(2. Example payloads validate.) Tj
+T*
+(3. Idempotency key test passes.) Tj
+T*
+(4. Contract tests pass against latest and supported previous schemas.) Tj
+T*
+(5. No forbidden fields/secrets in payload.) Tj
+T*
+(6. Privacy classification present.) Tj
+T*
+() Tj
+T*
+(19. Governance) Tj
+T*
+() Tj
+T*
+(19.1 Ownership) Tj
+T*
+() Tj
+T*
+(The Platform/Event Infrastructure Team owns the envelope, broker standards, schema registry, ) Tj
+T*
+(event store, and governance workflow. Each bounded context owns schemas for its event types.) Tj
+T*
+() Tj
+T*
+(19.2 Approval process) Tj
+T*
+() Tj
+T*
+(Event schema changes require:) Tj
+T*
+() Tj
+T*
+(1. Domain owner approval.) Tj
+T*
+(2. Platform/Event review.) Tj
+T*
+(3. Security/privacy review for restricted/highly restricted events.) Tj
+ET
+endstream
+endobj
+52 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 53 0 R >>
+endobj
+53 0 obj
+<< /Length 1912 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(4. AI review if events feed high-impact models.) Tj
+T*
+(5. Documentation update in CEA or schema registry.) Tj
+T*
+(6. Migration/replay plan for changes affecting existing consumers.) Tj
+T*
+() Tj
+T*
+(19.3 Breaking changes) Tj
+T*
+() Tj
+T*
+(Breaking changes require architecture review and, when domain ownership or semantic meaning ) Tj
+T*
+(changes, a new ADR.) Tj
+T*
+() Tj
+T*
+(19.4 Deprecation handling) Tj
+T*
+() Tj
+T*
+(Deprecated events are marked in the registry with replacement event, last producer date, ) Tj
+T*
+(consumer migration status, and replay transform guidance.) Tj
+T*
+() Tj
+T*
+(19.5 ADR governance) Tj
+T*
+() Tj
+T*
+(CEA-001 is the constitutional event specification. Future changes that alter fundamental ) Tj
+T*
+(principles-immutability, canonical envelope, LMS independence, ownership, privacy, or ) Tj
+T*
+(replayability-must update or supersede this document through a new accepted ADR/CEA.) Tj
+T*
+() Tj
+T*
+(20. Event Naming Convention) Tj
+T*
+() Tj
+T*
+(20.1 Mandatory rules) Tj
+T*
+() Tj
+T*
+(- Use PascalCase.) Tj
+T*
+(- Use past-tense facts.) Tj
+T*
+(- Use business language, not technical implementation language.) Tj
+T*
+(- Avoid source-system names.) Tj
+T*
+(- Avoid version numbers in names.) Tj
+T*
+(- Avoid vague words like Thing, Data, Event, Foo, Test.) Tj
+T*
+(- Name the business outcome, not the command.) Tj
+T*
+() Tj
+T*
+(20.2 Good names) Tj
+T*
+() Tj
+T*
+(- AssignmentSubmitted) Tj
+T*
+(- AssignmentGraded) Tj
+T*
+(- CapabilityObserved) Tj
+T*
+(- CapabilityUpdated) Tj
+T*
+(- ResearchPublished) Tj
+T*
+(- CredentialVerified) Tj
+T*
+(- PassportIssued) Tj
+T*
+(- MobilityApproved) Tj
+T*
+() Tj
+T*
+(20.3 Forbidden names) Tj
+T*
+() Tj
+T*
+(- assignment_complete_v2) Tj
+T*
+(- foo_event) Tj
+T*
+(- test123) Tj
+T*
+(- openedx_problem_check) Tj
+T*
+(- canvas_submission_created) Tj
+T*
+(- doRecommendation) Tj
+T*
+(- UpdatePassportCommand) Tj
+T*
+() Tj
+T*
+(20.4 Naming pattern) Tj
+ET
+endstream
+endobj
+54 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 55 0 R >>
+endobj
+55 0 obj
+<< /Length 1339 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+() Tj
+T*
+() Tj
+T*
+(<Noun><PastTenseVerb>) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Examples:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(AssignmentSubmitted) Tj
+T*
+(QuizCompleted) Tj
+T*
+(GitHubRepositoryLinked) Tj
+T*
+(CareerIntentUpdated) Tj
+T*
+(OpportunityMatched) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(21. Mermaid Diagrams) Tj
+T*
+() Tj
+T*
+(21.1 Event Taxonomy) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(mindmap) Tj
+T*
+(  root\(\(Syrka Events\)\)) Tj
+T*
+(    Identity) Tj
+T*
+(      IdentityCreated) Tj
+T*
+(      StudentCreated) Tj
+T*
+(      ConsentGranted) Tj
+T*
+(    Learning) Tj
+T*
+(      LessonViewed) Tj
+T*
+(      ModuleCompleted) Tj
+T*
+(      AttendanceRecorded) Tj
+T*
+(    Assessment) Tj
+T*
+(      AssignmentSubmitted) Tj
+T*
+(      AssignmentGraded) Tj
+T*
+(      QuizCompleted) Tj
+T*
+(    Evidence) Tj
+T*
+(      ResearchPublished) Tj
+T*
+(      GitHubRepositoryLinked) Tj
+T*
+(      CommitObserved) Tj
+T*
+(    Intelligence) Tj
+T*
+(      CapabilityObserved) Tj
+T*
+(      CapabilityUpdated) Tj
+T*
+(      RecommendationGenerated) Tj
+T*
+(    Trust) Tj
+T*
+(      CredentialVerified) Tj
+T*
+(      PassportIssued) Tj
+T*
+(      PassportUpdated) Tj
+T*
+(    Workforce) Tj
+T*
+(      EmployerInterested) Tj
+T*
+(      MobilityApproved) Tj
+T*
+(      CorridorMatched) Tj
+T*
+(    Platform) Tj
+T*
+(      SchemaPublished) Tj
+T*
+(      ReplayCompleted) Tj
+T*
+(      DataAccessed) Tj
+ET
+endstream
+endobj
+56 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 57 0 R >>
+endobj
+57 0 obj
+<< /Length 1961 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+() Tj
+T*
+() Tj
+T*
+(21.2 Event Lifecycle) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Source[Source system] --> Extract[Extract]) Tj
+T*
+(    Extract --> Map[Map to canonical event]) Tj
+T*
+(    Map --> Validate[Validate schema/domain/privacy]) Tj
+T*
+(    Validate --> Sign[Sign/enrich envelope]) Tj
+T*
+(    Sign --> Publish[Publish to bus]) Tj
+T*
+(    Publish --> Store[Append to event store]) Tj
+T*
+(    Publish --> Consume[Consumers]) Tj
+T*
+(    Consume --> Project[Update projections]) Tj
+T*
+(    Project --> Observe[Metrics/audit]) Tj
+T*
+(    Validate -- invalid --> DLQ[Reject/DLQ]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(21.3 Event Flow) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    LMS[Open edX/Canvas/Moodle/etc.] --> ACL[LMS ACL]) Tj
+T*
+(    GitHub[GitHub] --> Connectors[External Connectors]) Tj
+T*
+(    Research[Research Sources] --> Connectors) Tj
+T*
+(    Employer[Employer APIs] --> Connectors) Tj
+T*
+(    ACL --> Bus[Canonical Event Bus]) Tj
+T*
+(    Connectors --> Bus) Tj
+T*
+(    Bus --> Store[\(Immutable Event Store\)]) Tj
+T*
+(    Bus --> AI[AI/Inference Consumers]) Tj
+T*
+(    Bus --> Graph[Capability Graph]) Tj
+T*
+(    Bus --> Analytics[Analytics]) Tj
+T*
+(    Bus --> Passport[Job Passport]) Tj
+T*
+(    Bus --> Projections[\(Read Models\)]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(21.4 Event Bus) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Producers[Producers] --> Validator[Schema/Policy Validator]) Tj
+T*
+(    Validator --> Broker[Broker Topics]) Tj
+T*
+(    Broker --> CG1[Consumer Group: Graph]) Tj
+T*
+(    Broker --> CG2[Consumer Group: Analytics]) Tj
+T*
+(    Broker --> CG3[Consumer Group: Inference]) Tj
+T*
+(    Broker --> CG4[Consumer Group: Passport]) Tj
+T*
+(    Broker --> DLQ[Dead Letter Queues]) Tj
+T*
+(    Broker --> Lake[Event Lake]) Tj
+T*
+(    Schema[Schema Registry] --> Validator) Tj
+T*
+(    Observability[Metrics/Tracing] -. monitors .- Broker) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(21.5 Replay Process) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+58 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 59 0 R >>
+endobj
+59 0 obj
+<< /Length 2096 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+() Tj
+T*
+(sequenceDiagram) Tj
+T*
+(    participant Operator as Authorized Operator) Tj
+T*
+(    participant Replay as Replay Service) Tj
+T*
+(    participant Store as Event Store) Tj
+T*
+(    participant Bus as Replay Topic) Tj
+T*
+(    participant Consumer as Projection Consumer) Tj
+T*
+(    Operator->>Replay: Start replay with scope/reason) Tj
+T*
+(    Replay->>Store: Read events by topic/time/tenant) Tj
+T*
+(    Replay->>Bus: Publish replay context events) Tj
+T*
+(    Bus->>Consumer: Deliver events with replay metadata) Tj
+T*
+(    Consumer->>Consumer: Idempotent rebuild/checkpoint) Tj
+T*
+(    Consumer->>Replay: Report progress) Tj
+T*
+(    Replay->>Operator: ReplayCompleted) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(21.6 Event Store) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    Bus[Event Bus] --> Hot[Hot Stream Retention]) Tj
+T*
+(    Bus --> Lake[Append-only Event Lake]) Tj
+T*
+(    Lake --> Index[\(Event Metadata Index\)]) Tj
+T*
+(    Lake --> Archive[Cold Archive]) Tj
+T*
+(    Registry[Schema Registry] --> Lake) Tj
+T*
+(    Lake --> Replay[Replay Service]) Tj
+T*
+(    Replay --> Bus) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(21.7 AI Processing Pipeline) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Event[Evidence Event] --> Extract[Evidence Extraction]) Tj
+T*
+(    Extract --> Embed[Embeddings]) Tj
+T*
+(    Extract --> OntMap[Ontology Mapping]) Tj
+T*
+(    OntMap --> Retrieve[Graph/Vector Retrieval]) Tj
+T*
+(    Retrieve --> Infer[Inference Engine]) Tj
+T*
+(    Infer --> Confidence[Confidence Scoring]) Tj
+T*
+(    Confidence --> Explain[Explanation]) Tj
+T*
+(    Explain --> Policy[Bias/Safety/Policy]) Tj
+T*
+(    Policy --> Publish[CapabilityObserved]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(21.8 Connector Architecture) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Native[Native API/Webhook/Event] --> Auth[Connector Auth/Consent]) Tj
+T*
+(    Auth --> Raw[Raw Event Capture]) Tj
+T*
+(    Raw --> Mapper[Canonical Mapper]) Tj
+T*
+(    Mapper --> Validate[Schema/Domain Validation]) Tj
+T*
+(    Validate --> Idem[Idempotency Check]) Tj
+T*
+(    Idem --> Publish[Publish Canonical Event]) Tj
+ET
+endstream
+endobj
+60 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 61 0 R >>
+endobj
+61 0 obj
+<< /Length 2124 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(    Validate --> DLQ[Connector DLQ]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(21.9 Projection Architecture) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    Bus[Event Bus] --> Consumer[Projection Consumer]) Tj
+T*
+(    Consumer --> Checkpoint[\(Consumer Checkpoint\)]) Tj
+T*
+(    Consumer --> Projector[Deterministic Projector]) Tj
+T*
+(    Projector --> ReadModel[\(Read Model\)]) Tj
+T*
+(    Projector --> Snapshot[\(Snapshot\)]) Tj
+T*
+(    ReadModel --> API[Domain API]) Tj
+T*
+(    API --> Dashboard[Dashboard]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(21.10 Job Passport Update Flow) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(sequenceDiagram) Tj
+T*
+(    participant Graph as Capability Graph) Tj
+T*
+(    participant Bus as Event Bus) Tj
+T*
+(    participant Passport as Job Passport Service) Tj
+T*
+(    participant Credential as Credential Ledger) Tj
+T*
+(    participant Public as Public Profile) Tj
+T*
+(    Graph->>Bus: CapabilityUpdated) Tj
+T*
+(    Credential->>Bus: CredentialVerified) Tj
+T*
+(    Bus->>Passport: Deliver capability/credential events) Tj
+T*
+(    Passport->>Passport: Rebuild passport claims) Tj
+T*
+(    Passport->>Bus: PassportUpdated) Tj
+T*
+(    Bus->>Public: Update public disclosure projection if allowed) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(22. Appendices) Tj
+T*
+() Tj
+T*
+(Appendix A - Event-specific JSON Schema example: AssignmentSubmitted) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "$schema": "https://json-schema.org/draft/2020-12/schema",) Tj
+T*
+(  "$id": "https://schemas.syrka.ai/events/AssignmentSubmitted/1.0.0",) Tj
+T*
+(  "allOf": [) Tj
+T*
+(    { "$ref": "https://schemas.syrka.ai/events/envelope/1.0.0" },) Tj
+T*
+(    {) Tj
+T*
+(      "type": "object",) Tj
+T*
+(      "properties": {) Tj
+T*
+(        "event_type": { "const": "AssignmentSubmitted" },) Tj
+T*
+(        "payload": {) Tj
+T*
+(          "type": "object",) Tj
+T*
+(          "required": ["submission_id", "assignment_id", "course_id", "submitted_at"],) Tj
+T*
+(          "properties": {) Tj
+T*
+(            "submission_id": { "type": "string" },) Tj
+T*
+(            "assignment_id": { "type": "string" },) Tj
+T*
+(            "course_id": { "type": "string" },) Tj
+ET
+endstream
+endobj
+62 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 63 0 R >>
+endobj
+63 0 obj
+<< /Length 1615 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(            "attempt_number": { "type": "integer", "minimum": 1 },) Tj
+T*
+(            "submitted_at": { "type": "string", "format": "date-time" },) Tj
+T*
+(            "artifact_count": { "type": "integer", "minimum": 0 }) Tj
+T*
+(          },) Tj
+T*
+(          "additionalProperties": false) Tj
+T*
+(        }) Tj
+T*
+(      }) Tj
+T*
+(    }) Tj
+T*
+(  ]) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix B - Example event stream) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(01 StudentCreated) Tj
+T*
+(02 StudentEnrolled) Tj
+T*
+(03 LessonViewed) Tj
+T*
+(04 AssignmentOpened) Tj
+T*
+(05 AssignmentSubmitted) Tj
+T*
+(06 AssignmentGraded) Tj
+T*
+(07 CapabilityObserved) Tj
+T*
+(08 CapabilityUpdated) Tj
+T*
+(09 RecommendationGenerated) Tj
+T*
+(10 PassportUpdated) Tj
+T*
+(11 OpportunityMatched) Tj
+T*
+(12 EmployerInterested) Tj
+T*
+(13 MobilityApproved) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix C - Example replay request) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "replay_id": "replay_2026_07_07_001",) Tj
+T*
+(  "requested_by": "platform_admin_001",) Tj
+T*
+(  "reason": "Rebuild capability graph after ontology version 2.1.0",) Tj
+T*
+(  "scope": {) Tj
+T*
+(    "tenant_id": "tenant_sa_001",) Tj
+T*
+(    "topics": ["syrka.assessment.v1", "syrka.capability.v1"],) Tj
+T*
+(    "from": "2026-01-01T00:00:00Z",) Tj
+T*
+(    "to": "2026-07-07T00:00:00Z") Tj
+T*
+(  },) Tj
+T*
+(  "target_consumer_group": "capability-graph-replay",) Tj
+T*
+(  "dry_run": false) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix D - Example audit log) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "audit_id": "audit_001",) Tj
+T*
+(  "event_id": "01JZCEA000000000000000001",) Tj
+ET
+endstream
+endobj
+64 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 65 0 R >>
+endobj
+65 0 obj
+<< /Length 2184 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(  "action": "event_consumed",) Tj
+T*
+(  "consumer": "capability-inference",) Tj
+T*
+(  "actor": "svc_capability_inference",) Tj
+T*
+(  "purpose": "capability_inference",) Tj
+T*
+(  "occurred_at": "2026-07-07T10:15:05Z",) Tj
+T*
+(  "authorization_decision": "allow",) Tj
+T*
+(  "policy_version": "policy@2026.07") Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix E - Example dead letter queue record) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "dlq_id": "dlq_001",) Tj
+T*
+(  "event_id": "01JZCEA000000000000000001",) Tj
+T*
+(  "consumer": "capability-inference",) Tj
+T*
+(  "topic": "syrka.assessment.v1",) Tj
+T*
+(  "attempts": 5,) Tj
+T*
+(  "first_failed_at": "2026-07-07T10:15:06Z",) Tj
+T*
+(  "last_failed_at": "2026-07-07T10:22:30Z",) Tj
+T*
+(  "error_code": "ONTOLOGY_TERM_NOT_FOUND",) Tj
+T*
+(  "error_message": "Capability mapping references ontology term unavailable in version 2.1.0",) Tj
+T*
+(  "payload_ref": "s3://syrka-dlq/2026/07/07/dlq_001.json",) Tj
+T*
+(  "replay_eligible": true) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix F - Example producer pseudocode) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(const event = buildCanonicalEvent\({) Tj
+T*
+(  eventType: "AssignmentSubmitted",) Tj
+T*
+(  version: "1.0.0",) Tj
+T*
+(  sourceSystem: "openedx",) Tj
+T*
+(  producer: "learning-management-adapter",) Tj
+T*
+(  actor: { type: "student", id: studentId },) Tj
+T*
+(  subject: { type: "student", id: studentId },) Tj
+T*
+(  resource: { type: "assignment", id: assignmentId },) Tj
+T*
+(  payload: { submission_id, assignment_id, course_id, submitted_at },) Tj
+T*
+(  provenance: { source_event_type: "submission_created", transformer: "openedx-mapper", transformer_version: ) Tj
+T*
+("1.4.0" },) Tj
+T*
+(  idempotencyKey: openedx:${sourceSubmissionId}:AssignmentSubmitted:1.0.0) Tj
+T*
+(}\);) Tj
+T*
+(await validateAndPublish\(event\);) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix G - Example consumer pseudocode) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(for await \(const event of consumer.subscribe\("syrka.assessment.v1"\)\) {) Tj
+T*
+(  if \(await alreadyProcessed\(event.idempotency_key, consumer.name\)\) continue;) Tj
+T*
+(  await db.transaction\(async tx => {) Tj
+T*
+(    await applyProjection\(tx, event\);) Tj
+ET
+endstream
+endobj
+66 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 67 0 R >>
+endobj
+67 0 obj
+<< /Length 2190 >>
+stream
+BT
+/F1 8.7 Tf
+12.5 TL
+42 750 Td
+(    await recordCheckpoint\(tx, event.event_id, event.idempotency_key\);) Tj
+T*
+(  }\);) Tj
+T*
+(  await consumer.ack\(event\);) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix H - Event mapping table summary) Tj
+T*
+() Tj
+T*
+(| Source family | Native language | Syrka canonical language |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Open edX | problem_check, score_changed, submission_created | QuizCompleted, AssignmentGraded, ) Tj
+T*
+(AssignmentSubmitted |) Tj
+T*
+(| Canvas | submission_created, quiz_submission_completed | AssignmentSubmitted, QuizCompleted |) Tj
+T*
+(| Moodle | mod_assign_submission_created, mod_quiz_attempt_submitted | AssignmentSubmitted, QuizCompleted |) Tj
+T*
+(| Sakai | assignment submission, assessment submitted | AssignmentSubmitted, QuizCompleted |) Tj
+T*
+(| Chamilo | assignment submitted, exercise completed | AssignmentSubmitted, QuizCompleted |) Tj
+T*
+(| ILIAS | exercise submitted, test finished | AssignmentSubmitted, QuizCompleted |) Tj
+T*
+(| GitHub | push, pull_request, workflow_run | CommitObserved, PullRequestMerged, ProjectCompleted |) Tj
+T*
+(| LinkedIn | profile/experience/certification import | LinkedInProfileLinked, ProfessionalExperienceObserved, ) Tj
+T*
+(CredentialIssued candidate |) Tj
+T*
+(| Research | works, citations, topics | ResearchPublished, ResearchCapabilityMapped |) Tj
+T*
+(| Employer | job, interest, hiring feedback | JobPosted, EmployerInterested, OpportunityAccepted |) Tj
+T*
+() Tj
+T*
+(23. Final Decision) Tj
+T*
+() Tj
+T*
+(CEA-001 establishes canonical events as the permanent language of Syrka. Every service, ) Tj
+T*
+(connector, AI model, dashboard, database projection, API, and future LMS integration must ) Tj
+T*
+(produce or consume canonical events rather than relying on platform-specific schemas.) Tj
+T*
+() Tj
+T*
+(The architecture guarantees that any LMS can be replaced without changing Syrka's intelligence ) Tj
+T*
+(layer; every AI capability operates on canonical, provenance-rich evidence; every event is ) Tj
+T*
+(auditable, explainable, replayable, secure, and versioned; and Syrka's strategic intellectual ) Tj
+T*
+(property remains independent of Open edX or any other external platform.) Tj
+ET
+endstream
+endobj
+xref
+0 68
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000337 00000 n 
+0000000407 00000 n 
+0000000533 00000 n 
+0000004011 00000 n 
+0000004137 00000 n 
+0000006861 00000 n 
+0000006987 00000 n 
+0000011741 00000 n 
+0000011869 00000 n 
+0000015903 00000 n 
+0000016031 00000 n 
+0000021204 00000 n 
+0000021332 00000 n 
+0000026071 00000 n 
+0000026199 00000 n 
+0000031068 00000 n 
+0000031196 00000 n 
+0000035919 00000 n 
+0000036047 00000 n 
+0000039143 00000 n 
+0000039271 00000 n 
+0000041982 00000 n 
+0000042110 00000 n 
+0000045045 00000 n 
+0000045173 00000 n 
+0000047754 00000 n 
+0000047882 00000 n 
+0000049534 00000 n 
+0000049662 00000 n 
+0000052497 00000 n 
+0000052625 00000 n 
+0000056002 00000 n 
+0000056130 00000 n 
+0000058839 00000 n 
+0000058967 00000 n 
+0000061838 00000 n 
+0000061966 00000 n 
+0000064020 00000 n 
+0000064148 00000 n 
+0000066442 00000 n 
+0000066570 00000 n 
+0000069138 00000 n 
+0000069266 00000 n 
+0000071494 00000 n 
+0000071622 00000 n 
+0000074280 00000 n 
+0000074408 00000 n 
+0000076914 00000 n 
+0000077042 00000 n 
+0000079775 00000 n 
+0000079903 00000 n 
+0000081868 00000 n 
+0000081996 00000 n 
+0000083388 00000 n 
+0000083516 00000 n 
+0000085530 00000 n 
+0000085658 00000 n 
+0000087807 00000 n 
+0000087935 00000 n 
+0000090112 00000 n 
+0000090240 00000 n 
+0000091908 00000 n 
+0000092036 00000 n 
+0000094273 00000 n 
+0000094401 00000 n 
+trailer
+<< /Size 68 /Root 1 0 R /Info << /Title (CEA-001 - Syrka Canonical Event Architecture) /Author (Syrka Architecture) >> >>
+startxref
+96644
+%%EOF
