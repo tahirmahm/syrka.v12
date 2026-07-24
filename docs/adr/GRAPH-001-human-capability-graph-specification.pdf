@@ -1,0 +1,2520 @@
+%PDF-1.4
+%
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R 30 0 R 32 0 R 34 0 R 36 0 R 38 0 R 40 0 R 42 0 R 44 0 R] /Count 21 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 3555 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(GRAPH-001 - Syrka Human Capability Graph Specification) Tj
+T*
+() Tj
+T*
+(Status: Constitutional Engineering Specification) Tj
+T*
+(Version: 1.0) Tj
+T*
+(Date: 2026-07-08) Tj
+T*
+(Builds upon: Product Suite; ADR-001 - Open Source LMS Foundation; ADR-002 - Domain Architecture ) Tj
+T*
+(& Bounded Contexts; CEA-001 - Canonical Event Architecture; ONT-001 - Ontology Constitution) Tj
+T*
+(Decision owners: Knowledge Graph Architecture / AI Engineering / Ontology / Platform ) Tj
+T*
+(Architecture) Tj
+T*
+(Scope: Human Capability Graph metamodel, node and edge catalogues, graph semantics, event-) Tj
+T*
+(derived mutations, storage architecture, query model, AI integration, scalability, security, ) Tj
+T*
+(governance, diagrams, and implementation appendices) Tj
+T*
+() Tj
+T*
+(1. Executive Overview) Tj
+T*
+() Tj
+T*
+(The Human Capability Graph \(HCG\) is Syrka's persistent semantic representation of people, ) Tj
+T*
+(identities, institutions, employers, governments, programmes, courses, learning outcomes, ) Tj
+T*
+(skills, knowledge, capabilities, evidence, credentials, research, projects, technologies, ) Tj
+T*
+(occupations, opportunities, passports, mobility routes, and national strategies over time.) Tj
+T*
+() Tj
+T*
+(The HCG is not a social graph, an LMS graph, or a static taxonomy. It is the evidence-backed ) Tj
+T*
+(relationship layer that answers:) Tj
+T*
+() Tj
+T*
+(> What can this person credibly do, why do we believe it, and where can that capability create ) Tj
+T*
+(value?) Tj
+T*
+() Tj
+T*
+(1.1 Why a graph instead of relational tables?) Tj
+T*
+() Tj
+T*
+(Relational tables are excellent for transactional records with known joins. Syrka's core ) Tj
+T*
+(intelligence problem is different: capabilities emerge from multi-hop, temporal, evidence-backed) Tj
+T*
+( relationships among people, learning activities, artifacts, assessments, credentials, research,) Tj
+T*
+( projects, labour-market demand, occupations, jurisdictions, and recommendations. These ) Tj
+T*
+(relationships change over time and must remain explainable.) Tj
+T*
+() Tj
+T*
+(A graph is required because:) Tj
+T*
+() Tj
+T*
+(1. Capability is relational. A capability is not a column on a user row. It is an assertion ) Tj
+T*
+(connecting a person, capability concept, evidence, context, confidence, provenance, ontology ) Tj
+T*
+(version, and validity window.) Tj
+T*
+(2. Evidence is multi-hop. A Job Passport claim may trace from passport -> capability observation) Tj
+T*
+( -> evidence -> assignment -> artifact -> rubric -> course outcome -> ontology term -> ) Tj
+T*
+(occupation requirement.) Tj
+T*
+(3. Recommendations are path-based. Learning pathways, job matches, mobility routes, and ) Tj
+T*
+(curriculum gaps are graph traversals.) Tj
+T*
+(4. Ontology is relational. Skills require knowledge, capabilities require skills, occupations ) Tj
+T*
+(require capabilities, credentials verify claims, and jurisdictions regulate mobility.) Tj
+T*
+(5. Temporal evolution matters. Syrka must represent historical capability, current confidence, ) Tj
+T*
+(decay, supersession, revocation, and future potential.) Tj
+T*
+(6. AI needs grounded context. Graph retrieval gives AI systems constrained, provenance-rich ) Tj
+T*
+(neighborhoods rather than unstructured guesses.) Tj
+T*
+() Tj
+T*
+(1.2 Why capability is represented as relationships rather than columns) Tj
+T*
+() Tj
+T*
+(A column such as sql_skill_score = 0.84 hides the most important facts: what evidence supports ) Tj
+T*
+(the claim, what ontology version defined the capability, which model/rubric inferred it, whether) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 3306 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+( evidence is current, whether it is verified, and whether the capability transfers to a job or ) Tj
+T*
+(jurisdiction.) Tj
+T*
+() Tj
+T*
+(In the HCG, capability is represented as a graph assertion:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(\(Person\)-[:HAS_OBSERVATION]->\(CapabilityObservation\)-[:ASSERTS]->\(Capability\)) Tj
+T*
+(\(CapabilityObservation\)-[:EVIDENCED_BY]->\(Evidence\)) Tj
+T*
+(\(CapabilityObservation\)-[:HAS_CONFIDENCE]->\(ConfidenceScore\)) Tj
+T*
+(\(CapabilityObservation\)-[:DERIVED_FROM]->\(CanonicalEvent\)) Tj
+T*
+(\(CapabilityObservation\)-[:USES_ONTOLOGY_VERSION]->\(OntologyVersion\)) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(1.3 Explainable AI, lifelong learning, and mobility) Tj
+T*
+() Tj
+T*
+(The graph supports explainable AI by forcing every model output to connect to canonical events, ) Tj
+T*
+(evidence, ontology definitions, confidence scores, and provenance. It supports lifelong learning) Tj
+T*
+( by preserving a temporal history of capability development and decay. It supports workforce ) Tj
+T*
+(mobility by connecting evidence-backed capability to occupations, credentials, regulations, ) Tj
+T*
+(national strategies, employer demand, and mobility routes.) Tj
+T*
+() Tj
+T*
+(2. Graph Philosophy) Tj
+T*
+() Tj
+T*
+(| Concept | Definition | Role in HCG |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Node | A typed graph entity representing a person, concept, evidence item, organization, opportunity, event, or ) Tj
+T*
+(state object. | Stores identity and properties of graph entities. |) Tj
+T*
+(| Edge | A typed directed relationship between nodes. | Encodes semantic meaning such as EVIDENCED_BY, REQUIRES, or ) Tj
+T*
+(MATCHED_TO. |) Tj
+T*
+(| Graph assertion | A claim represented by nodes/edges with provenance, time, ontology version, and confidence where ) Tj
+T*
+(applicable. | Core unit of explainable graph knowledge. |) Tj
+T*
+(| Temporal edge | An edge with valid_from, valid_to, observed_at, and/or superseded_at. | Represents evolution rather ) Tj
+T*
+(than overwriting state. |) Tj
+T*
+(| Provenance | Lineage showing source events, source systems, transformations, models, reviewers, and ontology ) Tj
+T*
+(version. | Makes assertions auditable and reproducible. |) Tj
+T*
+(| Graph confidence | Calibrated support for an assertion, derived from evidence quality, trust, recency, and ) Tj
+T*
+(uncertainty. | Prevents overclaiming and enables thresholds. |) Tj
+T*
+(| Graph projection | Derived graph state or read model built from canonical events. | Query-optimized and rebuildable.) Tj
+T*
+( |) Tj
+T*
+(| Graph snapshot | Point-in-time materialization of graph state for performance, audit, or reproducibility. | Speeds ) Tj
+T*
+(replay and explanations without replacing events. |) Tj
+T*
+(| Graph evolution | Append-only change of graph state caused by canonical events and ontology versions. | Preserves ) Tj
+T*
+(history, decay, revocation, and migration. |) Tj
+T*
+() Tj
+T*
+(Principles:) Tj
+T*
+() Tj
+T*
+(- Events create graph mutations; the graph does not replace events.) Tj
+T*
+(- Ontology defines meaning; the graph instantiates meaning.) Tj
+T*
+(- Every edge has provenance.) Tj
+T*
+(- Every assertion is temporal.) Tj
+T*
+(- No AI model mutates the graph directly; AI publishes canonical events that graph consumers ) Tj
+T*
+(apply.) Tj
+T*
+() Tj
+T*
+(3. Node Catalogue) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 4564 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(3.1 Common node properties) Tj
+T*
+() Tj
+T*
+(All nodes include:) Tj
+T*
+() Tj
+T*
+(| Property | Meaning |) Tj
+T*
+(|---|---|) Tj
+T*
+(| id | Stable canonical identifier. |) Tj
+T*
+(| type | Node label/type. |) Tj
+T*
+(| tenant_id | Tenant boundary where applicable. |) Tj
+T*
+(| created_at | First creation timestamp. |) Tj
+T*
+(| updated_at | Last projection update timestamp. |) Tj
+T*
+(| ontology_version | Ontology version defining semantic type where applicable. |) Tj
+T*
+(| source_event_ids | Canonical events that created/updated node. |) Tj
+T*
+(| provenance_ref | Pointer to provenance details. |) Tj
+T*
+(| visibility | Access classification. |) Tj
+T*
+(| status | active, deprecated, revoked, archived, candidate. |) Tj
+T*
+() Tj
+T*
+(3.2 Node definitions) Tj
+T*
+() Tj
+T*
+(| Node type | Purpose | Key properties | Constraints | Lifecycle | Owner | Primary relationships | Indexing strategy |) Tj
+T*
+(|---|---|---|---|---|---|---|---|) Tj
+T*
+(| Person | Human subject of capability, learning, career, credentials, and mobility. | person_id, display_name_hash, ) Tj
+T*
+(country, status | Must not store secrets; PII minimized. | created, updated, anonymized/archived | Identity | ) Tj
+T*
+(HAS_IDENTITY, HAS_OBSERVATION, HAS_INTENT, HAS_PASSPORT | person_id, tenant_id, country |) Tj
+T*
+(| Identity | Auth/federation representation linked to a person or organization. | identity_id, provider, ) Tj
+T*
+(external_subject_hash | One identity maps to one canonical entity per tenant. | linked, unlinked, revoked | Identity |) Tj
+T*
+( IDENTIFIES, FEDERATED_WITH | identity_id, provider |) Tj
+T*
+(| Institution | Education/research/training organization. | institution_id, name, country, type | Tenant-scoped; may ) Tj
+T*
+(host programmes/courses. | active, merged, archived | Identity/Institution | OFFERS, BELONGS_TO, ALIGNED_WITH | ) Tj
+T*
+(institution_id, country |) Tj
+T*
+(| Employer | Organization creating work demand. | employer_id, name, industry_id, verified | Must be verified for ) Tj
+T*
+(sensitive actions. | active, suspended, archived | Employer Platform | POSTS, INTERESTED_IN, BELONGS_TO | employer_id,) Tj
+T*
+( industry_id |) Tj
+T*
+(| Government | Public authority or agency. | government_id, jurisdiction_id, authority_type | Must map to ) Tj
+T*
+(jurisdiction. | active, reorganized, archived | National Vision | PUBLISHES, REGULATES | government_id, ) Tj
+T*
+(jurisdiction_id |) Tj
+T*
+(| Programme | Structured educational pathway. | programme_id, title, level, credential_type | Belongs to institution. ) Tj
+T*
+(| draft, active, retired | Curriculum | CONTAINS, ALIGNED_WITH | programme_id, institution_id |) Tj
+T*
+(| Course | Structured unit of learning. | course_id, source_system, title, course_run | LMS-local IDs mapped ) Tj
+T*
+(externally. | active, completed, archived | Learning Adapter | PART_OF, CONTAINS, TEACHES | course_id, source_system |) Tj
+T*
+(| Module | Course subdivision. | module_id, title, sequence | Must belong to course. | active, retired | Learning ) Tj
+T*
+(Adapter | PART_OF, CONTAINS | module_id, course_id |) Tj
+T*
+(| Lesson | Discrete learning experience. | lesson_id, title, modality | Viewing alone is weak evidence. | active, ) Tj
+T*
+(retired | Learning Adapter | PART_OF, TEACHES, VIEWED | lesson_id, module_id |) Tj
+T*
+(| LearningOutcome | Expected knowledge/skill/capability outcome. | outcome_id, statement, bloom_level | Must align to ) Tj
+T*
+(ontology terms when used for inference. | draft, active, deprecated | Curriculum/Ontology | ALIGNED_WITH, ASSESSED_BY ) Tj
+T*
+(| outcome_id, ontology_term_id |) Tj
+T*
+(| Assessment | Evaluation method. | assessment_id, type, rubric_id | Must define evaluated concepts for inference. | ) Tj
+T*
+(active, administered, retired | Learning Adapter/Faculty | ASSESSES, PRODUCES | assessment_id, course_id |) Tj
+T*
+(| Assignment | Task assigned to learner. | assignment_id, due_at, type | May produce artifact/evidence. | opened, ) Tj
+T*
+(submitted, graded, archived | Learning Adapter | PART_OF, PRODUCES, SUBMITTED | assignment_id, course_id |) Tj
+T*
+(| Project | Bounded effort producing artifact/outcome. | project_id, title, domain, status | May have collaborators. |) Tj
+T*
+( started, completed, archived | Portfolio/Learning/GitHub | PRODUCED, DEMONSTRATES, LINKED_TO | project_id, owner_id |) Tj
+T*
+(| Artifact | Inspectable work product. | artifact_id, uri, content_hash, content_type | Stored by reference; ) Tj
+T*
+(malware/privacy scanned. | created, versioned, archived, revoked | Source domain/Object Storage | PRODUCED, EVIDENCES,) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 5703 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+( DERIVED_FROM | artifact_id, hash |) Tj
+T*
+(| Evidence | Provenance-bearing support/contradiction for claims. | evidence_id, evidence_type, strength, quality | ) Tj
+T*
+(Must reference source event/provenance. | observed, verified, revoked, expired | Capability Graph | EVIDENCES, ) Tj
+T*
+(SUPPORTS, CONTRADICTS | evidence_id, subject_id, evidence_type |) Tj
+T*
+(| Observation | Captured event/signal. | observation_id, event_type, occurred_at | Must derive from canonical event. |) Tj
+T*
+( created, compacted/archived | Event/Graph | DERIVED_FROM, MAY_SUPPORT | observation_id, event_id |) Tj
+T*
+(| Knowledge | Conceptual/procedural understanding. | knowledge_id, label, domain | Ontology-defined. | active, ) Tj
+T*
+(deprecated | Ontology | REQUIRES, PART_OF | knowledge_id, ontology_version |) Tj
+T*
+(| KnowledgeArea | Field/domain of knowledge. | area_id, label, standard_mapping | Hierarchical. | active, deprecated |) Tj
+T*
+( Ontology | CONTAINS, MAPPED_TO | area_id |) Tj
+T*
+(| Skill | Task-specific learned capacity. | skill_id, label, category | Ontology-defined; not same as capability. | ) Tj
+T*
+(active, deprecated | Ontology | REQUIRES, PART_OF, DEMONSTRATED_BY | skill_id |) Tj
+T*
+(| Capability | Evidence-backed contextual ability concept. | capability_id, label, category, required_evidence | Must ) Tj
+T*
+(have ontology definition. | active, deprecated | Ontology/Graph | REQUIRES, ASSERTED_BY, MATCHES | capability_id, ) Tj
+T*
+(category |) Tj
+T*
+(| CapabilityObservation | Temporal assertion that a subject demonstrates capability. | observation_id, confidence, ) Tj
+T*
+(context, valid_from, valid_to | Requires evidence, provenance, ontology version. | proposed, accepted, superseded, ) Tj
+T*
+(revoked | Capability Graph | ASSERTS, EVIDENCED_BY, HAS_CONFIDENCE | subject_id, capability_id, valid_from |) Tj
+T*
+(| Competency | Standard-defined capability/knowledge/skill bundle. | competency_id, framework, level | Maps to ) Tj
+T*
+(standards. | active, deprecated | Ontology/Curriculum | ALIGNED_WITH, REQUIRES | competency_id, framework |) Tj
+T*
+(| Credential | Verifiable issuer claim. | credential_id, issuer_id, status, issued_at | Must support ) Tj
+T*
+(verification/revocation. | issued, verified, revoked, expired | Credential Ledger | VERIFIED_BY, SUPPORTS, INCLUDED_IN) Tj
+T*
+( | credential_id, subject_id |) Tj
+T*
+(| Certification | Credential subtype. | certification_id, issuer, expiry | May expire. | issued, verified, expired | ) Tj
+T*
+(Credential Ledger | IS_A, SUPPORTS | certification_id, issuer |) Tj
+T*
+(| Portfolio | Curated evidence presentation. | portfolio_id, owner_id, version | Projection, not source truth. | ) Tj
+T*
+(generated, shared, revoked | Portfolio | CONTAINS, DERIVED_FROM | portfolio_id, owner_id |) Tj
+T*
+(| Publication | Disseminated research artifact. | publication_id, doi, title, published_at | Authorship confidence ) Tj
+T*
+(required. | imported, verified, corrected | Research Intelligence | AUTHORED, EVIDENCES | doi, publication_id |) Tj
+T*
+(| ResearchProject | Research activity producing outputs. | research_project_id, field, status | May involve ) Tj
+T*
+(institutions/persons. | started, completed, archived | Research Intelligence | PRODUCES, AUTHORED_BY | ) Tj
+T*
+(research_project_id |) Tj
+T*
+(| Researcher | Person role in research context. | researcher_id, person_id, affiliation | Role projection over Person.) Tj
+T*
+( | active, inactive | Research/Identity | IS_ROLE_OF, AUTHORED | researcher_id, person_id |) Tj
+T*
+(| Technology | Applied technical system/platform. | technology_id, label, vendor_neutral | Ontology-defined. | active,) Tj
+T*
+( deprecated | Ontology/Market | USED_BY, REQUIRES | technology_id |) Tj
+T*
+(| Tool | Instrument used to perform work. | tool_id, label, tool_type | Not same as capability. | active, deprecated |) Tj
+T*
+( Ontology | USED_BY | tool_id |) Tj
+T*
+(| ProgrammingLanguage | Symbolic/computational language. | language_id, name, paradigm | Subtype of ) Tj
+T*
+(Language/Technology. | active, deprecated | Ontology | USED_BY, REQUIRES | language_id |) Tj
+T*
+(| Framework | Structured practice/tool framework. | framework_id, name, domain | May be technical/professional. | ) Tj
+T*
+(active, deprecated | Ontology | USED_BY, ALIGNED_WITH | framework_id |) Tj
+T*
+(| Occupation | Recognized work category. | occupation_id, title, standard_codes | Maps to O*NET/ISCO/SOC/ESCO. | ) Tj
+T*
+(active, deprecated | Market/Ontology | REQUIRES, BELONGS_TO | occupation_id, standard_code |) Tj
+T*
+(| Role | Contextual set of responsibilities. | role_id, title, employer_context | More specific than occupation. | ) Tj
+T*
+(active, deprecated | Employer/Market | REQUIRES, PART_OF | role_id, occupation_id |) Tj
+T*
+(| Industry | Economic activity category. | industry_id, label, standard_code | Maps to standards. | active, deprecated) Tj
+T*
+( | Market | CONTAINS, HAS_DEMAND | industry_id |) Tj
+T*
+(| Sector | Broad strategic/economic category. | sector_id, label, strategy_flag | May be national overlay. | active, ) Tj
+T*
+(deprecated | National Vision/Market | CONTAINS, PRIORITIZED_BY | sector_id |) Tj
+T*
+(| Job | Concrete paid work opportunity. | job_id, title, employer_id, status | Must belong to employer. | posted, ) Tj
+T*
+(matched, closed, archived | Employer | REQUIRES, MATCHED_TO, POSTED_BY | job_id, employer_id |) Tj
+T*
+(| Internship | Temporary work-learning opportunity. | internship_id, employer_id, duration | Opportunity subtype. | ) Tj
+T*
+(posted, matched, completed | Employer/Opportunity | REQUIRES, MATCHED_TO | internship_id |) Tj
+T*
+(| Scholarship | Funding/education opportunity. | scholarship_id, sponsor_id, eligibility | Opportunity subtype. | ) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 4541 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(posted, matched, closed | Opportunity | REQUIRES, MATCHED_TO | scholarship_id |) Tj
+T*
+(| Opportunity | Generic actionable future option. | opportunity_id, type, status | Supertype for ) Tj
+T*
+(job/internship/scholarship/research collaboration. | created, matched, accepted, closed | Opportunity Engine | ) Tj
+T*
+(MATCHED_TO, RECOMMENDED_FOR | opportunity_id, type |) Tj
+T*
+(| CareerIntent | User-controlled future preference model. | intent_id, subject_id, geography, industry, salary | Not ) Tj
+T*
+(capability. | created, updated, revoked | Career Intent | EXPRESSES, GUIDES | subject_id, updated_at |) Tj
+T*
+(| Goal | Specific intended future outcome. | goal_id, subject_id, target, horizon | Must be subject-owned or advisor-) Tj
+T*
+(authored. | created, updated, completed, retired | Career Intent | PART_OF, GUIDES | goal_id, subject_id |) Tj
+T*
+(| Recommendation | Explainable suggestion. | recommendation_id, type, score, explanation_ref | Must derive from graph ) Tj
+T*
+(evidence/path. | generated, viewed, accepted, rejected | Opportunity/Odyssey | RECOMMENDED_FOR, DERIVED_FROM | ) Tj
+T*
+(recommendation_id, subject_id |) Tj
+T*
+(| Passport | Versioned portable claim package. | passport_id, subject_id, version, status | Projection from ) Tj
+T*
+(graph/credentials. | issued, updated, shared, revoked | Job Passport | INCLUDES, DERIVED_FROM | passport_id, ) Tj
+T*
+(subject_id, version |) Tj
+T*
+(| MobilityRoute | Pathway for role/geography/jurisdiction movement. | route_id, from_jurisdiction, to_jurisdiction, ) Tj
+T*
+(occupation_id | Regulated by jurisdiction. | active, revised, retired | Mobility | REQUIRES, REGULATED_BY, MATCHED_TO ) Tj
+T*
+(| route_id, jurisdictions |) Tj
+T*
+(| Country | National jurisdiction context. | country_code, name | ISO code required. | active | National Vision | ) Tj
+T*
+(HAS_STRATEGY, REGULATES | country_code |) Tj
+T*
+(| Jurisdiction | Legal/regulatory authority context. | jurisdiction_id, type, code | Can be ) Tj
+T*
+(country/region/supranational. | active, changed, retired | National Vision | REGULATES, CONTAINS | jurisdiction_id |) Tj
+T*
+(| NationalStrategy | Government strategy/policy object. | strategy_id, country_code, title, period | Source document ) Tj
+T*
+(required. | imported, active, superseded | National Vision | PRIORITIZES, ALIGNED_WITH | strategy_id, country_code |) Tj
+T*
+(| StrategicSector | Sector prioritized by strategy. | strategic_sector_id, sector_id, priority_level | Overlay over ) Tj
+T*
+(sector. | active, superseded | National Vision | PRIORITIZED_BY, REQUIRES | strategic_sector_id |) Tj
+T*
+(| AIModel | Model used for extraction/inference/recommendation. | model_id, provider, version, eval_version | Provider) Tj
+T*
+( is replaceable. | registered, active, deprecated | AI Platform | PRODUCED, REVIEWED_BY | model_id, version |) Tj
+T*
+(| OntologyVersion | Published immutable ontology release. | version, published_at, status | Required on semantic ) Tj
+T*
+(assertions. | draft, published, deprecated | Ontology | DEFINES, SUPERSEDES | version |) Tj
+T*
+(| CanonicalEvent | Immutable business event represented in graph as provenance anchor. | event_id, event_type, ) Tj
+T*
+(occurred_at | Source of graph mutations. | accepted, archived | Event Platform | DERIVED, CAUSED | event_id, ) Tj
+T*
+(event_type |) Tj
+T*
+(| ConfidenceScore | Confidence state for assertion. | score, band, method, model_version | Must be calibrated and ) Tj
+T*
+(bounded 0..1. | created, superseded | Inference/Graph | QUALIFIES | assertion_id, score |) Tj
+T*
+(| Provenance | Lineage object. | provenance_id, source_system, transformer, reviewer | Must reference source ) Tj
+T*
+(event/model/version. | created, archived | Platform/Graph | DESCRIBES | provenance_id |) Tj
+T*
+() Tj
+T*
+(4. Edge Catalogue) Tj
+T*
+() Tj
+T*
+(4.1 Common edge properties) Tj
+T*
+() Tj
+T*
+(All edges include:) Tj
+T*
+() Tj
+T*
+(| Property | Meaning |) Tj
+T*
+(|---|---|) Tj
+T*
+(| id | Stable edge/assertion identifier when materialized. |) Tj
+T*
+(| type | Relationship type. |) Tj
+T*
+(| created_at | Creation timestamp. |) Tj
+T*
+(| valid_from / valid_to | Temporal validity window where applicable. |) Tj
+T*
+(| observed_at | Time the represented fact was observed. |) Tj
+T*
+(| confidence | Assertion confidence when applicable. |) Tj
+T*
+(| source_event_ids | Canonical events that produced edge. |) Tj
+T*
+(| provenance_ref | Provenance node/reference. |) Tj
+T*
+(| ontology_version | Ontology version defining meaning. |) Tj
+T*
+(| status | active, superseded, revoked, expired. |) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 4873 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+() Tj
+T*
+(4.2 Edge definitions) Tj
+T*
+() Tj
+T*
+(| Edge | Source -> Target | Cardinality | Temporal rules | Confidence rules | Provenance rules | Versioning |) Tj
+T*
+(|---|---|---|---|---|---|---|) Tj
+T*
+(| HAS_IDENTITY | Person/Organization -> Identity | many | valid while identity linked | usually none | identity event ) Tj
+T*
+(required | superseded on unlink |) Tj
+T*
+(| IDENTIFIES | Identity -> Person/Organization | one active canonical target per tenant | temporal | high trust ) Tj
+T*
+(required | federation/identity provenance | version by provider mapping |) Tj
+T*
+(| ENROLLED_IN | Person -> Course/Programme | many | valid enrollment window | none or enrollment confidence | ) Tj
+T*
+(enrollment event | updated by enrollment changes |) Tj
+T*
+(| COMPLETED | Person -> Module/Course/Programme | many | completed_at immutable; revocation edge if corrected | ) Tj
+T*
+(completion confidence optional | completion event | never overwrite; supersede |) Tj
+T*
+(| VIEWED | Person -> Lesson/Artifact | high cardinality | observed_at | weak evidence confidence | view event | ) Tj
+T*
+(compactable projection allowed |) Tj
+T*
+(| SUBMITTED | Person -> Assignment/Assessment | many attempts | submitted_at immutable | none; evidence quality ) Tj
+T*
+(separate | submission event | attempt/version specific |) Tj
+T*
+(| ASSESSED_BY | Submission/Artifact/Person -> Assessment/Assessor | many | assessed_at | assessor trust may apply | ) Tj
+T*
+(grade/rubric event | supersede on regrade |) Tj
+T*
+(| PRODUCED | Person/Project/Assignment -> Artifact/Publication | many | production time | authorship confidence | ) Tj
+T*
+(source event/artifact hash | versioned artifacts |) Tj
+T*
+(| EVIDENCED_BY | CapabilityObservation/Claim -> Evidence | many | same validity as claim/evidence | edge inherits ) Tj
+T*
+(evidence weight | evidence event required | new edge on evidence change |) Tj
+T*
+(| EVIDENCES | Evidence -> Capability/Skill/Knowledge/Claim | many | evidence validity window | evidence strength score) Tj
+T*
+( | source event/provenance | revoked/expired via status |) Tj
+T*
+(| ASSERTS | CapabilityObservation -> Capability | one primary capability per observation | observation validity | ) Tj
+T*
+(observation confidence required | inference event | superseded by new observation |) Tj
+T*
+(| HAS_CONFIDENCE | Assertion -> ConfidenceScore | one active, many historical | confidence validity | score required |) Tj
+T*
+( scoring provenance | supersede not overwrite |) Tj
+T*
+(| REQUIRES | Capability/Occupation/Role/Credential -> Skill/Knowledge/Capability/Credential | many | ontology validity) Tj
+T*
+( | mapping confidence optional | ontology/standard mapping | ontology versioned |) Tj
+T*
+(| DEPENDS_ON | Any semantic node -> Any semantic node | many | validity window | optional | source rationale | ) Tj
+T*
+(ontology/event versioned |) Tj
+T*
+(| DEMONSTRATES | Evidence/Artifact/Project -> Capability/Skill | many | evidence validity | demonstration strength ) Tj
+T*
+(required | evidence/inference provenance | supersede on remap |) Tj
+T*
+(| USES | Person/Project/Capability/Job -> Tool/Technology/Language/Framework | many | observed or required window | ) Tj
+T*
+(optional | source event/ontology | versioned by context |) Tj
+T*
+(| CREATED | Person/Organization/AIModel -> Artifact/Event/Recommendation | many | created_at immutable | optional | ) Tj
+T*
+(creation event | append-only |) Tj
+T*
+(| AUTHORED | Person/Researcher -> Publication/Artifact | many | authorship validity | authorship confidence | ) Tj
+T*
+(ORCID/OpenAlex/source | corrections via supersession |) Tj
+T*
+(| WORKED_AT | Person -> Employer/Institution | many | employment dates | source confidence | professional ) Tj
+T*
+(evidence/consent | temporal |) Tj
+T*
+(| EMPLOYED_BY | Role/Job/Person -> Employer | many | employment/job validity | optional | employer/professional source) Tj
+T*
+( | temporal |) Tj
+T*
+(| INTERESTED_IN | Employer/Person -> Person/Opportunity | many | interest time/window | optional | employer/user event) Tj
+T*
+( | append-only/revocable |) Tj
+T*
+(| MATCHED_TO | Person/Passport/CapabilityProfile -> Opportunity/Job/MobilityRoute | many | recommendation validity | ) Tj
+T*
+(match score required | recommendation event | supersede on rematch |) Tj
+T*
+(| BELONGS_TO | Course/Programme/Job/Node -> Institution/Employer/Tenant | many but one canonical owner per context | ) Tj
+T*
+(valid ownership window | none | source event | migration on ownership change |) Tj
+T*
+(| ALIGNED_WITH | Outcome/Course/Capability/Curriculum -> Standard/Strategy/Competency | many | ontology/strategy ) Tj
+T*
+(validity | alignment confidence | curriculum/ontology source | versioned mapping |) Tj
+T*
+(| REGULATED_BY | Credential/Profession/MobilityRoute -> Jurisdiction/Government | many | regulation validity | none | ) Tj
+T*
+(policy source | superseded by rule changes |) Tj
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 3818 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(| SUPPORTED_BY | Claim/Recommendation/Decision -> Evidence/Capability | many | support validity | support weight | ) Tj
+T*
+(reasoning provenance | append-only |) Tj
+T*
+(| CONTRADICTS | Evidence/Observation -> Claim/CapabilityObservation | many | contradiction validity | contradiction ) Tj
+T*
+(weight | evidence/provenance | append-only |) Tj
+T*
+(| SUPERSEDES | Node/Edge/AssertionVersion -> prior Node/Edge/AssertionVersion | one-to-many | superseded_at | none | ) Tj
+T*
+(migration/event provenance | immutable |) Tj
+T*
+(| DERIVED_FROM | Projection/Inference/Evidence/GraphAssertion -> CanonicalEvent/Artifact | many | derivation time | ) Tj
+T*
+(none | mandatory | immutable |) Tj
+T*
+(| LINKED_TO | External entity/reference -> canonical node | many | link validity | link confidence | connector ) Tj
+T*
+(provenance | revoked on unlink |) Tj
+T*
+(| PART_OF | Module/Lesson/Outcome/CredentialComponent -> Course/Programme/Credential | many | structural validity | ) Tj
+T*
+(none | LMS/curriculum/ontology | versioned by structure |) Tj
+T*
+(| CONTAINS | Parent entity -> child entity | many | structural validity | none | source provenance | inverse of ) Tj
+T*
+(PART_OF |) Tj
+T*
+(| TEACHES | Course/Lesson/Module -> Knowledge/Skill/Capability | many | course version validity | curriculum mapping ) Tj
+T*
+(confidence | curriculum mapping | ontology versioned |) Tj
+T*
+(| ASSESSES | Assessment/Assignment -> LearningOutcome/Skill/Capability | many | assessment version validity | validity) Tj
+T*
+( score optional | rubric/curriculum mapping | versioned by assessment |) Tj
+T*
+(| RECOMMENDED_FOR | Recommendation/Opportunity/LearningAction -> Person/Cohort | many | recommendation expiry | score ) Tj
+T*
+(required | recommendation event | supersede on regeneration |) Tj
+T*
+(| INCLUDES | Passport/Portfolio -> Claim/Evidence/Credential | many | passport version validity | inherited | passport) Tj
+T*
+( event | versioned by passport |) Tj
+T*
+(| PRIORITIZES | NationalStrategy -> Sector/Capability/Occupation | many | strategy period | priority score optional | ) Tj
+T*
+(policy source | strategy versioned |) Tj
+T*
+(| POSTS | Employer -> Job/Opportunity | many | job lifecycle | none | employer event | updated via job events |) Tj
+T*
+(| VERIFIED_BY | Credential/Evidence/Claim -> Verification/Issuer/Government | many | verification validity | ) Tj
+T*
+(verification trust | verification event | revocation via edge status |) Tj
+T*
+(| REVIEWED_BY | Inference/Observation/Claim -> Person/AIModel/HumanReview | many | review timestamp | reviewer trust |) Tj
+T*
+( review event | append-only |) Tj
+T*
+() Tj
+T*
+(5. Graph Semantics) Tj
+T*
+() Tj
+T*
+(5.1 Directed vs undirected edges) Tj
+T*
+() Tj
+T*
+(All HCG edges are stored as directed typed relationships. Undirected semantics are represented ) Tj
+T*
+(by two directed edges or by query-level interpretation only when explicitly defined. For ) Tj
+T*
+(example, LINKED_TO may be traversed bidirectionally in queries, but its stored direction still ) Tj
+T*
+(records source and target meaning.) Tj
+T*
+() Tj
+T*
+(5.2 Typed relationships) Tj
+T*
+() Tj
+T*
+(Every edge type must be registered in the graph schema and ONT-001 relationship vocabulary. Ad ) Tj
+T*
+(hoc relationship names are forbidden.) Tj
+T*
+() Tj
+T*
+(5.3 Hyperedges) Tj
+T*
+() Tj
+T*
+(Some assertions involve more than two entities, such as "Person demonstrated Capability through ) Tj
+T*
+(Evidence in Context with Confidence." HCG represents these as assertion nodes rather than native) Tj
+T*
+( hyperedges:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(\(Person\)-[:HAS_OBSERVATION]->\(CapabilityObservation\)) Tj
+T*
+(\(CapabilityObservation\)-[:ASSERTS]->\(Capability\)) Tj
+T*
+(\(CapabilityObservation\)-[:EVIDENCED_BY]->\(Evidence\)) Tj
+T*
+(\(CapabilityObservation\)-[:HAS_CONFIDENCE]->\(ConfidenceScore\)) Tj
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 2749 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(\(CapabilityObservation\)-[:IN_CONTEXT_OF]->\(Course/Project/Job\)) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(5.4 Temporal validity) Tj
+T*
+() Tj
+T*
+(- Every assertion edge can include valid_from and valid_to.) Tj
+T*
+(- Historical assertions are never deleted to represent change.) Tj
+T*
+(- Revocation creates revocation/supersession edges and status changes through event-derived ) Tj
+T*
+(mutations.) Tj
+T*
+(- Point-in-time queries must specify an as_of timestamp.) Tj
+T*
+() Tj
+T*
+(5.5 Confidence propagation) Tj
+T*
+() Tj
+T*
+(Confidence does not blindly propagate through all paths. Propagation rules are relationship-) Tj
+T*
+(specific:) Tj
+T*
+() Tj
+T*
+(| Path | Propagation rule |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Evidence -> CapabilityObservation | evidence weight contributes to observation confidence. |) Tj
+T*
+(| Capability -> Occupation match | minimum/weighted coverage of required capabilities. |) Tj
+T*
+(| Credential -> Capability | credential supports only mapped capabilities and criteria. |) Tj
+T*
+(| Course completion -> Capability | weak support unless assessed evidence exists. |) Tj
+T*
+(| Similar capability transfer | decayed by ontology transfer distance and context mismatch. |) Tj
+T*
+() Tj
+T*
+(5.6 Provenance inheritance) Tj
+T*
+() Tj
+T*
+(Derived assertions inherit source event IDs and provenance references from upstream evidence and) Tj
+T*
+( add their own transformation/model/reviewer provenance. Inherited provenance must not be ) Tj
+T*
+(collapsed into a single string.) Tj
+T*
+() Tj
+T*
+(5.7 Semantic constraints and integrity rules) Tj
+T*
+() Tj
+T*
+(1. CapabilityObservation must have at least one EVIDENCED_BY edge.) Tj
+T*
+(2. CapabilityObservation must have exactly one primary ASSERTS edge to Capability.) Tj
+T*
+(3. CapabilityObservation must link to OntologyVersion.) Tj
+T*
+(4. MATCHED_TO edges must include score, explanation reference, and source recommendation event.) Tj
+T*
+(5. Passport claim edges must reference graph assertions or verified credentials.) Tj
+T*
+(6. Direct Person -> Capability edges are projections only and must derive from observation ) Tj
+T*
+(nodes.) Tj
+T*
+(7. No graph mutation may occur without canonical event provenance.) Tj
+T*
+(8. LMS-native IDs may appear only as source properties or mapping nodes, never as canonical IDs.) Tj
+T*
+() Tj
+T*
+(6. Graph Evolution) Tj
+T*
+() Tj
+T*
+(6.1 Event-to-graph mutation rule) Tj
+T*
+() Tj
+T*
+(Canonical events are the only source of graph mutations. The graph consumer applies ) Tj
+T*
+(deterministic transformations from events to graph nodes/edges. Direct writes from AI models, ) Tj
+T*
+(dashboards, or connectors are forbidden.) Tj
+T*
+() Tj
+T*
+(6.2 Mutation pipeline) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Canonical Event) Tj
+T*
+(  -> Schema validation) Tj
+ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 1996 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(  -> Idempotency check) Tj
+T*
+(  -> Ontology lookup) Tj
+T*
+(  -> Node upsert) Tj
+T*
+(  -> Edge assertion) Tj
+T*
+(  -> Confidence/provenance attachment) Tj
+T*
+(  -> Projection/snapshot update) Tj
+T*
+(  -> Audit event) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(6.3 Example: AssignmentSubmitted to capability update) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(AssignmentSubmitted) Tj
+T*
+(  -> Artifact node created/linked) Tj
+T*
+(  -> Evidence node created) Tj
+T*
+(  -> Person SUBMITTED Assignment) Tj
+T*
+(  -> Evidence DERIVED_FROM CanonicalEvent) Tj
+T*
+() Tj
+T*
+(AssignmentGraded) Tj
+T*
+(  -> Assessment/grade evidence strengthened) Tj
+T*
+(  -> Evidence VERIFIED_BY/ASSESSED_BY assessor) Tj
+T*
+() Tj
+T*
+(CapabilityObserved) Tj
+T*
+(  -> CapabilityObservation node created) Tj
+T*
+(  -> Person HAS_OBSERVATION CapabilityObservation) Tj
+T*
+(  -> CapabilityObservation ASSERTS Capability) Tj
+T*
+(  -> CapabilityObservation EVIDENCED_BY Evidence) Tj
+T*
+(  -> CapabilityObservation HAS_CONFIDENCE ConfidenceScore) Tj
+T*
+() Tj
+T*
+(CapabilityUpdated) Tj
+T*
+(  -> active capability projection updated) Tj
+T*
+(  -> prior projection SUPERSEDED if needed) Tj
+T*
+() Tj
+T*
+(RecommendationGenerated) Tj
+T*
+(  -> Recommendation node created) Tj
+T*
+(  -> Recommendation DERIVED_FROM graph path) Tj
+T*
+(  -> Recommendation RECOMMENDED_FOR Person) Tj
+T*
+() Tj
+T*
+(PassportUpdated) Tj
+T*
+(  -> Passport version node updated) Tj
+T*
+(  -> Passport INCLUDES selected claims/evidence) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(6.4 Idempotency and reproducibility) Tj
+T*
+() Tj
+T*
+(- Each mutation stores source_event_ids and deterministic assertion IDs.) Tj
+T*
+(- Reprocessing the same event must produce the same graph state.) Tj
+T*
+(- Replays run in isolated consumer groups and compare checksums/snapshots.) Tj
+T*
+(- Non-deterministic AI outputs must be captured as events before graph application.) Tj
+T*
+() Tj
+T*
+(7. Graph Storage) Tj
+T*
+() Tj
+T*
+(7.1 Technology evaluation) Tj
+T*
+() Tj
+T*
+(| Option | Strengths | Weaknesses | Fit |) Tj
+ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 3217 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(|---|---|---|---|) Tj
+T*
+(| Neo4j | Mature property graph, Cypher, strong ecosystem, good developer experience, Graph Data Science. | ) Tj
+T*
+(Licensing/cost considerations, horizontal scaling complexity at very large scale. | Strong MVP and medium-scale fit. |) Tj
+T*
+(| Memgraph | High-performance openCypher-compatible graph, streaming orientation. | Smaller ecosystem and enterprise ) Tj
+T*
+(maturity than Neo4j. | Strong real-time candidate, evaluate after MVP. |) Tj
+T*
+(| Amazon Neptune | Managed RDF/property graph, scalable AWS integration, SPARQL/Gremlin/openCypher support. | Cloud ) Tj
+T*
+(lock-in, operational/query ergonomics, cost. | Long-term managed scale candidate if AWS chosen. |) Tj
+T*
+(| PostgreSQL extensions | Operational simplicity with existing Supabase/Postgres, SQL familiarity. | Graph traversal ) Tj
+T*
+(performance and semantics limited. | Good for projections/mapping, not core HCG at scale. |) Tj
+T*
+(| Apache AGE | Graph extension in PostgreSQL. | Less mature for mission-critical large graph workloads. | ) Tj
+T*
+(Prototype/adjacent use, not constitutional HCG initially. |) Tj
+T*
+(| RDF triple stores | Standards-based semantics, OWL/RDF/SPARQL, strong ontology alignment. | Property graph developer) Tj
+T*
+( ergonomics and product query complexity. | Excellent semantic layer; may complement property graph. |) Tj
+T*
+() Tj
+T*
+(7.2 Recommended MVP architecture) Tj
+T*
+() Tj
+T*
+(MVP: Neo4j-compatible property graph for the HCG, plus Supabase PostgreSQL for graph ) Tj
+T*
+(metadata/projections, object storage for evidence artifacts, and vector database for semantic ) Tj
+T*
+(retrieval.) Tj
+T*
+() Tj
+T*
+(Rationale:) Tj
+T*
+() Tj
+T*
+(- Fastest path for graph engineers and AI engineers.) Tj
+T*
+(- Cypher is practical for explainability and product queries.) Tj
+T*
+(- Property graph model naturally represents temporal, confidence, and provenance properties on ) Tj
+T*
+(edges.) Tj
+T*
+(- Integrates well with graph-based RAG and recommendation exploration.) Tj
+T*
+() Tj
+T*
+(7.3 Recommended long-term architecture) Tj
+T*
+() Tj
+T*
+(Long-term: Dual-layer graph architecture:) Tj
+T*
+() Tj
+T*
+(1. Property Graph HCG for operational capability, evidence, recommendation, passport, and ) Tj
+T*
+(product queries.) Tj
+T*
+(2. RDF/OWL semantic ontology layer for standards mapping, reasoning constraints, validation, and) Tj
+T*
+( interoperability.) Tj
+T*
+(3. PostgreSQL projections for dashboards and API read models.) Tj
+T*
+(4. Vector indexes for evidence and semantic retrieval.) Tj
+T*
+(5. Event store as immutable source for graph rebuild.) Tj
+T*
+() Tj
+T*
+(If scale or managed operations require it, evaluate Neptune or distributed graph infrastructure ) Tj
+T*
+(for multi-region deployments while preserving the logical graph model.) Tj
+T*
+() Tj
+T*
+(8. Query Model) Tj
+T*
+() Tj
+T*
+(8.1 Query principles) Tj
+T*
+() Tj
+T*
+(- Product queries should use graph APIs, not direct database access.) Tj
+T*
+(- Queries must enforce tenant and privacy policy.) Tj
+T*
+(- Explainability queries must return paths, evidence, confidence, and provenance.) Tj
+T*
+(- High-impact queries must be auditable.) Tj
+T*
+() Tj
+T*
+(8.2 Explain why a capability exists) Tj
+T*
+() Tj
+T*
+() Tj
+ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 2770 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(MATCH \(p:Person {id: $personId}\)-[:HAS_OBSERVATION]->\(o:CapabilityObservation\)-[:ASSERTS]->\(c:Capability {id: ) Tj
+T*
+($capabilityId}\)) Tj
+T*
+(MATCH \(o\)-[:EVIDENCED_BY]->\(e:Evidence\)-[:DERIVED_FROM]->\(ev:CanonicalEvent\)) Tj
+T*
+(OPTIONAL MATCH \(o\)-[:HAS_CONFIDENCE]->\(cs:ConfidenceScore\)) Tj
+T*
+(OPTIONAL MATCH \(o\)-[:USES_ONTOLOGY_VERSION]->\(ov:OntologyVersion\)) Tj
+T*
+(RETURN p.id, c.id, o.context, cs.score, cs.band, collect\({evidence: e.id, event: ev.event_id, type: ev.event_type}\) AS) Tj
+T*
+( evidence, ov.version) Tj
+T*
+(ORDER BY o.valid_from DESC) Tj
+T*
+(LIMIT 10;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(8.3 Show evidence supporting a capability) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(MATCH \(:Person {id: $personId}\)-[:HAS_OBSERVATION]->\(o:CapabilityObservation\)-[:ASSERTS]->\(:Capability {id: ) Tj
+T*
+($capabilityId}\)) Tj
+T*
+(MATCH \(o\)-[r:EVIDENCED_BY]->\(e:Evidence\)) Tj
+T*
+(RETURN e.id, e.evidence_type, e.quality, r.confidence, e.status, e.provenance_ref) Tj
+T*
+(ORDER BY e.quality DESC;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(8.4 Find capability gaps for a role) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(MATCH \(role:Role {id: $roleId}\)-[:REQUIRES]->\(required:Capability\)) Tj
+T*
+(OPTIONAL MATCH \(:Person {id: $personId}\)-[:HAS_OBSERVATION]->\(obs:CapabilityObservation\)-[:ASSERTS]->\(required\)) Tj
+T*
+(OPTIONAL MATCH \(obs\)-[:HAS_CONFIDENCE]->\(score:ConfidenceScore\)) Tj
+T*
+(WITH required, max\(coalesce\(score.score, 0.0\)\) AS bestScore) Tj
+T*
+(WHERE bestScore < $threshold) Tj
+T*
+(RETURN required.id, required.label, bestScore, $threshold - bestScore AS gap) Tj
+T*
+(ORDER BY gap DESC;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(8.5 Recommend learning pathways) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(MATCH \(:Person {id: $personId}\)-[:HAS_GOAL|HAS_INTENT*1..2]->\(goal\)) Tj
+T*
+(MATCH \(goal\)-[:TARGETS]->\(target:Occupation\)-[:REQUIRES]->\(cap:Capability\)) Tj
+T*
+(OPTIONAL MATCH \(:Person {id: $personId}\)-[:HAS_OBSERVATION]->\(:CapabilityObservation\)-[:ASSERTS]->\(cap\)) Tj
+T*
+(WITH cap) Tj
+T*
+(MATCH \(course:Course\)-[:TEACHES|ASSESSES]->\(cap\)) Tj
+T*
+(RETURN course.id, course.title, collect\(cap.id\) AS addressedCapabilities) Tj
+T*
+(ORDER BY size\(addressedCapabilities\) DESC;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(8.6 Match candidates to jobs) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(MATCH \(job:Job {id: $jobId}\)-[:REQUIRES]->\(cap:Capability\)) Tj
+T*
+(MATCH \(p:Person\)-[:HAS_OBSERVATION]->\(obs:CapabilityObservation\)-[:ASSERTS]->\(cap\)) Tj
+T*
+(MATCH \(obs\)-[:HAS_CONFIDENCE]->\(score:ConfidenceScore\)) Tj
+T*
+(WHERE score.score >= $minConfidence) Tj
+T*
+(WITH p, job, count\(cap\) AS matchedCaps, avg\(score.score\) AS avgConfidence) Tj
+T*
+(MATCH \(job\)-[:REQUIRES]->\(allReq:Capability\)) Tj
+T*
+(WITH p, job, matchedCaps, avgConfidence, count\(allReq\) AS totalReq) Tj
+ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 2434 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(RETURN p.id, matchedCaps, totalReq, toFloat\(matchedCaps\)/totalReq AS coverage, avgConfidence) Tj
+T*
+(ORDER BY coverage DESC, avgConfidence DESC;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(8.7 Find transferable capabilities across industries) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(MATCH \(source:Industry {id: $sourceIndustry}\)<-[:BELONGS_TO]-\(:Occupation\)-[:REQUIRES]->\(cap:Capability\)) Tj
+T*
+(MATCH \(cap\)<-[:REQUIRES]-\(:Occupation\)-[:BELONGS_TO]->\(target:Industry\)) Tj
+T*
+(WHERE target.id <> source.id) Tj
+T*
+(RETURN cap.id, cap.label, collect\(DISTINCT target.id\) AS targetIndustries) Tj
+T*
+(ORDER BY size\(targetIndustries\) DESC;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(8.8 Generate Job Passport evidence trails) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(MATCH \(passport:Passport {id: $passportId}\)-[:INCLUDES]->\(claim:CapabilityObservation\)-[:ASSERTS]->\(cap:Capability\)) Tj
+T*
+(MATCH \(claim\)-[:EVIDENCED_BY]->\(e:Evidence\)-[:DERIVED_FROM]->\(ev:CanonicalEvent\)) Tj
+T*
+(OPTIONAL MATCH \(claim\)-[:HAS_CONFIDENCE]->\(score:ConfidenceScore\)) Tj
+T*
+(RETURN passport.id, cap.label, score.score, collect\({evidence: e.id, event: ev.event_type, occurred_at: ) Tj
+T*
+(ev.occurred_at}\) AS trail;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(9. AI Integration) Tj
+T*
+() Tj
+T*
+(9.1 AI interaction model) Tj
+T*
+() Tj
+T*
+(AI systems interact with the graph through controlled retrieval and event publication:) Tj
+T*
+() Tj
+T*
+(1. AI retrieves graph neighborhoods through policy-aware graph APIs.) Tj
+T*
+(2. AI retrieves evidence artifacts through signed evidence references.) Tj
+T*
+(3. AI reasons over ontology-defined concepts and graph paths.) Tj
+T*
+(4. AI produces structured outputs with evidence IDs, concept IDs, confidence, and explanation.) Tj
+T*
+(5. AI output is validated and published as canonical events.) Tj
+T*
+(6. Graph consumers apply those events to mutate graph state.) Tj
+T*
+() Tj
+T*
+(9.2 Retrieval and graph RAG) Tj
+T*
+() Tj
+T*
+(Graph RAG combines:) Tj
+T*
+() Tj
+T*
+(- ontology definitions) Tj
+T*
+(- person capability neighborhood) Tj
+T*
+(- evidence paths) Tj
+T*
+(- role/occupation requirements) Tj
+T*
+(- market/national strategy context) Tj
+T*
+(- prior recommendations and outcomes) Tj
+T*
+(- confidence/provenance metadata) Tj
+T*
+() Tj
+T*
+(The graph constrains AI prompts to known nodes and relationship types, reducing hallucination.) Tj
+T*
+() Tj
+T*
+(9.3 Capability inference inputs) Tj
+T*
+() Tj
+T*
+(Capability inference consumes:) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+28 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 29 0 R >>
+endobj
+29 0 obj
+<< /Length 2198 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(- Evidence nodes and artifact references) Tj
+T*
+(- related Skill, Knowledge, and Capability nodes) Tj
+T*
+(- assessment/rubric context) Tj
+T*
+(- prior CapabilityObservation history) Tj
+T*
+(- ontology version) Tj
+T*
+(- source trust and evidence quality) Tj
+T*
+(- contradiction/revocation edges) Tj
+T*
+() Tj
+T*
+(9.4 Recommendation inputs) Tj
+T*
+() Tj
+T*
+(Recommendation engines consume:) Tj
+T*
+() Tj
+T*
+(- current capability profile) Tj
+T*
+(- capability gaps to roles/opportunities) Tj
+T*
+(- career intent and goals) Tj
+T*
+(- market demand and national strategy edges) Tj
+T*
+(- mobility constraints) Tj
+T*
+(- learning pathway edges) Tj
+T*
+(- prior recommendation feedback) Tj
+T*
+() Tj
+T*
+(9.5 Hallucination prevention) Tj
+T*
+() Tj
+T*
+(- AI may only assert concept IDs present in ontology or mark candidates for ontology review.) Tj
+T*
+(- AI output must validate against schema and graph constraints.) Tj
+T*
+(- AI cannot directly write graph nodes/edges.) Tj
+T*
+(- High-impact assertions require human review or policy threshold approval.) Tj
+T*
+(- Every AI-derived assertion records model ID, prompt version, evidence IDs, and graph snapshot ) Tj
+T*
+(reference.) Tj
+T*
+() Tj
+T*
+(10. Performance & Scalability) Tj
+T*
+() Tj
+T*
+(10.1 Planning estimates) Tj
+T*
+() Tj
+T*
+(| Scale | People | Nodes/person avg | Edges/person avg | Total nodes | Total edges |) Tj
+T*
+(|---|---:|---:|---:|---:|---:|) Tj
+T*
+(| Pilot | 10k | 200-500 | 500-2k | 2M-5M | 5M-20M |) Tj
+T*
+(| Regional | 1M | 200-800 | 500-3k | 200M-800M | 500M-3B |) Tj
+T*
+(| National | 10M | 300-1k | 1k-5k | 3B-10B | 10B-50B |) Tj
+T*
+(| Multi-country | 50M+ | 300-1.5k | 1k-8k | 15B+ | 50B+ |) Tj
+T*
+() Tj
+T*
+(10.2 Growth per institution) Tj
+T*
+() Tj
+T*
+(Growth drivers:) Tj
+T*
+() Tj
+T*
+(- LMS events converted to observations/evidence) Tj
+T*
+(- assessments and submissions) Tj
+T*
+(- artifacts and projects) Tj
+T*
+(- capability observations over time) Tj
+T*
+(- credentials and passports) Tj
+T*
+(- employer/job matching) Tj
+T*
+(- analytics and recommendations) Tj
+T*
+() Tj
+T*
+(High-volume view/session events should be compacted into analytics projections unless they ) Tj
+T*
+(become durable evidence.) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+30 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 31 0 R >>
+endobj
+31 0 obj
+<< /Length 2753 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(10.3 Multi-tenant isolation) Tj
+T*
+() Tj
+T*
+(- Every tenant-scoped node/edge carries tenant_id or belongs to a tenant partition.) Tj
+T*
+(- Global ontology nodes are shared read-only.) Tj
+T*
+(- Cross-tenant analytics require anonymized aggregate projections.) Tj
+T*
+(- Employer/government views use disclosure policies and purpose-bound access.) Tj
+T*
+() Tj
+T*
+(10.4 Caching and indexing) Tj
+T*
+() Tj
+T*
+(Required indexes:) Tj
+T*
+() Tj
+T*
+(- Person: person_id, tenant_id, country) Tj
+T*
+(- CapabilityObservation: subject_id, capability_id, valid_from, status) Tj
+T*
+(- Evidence: evidence_id, subject_id, evidence_type, status) Tj
+T*
+(- CanonicalEvent: event_id, event_type, occurred_at) Tj
+T*
+(- Job/Opportunity: job_id, employer_id, occupation_id, status) Tj
+T*
+(- Ontology: concept_id, version) Tj
+T*
+(- Passport: passport_id, subject_id, version) Tj
+T*
+() Tj
+T*
+(Caching:) Tj
+T*
+() Tj
+T*
+(- capability profile cache by person/version) Tj
+T*
+(- passport evidence trail cache by passport version) Tj
+T*
+(- role requirement cache) Tj
+T*
+(- ontology neighborhood cache) Tj
+T*
+(- recommendation candidate cache) Tj
+T*
+() Tj
+T*
+(10.5 Horizontal scaling, backup, recovery) Tj
+T*
+() Tj
+T*
+(- Partition operational graph by tenant/country/person shard where supported.) Tj
+T*
+(- Use read replicas for dashboard/explainability traffic.) Tj
+T*
+(- Store immutable events as rebuild source.) Tj
+T*
+(- Take graph snapshots for faster recovery.) Tj
+T*
+(- Validate backups through replay drills.) Tj
+T*
+(- Target RPO: <= 15 minutes for graph mutations; RTO: <= 4 hours for core graph service at ) Tj
+T*
+(regional scale.) Tj
+T*
+() Tj
+T*
+(11. Security) Tj
+T*
+() Tj
+T*
+(11.1 Access model) Tj
+T*
+() Tj
+T*
+(Access is policy-based and evaluated by subject, tenant, role, purpose, consent, jurisdiction, ) Tj
+T*
+(and relationship.) Tj
+T*
+() Tj
+T*
+(| Security concern | Rule |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Node-level access | Sensitive nodes such as Person, Evidence, Credential, Passport require scoped authorization. |) Tj
+T*
+(| Edge visibility | Edges may reveal sensitive facts; EMPLOYER_INTERESTED_IN, CONTRADICTS, and MOBILITY_BLOCKED are ) Tj
+T*
+(highly restricted. |) Tj
+T*
+(| Multi-tenancy | Tenant filters are mandatory for all tenant-scoped traversals. |) Tj
+T*
+(| Encryption | Graph storage encrypted at rest and in transit. Evidence artifacts encrypted separately. |) Tj
+T*
+(| Audit trails | Sensitive graph reads and all graph mutations emit audit events. |) Tj
+T*
+(| Provenance verification | High-impact graph assertions must verify source event signatures/provenance. |) Tj
+T*
+(| Sensitive relationships | Credential, consent, employer interest, mobility, risk, and contradiction edges require ) Tj
+T*
+(stricter scopes. |) Tj
+ET
+endstream
+endobj
+32 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 33 0 R >>
+endobj
+33 0 obj
+<< /Length 2542 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+() Tj
+T*
+(11.2 Query safety) Tj
+T*
+() Tj
+T*
+(- API layer enforces traversal depth and result limits.) Tj
+T*
+(- Policy engine filters nodes and edges before returning paths.) Tj
+T*
+(- Explanations redact evidence artifacts unless user has access.) Tj
+T*
+(- Public profiles use precomputed disclosure projections, not live unrestricted graph traversal.) Tj
+T*
+() Tj
+T*
+(11.3 AI security) Tj
+T*
+() Tj
+T*
+(- AI retrieval uses least-privilege service scopes.) Tj
+T*
+(- Prompt context excludes inaccessible graph paths.) Tj
+T*
+(- Model outputs cannot bypass authorization or mutate graph directly.) Tj
+T*
+(- AI-generated graph assertions require canonical events and validation.) Tj
+T*
+() Tj
+T*
+(12. Governance) Tj
+T*
+() Tj
+T*
+(| Question | Decision |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Who owns graph schema? | Capability Intelligence Team with Ontology and Platform co-approval. |) Tj
+T*
+(| Who introduces node types? | Owning domain proposes; Graph Schema Council approves. |) Tj
+T*
+(| Who approves relationship changes? | Graph Schema Council, Ontology Council, affected domain owners, ) Tj
+T*
+(Security/Privacy for sensitive edges. |) Tj
+T*
+(| Migration strategy | Additive first; dual-write/replay for breaking changes; source events remain rebuild source. |) Tj
+T*
+(| Versioning policy | Graph schema versions follow semantic versioning and reference ontology versions. |) Tj
+T*
+() Tj
+T*
+(12.1 Change process) Tj
+T*
+() Tj
+T*
+(1. Proposal with business need, node/edge definitions, examples, constraints, and access model.) Tj
+T*
+(2. Ontology alignment review.) Tj
+T*
+(3. Event sourcing review: which canonical events create/update/delete/supersede graph elements.) Tj
+T*
+(4. Security/privacy review.) Tj
+T*
+(5. Migration and replay plan.) Tj
+T*
+(6. Test fixtures and validation rules.) Tj
+T*
+(7. Approval and versioned publication.) Tj
+T*
+() Tj
+T*
+(12.2 Breaking changes) Tj
+T*
+() Tj
+T*
+(Breaking changes require a new accepted graph specification update or ADR. Existing graph ) Tj
+T*
+(assertions must remain interpretable through schema version metadata.) Tj
+T*
+() Tj
+T*
+(13. Mermaid Diagrams) Tj
+T*
+() Tj
+T*
+(13.1 Graph metamodel) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    CanonicalEvent -->|creates| GraphAssertion) Tj
+T*
+(    OntologyVersion -->|defines meaning| GraphAssertion) Tj
+T*
+(    GraphAssertion --> Node) Tj
+T*
+(    GraphAssertion --> Edge) Tj
+T*
+(    GraphAssertion --> Provenance) Tj
+T*
+(    GraphAssertion --> ConfidenceScore) Tj
+T*
+(    Node --> Person) Tj
+T*
+(    Node --> Capability) Tj
+ET
+endstream
+endobj
+34 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 35 0 R >>
+endobj
+35 0 obj
+<< /Length 1867 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(    Node --> Evidence) Tj
+T*
+(    Edge --> EVIDENCED_BY) Tj
+T*
+(    Edge --> ASSERTS) Tj
+T*
+(    Edge --> REQUIRES) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(13.2 Node hierarchy) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    Node --> Human[Person]) Tj
+T*
+(    Node --> Organization) Tj
+T*
+(    Organization --> Institution) Tj
+T*
+(    Organization --> Employer) Tj
+T*
+(    Organization --> Government) Tj
+T*
+(    Node --> LearningEntity) Tj
+T*
+(    LearningEntity --> Programme) Tj
+T*
+(    LearningEntity --> Course) Tj
+T*
+(    LearningEntity --> Module) Tj
+T*
+(    LearningEntity --> Lesson) Tj
+T*
+(    Node --> SemanticConcept) Tj
+T*
+(    SemanticConcept --> Knowledge) Tj
+T*
+(    SemanticConcept --> Skill) Tj
+T*
+(    SemanticConcept --> Capability) Tj
+T*
+(    Node --> EvidenceEntity) Tj
+T*
+(    EvidenceEntity --> Observation) Tj
+T*
+(    EvidenceEntity --> Evidence) Tj
+T*
+(    EvidenceEntity --> Artifact) Tj
+T*
+(    EvidenceEntity --> Credential) Tj
+T*
+(    Node --> WorkEntity) Tj
+T*
+(    WorkEntity --> Occupation) Tj
+T*
+(    WorkEntity --> Role) Tj
+T*
+(    WorkEntity --> Job) Tj
+T*
+(    WorkEntity --> Opportunity) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(13.3 Relationship network) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Person -->|ENROLLED_IN| Course) Tj
+T*
+(    Course -->|TEACHES| Knowledge) Tj
+T*
+(    Assignment -->|PRODUCES| Artifact) Tj
+T*
+(    Person -->|SUBMITTED| Assignment) Tj
+T*
+(    Artifact -->|EVIDENCES| Evidence) Tj
+T*
+(    Evidence -->|DEMONSTRATES| Capability) Tj
+T*
+(    CapabilityObservation -->|ASSERTS| Capability) Tj
+T*
+(    CapabilityObservation -->|EVIDENCED_BY| Evidence) Tj
+T*
+(    Occupation -->|REQUIRES| Capability) Tj
+T*
+(    Job -->|REQUIRES| Capability) Tj
+T*
+(    Person -->|MATCHED_TO| Job) Tj
+T*
+(    Passport -->|INCLUDES| CapabilityObservation) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(13.4 Capability evolution) Tj
+ET
+endstream
+endobj
+36 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 37 0 R >>
+endobj
+37 0 obj
+<< /Length 1922 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+() Tj
+T*
+() Tj
+T*
+(sequenceDiagram) Tj
+T*
+(    participant Event as Canonical Events) Tj
+T*
+(    participant Graph as HCG Consumer) Tj
+T*
+(    participant Evidence as Evidence Node) Tj
+T*
+(    participant Obs as CapabilityObservation) Tj
+T*
+(    participant Cap as Capability Projection) Tj
+T*
+(    Event->>Graph: AssignmentSubmitted) Tj
+T*
+(    Graph->>Evidence: create/link evidence) Tj
+T*
+(    Event->>Graph: CapabilityObserved) Tj
+T*
+(    Graph->>Obs: create observation with confidence) Tj
+T*
+(    Obs->>Evidence: EVIDENCED_BY) Tj
+T*
+(    Obs->>Cap: ASSERTS capability) Tj
+T*
+(    Event->>Graph: CapabilityUpdated) Tj
+T*
+(    Graph->>Cap: supersede active projection) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(13.5 Evidence flow) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    AssignmentSubmitted --> Artifact) Tj
+T*
+(    Artifact --> Evidence) Tj
+T*
+(    AssignmentGraded --> Evidence) Tj
+T*
+(    Evidence --> CapabilityObservation) Tj
+T*
+(    CapabilityObservation --> ConfidenceScore) Tj
+T*
+(    CapabilityObservation --> Capability) Tj
+T*
+(    CapabilityObservation --> Provenance) Tj
+T*
+(    Provenance --> CanonicalEvent) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(13.6 Job Passport derivation) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    Person --> CapabilityObservation) Tj
+T*
+(    CapabilityObservation --> Evidence) Tj
+T*
+(    CapabilityObservation --> Credential) Tj
+T*
+(    Evidence --> CanonicalEvent) Tj
+T*
+(    Credential --> Verification) Tj
+T*
+(    CapabilityObservation --> Passport) Tj
+T*
+(    Credential --> Passport) Tj
+T*
+(    Passport --> PublicProfile) Tj
+T*
+(    Passport --> EmployerVerification) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(13.7 Employer matching) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Employer -->|POSTS| Job) Tj
+T*
+(    Job -->|REQUIRES| Capability) Tj
+T*
+(    Person -->|HAS_OBSERVATION| CapabilityObservation) Tj
+T*
+(    CapabilityObservation -->|ASSERTS| Capability) Tj
+ET
+endstream
+endobj
+38 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 39 0 R >>
+endobj
+39 0 obj
+<< /Length 2638 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(    CapabilityObservation -->|HAS_CONFIDENCE| ConfidenceScore) Tj
+T*
+(    CareerIntent -->|GUIDES| Recommendation) Tj
+T*
+(    Recommendation -->|MATCHED_TO| Job) Tj
+T*
+(    Employer -->|INTERESTED_IN| Person) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(13.8 Workforce mobility graph) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    Person --> Passport) Tj
+T*
+(    Passport --> CapabilityObservation) Tj
+T*
+(    Passport --> Credential) Tj
+T*
+(    MobilityRoute -->|REQUIRES| Credential) Tj
+T*
+(    MobilityRoute -->|REQUIRES| Capability) Tj
+T*
+(    MobilityRoute -->|REGULATED_BY| Jurisdiction) Tj
+T*
+(    NationalStrategy -->|PRIORITIZES| StrategicSector) Tj
+T*
+(    StrategicSector -->|REQUIRES| Capability) Tj
+T*
+(    Passport -->|MATCHED_TO| MobilityRoute) Tj
+T*
+(    MobilityRoute --> Corridor) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(14. Appendices) Tj
+T*
+() Tj
+T*
+(Appendix A - Property definitions) Tj
+T*
+() Tj
+T*
+(| Property | Type | Applies to | Required | Notes |) Tj
+T*
+(|---|---|---|---:|---|) Tj
+T*
+(| id | string | all nodes/materialized edges | yes | canonical stable ID |) Tj
+T*
+(| tenant_id | string | tenant-scoped nodes/edges | conditional | global ontology nodes may omit |) Tj
+T*
+(| source_event_ids | string[] | all assertions | yes | canonical event provenance |) Tj
+T*
+(| ontology_version | string | semantic nodes/edges | yes | version used for meaning |) Tj
+T*
+(| confidence | float 0..1 | confidence-bearing edges/nodes | conditional | calibrated score |) Tj
+T*
+(| valid_from | datetime | temporal assertions | conditional | required for current-state assertions |) Tj
+T*
+(| valid_to | datetime/null | temporal assertions | conditional | null means currently valid |) Tj
+T*
+(| status | enum | all nodes/edges | yes | active/superseded/revoked/expired |) Tj
+T*
+(| visibility | enum | sensitive nodes/edges | yes | public/internal/restricted/highly_restricted |) Tj
+T*
+(| provenance_ref | string | all assertions | yes | points to provenance node/details |) Tj
+T*
+() Tj
+T*
+(Appendix B - Additional Cypher examples) Tj
+T*
+() Tj
+T*
+(Find all evidence paths for a passport:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(MATCH path = \(:Passport {id: ) Tj
+T*
+($passportId}\)-[:INCLUDES]->\(:CapabilityObservation\)-[:EVIDENCED_BY]->\(:Evidence\)-[:DERIVED_FROM]->\(:CanonicalEvent\)) Tj
+T*
+(RETURN path;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Find stale capabilities:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(MATCH \(p:Person\)-[:HAS_OBSERVATION]->\(o:CapabilityObservation\)-[:ASSERTS]->\(c:Capability\)) Tj
+T*
+(WHERE o.valid_to IS NULL AND o.observed_at < datetime\(\) - duration\({months: $months}\)) Tj
+T*
+(RETURN p.id, c.id, o.observed_at, o.confidence;) Tj
+ET
+endstream
+endobj
+40 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 41 0 R >>
+endobj
+41 0 obj
+<< /Length 2328 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+() Tj
+T*
+() Tj
+T*
+(Find contradiction paths:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(MATCH \(e:Evidence\)-[:CONTRADICTS]->\(o:CapabilityObservation\)-[:ASSERTS]->\(c:Capability\)) Tj
+T*
+(RETURN e.id, o.id, c.id, e.provenance_ref;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix C - GraphQL example) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(query ExplainCapability\($personId: ID!, $capabilityId: ID!\) {) Tj
+T*
+(  person\(id: $personId\) {) Tj
+T*
+(    capability\(id: $capabilityId\) {) Tj
+T*
+(      label) Tj
+T*
+(      confidence { score band method }) Tj
+T*
+(      observations {) Tj
+T*
+(        context) Tj
+T*
+(        validFrom) Tj
+T*
+(        evidence {) Tj
+T*
+(          id) Tj
+T*
+(          type) Tj
+T*
+(          quality) Tj
+T*
+(          provenance { sourceSystem sourceEventId }) Tj
+T*
+(        }) Tj
+T*
+(      }) Tj
+T*
+(    }) Tj
+T*
+(  }) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix D - Graph validation rules) Tj
+T*
+() Tj
+T*
+(1. Every CapabilityObservation must have ASSERTS, EVIDENCED_BY, HAS_CONFIDENCE, DERIVED_FROM, ) Tj
+T*
+(and ontology version references.) Tj
+T*
+(2. Every graph mutation must reference at least one canonical event.) Tj
+T*
+(3. No LMS-native ID may be used as canonical graph ID.) Tj
+T*
+(4. Sensitive edge types require visibility and policy metadata.) Tj
+T*
+(5. SUPERSEDES must point to an existing prior assertion.) Tj
+T*
+(6. Revoked credentials must not support current passport claims.) Tj
+T*
+(7. MATCHED_TO edges require score and explanation reference.) Tj
+T*
+(8. Direct Person -> Capability edges must be marked projection-only.) Tj
+T*
+(9. Every ontology concept node must reference an ontology version.) Tj
+T*
+(10. Replayed graph state must be checksum-comparable for deterministic projections.) Tj
+T*
+() Tj
+T*
+(Appendix E - SHACL-style constraints) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(syrka:CapabilityObservationShape a sh:NodeShape ;) Tj
+T*
+(  sh:targetClass syrka:CapabilityObservation ;) Tj
+T*
+(  sh:property [ sh:path syrka:asserts ; sh:minCount 1 ; sh:maxCount 1 ; sh:class syrka:Capability ] ;) Tj
+T*
+(  sh:property [ sh:path syrka:evidencedBy ; sh:minCount 1 ; sh:class syrka:Evidence ] ;) Tj
+T*
+(  sh:property [ sh:path syrka:hasConfidence ; sh:minCount 1 ; sh:class syrka:ConfidenceScore ] ;) Tj
+T*
+(  sh:property [ sh:path syrka:derivedFrom ; sh:minCount 1 ; sh:class syrka:CanonicalEvent ] ;) Tj
+ET
+endstream
+endobj
+42 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 43 0 R >>
+endobj
+43 0 obj
+<< /Length 2304 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(  sh:property [ sh:path syrka:ontologyVersion ; sh:minCount 1 ] .) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix F - Example graph snapshot) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "snapshot_id": "hcg_snapshot_2026_07_08_001",) Tj
+T*
+(  "tenant_id": "tenant_sa_001",) Tj
+T*
+(  "as_of": "2026-07-08T00:00:00Z",) Tj
+T*
+(  "graph_schema_version": "1.0.0",) Tj
+T*
+(  "ontology_version": "1.0.0",) Tj
+T*
+(  "event_range": {) Tj
+T*
+(    "from": "2026-01-01T00:00:00Z",) Tj
+T*
+(    "to": "2026-07-08T00:00:00Z") Tj
+T*
+(  },) Tj
+T*
+(  "node_count": 12500000,) Tj
+T*
+(  "edge_count": 78000000,) Tj
+T*
+(  "checksum": "sha256:...") Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix G - Migration example) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Change: CapabilityObservation confidence model v1 -> v2.) Tj
+T*
+(1. Publish graph schema 1.1.0.) Tj
+T*
+(2. Publish ConfidenceModelUpdated event.) Tj
+T*
+(3. Replay CapabilityObserved events into isolated projection.) Tj
+T*
+(4. Create new ConfidenceScore nodes with method=v2.) Tj
+T*
+(5. SUPERSEDES edges connect v2 confidence to v1 confidence.) Tj
+T*
+(6. Compare dashboard/passport outputs.) Tj
+T*
+(7. Promote v2 projection after review.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix H - Performance benchmark targets) Tj
+T*
+() Tj
+T*
+(| Benchmark | Pilot target | Regional target |) Tj
+T*
+(|---|---:|---:|) Tj
+T*
+(| Explain capability path P95 | < 500 ms | < 1.5 s |) Tj
+T*
+(| Passport evidence trail P95 | < 1 s | < 3 s |) Tj
+T*
+(| Candidate/job match batch | 10k candidates/min | 1M candidates/hour |) Tj
+T*
+(| Capability gap query P95 | < 750 ms | < 2 s |) Tj
+T*
+(| Event-to-graph mutation latency P95 | < 5 s | < 30 s |) Tj
+T*
+(| Snapshot restore drill | < 1 hour | < 8 hours |) Tj
+T*
+() Tj
+T*
+(15. Final Decision) Tj
+T*
+() Tj
+T*
+(GRAPH-001 establishes the Human Capability Graph as Syrka's persistent semantic relationship ) Tj
+T*
+(layer. Every capability, recommendation, passport claim, employer match, and mobility decision ) Tj
+T*
+(must be traceable through graph paths to canonical events, evidence, ontology versions, ) Tj
+T*
+(confidence, and provenance.) Tj
+T*
+() Tj
+T*
+(The HCG remains independent of Open edX, any LMS, any AI provider, and any specific database ) Tj
+T*
+(technology. Physical graph storage may evolve, but the logical graph model, canonical node and ) Tj
+ET
+endstream
+endobj
+44 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 45 0 R >>
+endobj
+45 0 obj
+<< /Length 211 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(edge semantics, event-derived mutation rules, provenance requirements, and explainability ) Tj
+T*
+(constraints are constitutional and must govern all future implementations.) Tj
+ET
+endstream
+endobj
+xref
+0 46
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000260 00000 n 
+0000000330 00000 n 
+0000000456 00000 n 
+0000004063 00000 n 
+0000004189 00000 n 
+0000007547 00000 n 
+0000007673 00000 n 
+0000012289 00000 n 
+0000012417 00000 n 
+0000018173 00000 n 
+0000018301 00000 n 
+0000022895 00000 n 
+0000023023 00000 n 
+0000027949 00000 n 
+0000028077 00000 n 
+0000031948 00000 n 
+0000032076 00000 n 
+0000034878 00000 n 
+0000035006 00000 n 
+0000037055 00000 n 
+0000037183 00000 n 
+0000040453 00000 n 
+0000040581 00000 n 
+0000043404 00000 n 
+0000043532 00000 n 
+0000046019 00000 n 
+0000046147 00000 n 
+0000048398 00000 n 
+0000048526 00000 n 
+0000051332 00000 n 
+0000051460 00000 n 
+0000054055 00000 n 
+0000054183 00000 n 
+0000056103 00000 n 
+0000056231 00000 n 
+0000058206 00000 n 
+0000058334 00000 n 
+0000061025 00000 n 
+0000061153 00000 n 
+0000063534 00000 n 
+0000063662 00000 n 
+0000066019 00000 n 
+0000066147 00000 n 
+trailer
+<< /Size 46 /Root 1 0 R /Info << /Title (GRAPH-001 - Syrka Human Capability Graph Specification) /Author (Syrka Architecture) >> >>
+startxref
+66410
+%%EOF

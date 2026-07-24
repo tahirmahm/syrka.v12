@@ -1,0 +1,2798 @@
+%PDF-1.4
+%
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R 30 0 R 32 0 R 34 0 R 36 0 R 38 0 R 40 0 R 42 0 R 44 0 R 46 0 R 48 0 R] /Count 23 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 3836 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(ONT-001 - Syrka Ontology Constitution) Tj
+T*
+() Tj
+T*
+(Status: Constitutional Engineering Specification) Tj
+T*
+(Version: 1.0) Tj
+T*
+(Date: 2026-07-08) Tj
+T*
+(Builds upon: Product Suite; ADR-001 - Open Source LMS Foundation; ADR-002 - Domain Architecture ) Tj
+T*
+(& Bounded Contexts; CEA-001 - Canonical Event Architecture) Tj
+T*
+(Decision owners: Ontology / AI Architecture / Knowledge Engineering / Platform Architecture) Tj
+T*
+(Scope: Canonical semantic definitions, relationships, capability model, evidence model, ) Tj
+T*
+(confidence model, graph semantics, AI semantics, ontology versioning, governance, and ) Tj
+T*
+(implementation examples) Tj
+T*
+() Tj
+T*
+(1. Executive Overview) Tj
+T*
+() Tj
+T*
+(Syrka's ontology is the semantic constitution of the platform. It defines what every important ) Tj
+T*
+(concept means before those concepts appear in APIs, events, databases, dashboards, AI prompts, ) Tj
+T*
+(graph nodes, vector indexes, credentials, passports, employer workflows, government reports, or ) Tj
+T*
+(cross-border mobility decisions.) Tj
+T*
+() Tj
+T*
+(Ontology is the foundation of Syrka because Syrka's product does not merely store educational ) Tj
+T*
+(records. Syrka models human capability. Every system ultimately answers one question:) Tj
+T*
+() Tj
+T*
+(> What can this person credibly do?) Tj
+T*
+() Tj
+T*
+(To answer that question, Syrka must define the difference between a person, identity, course, ) Tj
+T*
+(learning outcome, skill, knowledge, competency, capability, assessment, evidence, confidence, ) Tj
+T*
+(credential, occupation, job, mobility route, and national strategy. Without canonical ) Tj
+T*
+(definitions, AI systems infer from ambiguous labels; dashboards display inconsistent metrics; ) Tj
+T*
+(employers misread passports; governments compare incompatible signals; and LMS data leaks ) Tj
+T*
+(implementation-specific meaning into Syrka's intelligence layer.) Tj
+T*
+() Tj
+T*
+(Semantic consistency matters because Syrka is a distributed, AI-native, event-driven system. ) Tj
+T*
+(Events are immutable, but their meaning is only stable if the ontology behind them is stable. ) Tj
+T*
+(CapabilityObserved is useful only if the term Capability has one canonical meaning. ) Tj
+T*
+(CredentialVerified is useful only if Credential, Verification, and Trust have formal boundaries.) Tj
+T*
+( OpportunityMatched is useful only if Opportunity, Occupation, Career Intent, and Capability Gap) Tj
+T*
+( are defined consistently.) Tj
+T*
+() Tj
+T*
+(AI requires formal definitions rather than informal labels because language models are ) Tj
+T*
+(probabilistic and context-sensitive. A label like "communication" can mean verbal fluency, ) Tj
+T*
+(written clarity, persuasion, multilingual translation, team coordination, or stakeholder ) Tj
+T*
+(management. Syrka's ontology disambiguates concepts, constrains reasoning, requires evidence, ) Tj
+T*
+(records provenance, and forces every inference to cite the semantic version used.) Tj
+T*
+() Tj
+T*
+(Ontology differs from adjacent artifacts:) Tj
+T*
+() Tj
+T*
+(| Artifact | Purpose | Source of truth? | Example |) Tj
+T*
+(|---|---|---:|---|) Tj
+T*
+(| Ontology | Defines meaning, concepts, relationships, constraints | Yes, for semantics | Capability is an evidence-) Tj
+T*
+(backed ability to perform in context |) Tj
+T*
+(| Taxonomy | Hierarchical classification | No, partial semantic structure | skill categories, industry families |) Tj
+T*
+(| Database | Stores records and state | Yes, for stored data only | capability_observations table |) Tj
+T*
+(| API | Contract for interaction | Yes, for interface shape | /ontology/terms |) Tj
+T*
+(| Event | Immutable business fact | Yes, for occurrence | CapabilityObserved |) Tj
+T*
+(| Graph | Connected representation of entities/relationships | Derived from ontology and events | person-demonstrates-) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 4266 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(capability |) Tj
+T*
+(| AI prompt | Runtime instruction to model | No | rubric reasoning prompt |) Tj
+T*
+(| Dashboard | Presentation/read model | No | capability heatmap |) Tj
+T*
+() Tj
+T*
+(The ontology is technology-independent, LMS-independent, country-independent, and institution-) Tj
+T*
+(independent. Open edX, Canvas, Moodle, a graph database, PostgreSQL, vector indexes, and AI ) Tj
+T*
+(providers may all implement or consume ontology concepts; none may redefine them.) Tj
+T*
+() Tj
+T*
+(2. Philosophical Foundations) Tj
+T*
+() Tj
+T*
+(| Concept | Canonical definition | Justification and boundary |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Reality | The set of states, events, entities, constraints, and relationships that exist independently of Syrka's ) Tj
+T*
+(representation. | Syrka models reality; it does not create it. A student may be capable even before Syrka observes ) Tj
+T*
+(evidence. |) Tj
+T*
+(| Knowledge | Structured understanding of facts, concepts, principles, procedures, and relationships that can inform ) Tj
+T*
+(action or judgment. | Knowledge may exist without demonstrated performance. It is necessary but not sufficient for ) Tj
+T*
+(capability. |) Tj
+T*
+(| Learning | A process through which a person changes knowledge, skill, behavior, judgment, or capability through ) Tj
+T*
+(study, practice, experience, feedback, or reflection. | Learning is a process, not proof. Evidence of learning may ) Tj
+T*
+(support capability inference. |) Tj
+T*
+(| Competence | A recognized level of adequacy against a defined standard, context, or role expectation. | Competence ) Tj
+T*
+(is standard-relative. It may be institutional, professional, or regulatory. |) Tj
+T*
+(| Capability | An evidence-backed, context-aware ability of a person or group to perform actions, solve problems, ) Tj
+T*
+(produce outcomes, or exercise judgment at a stated confidence level. | Capability is Syrka's primary object. It ) Tj
+T*
+(requires evidence, context, provenance, and confidence. |) Tj
+T*
+(| Skill | A learned capacity to perform a specific task, technique, operation, or behavior. | A skill is narrower than) Tj
+T*
+( capability. Multiple skills plus knowledge and judgment may compose a capability. |) Tj
+T*
+(| Intelligence | The capacity to acquire, integrate, reason over, and apply knowledge and evidence to produce adaptive) Tj
+T*
+( behavior or decisions. | Syrka models intelligence operationally through evidence and explainable decisions, not as a) Tj
+T*
+( fixed human trait. |) Tj
+T*
+(| Evidence | A provenance-bearing observation, artifact, assessment, credential, or external signal that can support ) Tj
+T*
+(or weaken a claim. | Evidence is not identical to truth. It affects confidence. |) Tj
+T*
+(| Observation | A captured event or signal that something occurred. | Observations become evidence only when relevant ) Tj
+T*
+(to a claim. |) Tj
+T*
+(| Truth | The degree to which a claim corresponds to reality. | Syrka does not assert absolute truth for capabilities;) Tj
+T*
+( it maintains evidence-backed confidence. |) Tj
+T*
+(| Confidence | A calibrated estimate that a claim is supported by available evidence under known uncertainty. | ) Tj
+T*
+(Confidence is not certainty. It must include source, model, and evidence context. |) Tj
+T*
+(| Uncertainty | The known or unknown limitations affecting confidence, including missing data, ambiguous evidence, ) Tj
+T*
+(model error, recency, bias, and context mismatch. | Uncertainty must be represented explicitly to prevent ) Tj
+T*
+(overclaiming. |) Tj
+T*
+(| Explainability | The ability to show why a conclusion was reached, including evidence, ontology version, reasoning ) Tj
+T*
+(path, model/rule version, assumptions, and limitations. | AI outputs without explanation cannot drive high-impact ) Tj
+T*
+(Syrka decisions. |) Tj
+T*
+(| Human Potential | The plausible future capability a person may develop under certain learning, practice, support, ) Tj
+T*
+(context, and opportunity conditions. | Potential is prospective and uncertain. It must not be represented as verified ) Tj
+T*
+(capability. |) Tj
+T*
+() Tj
+T*
+(3. Core Ontology) Tj
+T*
+() Tj
+T*
+(3.1 Concept record format) Tj
+T*
+() Tj
+T*
+(Every canonical ontology concept is represented as a versioned concept record:) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 4571 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+() Tj
+T*
+({) Tj
+T*
+(  "concept_id": "ont:capability",) Tj
+T*
+(  "label": "Capability",) Tj
+T*
+(  "definition": "An evidence-backed, context-aware ability...",) Tj
+T*
+(  "version_introduced": "1.0.0",) Tj
+T*
+(  "status": "active",) Tj
+T*
+(  "parents": ["ont:human_attribute"],) Tj
+T*
+(  "children": ["ont:technical_capability", "ont:research_capability"],) Tj
+T*
+(  "synonyms": ["demonstrated capability"],) Tj
+T*
+(  "deprecated_terms": ["skill score"],) Tj
+T*
+(  "external_mappings": [) Tj
+T*
+(    { "standard": "ESCO", "relation": "broader_than", "target": "skill/competence" }) Tj
+T*
+(  ]) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(3.2 Foundational concepts) Tj
+T*
+() Tj
+T*
+(The following table defines Syrka's core concepts. For each row, examples are valid instances; ) Tj
+T*
+(counter-examples indicate boundary violations; external mappings are semantic alignments, not ) Tj
+T*
+(identity claims unless marked equivalent.) Tj
+T*
+() Tj
+T*
+(| Concept | Canonical definition | Purpose | Boundaries | Examples | Counter-examples | Parent concepts | Child ) Tj
+T*
+(concepts | Synonyms | Deprecated terminology | External standards mapping |) Tj
+T*
+(|---|---|---|---|---|---|---|---|---|---|---|) Tj
+T*
+(| Person | A human being represented as a subject of learning, evidence, capability, intent, credential, employment, ) Tj
+T*
+(or mobility. | Anchor human capability modeling. | Not an account, login, organization, cohort, or AI agent. | ) Tj
+T*
+(student, faculty member, worker | user session, institution | Entity | Learner, FacultyMember, Worker, Researcher | ) Tj
+T*
+(human subject | user-as-person | Schema.org Person; W3C VC credentialSubject |) Tj
+T*
+(| Identity | A platform-recognized representation of an entity used for authentication, authorization, federation, and) Tj
+T*
+( linkage. | Establish secure reference to persons/orgs. | Not equal to full personhood. One person may have multiple ) Tj
+T*
+(linked identities. | Supabase user, SSO subject | capability profile | DigitalEntity | StudentIdentity, ) Tj
+T*
+(EmployerIdentity | account | LMS user as source of truth | OIDC subject; SAML NameID |) Tj
+T*
+(| Institution | An educational, research, workforce, or training organization that hosts or validates learning and ) Tj
+T*
+(evidence. | Tenant, governance, curriculum context. | Not an employer unless acting in education role. | university, ) Tj
+T*
+(school, institute | ministry, private job board | Organization | University, School, ResearchInstitute | education ) Tj
+T*
+(provider | campus as institution | ISCED provider concepts; Schema.org CollegeOrUniversity |) Tj
+T*
+(| Employer | An organization that creates work demand, jobs, projects, internships, or hiring signals. | Model labour ) Tj
+T*
+(demand and verification. | Not every organization is an employer in a given context. | company, hospital hiring nurses) Tj
+T*
+( | university acting only as school | Organization | Company, PublicEmployer, NGOEmployer | hiring organization | ) Tj
+T*
+(recruiter as employer | Schema.org Organization; O*NET employer context |) Tj
+T*
+(| Government | A public authority responsible for policy, regulation, national strategy, workforce planning, or ) Tj
+T*
+(credential recognition. | Model national vision and jurisdiction. | Not a country itself; not a political party. | ) Tj
+T*
+(ministry of labour, education authority | employer association | PublicAuthority | Ministry, Agency, Regulator | ) Tj
+T*
+(public authority | state as generic owner | ISO country context; public sector standards |) Tj
+T*
+(| Programme | A coherent educational pathway leading to outcomes, credits, credential, degree, or preparation for ) Tj
+T*
+(roles. | Connect curricula to capability pathways. | Larger than a course; not a job pathway unless educational. | BSc) Tj
+T*
+( Computer Science | single lesson | CurriculumEntity | DegreeProgramme, CertificateProgramme | program | major-as-) Tj
+T*
+(course | ISCED programme; EQF qualification context |) Tj
+T*
+(| Course | A structured unit of learning within a programme or offering. | Map LMS course data to curriculum ) Tj
+T*
+(semantics. | Does not equal capability. | Data Structures course | textbook, video | CurriculumEntity | CourseRun, ) Tj
+T*
+(Module | class | Open edX course as canonical course | IMS/LMS course; Schema.org Course |) Tj
+T*
+(| Module | A subdivision of a course around a topic or outcome. | Support granular learning/evidence mapping. | Larger) Tj
+T*
+( than lesson; smaller than course. | recursion module | entire degree | CurriculumEntity | Lesson, Activity | unit | ) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 5708 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(block as universal module | SCORM/SCO partial; LMS module concepts |) Tj
+T*
+(| Lesson | A discrete learning experience focused on content, activity, or practice. | Map content interactions. | ) Tj
+T*
+(Viewing a lesson is not evidence of mastery alone. | lecture video, reading | assessment grade | LearningExperience | ) Tj
+T*
+(ContentLesson, PracticeLesson | class session | page_view as lesson | Schema.org LearningResource |) Tj
+T*
+(| Learning Outcome | A statement of what a learner is expected to know, do, or value after learning. | Bridge ) Tj
+T*
+(curriculum to ontology. | Not necessarily verified achievement. | "implement binary search" | course title | ) Tj
+T*
+(CurriculumSemanticObject | KnowledgeOutcome, SkillOutcome | objective | outcome as capability | EQF learning outcomes;) Tj
+T*
+( Bloom's taxonomy |) Tj
+T*
+(| Assessment | A designed method for evaluating knowledge, skill, competency, or capability. | Produce evaluative ) Tj
+T*
+(evidence. | Not all assignments are assessments; not all assessments are valid. | quiz, exam, rubric project | content) Tj
+T*
+( page | EvaluationMethod | Quiz, Assignment, Rubric | evaluation | grade as assessment | Open Badges criteria; ) Tj
+T*
+(educational assessment standards |) Tj
+T*
+(| Assignment | A task assigned to a learner that may produce an artifact or performance evidence. | Capture submitted ) Tj
+T*
+(evidence. | Not automatically assessment unless evaluated. | essay, coding task | lesson view | LearningTask | ) Tj
+T*
+(ProjectAssignment, WrittenAssignment | task | homework as universal term | LMS assignment concepts |) Tj
+T*
+(| Project | A bounded effort to produce an artifact, result, experiment, implementation, or solution. | Strong ) Tj
+T*
+(evidence of integrated capability. | Not every assignment is a project. | capstone, GitHub app | quiz attempt | ) Tj
+T*
+(EvidenceProducingActivity | ResearchProject, EngineeringProject | practical work | coursework as project | ) Tj
+T*
+(CDIO/project-based learning mappings |) Tj
+T*
+(| Research | Systematic inquiry intended to produce new knowledge, interpretation, evidence, or scholarly ) Tj
+T*
+(contribution. | Model research capability and outputs. | Not every reading activity is research. | experiment, ) Tj
+T*
+(literature review | blog opinion only | KnowledgeProduction | Publication, Dataset, Grant | scholarly inquiry | paper ) Tj
+T*
+(as research | Dublin Core; ORCID; OpenAlex |) Tj
+T*
+(| Publication | A disseminated research or knowledge artifact with authorship and source metadata. | Evidence for ) Tj
+T*
+(research capability. | Publication is artifact; research is activity. | article, preprint, conference paper | private ) Tj
+T*
+(note | Artifact | JournalArticle, Preprint | paper | citation as publication | Dublin Core; Crossref; Schema.org ) Tj
+T*
+(ScholarlyArticle |) Tj
+T*
+(| Skill | Learned capacity to perform a specific task, operation, technique, or behavior. | Fine-grained capability ) Tj
+T*
+(building block. | Narrower than capability; may lack context/outcome. | SQL joins, active listening | general ) Tj
+T*
+(employability | HumanAttribute | TechnicalSkill, SoftSkill | technique | skill score | ESCO skill/competence; O*NET ) Tj
+T*
+(skills |) Tj
+T*
+(| Knowledge | Structured understanding of facts, concepts, procedures, principles, and relationships. | Model ) Tj
+T*
+(cognitive prerequisites and domains. | Knowing is not doing. | graph theory concepts | passing grade | HumanAttribute ) Tj
+T*
+(| KnowledgeArea, Concept | understanding | content familiarity | Bloom knowledge dimension |) Tj
+T*
+(| Knowledge Area | A coherent domain or field of knowledge. | Organize knowledge hierarchy. | Broader than individual ) Tj
+T*
+(concept. | machine learning, anatomy | one formula | Knowledge | Discipline, Topic | subject area | course category | ) Tj
+T*
+(UNESCO ISCED fields; ACM CCS |) Tj
+T*
+(| Competency | A standard-defined combination of knowledge, skills, behaviors, and performance criteria for a ) Tj
+T*
+(role/context. | Align institutions/regulators. | More standard-bound than capability. | ABET outcome, nursing ) Tj
+T*
+(competency | raw skill | StandardizedHumanAttribute | ProfessionalCompetency | competence | competency score without ) Tj
+T*
+(evidence | EQF competence; ABET outcomes |) Tj
+T*
+(| Capability | Evidence-backed, context-aware ability to perform actions, solve problems, produce outcomes, or ) Tj
+T*
+(exercise judgment at confidence level. | Primary object of Syrka. | Requires evidence, provenance, context, ) Tj
+T*
+(confidence. | can design normalized DB schema | watched DB lecture | HumanCapability | TechnicalCapability, ) Tj
+T*
+(ResearchCapability | demonstrated ability | skill score, talent label | ESCO broader; O*NET abilities/skills; W3C VC ) Tj
+T*
+(claims |) Tj
+T*
+(| Ability | A general capacity or aptitude to perform a class of actions. | Distinguish potential/general capacity ) Tj
+T*
+(from evidenced capability. | Less evidence/context-bound than capability. | numerical reasoning | verified credential ) Tj
+T*
+(| HumanAttribute | CognitiveAbility, PhysicalAbility | aptitude | innate talent as fact | O*NET abilities |) Tj
+T*
+(| Behaviour | Observable action pattern in context. | Model collaboration, habits, professionalism. | Not moral ) Tj
+T*
+(judgment by itself. | submits work early | identity trait | ObservablePattern | CollaborationBehaviour | conduct | ) Tj
+T*
+(personality score | xAPI activity patterns |) Tj
+T*
+(| Habit | Repeated behavior pattern over time. | Model consistency and decay. | Requires repeated observations. | ) Tj
+T*
+(daily practice streak | one login | Behaviour | LearningHabit, WorkHabit | routine | engagement as habit | none direct) Tj
+T*
+( |) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 5960 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(| Experience | Participation in activities or contexts over time. | Model exposure and practice. | Experience alone ) Tj
+T*
+(does not prove capability. | internship, lab work | credential with no activity | HumanHistory | WorkExperience, ) Tj
+T*
+(ResearchExperience | exposure | years as capability | LinkedIn/profile standards |) Tj
+T*
+(| Expertise | High-confidence, deep, transferable capability within a domain based on strong evidence over time. | ) Tj
+T*
+(Represent advanced mastery. | Not self-declared seniority. | expert in distributed systems | completed intro course | ) Tj
+T*
+(CapabilityState | DomainExpertise | mastery | expert label without proof | professional certification mappings |) Tj
+T*
+(| Tool | An instrument used to perform work or learning. | Map capability context. | Tool is not capability. | Git, ) Tj
+T*
+(microscope | programming language as concept may be technology/language | Resource | SoftwareTool, LabTool | ) Tj
+T*
+(instrument | platform as capability | Schema.org SoftwareApplication |) Tj
+T*
+(| Technology | Applied technical system, platform, method, or artifact used to produce outcomes. | Connect skills to ) Tj
+T*
+(market demand. | Broader than tool; not same as knowledge area. | Kubernetes, CRISPR | teamwork | Resource | Tool, ) Tj
+T*
+(Platform, Protocol | tech | vendor skill as capability | ESCO technologies; O*NET tools |) Tj
+T*
+(| Method | A systematic procedure or approach. | Model procedural capability. | Not a tool; may use tools. | ) Tj
+T*
+(randomized trial, agile sprint | Python | KnowledgeObject | ResearchMethod, DesignMethod | methodology | framework as ) Tj
+T*
+(method always | Dublin Core method; research methods taxonomies |) Tj
+T*
+(| Framework | A structured set of concepts, practices, tools, or rules used to organize work. | Model ) Tj
+T*
+(professional/technical context. | Not every library is a framework. | React, Scrum, EQF | single function | ) Tj
+T*
+(KnowledgeObject | TechnicalFramework, GovernanceFramework | model | tool as framework | technology taxonomies |) Tj
+T*
+(| Language | A formal, natural, or programming system used for communication or computation. | Model ) Tj
+T*
+(communication/programming capabilities. | Not synonymous with literacy or fluency. | Arabic, Python, SQL | IDE | ) Tj
+T*
+(SymbolicSystem | NaturalLanguage, ProgrammingLanguage | language system | language skill as language | ISO 639; ) Tj
+T*
+(programming language registries |) Tj
+T*
+(| Certification | A formal attestation issued by an authority that a requirement was met. | Credential evidence input.) Tj
+T*
+( | Certification is one type of credential. | AWS cert | portfolio | CredentialType | ProfessionalCertification | ) Tj
+T*
+(certificate | badge as always cert | Open Badges; VC |) Tj
+T*
+(| Credential | A verifiable claim issued by an authority about identity, achievement, qualification, or status. | ) Tj
+T*
+(Trust and passport foundation. | Not all credentials prove capability. | degree, license, badge | unverified resume ) Tj
+T*
+(line | TrustArtifact | Degree, License, Badge, Certification | qualification | certificate as universal credential | ) Tj
+T*
+(W3C VC; Open Badges; EQF qualifications |) Tj
+T*
+(| Evidence | Provenance-bearing item that supports or weakens a claim. | Ground all inference. | Evidence is not ) Tj
+T*
+(conclusion. | graded project | unsupported self-claim | EpistemicObject | AssessmentEvidence, ArtifactEvidence | ) Tj
+T*
+(proof, signal | data point as proof | W3C evidence property; xAPI statements |) Tj
+T*
+(| Observation | Captured fact or signal of activity/state. | Raw input to evidence. | Observation may be irrelevant. |) Tj
+T*
+( lesson viewed, commit observed | capability claim | EpistemicObject | LearningObservation, MarketObservation | signal) Tj
+T*
+( | event as all evidence | xAPI statement; CEA event |) Tj
+T*
+(| Artifact | A produced or collected object that can be inspected. | Durable evidence reference. | Not all evidence is) Tj
+T*
+( artifact. | PDF, code repo, dataset | attendance status | EvidenceObject | SubmissionArtifact, PortfolioArtifact | ) Tj
+T*
+(work product | file as evidence always | Dublin Core resource |) Tj
+T*
+(| Portfolio | Curated collection of artifacts, reflections, credentials, and capability claims. | Present evidence to ) Tj
+T*
+(audiences. | Presentation layer, not source truth. | project portfolio | transcript alone | PresentationObject | ) Tj
+T*
+(PublicPortfolio | showcase | CV as portfolio always | Europass partial; Schema.org CreativeWork |) Tj
+T*
+(| Reflection | A person's explanation of learning, reasoning, growth, or intent. | Qualitative evidence and ) Tj
+T*
+(metacognition. | Not proof alone. | learning reflection | grade | EvidenceObject | LearningReflection | self-) Tj
+T*
+(assessment | testimonial as reflection | educational portfolio standards |) Tj
+T*
+(| Intent | A stated or inferred orientation toward future action or outcome. | Model goals and preferences. | Intent ) Tj
+T*
+(is not commitment or capability. | wants AI career | job offer | MentalState | Goal, Aspiration, CareerIntent | ) Tj
+T*
+(preference | prediction as intent | none direct |) Tj
+T*
+(| Goal | A specific intended outcome. | Drive recommendations. | More concrete than aspiration. | become data analyst ) Tj
+T*
+(in 12 months | interest in tech | Intent | LearningGoal, CareerGoal | objective | KPI as all goals | OKR-style ) Tj
+T*
+(mappings |) Tj
+T*
+(| Aspiration | A broader desired future identity, role, or life direction. | Long-range career modeling. | Less ) Tj
+T*
+(specific than goal. | work in climate tech | salary requirement | Intent | CareerAspiration | ambition | dream as goal) Tj
+T*
+( | career guidance frameworks |) Tj
+T*
+(| Career Intent | User-controlled model of career aspirations, constraints, preferences, geography, industry, and ) Tj
+T*
+(salary expectations. | Personalize opportunity/mobility. | Not employer demand; not capability. | remote AI role in ) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 5758 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(Riyadh | inferred skill | Intent | GeographicIntent, IndustryIntent | career preference | career score | HR-XML ) Tj
+T*
+(partial |) Tj
+T*
+(| Occupation | A recognized category of work performed across employers. | Map capabilities to labour market. | Not a ) Tj
+T*
+(job posting or role title alone. | software developer | senior backend engineer at X | LabourConcept | Profession, ) Tj
+T*
+(RoleFamily | job family | job as occupation | ISCO; SOC; O*NET; ESCO occupations |) Tj
+T*
+(| Role | A set of responsibilities in an organizational/work context. | Match people to concrete expectations. | More ) Tj
+T*
+(contextual than occupation. | ML engineer intern | industry | WorkConcept | JobRole, ProjectRole | position | title as) Tj
+T*
+( role always | HR job architecture |) Tj
+T*
+(| Profession | A socially/professionally recognized occupation often with standards or regulation. | Support ) Tj
+T*
+(licensing/mobility. | Not all occupations are professions. | physician, architect | cashier | Occupation | ) Tj
+T*
+(LicensedProfession | vocation | career as profession | ISCO/SOC; licensing bodies |) Tj
+T*
+(| Industry | Economic activity category grouping organizations and work. | Market/national analysis. | Not a sector ) Tj
+T*
+(priority itself. | healthcare, fintech | Python | EconomicConcept | IndustryGroup | vertical | sector as always ) Tj
+T*
+(industry | NAICS, ISIC, NACE |) Tj
+T*
+(| Sector | Broad economic or strategic area, often policy-defined. | National vision alignment. | May span industries.) Tj
+T*
+( | energy sector | job role | EconomicConcept | StrategicSector | domain | industry synonym | ISIC/NACE; national ) Tj
+T*
+(plans |) Tj
+T*
+(| Labour Market | The system of supply/demand for work, skills, wages, occupations, and mobility. | Opportunity and ) Tj
+T*
+(policy intelligence. | Not one job board. | Saudi AI labour market | class enrollment | EconomicSystem | ) Tj
+T*
+(RegionalLabourMarket | job market | hiring list | ILO/statistical frameworks |) Tj
+T*
+(| Opportunity | A possible future action/pathway that may benefit a person or institution. | Recommendation target. | ) Tj
+T*
+(Opportunity is not guarantee. | job, internship, course, grant | capability | FutureOption | Job, Scholarship, ) Tj
+T*
+(Internship | option | recommendation | Schema.org JobPosting partial |) Tj
+T*
+(| Job | A paid work position with employer, role, responsibilities, and conditions. | Employer matching. | Not ) Tj
+T*
+(occupation category. | Data Analyst at Company X | software developer occupation | Opportunity | FullTimeJob, ) Tj
+T*
+(PartTimeJob | position | vacancy | Schema.org JobPosting; HR-XML |) Tj
+T*
+(| Internship | Temporary supervised work/learning opportunity. | Early-career matching. | Not full profession or ) Tj
+T*
+(course. | summer analyst internship | degree | Opportunity | PaidInternship, ResearchInternship | placement | co-op as) Tj
+T*
+( always internship | work-integrated learning standards |) Tj
+T*
+(| Scholarship | Financial/academic support opportunity tied to eligibility. | Education opportunity matching. | Not ) Tj
+T*
+(credential. | graduate scholarship | salary | Opportunity | MeritScholarship | grant | award as credential | financial) Tj
+T*
+( aid standards |) Tj
+T*
+(| Research Collaboration | Opportunity to jointly produce research outputs. | Connect research capabilities. | Not any) Tj
+T*
+( discussion. | lab project invitation | citation | Opportunity | LabCollaboration | collaboration | group chat | ) Tj
+T*
+(ORCID/OpenAlex relation partial |) Tj
+T*
+(| Passport | Versioned, portable, evidence-backed package of capability and credential claims for disclosure. | ) Tj
+T*
+(Workforce mobility and employer trust. | Not raw CV; not all graph state. | Syrka Job Passport | LMS transcript | ) Tj
+T*
+(TrustPresentation | JobPassport | capability passport | resume as passport | W3C VC presentation; Europass partial |) Tj
+T*
+(| Capability Profile | A structured view of a person's capabilities, evidence, confidence, gaps, and evolution. | ) Tj
+T*
+(Dashboards and public profile. | View/projection, not source truth. | public capability page | database user | ) Tj
+T*
+(PresentationObject | PublicCapabilityProfile | profile | skill list | Schema.org ProfilePage partial |) Tj
+T*
+(| Recommendation | An explainable suggestion generated from capabilities, intent, opportunities, and constraints. | ) Tj
+T*
+(Guide action. | Not decision unless accepted/enforced. | take course, apply to job | ad impression | ) Tj
+T*
+(DecisionSupportObject | LearningRecommendation, JobRecommendation | suggestion | ranking as recommendation | ) Tj
+T*
+(recommender systems concepts |) Tj
+T*
+(| Decision | A committed outcome that affects state, access, eligibility, recommendation, verification, or mobility. |) Tj
+T*
+( Audit high-impact outcomes. | Must be traceable and appealable if high-impact. | mobility approved | displayed option) Tj
+T*
+( | GovernanceObject | AutomatedDecision, HumanDecision | determination | model output as decision | GDPR automated ) Tj
+T*
+(decision context |) Tj
+T*
+(| Inference | A reasoned conclusion derived from evidence, rules, models, and ontology. | Produce capability ) Tj
+T*
+(observations. | Not raw observation. | capability inferred from project | submitted file | ReasoningObject | ) Tj
+T*
+(AIInference, RuleInference | conclusion | prediction as fact | AI governance/evidence rules |) Tj
+T*
+(| Confidence | Calibrated estimate of support for a claim given evidence and uncertainty. | Quantify belief and ) Tj
+T*
+(thresholds. | Not probability alone; includes calibration/context. | 0.82 confidence in SQL capability | grade percent) Tj
+T*
+( | EpistemicMeasure | ConfidenceScore | certainty score | trust score | statistical confidence/calibration |) Tj
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 6008 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(| Trust | Degree to which a source, issuer, process, or claim can be relied upon for a purpose. | Weight evidence and ) Tj
+T*
+(credentials. | Trust is contextual and revocable. | accredited issuer trust | popularity | EpistemicMeasure | ) Tj
+T*
+(SourceTrust, IssuerTrust | reliability | confidence synonym | W3C trust registries partial |) Tj
+T*
+(| Provenance | Lineage of data, evidence, inference, or claim, including source, transformation, version, actor/model,) Tj
+T*
+( and time. | Explain and audit. | Not just citation. | source event + model version | URL only | EpistemicMetadata | ) Tj
+T*
+(DataProvenance, ModelProvenance | lineage | source link | W3C PROV-O; Dublin Core provenance |) Tj
+T*
+(| Verification | Process of checking authenticity, issuer, integrity, or factual status of a claim/artifact. | Trust ) Tj
+T*
+(credentials/evidence. | Verification does not prove broad capability. | credential signature check | inference | ) Tj
+T*
+(TrustProcess | CredentialVerification | validation | validation synonym | W3C VC verification |) Tj
+T*
+(| Validation | Process of checking conformance to rules, schema, standard, or quality criteria. | Data/semantic ) Tj
+T*
+(quality. | May not establish authenticity. | schema validation | identity proof | QualityProcess | SchemaValidation, ) Tj
+T*
+(RubricValidation | conformance check | verification | JSON Schema; SHACL |) Tj
+T*
+(| Quality | Degree to which evidence, data, process, artifact, or outcome meets fitness-for-purpose criteria. | Weight) Tj
+T*
+( evidence and analytics. | Not moral value. | high-quality project evidence | high grade only | EvaluationMeasure | ) Tj
+T*
+(EvidenceQuality, DataQuality | fitness | excellence as quality | ISO quality concepts |) Tj
+T*
+(| Mastery | Sustained high-confidence capability across varied contexts with transfer and low uncertainty. | Advanced ) Tj
+T*
+(capability state. | More than one success. | repeated robust performance | single perfect quiz | CapabilityState | ) Tj
+T*
+(DomainMastery | expertise | completion | mastery learning theory |) Tj
+T*
+(| Proficiency | Level of performance on a capability or skill scale. | Support passports and pathways. | Scale must be) Tj
+T*
+( defined. | beginner/intermediate/advanced | confidence alone | CapabilityMeasure | ProficiencyLevel | level | grade |) Tj
+T*
+( CEFR-like scales; EQF levels partial |) Tj
+T*
+(| Performance | Observable execution quality in a task/context/time. | Evidence source. | Momentary; not enduring ) Tj
+T*
+(capability alone. | score in coding challenge | potential | ObservationMeasure | TaskPerformance | result | capability) Tj
+T*
+( | assessment theory |) Tj
+T*
+(| Potential | Plausible future capability under specified conditions. | Growth recommendations. | Not verified present) Tj
+T*
+( capability. | likely to succeed in ML pathway | certified skill | ProspectiveMeasure | GrowthPotential | promise | ) Tj
+T*
+(talent as fact | predictive analytics |) Tj
+T*
+(| Mobility | Ability/process of moving across jobs, institutions, regions, countries, or regulated pathways. | ) Tj
+T*
+(Workforce corridor logic. | Not physical movement alone. | eligible for cross-border nursing route | job search only |) Tj
+T*
+( WorkforceProcess | WorkforceMobility, AcademicMobility | movement | migration | ILO/labour mobility concepts |) Tj
+T*
+(| Jurisdiction | Legal/regulatory territory or authority context. | Consent, credentials, mobility. | Not always ) Tj
+T*
+(country; can be state/region. | EU, Saudi Arabia, California | institution | GovernanceContext | Country, Region | ) Tj
+T*
+(legal context | location | ISO/legal jurisdiction |) Tj
+T*
+(| Country | Sovereign or recognized national context. | National vision and overlays. | Not a market by itself. | ) Tj
+T*
+(Saudi Arabia, Malta | city | Jurisdiction | CountryProfile | nation | government | ISO 3166 |) Tj
+T*
+(| National Strategy | Formal strategic plan or policy priorities for a country/government. | Align ) Tj
+T*
+(curricula/workforce. | Not any news article. | Vision 2030 | employer plan | PolicyObject | WorkforceStrategy | ) Tj
+T*
+(national vision | manifesto as strategy | government policy docs |) Tj
+T*
+(| Strategic Sector | Sector prioritized by national/institutional strategy. | Workforce planning. | Not all ) Tj
+T*
+(industries. | renewable energy priority | retail category | Sector | PrioritySector | target sector | hot industry | ) Tj
+T*
+(national plans/industrial classifications |) Tj
+T*
+(| Labour Demand | Observed or forecast need for work/capabilities in a market. | Recommendations/curriculum. | Not one) Tj
+T*
+( job posting alone. | rising demand for cloud security | course popularity | MarketSignal | SkillDemand, ) Tj
+T*
+(OccupationDemand | demand signal | trend | BLS/ILO/job postings |) Tj
+T*
+(| Capability Gap | Difference between required capabilities and observed capabilities at person/cohort/market level. |) Tj
+T*
+( Drive learning and policy. | Not moral deficiency. | lacks evidence for data modeling | low confidence due missing ) Tj
+T*
+(data | Gap | SkillGap, CurriculumGap | gap | weakness | skills gap literature |) Tj
+T*
+(| Risk | Possible adverse outcome with likelihood, impact, and uncertainty. | Interventions and governance. | Risk is ) Tj
+T*
+(not destiny. | dropout risk, bias risk | low grade alone | ProspectiveMeasure | LearningRisk, MobilityRisk | concern |) Tj
+T*
+( label | risk management standards |) Tj
+T*
+(| Ethics | Principles governing fair, accountable, human-centered, and responsible use of data/AI. | Guard high-impact) Tj
+T*
+( systems. | Not optional policy afterthought. | bias review, consent | compliance checklist only | GovernanceConcept |) Tj
+T*
+( AIEthics, DataEthics | responsible AI | morals | OECD/UNESCO AI principles |) Tj
+T*
+(| Consent | Revocable permission or legal basis for processing/sharing data for a purpose. | Privacy and user agency. ) Tj
+T*
+(| Not blanket ownership transfer. | share passport with employer | terms acceptance only | GovernanceObject | ) Tj
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 4960 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(DataConsent, DisclosureConsent | permission | opt-in as permanent | GDPR consent concepts |) Tj
+T*
+(| Privacy | Control and protection of personal/sensitive information according to law, ethics, and user expectation. |) Tj
+T*
+( Trust and compliance. | Not secrecy alone. | restricted grade event | public profile claim | GovernanceConcept | ) Tj
+T*
+(DataPrivacy, EducationalPrivacy | confidentiality | security synonym | GDPR, FERPA concepts |) Tj
+T*
+() Tj
+T*
+(4. Concept Relationships) Tj
+T*
+() Tj
+T*
+(4.1 Canonical relationship types) Tj
+T*
+() Tj
+T*
+(| Relationship | Formal meaning | Domain/range rule | Transitive? | Inverse | Example | Invalid use |) Tj
+T*
+(|---|---|---|---:|---|---|---|) Tj
+T*
+(| is_a | Subclass/specialization relationship. | Concept -> Concept | yes | has_subtype | TechnicalSkill is_a Skill | ) Tj
+T*
+(Course is_a Capability |) Tj
+T*
+(| part_of | Whole-part containment. | Entity/Concept -> Entity/Concept | context-dependent | has_part | Module part_of) Tj
+T*
+( Course | Skill part_of Person |) Tj
+T*
+(| requires | Source cannot be achieved/performed without target prerequisite. | Capability/Role/Credential -> ) Tj
+T*
+(Skill/Knowledge/Capability | no | required_by | DataEngineeringCapability requires SQLSkill | Lesson requires Job |) Tj
+T*
+(| depends_on | Source relies on target but not necessarily prerequisite. | Any -> Any | no | supports_dependency_of | ) Tj
+T*
+(Recommendation depends_on MarketSignal | Country depends_on Quiz |) Tj
+T*
+(| demonstrates | Evidence/person/artifact shows support for capability/skill. | Evidence/Artifact/Person -> ) Tj
+T*
+(Capability/Skill | no | demonstrated_by | Project demonstrates API design capability | Course demonstrates student |) Tj
+T*
+(| evidenced_by | Claim is supported by evidence. | Claim/CapabilityObservation -> Evidence | no | evidences | ) Tj
+T*
+(CapabilityObserved evidenced_by AssignmentGraded | Evidence evidenced_by Capability |) Tj
+T*
+(| derived_from | Object was computed/transformed from source. | Projection/Inference/Event -> Event/Evidence | no | ) Tj
+T*
+(derives | CapabilityUpdated derived_from CapabilityObserved | Course derived_from Student |) Tj
+T*
+(| supports | Evidence/concept increases confidence in claim. | Evidence/Observation -> Claim | no | supported_by | ) Tj
+T*
+(Peer review supports collaboration capability | Revoked evidence supports credential |) Tj
+T*
+(| contradicts | Evidence/concept decreases confidence or conflicts with claim. | Evidence/Observation -> Claim | no | ) Tj
+T*
+(contradicted_by | plagiarism finding contradicts authorship evidence | Unrelated lesson contradicts capability |) Tj
+T*
+(| improves | Event/action raises expected capability/quality/outcome. | Activity/Event -> Capability/Metric | no | ) Tj
+T*
+(improved_by | Practice improves fluency | Credential improves country |) Tj
+T*
+(| degrades | Event/time/action lowers confidence/capability/quality. | Event/Condition -> Capability/Metric | no | ) Tj
+T*
+(degraded_by | stale evidence degrades confidence | Course degrades identity |) Tj
+T*
+(| verified_by | Claim/artifact verified by authority/process. | Claim/Credential -> Verification/Authority | no | ) Tj
+T*
+(verifies | Credential verified_by IssuerSignature | Skill verified_by CourseTitle |) Tj
+T*
+(| recommended_for | Recommendation target is appropriate for subject/context. | Opportunity/Course/Action -> ) Tj
+T*
+(Person/Cohort/Role | no | has_recommendation | Internship recommended_for Student | Person recommended_for Job without) Tj
+T*
+( context |) Tj
+T*
+(| belongs_to | Entity is owned/associated with context. | Entity -> Organization/Tenant/Person | no | has_member | ) Tj
+T*
+(Course belongs_to Institution | Capability belongs_to LMS |) Tj
+T*
+(| aligned_with | Concept supports or maps to strategy/standard/outcome. | Concept/Curriculum -> Strategy/Standard | no) Tj
+T*
+( | has_alignment | CourseOutcome aligned_with ABETOutcome | Student aligned_with Credential |) Tj
+T*
+(| regulated_by | Entity/action is constrained by authority/rule. | Credential/Profession/Mobility -> ) Tj
+T*
+(Jurisdiction/Regulator | no | regulates | NursingLicense regulated_by Ministry | Quiz regulated_by Employer |) Tj
+T*
+(| replaces | New concept supersedes old concept operationally. | ConceptVersion -> ConceptVersion | no | replaced_by |) Tj
+T*
+( SkillV2 replaces SkillV1 | Event replaces Person |) Tj
+T*
+(| supersedes | New assertion/version takes precedence while history remains. | Assertion/Version -> Assertion/Version ) Tj
+T*
+(| no | superseded_by | PassportV2 supersedes PassportV1 | Grade supersedes Course |) Tj
+T*
+(| mapped_to | Semantic correspondence to external concept. | SyrkaConcept -> ExternalConcept | no | mapped_from | ) Tj
+T*
+(Occupation mapped_to ISCO code | Person mapped_to Skill |) Tj
+T*
+() Tj
+T*
+(4.2 Relationship rules) Tj
+T*
+() Tj
+T*
+(1. Relationships are typed and versioned.) Tj
+T*
+(2. Relationship meaning is immutable within an ontology version.) Tj
+ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 2595 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(3. Relationship assertions may have confidence, provenance, jurisdiction, and validity windows.) Tj
+T*
+(4. is_a relationships define inheritance of semantic constraints.) Tj
+T*
+(5. mapped_to relationships must state equivalence type: exact, close, broader, narrower, or ) Tj
+T*
+(related.) Tj
+T*
+(6. demonstrates, supports, and contradicts require evidence/provenance.) Tj
+T*
+(7. verified_by requires verifier identity, verification method, and timestamp.) Tj
+T*
+(8. Jurisdiction-specific relationships must be overlays, not mutations of the global ontology.) Tj
+T*
+() Tj
+T*
+(5. Capability Model) Tj
+T*
+() Tj
+T*
+(5.1 Formal definition) Tj
+T*
+() Tj
+T*
+(A Capability is an evidence-backed, context-aware ability of a person or group to perform ) Tj
+T*
+(actions, solve problems, produce outcomes, or exercise judgment at a stated confidence level, ) Tj
+T*
+(under specified constraints, with traceable provenance.) Tj
+T*
+() Tj
+T*
+(Canonical representation:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(CapabilityClaim = f\(subject, capability, context, evidence, confidence, provenance, time, ontology_version\)) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(5.2 Capability vs adjacent concepts) Tj
+T*
+() Tj
+T*
+(| Concept | Difference from capability |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Skill | Skill is task-specific; capability combines skills, knowledge, judgment, context, and evidence. |) Tj
+T*
+(| Competency | Competency is standard-defined adequacy; capability is evidence-backed ability that may or may not map ) Tj
+T*
+(to a standard. |) Tj
+T*
+(| Knowledge | Knowledge is understanding; capability is demonstrated ability to apply knowledge. |) Tj
+T*
+(| Ability | Ability can be general/potential; capability is contextual and evidenced. |) Tj
+T*
+(| Performance | Performance is an observed result at a time; capability is inferred from one or more ) Tj
+T*
+(performances/evidence items. |) Tj
+T*
+(| Credential | Credential is a trusted claim by issuer; capability may be supported by credential but still requires ) Tj
+T*
+(semantic interpretation. |) Tj
+T*
+() Tj
+T*
+(5.3 Measurement) Tj
+T*
+() Tj
+T*
+(Capability is measured through:) Tj
+T*
+() Tj
+T*
+(- evidence relevance) Tj
+T*
+(- evidence strength) Tj
+T*
+(- evidence diversity) Tj
+T*
+(- evidence recency) Tj
+T*
+(- assessor/source trust) Tj
+T*
+(- task difficulty) Tj
+T*
+(- context similarity) Tj
+T*
+(- consistency over time) Tj
+T*
+(- transfer across contexts) Tj
+T*
+(- external verification) Tj
+T*
+(- uncertainty and bias checks) Tj
+T*
+() Tj
+T*
+(5.4 Evolution, decay, transfer, verification, revocation) Tj
+T*
+() Tj
+T*
+(| Process | Definition | Rule |) Tj
+ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 3664 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(|---|---|---|) Tj
+T*
+(| Evolution | Capability changes through learning, practice, feedback, work, research, or new evidence. | Store ) Tj
+T*
+(temporal graph states; never overwrite history. |) Tj
+T*
+(| Decay | Confidence decreases when evidence becomes stale, contradicted, or context changes. | Decay functions are ) Tj
+T*
+(capability-specific and provenance-backed. |) Tj
+T*
+(| Transfer | Capability in one context supports confidence in adjacent context. | Requires ontology relationship and ) Tj
+T*
+(transfer confidence. |) Tj
+T*
+(| Verification | A trusted process/authority confirms evidence or claim authenticity. | Verification raises trust but ) Tj
+T*
+(may not fully prove capability. |) Tj
+T*
+(| Revocation | A prior credential/evidence/claim is invalidated. | Publish revocation event and update confidence; do ) Tj
+T*
+(not delete history. |) Tj
+T*
+() Tj
+T*
+(5.5 Human Capability Graph representation) Tj
+T*
+() Tj
+T*
+(Capability graph pattern:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(\(Person\)-[:HAS_OBSERVATION]->\(CapabilityObservation\)) Tj
+T*
+(\(CapabilityObservation\)-[:EVIDENCED_BY]->\(Evidence\)) Tj
+T*
+(\(CapabilityObservation\)-[:ASSERTS]->\(Capability\)) Tj
+T*
+(\(CapabilityObservation\)-[:USES_ONTOLOGY_VERSION]->\(OntologyVersion\)) Tj
+T*
+(\(CapabilityObservation\)-[:HAS_CONFIDENCE]->\(ConfidenceScore\)) Tj
+T*
+(\(Capability\)-[:REQUIRES]->\(Skill\)) Tj
+T*
+(\(Capability\)-[:REQUIRES]->\(Knowledge\)) Tj
+T*
+(\(Evidence\)-[:DERIVED_FROM]->\(CanonicalEvent\)) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(6. Evidence Model) Tj
+T*
+() Tj
+T*
+(6.1 Evidence categories) Tj
+T*
+() Tj
+T*
+(| Evidence type | Definition | Examples | Default strength | Risks |) Tj
+T*
+(|---|---|---|---|---|) Tj
+T*
+(| Observation | Captured signal/event. | lesson view, attendance | weak to medium | may show exposure only |) Tj
+T*
+(| Artifact | Inspectable produced object. | code repo, essay, dataset | medium to strong | authenticity/plagiarism |) Tj
+T*
+(| Assessment | Evaluated performance. | quiz, rubric, exam | medium to strong | assessment validity |) Tj
+T*
+(| External signal | Non-Syrka source signal. | GitHub, LinkedIn, ORCID | weak to strong | consent/API reliability |) Tj
+T*
+(| Behavioural evidence | Repeated behavior pattern. | collaboration, punctuality | weak to medium | bias/context risk ) Tj
+T*
+(|) Tj
+T*
+(| Research evidence | Scholarly output/activity. | publication, citation, grant | medium to strong | authorship ) Tj
+T*
+(contribution ambiguity |) Tj
+T*
+(| Engineering evidence | Software/product work signal. | commit, PR, tests | medium to strong | superficial commits |) Tj
+T*
+(| Professional evidence | Work/credential/career signal. | role history, cert | weak to strong | self-reporting |) Tj
+T*
+(| Peer evidence | Review by peers. | peer review, endorsement | weak to medium | collusion/social bias |) Tj
+T*
+(| AI-generated evidence | AI extraction/classification output. | rubric analysis | weak unless reviewed | ) Tj
+T*
+(hallucination/model error |) Tj
+T*
+(| Human-reviewed evidence | Evidence reviewed by trusted human. | instructor-verified project | strong | reviewer ) Tj
+T*
+(inconsistency |) Tj
+T*
+(| Weak evidence | Low relevance/trust/specificity. | page view | weak | overinterpretation |) Tj
+T*
+(| Strong evidence | High relevance/trust/difficulty/verification. | graded capstone with rubric | strong | still ) Tj
+T*
+(context-limited |) Tj
+T*
+(| Conflicting evidence | Evidence contradicting claim. | failed advanced task | negative | may be stale or context-) Tj
+T*
+(specific |) Tj
+T*
+(| Revoked evidence | Evidence invalidated by authority/process. | revoked credential | negative/ignored | audit needed) Tj
+T*
+( |) Tj
+ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 3329 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(| Expired evidence | Evidence beyond validity window. | old safety license | reduced | decay model required |) Tj
+T*
+() Tj
+T*
+(6.2 Evidence contribution to confidence) Tj
+T*
+() Tj
+T*
+(Evidence contributes to confidence through weighted factors:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(confidence_delta = relevance  quality  trust  difficulty  recency  independence  authenticity  ) Tj
+T*
+(context_similarity - contradiction_penalty) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Rules:) Tj
+T*
+() Tj
+T*
+(1. No single weak evidence item can verify a high-impact capability.) Tj
+T*
+(2. Independent corroborating evidence increases confidence more than repeated identical ) Tj
+T*
+(evidence.) Tj
+T*
+(3. Revoked evidence cannot positively support a claim after revocation effective time.) Tj
+T*
+(4. Expired evidence may support historical capability but not current capability unless ) Tj
+T*
+(refreshed.) Tj
+T*
+(5. AI-generated evidence requires human review for high-impact claims.) Tj
+T*
+() Tj
+T*
+(7. Confidence Model) Tj
+T*
+() Tj
+T*
+(| Concept | Canonical definition | Use in Syrka |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Confidence | Calibrated support for a claim given evidence and uncertainty. | Capability claims, recommendations, ) Tj
+T*
+(mobility decisions. |) Tj
+T*
+(| Uncertainty | Known/unknown limits that reduce confidence. | Missing evidence, ambiguity, model error. |) Tj
+T*
+(| Probability | Numeric likelihood estimate under a model. | Input to confidence but not identical. |) Tj
+T*
+(| Reliability | Stability/consistency of source or method. | Evidence weighting. |) Tj
+T*
+(| Validity | Whether evidence measures what it claims to measure. | Assessment quality. |) Tj
+T*
+(| Trust | Contextual reliance on source/issuer/process. | Credential/evidence weighting. |) Tj
+T*
+(| Calibration | Alignment between confidence scores and observed correctness. | Model governance. |) Tj
+T*
+(| Confidence threshold | Minimum confidence for a product action. | Passport claim inclusion, recommendation, mobility) Tj
+T*
+( approval. |) Tj
+T*
+(| Explainability | Traceable rationale for score/claim. | Required for high-impact decisions. |) Tj
+T*
+(| Bias | Systematic error affecting groups/contexts. | Fairness reviews and mitigation. |) Tj
+T*
+(| Human review | Authorized human evaluation of evidence/inference. | Required above risk thresholds. |) Tj
+T*
+(| Model disagreement | Divergence among models/rules/reviewers. | Triggers uncertainty or review. |) Tj
+T*
+(| Evidence weighting | Relative contribution of evidence. | Scoring model. |) Tj
+T*
+(| Recency | Time relevance of evidence. | Decay and freshness. |) Tj
+T*
+(| Confidence decay | Reduction over time/context change. | Current capability estimates. |) Tj
+T*
+() Tj
+T*
+(Threshold bands:) Tj
+T*
+() Tj
+T*
+(| Band | Range | Meaning | Allowed use |) Tj
+T*
+(|---|---:|---|---|) Tj
+T*
+(| Hypothesis | 0.00-0.39 | Insufficient support | internal exploration only |) Tj
+T*
+(| Emerging | 0.40-0.59 | Some evidence | learning recommendations |) Tj
+T*
+(| Supported | 0.60-0.74 | Useful evidence | dashboards with caveats |) Tj
+T*
+(| Strong | 0.75-0.89 | Strong evidence | passport candidate claims |) Tj
+T*
+(| Verified | 0.90-1.00 | Strong, verified, current evidence | high-stakes passport/mobility where policy allows |) Tj
+T*
+() Tj
+T*
+(8. Human Capability Lifecycle) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 2521 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+() Tj
+T*
+(Learning -> Practice -> Observation -> Evidence -> Inference -> Capability -> Mastery -> Recommendation -> Employment ) Tj
+T*
+(-> Continuous Learning -> Career Evolution -> Retirement/Transition) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(| Stage | Meaning | Canonical events | Ontology objects |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| Learning | Person engages with educational experience. | LessonViewed, ModuleCompleted | Lesson, Module, Knowledge |) Tj
+T*
+(| Practice | Person performs tasks to improve. | AssignmentOpened, ProjectStarted | Assignment, Project, Skill |) Tj
+T*
+(| Observation | Platform records activity/signal. | any canonical observation event | Observation |) Tj
+T*
+(| Evidence | Observation/artifact becomes relevant support. | AssignmentSubmitted, CommitObserved | Evidence, Artifact) Tj
+T*
+( |) Tj
+T*
+(| Inference | AI/rules/humans derive claim. | CapabilityObserved | Inference, Confidence |) Tj
+T*
+(| Capability | Claim updates capability graph. | CapabilityUpdated | Capability |) Tj
+T*
+(| Mastery | Sustained high-confidence capability. | MasterySignalDetected | Mastery, Expertise |) Tj
+T*
+(| Recommendation | System suggests next action. | RecommendationGenerated | Recommendation, Opportunity |) Tj
+T*
+(| Employment | Person engages work opportunity. | OpportunityAccepted | Job, Role, Employer |) Tj
+T*
+(| Continuous learning | New evidence updates capability. | learning/research/work events | Capability evolution |) Tj
+T*
+(| Career evolution | Intent/pathway changes over time. | CareerIntentUpdated | Career Intent, Aspiration |) Tj
+T*
+(| Retirement/transition | Capability remains historical; active intent changes. | profile/intent events | Career state) Tj
+T*
+( |) Tj
+T*
+() Tj
+T*
+(9. Ontology Hierarchies) Tj
+T*
+() Tj
+T*
+(9.1 Hierarchy templates) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Knowledge) Tj
+T*
+(  Knowledge Area) Tj
+T*
+(    Discipline) Tj
+T*
+(      Topic) Tj
+T*
+(        Concept) Tj
+T*
+(          Principle / Procedure / Fact) Tj
+T*
+() Tj
+T*
+(Skill) Tj
+T*
+(  Technical Skill) Tj
+T*
+(  Cognitive Skill) Tj
+T*
+(  Communication Skill) Tj
+T*
+(  Collaboration Skill) Tj
+T*
+(  Research Skill) Tj
+T*
+(  Professional Skill) Tj
+T*
+() Tj
+T*
+(Capability) Tj
+T*
+(  Technical Capability) Tj
+T*
+(  Analytical Capability) Tj
+T*
+(  Research Capability) Tj
+T*
+(  Creative Capability) Tj
+T*
+(  Leadership Capability) Tj
+T*
+(  Mobility Capability) Tj
+T*
+(  Professional Capability) Tj
+T*
+() Tj
+T*
+(Occupation) Tj
+T*
+(  Occupation Family) Tj
+T*
+(    Occupation) Tj
+T*
+(      Role) Tj
+ET
+endstream
+endobj
+28 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 29 0 R >>
+endobj
+29 0 obj
+<< /Length 3367 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(        Job) Tj
+T*
+() Tj
+T*
+(Industry/Sector) Tj
+T*
+(  Economic Sector) Tj
+T*
+(    Industry) Tj
+T*
+(      Sub-industry) Tj
+T*
+(        Employer Domain) Tj
+T*
+() Tj
+T*
+(Credential) Tj
+T*
+(  Degree) Tj
+T*
+(  Certificate) Tj
+T*
+(  License) Tj
+T*
+(  Badge) Tj
+T*
+(  Micro-credential) Tj
+T*
+(  Professional Certification) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(9.2 Required hierarchies) Tj
+T*
+() Tj
+T*
+(| Hierarchy | Root | Design rule |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Knowledge | Knowledge | Separate concepts from courses that teach them. |) Tj
+T*
+(| Skills | Skill | Skills are task-specific and may compose capabilities. |) Tj
+T*
+(| Capabilities | Capability | Capabilities require evidence and context. |) Tj
+T*
+(| Occupations | Occupation | Map to ISCO/SOC/O*NET/ESCO where possible. |) Tj
+T*
+(| Industries | Sector/Industry | Support national and labour market overlays. |) Tj
+T*
+(| Technologies | Technology | Distinguish technologies, tools, frameworks, languages. |) Tj
+T*
+(| Research fields | Knowledge Area/Research Field | Map to publications and grants. |) Tj
+T*
+(| Educational programmes | Programme | Link programmes to courses/outcomes/credentials. |) Tj
+T*
+(| Curricula | CurriculumEntity | Model outcomes and assessment coverage. |) Tj
+T*
+(| Credentials | Credential | Separate issuer, verification, and claim semantics. |) Tj
+T*
+(| Countries | Jurisdiction/Country | Use jurisdiction overlays, not global mutation. |) Tj
+T*
+(| Strategic priorities | National Strategy | Link to sectors, occupations, capabilities. |) Tj
+T*
+(| Tools | Tool | Tools are context for skills/capabilities. |) Tj
+T*
+(| Programming languages | Language/Technology | Programming language is both symbolic system and technology context. |) Tj
+T*
+(| AI models | Technology/AIModel | AI provider/model is implementation context, not ontology owner. |) Tj
+T*
+(| Professional frameworks | Framework/Competency | Map standards and competency frameworks. |) Tj
+T*
+() Tj
+T*
+(10. External Standards Mapping) Tj
+T*
+() Tj
+T*
+(| Standard | Syrka mapped concepts | Semantic relationship | Difference/notes |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| ESCO | Skill, Competency, Occupation | close/broader/narrower mappings | ESCO mixes skill/competence; Syrka ) Tj
+T*
+(separates skill, competency, capability. |) Tj
+T*
+(| O*NET | Skill, Ability, Knowledge, Work Activity, Occupation | close mappings | O*NET has rich occupational ) Tj
+T*
+(descriptors; Syrka adds evidence/provenance/confidence. |) Tj
+T*
+(| ISCO | Occupation | close/exact for occupational classes | ISCO is classification, not capability evidence. |) Tj
+T*
+(| SOC | Occupation | close/exact for US occupations | Jurisdiction-specific occupational taxonomy. |) Tj
+T*
+(| EQF | Credential, Competency, Learning Outcome, Proficiency | related/close | EQF levels are qualification ) Tj
+T*
+(framework; Syrka capability confidence is evidence-based. |) Tj
+T*
+(| National Qualification Frameworks | Credential, Competency, Learning Outcome | jurisdiction overlay | Must not ) Tj
+T*
+(override global definitions; map through overlay. |) Tj
+T*
+(| Bloom's Taxonomy | Learning Outcome, Cognitive Process | related | Bloom classifies cognitive demand, not evidence-) Tj
+T*
+(backed capability. |) Tj
+T*
+(| ABET | Competency, Learning Outcome, Programme Outcome | close | ABET outcomes are accreditation standards; Syrka ) Tj
+ET
+endstream
+endobj
+30 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 31 0 R >>
+endobj
+31 0 obj
+<< /Length 2545 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(maps evidence to them. |) Tj
+T*
+(| UNESCO ISCED | Programme, Knowledge Area, Field | close | ISCED classifies education fields/programmes, not human ) Tj
+T*
+(capability. |) Tj
+T*
+(| Dublin Core | Publication, Artifact, Metadata | close | Metadata vocabulary for resources, not capability model. |) Tj
+T*
+(| Schema.org | Person, Course, Organization, JobPosting, CreativeWork | related/close | Web schema lacks ) Tj
+T*
+(evidence/confidence semantics. |) Tj
+T*
+(| Open Badges | Credential, Achievement, Evidence | close | Badge is credential artifact; Syrka separately models ) Tj
+T*
+(capability inference. |) Tj
+T*
+(| W3C Verifiable Credentials | Credential, Verification, Subject, Claim | close | VC provides proof format; Syrka ) Tj
+T*
+(defines semantic meaning of claims. |) Tj
+T*
+() Tj
+T*
+(Mapping rule:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "syrka_concept_id": "ont:occupation:software_developer",) Tj
+T*
+(  "external_standard": "ISCO",) Tj
+T*
+(  "external_id": "2512",) Tj
+T*
+(  "mapping_relation": "close",) Tj
+T*
+(  "confidence": 0.92,) Tj
+T*
+(  "jurisdiction": "global",) Tj
+T*
+(  "provenance": "mapping-review-2026-07",) Tj
+T*
+(  "ontology_version": "1.0.0") Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(11. Human Capability Graph Semantics) Tj
+T*
+() Tj
+T*
+(11.1 Node types) Tj
+T*
+() Tj
+T*
+(| Node type | Meaning |) Tj
+T*
+(|---|---|) Tj
+T*
+(| PersonNode | Human subject. |) Tj
+T*
+(| IdentityNode | Digital identity/account/federation reference. |) Tj
+T*
+(| CapabilityNode | Canonical capability concept. |) Tj
+T*
+(| SkillNode | Canonical skill concept. |) Tj
+T*
+(| KnowledgeNode | Knowledge concept/area. |) Tj
+T*
+(| EvidenceNode | Evidence item or evidence bundle. |) Tj
+T*
+(| ObservationNode | Canonical event-derived observation. |) Tj
+T*
+(| ArtifactNode | Durable evidence artifact. |) Tj
+T*
+(| CredentialNode | Credential/claim/proof. |) Tj
+T*
+(| OccupationNode | Occupation/role category. |) Tj
+T*
+(| OpportunityNode | Job/internship/research/scholarship opportunity. |) Tj
+T*
+(| InstitutionNode | Education/research institution. |) Tj
+T*
+(| EmployerNode | Employer organization. |) Tj
+T*
+(| JurisdictionNode | Country/region/legal context. |) Tj
+T*
+(| StrategyNode | National/institutional strategy. |) Tj
+T*
+(| OntologyVersionNode | Published ontology version. |) Tj
+T*
+(| ConfidenceNode | Confidence state/score. |) Tj
+T*
+(| ProvenanceNode | Source/model/transform lineage. |) Tj
+T*
+() Tj
+T*
+(11.2 Edge semantics) Tj
+T*
+() Tj
+T*
+(Edges use relationship types from section 4 and may include:) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+32 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 33 0 R >>
+endobj
+33 0 obj
+<< /Length 2643 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(- valid_from, valid_to) Tj
+T*
+(- observed_at) Tj
+T*
+(- confidence) Tj
+T*
+(- source_event_ids) Tj
+T*
+(- ontology_version) Tj
+T*
+(- jurisdiction) Tj
+T*
+(- provenance_ref) Tj
+T*
+(- review_status) Tj
+T*
+() Tj
+T*
+(11.3 Temporal consistency) Tj
+T*
+() Tj
+T*
+(Graph assertions are temporal. A capability can be true with high confidence for one validity ) Tj
+T*
+(window and lower confidence later. Historical graph states must be reproducible from events, ) Tj
+T*
+(ontology versions, and confidence models.) Tj
+T*
+() Tj
+T*
+(11.4 Jurisdiction overlays) Tj
+T*
+() Tj
+T*
+(Jurisdiction overlays add regulatory mappings, qualification recognition, occupation labels, and) Tj
+T*
+( mobility rules. They never mutate global concept definitions.) Tj
+T*
+() Tj
+T*
+(11.5 Ontology versioning in graph) Tj
+T*
+() Tj
+T*
+(Every graph assertion references the ontology version used at creation. When ontology versions ) Tj
+T*
+(change, graph migrations create new assertions or mappings rather than rewriting historical ) Tj
+T*
+(assertions.) Tj
+T*
+() Tj
+T*
+(12. AI Semantics) Tj
+T*
+() Tj
+T*
+(12.1 AI interpretation rules) Tj
+T*
+() Tj
+T*
+(1. AI systems must use canonical concept IDs, not free-text labels, for persistent claims.) Tj
+T*
+(2. AI prompts must include ontology version when reasoning about capability.) Tj
+T*
+(3. AI outputs must include evidence references and confidence.) Tj
+T*
+(4. AI may propose concepts but cannot publish ontology changes.) Tj
+T*
+(5. AI may infer capability only from allowed evidence types.) Tj
+T*
+(6. High-impact inferences require policy checks and sometimes human review.) Tj
+T*
+(7. AI must distinguish present capability, potential, intent, and recommendation.) Tj
+T*
+() Tj
+T*
+(12.2 Reasoning constraints) Tj
+T*
+() Tj
+T*
+(- Never infer capability from course enrollment alone.) Tj
+T*
+(- Never infer verified capability from self-report alone.) Tj
+T*
+(- Never treat credential verification as broad capability verification unless credential ) Tj
+T*
+(criteria map to capability evidence.) Tj
+T*
+(- Never use protected attributes to raise/lower capability confidence.) Tj
+T*
+(- Never collapse country-specific requirements into global definitions.) Tj
+T*
+(- Never publish a high-confidence claim without evidence and provenance.) Tj
+T*
+() Tj
+T*
+(12.3 Hallucination prevention) Tj
+T*
+() Tj
+T*
+(- Use ontology retrieval by concept ID.) Tj
+T*
+(- Validate outputs against JSON Schema/SHACL constraints.) Tj
+T*
+(- Require evidence IDs for every claim.) Tj
+T*
+(- Reject unknown concept labels unless mapped or proposed as candidate concepts.) Tj
+T*
+(- Log model, prompt, ontology, and evidence versions.) Tj
+ET
+endstream
+endobj
+34 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 35 0 R >>
+endobj
+35 0 obj
+<< /Length 2140 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+() Tj
+T*
+(12.4 Human override and governance) Tj
+T*
+() Tj
+T*
+(Human reviewers may approve, reject, downgrade, or annotate AI inferences. Overrides create new ) Tj
+T*
+(events and graph assertions; they do not delete original AI outputs.) Tj
+T*
+() Tj
+T*
+(13. Versioning) Tj
+T*
+() Tj
+T*
+(13.1 Version numbering) Tj
+T*
+() Tj
+T*
+(Ontology versions use semantic versioning:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(MAJOR.MINOR.PATCH) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(- MAJOR - breaking semantic change or changed canonical definition.) Tj
+T*
+(- MINOR - new concepts, relationships, mappings, or non-breaking hierarchy additions.) Tj
+T*
+(- PATCH - typo, documentation, example, or metadata correction that does not change meaning.) Tj
+T*
+() Tj
+T*
+(13.2 Immutability and deprecation) Tj
+T*
+() Tj
+T*
+(Published definitions are immutable within a version. Deprecated concepts remain resolvable ) Tj
+T*
+(forever with deprecated, replaced_by, and migration guidance.) Tj
+T*
+() Tj
+T*
+(13.3 Backward compatibility) Tj
+T*
+() Tj
+T*
+(Backward-compatible changes cannot alter prior concept meaning. They may add child concepts, ) Tj
+T*
+(mappings, examples, translations, or constraints that do not invalidate prior assertions.) Tj
+T*
+() Tj
+T*
+(13.4 Migration) Tj
+T*
+() Tj
+T*
+(Migration plans must specify:) Tj
+T*
+() Tj
+T*
+(1. affected concepts) Tj
+T*
+(2. affected relationships) Tj
+T*
+(3. impacted events and graph assertions) Tj
+T*
+(4. projection rebuild requirements) Tj
+T*
+(5. AI prompt/model changes) Tj
+T*
+(6. backward mapping) Tj
+T*
+(7. validation tests) Tj
+T*
+() Tj
+T*
+(13.5 Semantic drift prevention) Tj
+T*
+() Tj
+T*
+(- Concepts have canonical definitions and forbidden synonyms.) Tj
+T*
+(- Dashboards and APIs display labels but store concept IDs.) Tj
+T*
+(- AI prompts use retrieved definitions, not ad hoc terms.) Tj
+T*
+(- External standard mappings record equivalence type and confidence.) Tj
+T*
+() Tj
+T*
+(13.6 Overlays) Tj
+T*
+() Tj
+T*
+(Jurisdiction and institution overlays can add local labels, mappings, regulatory rules, and ) Tj
+T*
+(qualification equivalences. They cannot redefine global concepts.) Tj
+T*
+() Tj
+T*
+(14. Governance) Tj
+ET
+endstream
+endobj
+36 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 37 0 R >>
+endobj
+37 0 obj
+<< /Length 2120 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+() Tj
+T*
+(| Governance question | Decision |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Who owns ontology? | Syrka Ontology Council, operationally maintained by Ontology Team. |) Tj
+T*
+(| Who proposes changes? | Domain teams, AI teams, customer implementation teams, research/policy teams. |) Tj
+T*
+(| Who approves changes? | Ontology Council plus affected domain owners; Security/Privacy for sensitive concepts. |) Tj
+T*
+(| How are disputes resolved? | Evidence-based semantic review; CTO/Chief Ontologist final tie-break for constitutional) Tj
+T*
+( concepts. |) Tj
+T*
+(| How are breaking changes prevented? | Schema/SHACL validation, compatibility review, impact analysis, ADR ) Tj
+T*
+(requirement for constitutional changes. |) Tj
+T*
+(| How are new concepts introduced? | Proposal -> definition -> examples/counter-examples -> mapping -> review -> ) Tj
+T*
+(versioned publication. |) Tj
+T*
+() Tj
+T*
+(Required concept proposal fields:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(label) Tj
+T*
+(canonical definition) Tj
+T*
+(business purpose) Tj
+T*
+(boundaries) Tj
+T*
+(examples) Tj
+T*
+(counter-examples) Tj
+T*
+(parent/child concepts) Tj
+T*
+(relationships) Tj
+T*
+(external mappings) Tj
+T*
+(privacy/security impact) Tj
+T*
+(AI reasoning impact) Tj
+T*
+(migration impact) Tj
+T*
+(owner) Tj
+T*
+(reviewers) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15. Mermaid Diagrams) Tj
+T*
+() Tj
+T*
+(15.1 Ontology hierarchy) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    Entity --> Person) Tj
+T*
+(    Entity --> Organization) Tj
+T*
+(    Organization --> Institution) Tj
+T*
+(    Organization --> Employer) Tj
+T*
+(    Organization --> Government) Tj
+T*
+(    HumanAttribute --> Knowledge) Tj
+T*
+(    HumanAttribute --> Skill) Tj
+T*
+(    HumanAttribute --> Ability) Tj
+T*
+(    HumanAttribute --> Capability) Tj
+T*
+(    Capability --> TechnicalCapability) Tj
+T*
+(    Capability --> ResearchCapability) Tj
+T*
+(    Capability --> ProfessionalCapability) Tj
+T*
+(    EpistemicObject --> Observation) Tj
+T*
+(    EpistemicObject --> Evidence) Tj
+T*
+(    Evidence --> Artifact) Tj
+T*
+(    Evidence --> AssessmentEvidence) Tj
+T*
+(    Evidence --> CredentialEvidence) Tj
+ET
+endstream
+endobj
+38 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 39 0 R >>
+endobj
+39 0 obj
+<< /Length 1871 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(    WorkConcept --> Occupation) Tj
+T*
+(    Occupation --> Profession) Tj
+T*
+(    Occupation --> Role) Tj
+T*
+(    Opportunity --> Job) Tj
+T*
+(    Opportunity --> Internship) Tj
+T*
+(    Opportunity --> Scholarship) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.2 Concept map) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Person -->|has identity| Identity) Tj
+T*
+(    Person -->|participates in| Course) Tj
+T*
+(    Course -->|has| LearningOutcome) Tj
+T*
+(    LearningOutcome -->|aligned_with| Capability) Tj
+T*
+(    Assignment -->|produces| Artifact) Tj
+T*
+(    Artifact -->|is| Evidence) Tj
+T*
+(    Evidence -->|supports| Inference) Tj
+T*
+(    Inference -->|observes| Capability) Tj
+T*
+(    Capability -->|recommended_for| Opportunity) Tj
+T*
+(    Opportunity -->|belongs_to| Employer) Tj
+T*
+(    Capability -->|included_in| Passport) Tj
+T*
+(    Passport -->|supports| Mobility) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.3 Capability model) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    Knowledge --> Capability) Tj
+T*
+(    Skill --> Capability) Tj
+T*
+(    Behaviour --> Capability) Tj
+T*
+(    Experience --> Capability) Tj
+T*
+(    Evidence --> Confidence) Tj
+T*
+(    Provenance --> Confidence) Tj
+T*
+(    Confidence --> CapabilityClaim) Tj
+T*
+(    Capability --> CapabilityClaim) Tj
+T*
+(    Person --> CapabilityClaim) Tj
+T*
+(    CapabilityClaim --> Passport) Tj
+T*
+(    CapabilityClaim --> Recommendation) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.4 Evidence model) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Observation --> Evidence) Tj
+T*
+(    Artifact --> Evidence) Tj
+T*
+(    Assessment --> Evidence) Tj
+T*
+(    Credential --> Evidence) Tj
+T*
+(    ExternalSignal[External signal] --> Evidence) Tj
+T*
+(    Evidence -->|supports| CapabilityObservation) Tj
+T*
+(    Evidence -->|contradicts| CapabilityObservation) Tj
+T*
+(    Evidence -->|verified_by| Verification) Tj
+ET
+endstream
+endobj
+40 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 41 0 R >>
+endobj
+41 0 obj
+<< /Length 1820 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(    Evidence -->|has| Provenance) Tj
+T*
+(    Evidence -->|weighted_into| Confidence) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.5 Relationship graph) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Capability -->|requires| Skill) Tj
+T*
+(    Capability -->|requires| Knowledge) Tj
+T*
+(    Evidence -->|demonstrates| Capability) Tj
+T*
+(    CapabilityObservation -->|evidenced_by| Evidence) Tj
+T*
+(    Credential -->|verified_by| Verification) Tj
+T*
+(    CourseOutcome -->|aligned_with| Capability) Tj
+T*
+(    Occupation -->|requires| Capability) Tj
+T*
+(    Passport -->|derived_from| CapabilityObservation) Tj
+T*
+(    Mobility -->|regulated_by| Jurisdiction) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.6 Knowledge graph) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    KnowledgeArea --> Discipline) Tj
+T*
+(    Discipline --> Topic) Tj
+T*
+(    Topic --> Concept) Tj
+T*
+(    Concept --> Principle) Tj
+T*
+(    Concept --> Procedure) Tj
+T*
+(    Concept --> Fact) Tj
+T*
+(    Course -->|teaches| Topic) Tj
+T*
+(    Assessment -->|evaluates| Concept) Tj
+T*
+(    Capability -->|requires| Concept) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.7 Human capability lifecycle) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(stateDiagram-v2) Tj
+T*
+(    [*] --> Learning) Tj
+T*
+(    Learning --> Practice) Tj
+T*
+(    Practice --> Observation) Tj
+T*
+(    Observation --> Evidence) Tj
+T*
+(    Evidence --> Inference) Tj
+T*
+(    Inference --> Capability) Tj
+T*
+(    Capability --> Mastery) Tj
+T*
+(    Capability --> Recommendation) Tj
+T*
+(    Recommendation --> Employment) Tj
+T*
+(    Employment --> ContinuousLearning) Tj
+T*
+(    ContinuousLearning --> Capability) Tj
+T*
+(    Employment --> CareerEvolution) Tj
+T*
+(    CareerEvolution --> ContinuousLearning) Tj
+T*
+(    CareerEvolution --> RetirementTransition) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15.8 Semantic dependency graph) Tj
+ET
+endstream
+endobj
+42 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 43 0 R >>
+endobj
+43 0 obj
+<< /Length 2899 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    OntologyVersion --> Events) Tj
+T*
+(    OntologyVersion --> Graph) Tj
+T*
+(    OntologyVersion --> AIModels) Tj
+T*
+(    OntologyVersion --> APIs) Tj
+T*
+(    OntologyVersion --> Dashboards) Tj
+T*
+(    OntologyVersion --> Passports) Tj
+T*
+(    Events --> Evidence) Tj
+T*
+(    Evidence --> Inference) Tj
+T*
+(    Inference --> Graph) Tj
+T*
+(    Graph --> Recommendations) Tj
+T*
+(    Graph --> Passports) Tj
+T*
+(    Passports --> Mobility) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(16. Appendices) Tj
+T*
+() Tj
+T*
+(Appendix A - Canonical glossary) Tj
+T*
+() Tj
+T*
+(| Term | Short definition |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Capability | Evidence-backed contextual ability with confidence and provenance. |) Tj
+T*
+(| Evidence | Provenance-bearing support or contradiction for a claim. |) Tj
+T*
+(| Confidence | Calibrated support under uncertainty. |) Tj
+T*
+(| Provenance | Lineage of data, evidence, inference, or claim. |) Tj
+T*
+(| Credential | Verifiable issuer claim about subject/status/achievement. |) Tj
+T*
+(| Passport | Portable, versioned package of selected verified claims. |) Tj
+T*
+(| Ontology version | Immutable semantic release used by events/graph/AI. |) Tj
+T*
+(| Overlay | Jurisdiction/institution extension that does not redefine global meaning. |) Tj
+T*
+() Tj
+T*
+(Appendix B - Relationship matrix) Tj
+T*
+() Tj
+T*
+(| From \\ To | Skill | Knowledge | Capability | Evidence | Credential | Occupation | Jurisdiction |) Tj
+T*
+(|---|---|---|---|---|---|---|---|) Tj
+T*
+(| Skill | is_a, requires | requires | part_of | none | none | mapped_to | overlay only |) Tj
+T*
+(| Knowledge | supports | is_a, part_of | requires | none | none | mapped_to | overlay only |) Tj
+T*
+(| Capability | requires | requires | is_a, depends_on | evidenced_by | supported_by | recommended_for inverse | ) Tj
+T*
+(regulated_by when applicable |) Tj
+T*
+(| Evidence | demonstrates | demonstrates | demonstrates/supports/contradicts | derived_from | supports | none | ) Tj
+T*
+(jurisdiction metadata |) Tj
+T*
+(| Credential | none | none | supports | evidenced_by | is_a | regulated_by | regulated_by |) Tj
+T*
+(| Occupation | requires | requires | requires | none | requires | is_a | regulated_by |) Tj
+T*
+() Tj
+T*
+(Appendix C - Concept index) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Ability, Artifact, Aspiration, Assessment, Behaviour, Capability, Capability Gap,) Tj
+T*
+(Capability Profile, Career Intent, Certification, Competency, Confidence, Consent,) Tj
+T*
+(Country, Course, Credential, Decision, Employer, Ethics, Evidence, Experience,) Tj
+T*
+(Expertise, Framework, Goal, Government, Habit, Identity, Industry, Inference,) Tj
+T*
+(Institution, Intent, Internship, Job, Jurisdiction, Knowledge, Knowledge Area,) Tj
+T*
+(Labour Demand, Labour Market, Language, Learning Outcome, Lesson, Method,) Tj
+T*
+(Mobility, Module, National Strategy, Observation, Occupation, Opportunity,) Tj
+ET
+endstream
+endobj
+44 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 45 0 R >>
+endobj
+45 0 obj
+<< /Length 2215 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(Passport, Performance, Person, Portfolio, Potential, Privacy, Profession,) Tj
+T*
+(Programme, Project, Proficiency, Publication, Quality, Recommendation,) Tj
+T*
+(Reflection, Research, Research Collaboration, Risk, Role, Scholarship, Sector,) Tj
+T*
+(Skill, Strategic Sector, Technology, Tool, Trust, Validation, Verification) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix D - JSON-LD example) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "@context": {) Tj
+T*
+(    "syrka": "https://ontology.syrka.ai/",) Tj
+T*
+(    "prov": "http://www.w3.org/ns/prov#",) Tj
+T*
+(    "schema": "https://schema.org/") Tj
+T*
+(  },) Tj
+T*
+(  "@id": "syrka:capability/software_api_design",) Tj
+T*
+(  "@type": "syrka:Capability",) Tj
+T*
+(  "syrka:definition": "Ability to design reliable software APIs in context.",) Tj
+T*
+(  "syrka:requires": ["syrka:skill/http_semantics", "syrka:knowledge/distributed_systems"],) Tj
+T*
+(  "syrka:evidencedBy": "syrka:evidence/project_123",) Tj
+T*
+(  "syrka:ontologyVersion": "1.0.0") Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix E - OWL example) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(syrka:Capability a owl:Class .) Tj
+T*
+(syrka:Skill a owl:Class .) Tj
+T*
+(syrka:Knowledge a owl:Class .) Tj
+T*
+(syrka:requires a owl:ObjectProperty ;) Tj
+T*
+(  rdfs:domain syrka:Capability ;) Tj
+T*
+(  rdfs:range owl:Thing .) Tj
+T*
+(syrka:evidencedBy a owl:ObjectProperty ;) Tj
+T*
+(  rdfs:domain syrka:CapabilityObservation ;) Tj
+T*
+(  rdfs:range syrka:Evidence .) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix F - RDF triple example) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(syrka:person_123 syrka:hasCapabilityObservation syrka:obs_456 .) Tj
+T*
+(syrka:obs_456 syrka:asserts syrka:capability_sql_data_modeling .) Tj
+T*
+(syrka:obs_456 syrka:evidencedBy syrka:evidence_assignment_789 .) Tj
+T*
+(syrka:obs_456 syrka:confidence "0.84"^^xsd:decimal .) Tj
+T*
+(syrka:obs_456 syrka:ontologyVersion "1.0.0" .) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix G - Graph example) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(MERGE \(p:Person {id: 'person_123'}\)) Tj
+T*
+(MERGE \(c:Capability {id: 'capability_sql_data_modeling'}\)) Tj
+T*
+(MERGE \(e:Evidence {id: 'evidence_assignment_789'}\)) Tj
+T*
+(MERGE \(o:CapabilityObservation {id: 'obs_456', confidence: 0.84, ontologyVersion: '1.0.0'}\)) Tj
+ET
+endstream
+endobj
+46 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 47 0 R >>
+endobj
+47 0 obj
+<< /Length 2346 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(MERGE \(p\)-[:HAS_OBSERVATION]->\(o\)) Tj
+T*
+(MERGE \(o\)-[:ASSERTS]->\(c\)) Tj
+T*
+(MERGE \(o\)-[:EVIDENCED_BY]->\(e\)) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix H - Capability example) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "subject_id": "person_123",) Tj
+T*
+(  "capability_id": "capability:sql_data_modeling",) Tj
+T*
+(  "context": "undergraduate database systems project",) Tj
+T*
+(  "confidence": 0.84,) Tj
+T*
+(  "threshold_band": "Strong",) Tj
+T*
+(  "evidence_refs": ["event:AssignmentGraded:abc", "artifact:project_schema_pdf"],) Tj
+T*
+(  "ontology_version": "1.0.0",) Tj
+T*
+(  "explanation": "Rubric-scored project demonstrated normalization, relationships, constraints, and query design.") Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix I - Evidence example) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "evidence_id": "evidence_assignment_789",) Tj
+T*
+(  "evidence_type": "AssessmentEvidence",) Tj
+T*
+(  "source_event_id": "event_assignment_graded_001",) Tj
+T*
+(  "artifact_refs": ["object://submissions/schema_project.pdf"],) Tj
+T*
+(  "assessor": "faculty_456",) Tj
+T*
+(  "quality": 0.88,) Tj
+T*
+(  "trust": 0.91,) Tj
+T*
+(  "recency": "2026-07-08T00:00:00Z",) Tj
+T*
+(  "valid_for": ["capability:sql_data_modeling"]) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix J - Reasoning example) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Claim: Person can design normalized relational schemas.) Tj
+T*
+(Evidence: Graded schema project, rubric score 91%, instructor feedback, SQL migration artifact.) Tj
+T*
+(Ontology: capability:sql_data_modeling requires knowledge:normal_forms and skill:relationship_modeling.) Tj
+T*
+(Reasoning: Evidence demonstrates required skill and knowledge in project context.) Tj
+T*
+(Confidence: 0.84 because evidence is recent, assessed, artifact-backed, and aligned; not 0.95 because context is ) Tj
+T*
+(academic not production.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Appendix K - Ontology validation rules) Tj
+T*
+() Tj
+T*
+(1. Every concept must have one canonical definition.) Tj
+T*
+(2. Every active concept must have at least one parent except root concepts.) Tj
+T*
+(3. No concept may be both active and deprecated.) Tj
+T*
+(4. Deprecated concepts must include replacement or rationale.) Tj
+T*
+(5. External mappings must state equivalence relation.) Tj
+T*
+(6. Capability concepts must define required evidence types or evidence guidance.) Tj
+ET
+endstream
+endobj
+48 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 49 0 R >>
+endobj
+49 0 obj
+<< /Length 1110 >>
+stream
+BT
+/F1 8.2 Tf
+12 TL
+40 752 Td
+(7. Relationship assertions must use registered relationship types.) Tj
+T*
+(8. AI-facing concepts must include examples and counter-examples.) Tj
+T*
+(9. Jurisdiction overlays must reference global concepts and may not redefine them.) Tj
+T*
+(10. Published versions are immutable.) Tj
+T*
+() Tj
+T*
+(17. Final Decision) Tj
+T*
+() Tj
+T*
+(ONT-001 establishes Syrka's official semantic constitution. Every future API, event, graph, ) Tj
+T*
+(database, AI model, recommendation engine, dashboard, credential, passport, connector, and ) Tj
+T*
+(external integration must use these definitions or explicitly propose a versioned ontology ) Tj
+T*
+(change.) Tj
+T*
+() Tj
+T*
+(The ontology guarantees that every concept has exactly one canonical meaning; every capability ) Tj
+T*
+(is grounded in evidence; every inference is explainable; every relationship is formally defined;) Tj
+T*
+( every AI decision is semantically constrained; and Syrka remains independent of any LMS, ) Tj
+T*
+(database, AI provider, or jurisdiction while supporting versioned overlays for local ) Tj
+T*
+(requirements.) Tj
+ET
+endstream
+endobj
+xref
+0 50
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000274 00000 n 
+0000000344 00000 n 
+0000000470 00000 n 
+0000004358 00000 n 
+0000004484 00000 n 
+0000008802 00000 n 
+0000008928 00000 n 
+0000013551 00000 n 
+0000013679 00000 n 
+0000019440 00000 n 
+0000019568 00000 n 
+0000025581 00000 n 
+0000025709 00000 n 
+0000031520 00000 n 
+0000031648 00000 n 
+0000037709 00000 n 
+0000037837 00000 n 
+0000042850 00000 n 
+0000042978 00000 n 
+0000045626 00000 n 
+0000045754 00000 n 
+0000049471 00000 n 
+0000049599 00000 n 
+0000052981 00000 n 
+0000053109 00000 n 
+0000055683 00000 n 
+0000055811 00000 n 
+0000059231 00000 n 
+0000059359 00000 n 
+0000061957 00000 n 
+0000062085 00000 n 
+0000064781 00000 n 
+0000064909 00000 n 
+0000067102 00000 n 
+0000067230 00000 n 
+0000069403 00000 n 
+0000069531 00000 n 
+0000071455 00000 n 
+0000071583 00000 n 
+0000073456 00000 n 
+0000073584 00000 n 
+0000076536 00000 n 
+0000076664 00000 n 
+0000078932 00000 n 
+0000079060 00000 n 
+0000081459 00000 n 
+0000081587 00000 n 
+trailer
+<< /Size 50 /Root 1 0 R /Info << /Title (ONT-001 - Syrka Ontology Constitution) /Author (Syrka Architecture) >> >>
+startxref
+82750
+%%EOF
