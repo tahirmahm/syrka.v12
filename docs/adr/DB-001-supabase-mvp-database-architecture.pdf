@@ -1,0 +1,2192 @@
+%PDF-1.4
+%
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R 30 0 R 32 0 R 34 0 R 36 0 R 38 0 R] /Count 18 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 3782 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(DB-001 - Syrka Supabase MVP Database Architecture) Tj
+T*
+() Tj
+T*
+(Status: Implementation Specification) Tj
+T*
+(Version: 1.0) Tj
+T*
+(Date: 2026-07-08) Tj
+T*
+(Builds upon: Product Suite; ADR-001; ADR-002; CEA-001; ONT-001; GRAPH-001; REASON-001; INF-001; ) Tj
+T*
+(UX-001) Tj
+T*
+(Decision owners: Database Architecture / Supabase Engineering / Backend Architecture / Security ) Tj
+T*
+(/ Platform Engineering) Tj
+T*
+(Scope: Supabase PostgreSQL schemas, tables, RLS, storage buckets, event store, projections, seed) Tj
+T*
+( data, migrations, implementation order, and future extraction boundaries for Syrka MVP) Tj
+T*
+() Tj
+T*
+(1. Executive Overview) Tj
+T*
+() Tj
+T*
+(Supabase PostgreSQL is Syrka's MVP operational backend. It stores the first production-grade ) Tj
+T*
+(implementation of identity profiles, tenants, institutions, learning projections, canonical ) Tj
+T*
+(events, ontology terms, evidence, capability observations, recommendations, Odyssey plans, Job ) Tj
+T*
+(Passport records, employer workflows, faculty dashboards, government aggregates, integration ) Tj
+T*
+(mappings, storage metadata, and audit logs.) Tj
+T*
+() Tj
+T*
+(Supabase is the MVP system of record for operational product data, not the permanent replacement) Tj
+T*
+( for specialized graph, vector, event-store, warehouse, credential-ledger, or object-storage ) Tj
+T*
+(systems. The schema must therefore be practical enough for Claude Sonnet and backend engineers ) Tj
+T*
+(to implement quickly while preserving clean extraction paths.) Tj
+T*
+() Tj
+T*
+(| Data/system | In Supabase MVP now | Future extraction path |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Authentication | Supabase Auth + identity schemas | optional enterprise identity broker, still synchronized to ) Tj
+T*
+(identity projections |) Tj
+T*
+(| Operational profiles/tenants | PostgreSQL schemas | remains relational source of truth |) Tj
+T*
+(| Canonical events | PostgreSQL append-only MVP event store | Kafka/NATS + event lake + schema registry |) Tj
+T*
+(| Ontology | relational tables | RDF/OWL store + graph semantic layer |) Tj
+T*
+(| Human Capability Graph | relational graph-like projections | Neo4j/property graph + RDF layer |) Tj
+T*
+(| Evidence metadata | PostgreSQL | stays relational; artifacts in object storage; embeddings in vector DB |) Tj
+T*
+(| AI embeddings | pgvector optional | dedicated vector database |) Tj
+T*
+(| Analytics | materialized views/tables | warehouse/lakehouse |) Tj
+T*
+(| Credential ledger | passport/credential tables | dedicated verifiable credential ledger |) Tj
+T*
+(| Files/artifacts | Supabase Storage metadata | object storage with scanning/lifecycle policies |) Tj
+T*
+() Tj
+T*
+(Avoid overengineering by building only MVP-required tables and projections first, but avoid ) Tj
+T*
+(lock-in by using canonical IDs, canonical events, source mappings, ontology term IDs, evidence ) Tj
+T*
+(provenance, RLS, and append-only logs from day one.) Tj
+T*
+() Tj
+T*
+(2. Database Architecture Principles) Tj
+T*
+() Tj
+T*
+(1. MVP-first but future-compatible. Build operational tables that support product workflows now ) Tj
+T*
+(and can be extracted into graph/vector/event systems later.) Tj
+T*
+(2. Strict tenant isolation. Tenant-scoped rows include tenant_id; RLS policies enforce tenant ) Tj
+T*
+(access.) Tj
+T*
+(3. RLS by default. All non-public tables enable Row Level Security before production.) Tj
+T*
+(4. Canonical IDs. Use Syrka UUIDs/ULIDs as canonical IDs; LMS-native IDs remain mapping fields.) Tj
+T*
+(5. Event-first architecture. Important state changes publish and/or derive from canonical ) Tj
+T*
+(events.) Tj
+T*
+(6. Auditability. Sensitive reads/writes create audit records.) Tj
+T*
+(7. Evidence provenance. Evidence rows link to canonical events, source systems, artifacts, and ) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 4523 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(ontology terms.) Tj
+T*
+(8. Soft deletion where required. Use deleted_at/archived_at for user-facing/domain objects; ) Tj
+T*
+(event logs remain immutable.) Tj
+T*
+(9. Immutable event logs. events.canonical_events is append-only; corrections are new events.) Tj
+T*
+(10. Country/institution overlays. Include country_code, institution_id, jurisdiction and overlay) Tj
+T*
+( tables.) Tj
+T*
+(11. Privacy-aware schema. Include privacy_classification, consent_basis, visibility, and ) Tj
+T*
+(retention metadata.) Tj
+T*
+(12. No direct LMS coupling. Learning tables may project LMS data but never make LMS IDs ) Tj
+T*
+(canonical.) Tj
+T*
+(13. No AI outputs without evidence/provenance. Reasoning/AI tables store candidate outputs with ) Tj
+T*
+(source evidence and validation status.) Tj
+T*
+(14. Server-only privileged access. Service-role writes are isolated to backend workers/API ) Tj
+T*
+(routes.) Tj
+T*
+() Tj
+T*
+(3. Supabase Schema Organization) Tj
+T*
+() Tj
+T*
+(| Schema | Purpose | Owned tables | Access patterns | RLS strategy | Future migration path |) Tj
+T*
+(|---|---|---|---|---|---|) Tj
+T*
+(| public | Compatibility, public lookup views, generated API-safe views. | public views only | frontend read of safe ) Tj
+T*
+(data | expose only safe views | keep thin |) Tj
+T*
+(| auth | Supabase-managed authentication. | users, sessions | Supabase internal | managed | keep Supabase or identity ) Tj
+T*
+(broker sync |) Tj
+T*
+(| identity | Syrka identity, tenant, role, consent model. | profiles, persons, organizations, tenants, roles, consent ) Tj
+T*
+(| all apps | tenant/user scoped | remains relational core |) Tj
+T*
+(| institutions | Institution, programme, cohort, term, enrollments. | institutions, departments, programmes, cohorts |) Tj
+T*
+( faculty/admin/student | tenant + institution scoped | remains relational + analytics exports |) Tj
+T*
+(| learning | MVP LMS projections/native learning records. | courses, modules, assignments, submissions | ) Tj
+T*
+(student/faculty | enrollment/faculty scoped | replaceable adapter projections |) Tj
+T*
+(| events | MVP canonical event store and processing. | canonical_events, schemas, checkpoints, DLQ | services, audits ) Tj
+T*
+(| service/admin mostly | move to broker/event lake |) Tj
+T*
+(| ontology | MVP ontology concepts and mappings. | ontology_terms, relationships, overlays | read-heavy | mostly read;) Tj
+T*
+( admin write | RDF/graph semantic layer |) Tj
+T*
+(| evidence | Evidence metadata, artifacts, reviews, provenance. | evidence_items, artifacts, reviews | ) Tj
+T*
+(student/faculty/AI | owner/reviewer scoped | metadata stays, artifacts external |) Tj
+T*
+(| capability | Capability observations/states/confidence. | observations, states, dependencies | dashboards/passport |) Tj
+T*
+( subject/role scoped | move to HCG property graph |) Tj
+T*
+(| reasoning | AI/reasoning runs, GLM requests, human review. | runs, inputs, outputs, prompts | AI ) Tj
+T*
+(services/admin/reviewers | service/reviewer scoped | model registry + eval platform |) Tj
+T*
+(| recommendations | Odyssey, recommendations, goals, matches. | intents, goals, odyssey, recs | ) Tj
+T*
+(student/advisor/employer | subject scoped | recommender service projections |) Tj
+T*
+(| passport | Job Passport and public profile. | passports, versions, claims, shares | student/employer/public | ) Tj
+T*
+(owner/share scoped | credential ledger/public profile service |) Tj
+T*
+(| portfolio | Portfolio pages/items/artifacts. | portfolios, sections, items | student/public share | owner/share ) Tj
+T*
+(scoped | portfolio service |) Tj
+T*
+(| employer | Employer, jobs, pipeline, matching. | employers, jobs, matches | employer/recruiter | employer tenant ) Tj
+T*
+(scoped | employer service |) Tj
+T*
+(| faculty | Faculty queues/interventions/curriculum mapping. | access, snapshots, reviews | faculty/admin | assigned-) Tj
+T*
+(course scoped | academic service |) Tj
+T*
+(| government | Government/institution aggregate analytics. | strategies, signals, gaps, corridors | government/admin |) Tj
+T*
+( aggregate only | warehouse/government platform |) Tj
+T*
+(| integrations | External connectors and source mappings. | connections, mappings, sync_jobs | service/admin/user ) Tj
+T*
+(consent | owner/service scoped | connector services |) Tj
+T*
+(| audit | Audit/access/security logs. | audit_logs, access_logs | security/admin | append-only/admin | SIEM/export |) Tj
+T*
+(| storage_meta | File metadata for Supabase Storage. | storage_objects, scans | storage/API | owner/bucket scoped | ) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 4601 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(object metadata service |) Tj
+T*
+() Tj
+T*
+(4. Core Identity Tables) Tj
+T*
+() Tj
+T*
+(4.1 Identity table definitions) Tj
+T*
+() Tj
+T*
+(| Table | Columns | PK / FKs | Indexes | RLS policy | Example query | Lifecycle events |) Tj
+T*
+(|---|---|---|---|---|---|---|) Tj
+T*
+(| identity.profiles | user_id uuid, person_id uuid, display_name text, avatar_url text, country_code char\(2\), locale ) Tj
+T*
+(text, timezone text, onboarding_status text, created_at timestamptz, updated_at timestamptz | PK user_id; FK ) Tj
+T*
+(auth.users\(id\), identity.persons\(id\) | person_id, country_code | user can read/update own profile; tenant admins read ) Tj
+T*
+(members | select * from identity.profiles where user_id = auth.uid\(\) | IdentityCreated, StudentUpdated |) Tj
+T*
+(| identity.persons | person_id uuid default gen_random_uuid\(\), tenant_id uuid, primary_user_id uuid, ) Tj
+T*
+(legal_name_encrypted text, preferred_name text, date_of_birth date, country_code char\(2\), status text, created_at, ) Tj
+T*
+(updated_at, deleted_at | PK person_id; FK tenant/user | tenant_id, primary_user_id, \(tenant_id,status\) | own person; ) Tj
+T*
+(faculty/employer via policy views only | join profile to person by user_id | StudentCreated, PersonUpdated |) Tj
+T*
+(| identity.organizations | organization_id uuid, tenant_id uuid, type text, name text, country_code char\(2\), verified ) Tj
+T*
+(boolean, metadata jsonb, timestamps | PK; FK tenant | \(tenant_id,type\), country_code | tenant members read; admins ) Tj
+T*
+(write | find employer/institution orgs | OrganizationCreated |) Tj
+T*
+(| identity.tenants | tenant_id uuid, slug text, name text, type text, country_code char\(2\), status text, settings ) Tj
+T*
+(jsonb, timestamps | PK; unique slug | slug, country_code | members read; platform admins write | load tenant by slug |) Tj
+T*
+( TenantCreated |) Tj
+T*
+(| identity.tenant_memberships | membership_id uuid, tenant_id uuid, user_id uuid, person_id uuid, organization_id ) Tj
+T*
+(uuid, status text, timestamps | PK; FK tenant/user/person/org | \(tenant_id,user_id\) unique, person_id | user reads ) Tj
+T*
+(own; tenant admin manages | list tenant members | TenantMemberAdded |) Tj
+T*
+(| identity.roles | role_id uuid, tenant_id uuid null, code text, name text, description text, system_role boolean | ) Tj
+T*
+(PK; unique \(tenant_id,code\) | code | readable to tenant; platform writes | map role codes | RoleCreated |) Tj
+T*
+(| identity.permissions | permission_id uuid, code text, description text, resource text, action text | PK; unique code) Tj
+T*
+( | \(resource,action\) | readable to admins/services | permission catalog | PermissionCreated |) Tj
+T*
+(| identity.user_roles | user_role_id uuid, tenant_id uuid, user_id uuid, role_id uuid, scope_type text, scope_id uuid,) Tj
+T*
+( granted_by uuid, expires_at timestamptz, timestamps | PK; FKs user/role | \(tenant_id,user_id\), \(scope_type,scope_id\) ) Tj
+T*
+(| self reads own; admins manage; services evaluate | check faculty course role | RoleAssigned, RoleRevoked |) Tj
+T*
+(| identity.consent_grants | consent_id uuid, tenant_id uuid, person_id uuid, consent_type text, scope jsonb, status ) Tj
+T*
+(text, granted_at, revoked_at, expires_at, policy_version text | PK; FK person/tenant | ) Tj
+T*
+(\(person_id,consent_type,status\), expires_at | person owns; services read active consents | active GitHub consent | ) Tj
+T*
+(ConsentGranted, ConsentRevoked |) Tj
+T*
+(| identity.identity_links | link_id uuid, person_id uuid, provider text, external_subject_hash text, assurance_level ) Tj
+T*
+(text, linked_at, revoked_at | PK; FK person; unique provider+subject | person_id, \(provider,external_subject_hash\) | ) Tj
+T*
+(person/admin scoped | find SSO identities | FederationLinked |) Tj
+T*
+(| identity.service_accounts | service_account_id uuid, tenant_id uuid null, name text, service_code text, scopes ) Tj
+T*
+(text[], active boolean, created_at, rotated_at | PK | service_code, tenant_id | platform admins only; services by ) Tj
+T*
+(secret infra | event processor account | ServiceAccountCreated |) Tj
+T*
+() Tj
+T*
+(4.2 Identity SQL skeleton) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(create schema if not exists identity;) Tj
+T*
+(create table identity.tenants \() Tj
+T*
+(  tenant_id uuid primary key default gen_random_uuid\(\),) Tj
+T*
+(  slug text not null unique,) Tj
+T*
+(  name text not null,) Tj
+T*
+(  type text not null check \(type in \('platform','institution','employer','government','demo'\)\),) Tj
+T*
+(  country_code char\(2\),) Tj
+T*
+(  status text not null default 'active',) Tj
+T*
+(  settings jsonb not null default '{}',) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 3936 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(  created_at timestamptz not null default now\(\),) Tj
+T*
+(  updated_at timestamptz not null default now\(\)) Tj
+T*
+(\);) Tj
+T*
+() Tj
+T*
+(alter table identity.tenants enable row level security;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(5. Institution Tables) Tj
+T*
+() Tj
+T*
+(| Table | Purpose | Key columns | Relationships | RLS / access |) Tj
+T*
+(|---|---|---|---|---|) Tj
+T*
+(| institutions.institutions | canonical institution record | institution_id, tenant_id, organization_id, name, ) Tj
+T*
+(country_code, type, verified, metadata | tenant and organization | institution members read; admins manage |) Tj
+T*
+(| institutions.departments | academic units | department_id, institution_id, name, code, parent_department_id | ) Tj
+T*
+(institution hierarchy | institution scoped |) Tj
+T*
+(| institutions.programmes | degree/certificate pathways | programme_id, institution_id, department_id, title, level, ) Tj
+T*
+(ontology_mapping jsonb | departments, cohorts, courses | student/faculty/admin scoped |) Tj
+T*
+(| institutions.cohorts | learner groups | cohort_id, programme_id, term_id, name, start_date, end_date | ) Tj
+T*
+(programme/term | assigned faculty/admin/students |) Tj
+T*
+(| institutions.academic_terms | time periods | term_id, institution_id, name, start_date, end_date | institution | ) Tj
+T*
+(institution scoped |) Tj
+T*
+(| institutions.faculty_assignments | faculty-course/cohort access | assignment_id, faculty_person_id, course_run_id, ) Tj
+T*
+(cohort_id, role | learning course runs/cohorts | faculty sees assigned |) Tj
+T*
+(| institutions.student_enrollments | programme/cohort enrollment projection | enrollment_id, student_person_id, ) Tj
+T*
+(programme_id, cohort_id, status | persons/programmes/cohorts | student own; faculty assigned |) Tj
+T*
+() Tj
+T*
+(Institutions relate to tenants through tenant_id, to users through memberships/persons, to ) Tj
+T*
+(courses through learning.course_runs.institution_id, and to analytics through aggregate ) Tj
+T*
+(snapshots keyed by institution_id, programme_id, cohort_id, and term_id.) Tj
+T*
+() Tj
+T*
+(6. Learning MVP Tables) Tj
+T*
+() Tj
+T*
+(Learning tables are Syrka-native projections or connector projections. Canonical IDs are Syrka ) Tj
+T*
+(UUIDs. Source fields are references only.) Tj
+T*
+() Tj
+T*
+(| Table | Key columns | Mapping fields | Notes |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| learning.courses | course_id uuid, tenant_id, institution_id, title, description, status, created_at | ) Tj
+T*
+(source_system, source_record_id, canonical_id, adapter_version | course metadata projection |) Tj
+T*
+(| learning.course_runs | course_run_id, course_id, term_id, start_at, end_at, status | source fields | concrete ) Tj
+T*
+(offering |) Tj
+T*
+(| learning.modules | module_id, course_id, title, sequence, status | source fields | course structure |) Tj
+T*
+(| learning.lessons | lesson_id, module_id, title, content_ref, sequence, estimated_minutes | source fields | content ) Tj
+T*
+(projection |) Tj
+T*
+(| learning.assignments | assignment_id, course_run_id, title, rubric jsonb, due_at, status | source fields | ) Tj
+T*
+(task/assessment bridge |) Tj
+T*
+(| learning.submissions | submission_id, assignment_id, student_person_id, submitted_at, artifact_refs jsonb, status | ) Tj
+T*
+(source fields | evidence source |) Tj
+T*
+(| learning.grades | grade_id, submission_id, score numeric, max_score numeric, rubric_scores jsonb, graded_by, ) Tj
+T*
+(graded_at | source fields | assessment evidence |) Tj
+T*
+(| learning.feedback | feedback_id, submission_id, author_person_id, feedback_ref, visibility, created_at | source ) Tj
+T*
+(fields | may become evidence |) Tj
+T*
+(| learning.discussions | discussion_id, course_run_id, participant_person_id, action, content_ref, occurred_at | ) Tj
+T*
+(source fields | high privacy caution |) Tj
+T*
+(| learning.attendance_records | attendance_id, course_run_id, student_person_id, status, recorded_at, method | source ) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 2770 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(fields | weak evidence |) Tj
+T*
+() Tj
+T*
+(Recommended composite index for every projected LMS table:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(create unique index on learning.courses\(source_system, source_record_id\) where source_record_id is not null;) Tj
+T*
+(create index on learning.submissions\(student_person_id, submitted_at desc\);) Tj
+T*
+(create index on learning.grades\(submission_id, graded_at desc\);) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(7. Canonical Event Tables) Tj
+T*
+() Tj
+T*
+(7.1 Table design) Tj
+T*
+() Tj
+T*
+(| Table | Purpose | Key columns |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| events.canonical_events | append-only event metadata and searchable envelope | event_id uuid, event_type text, ) Tj
+T*
+(event_version text, schema_version text, occurred_at, published_at, tenant_id, institution_id, country_code, ) Tj
+T*
+(source_system, producer, actor jsonb, subject jsonb, resource jsonb, evidence_refs jsonb, privacy jsonb, security ) Tj
+T*
+(jsonb, provenance jsonb, idempotency_key text, payload_hash text, partition_key text |) Tj
+T*
+(| events.event_payloads | potentially large JSON payload split from metadata | event_id, payload jsonb, created_at |) Tj
+T*
+(| events.event_schemas | schema registry MVP | schema_id, event_type, event_version, json_schema jsonb, status, ) Tj
+T*
+(published_at |) Tj
+T*
+(| events.event_processing_checkpoints | consumer offsets/checkpoints | consumer_name, topic, partition_key, ) Tj
+T*
+(last_event_id, last_occurred_at, updated_at |) Tj
+T*
+(| events.event_dead_letters | failed consumer records | dead_letter_id, event_id, consumer_name, error_code, ) Tj
+T*
+(error_message, payload_ref, attempts, replay_eligible |) Tj
+T*
+(| events.event_replay_jobs | replay requests and status | replay_id, requested_by, scope jsonb, status, started_at, ) Tj
+T*
+(completed_at, counts jsonb |) Tj
+T*
+() Tj
+T*
+(7.2 Canonical event SQL skeleton) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(create schema if not exists events;) Tj
+T*
+(create table events.canonical_events \() Tj
+T*
+(  event_id uuid primary key default gen_random_uuid\(\),) Tj
+T*
+(  event_type text not null,) Tj
+T*
+(  event_version text not null,) Tj
+T*
+(  schema_version text not null,) Tj
+T*
+(  occurred_at timestamptz not null,) Tj
+T*
+(  published_at timestamptz not null default now\(\),) Tj
+T*
+(  tenant_id uuid,) Tj
+T*
+(  institution_id uuid,) Tj
+T*
+(  country_code char\(2\),) Tj
+T*
+(  source_system text not null,) Tj
+T*
+(  producer text not null,) Tj
+T*
+(  actor jsonb,) Tj
+T*
+(  subject jsonb,) Tj
+T*
+(  resource jsonb,) Tj
+T*
+(  evidence_refs jsonb not null default '[]',) Tj
+T*
+(  privacy jsonb not null,) Tj
+T*
+(  security jsonb not null default '{}',) Tj
+T*
+(  provenance jsonb not null,) Tj
+T*
+(  idempotency_key text not null unique,) Tj
+T*
+(  payload_hash text,) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 3199 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(  partition_key text,) Tj
+T*
+(  created_at timestamptz not null default now\(\)) Tj
+T*
+(\);) Tj
+T*
+() Tj
+T*
+(create table events.event_payloads \() Tj
+T*
+(  event_id uuid primary key references events.canonical_events\(event_id\) on delete restrict,) Tj
+T*
+(  payload jsonb not null,) Tj
+T*
+(  created_at timestamptz not null default now\(\)) Tj
+T*
+(\);) Tj
+T*
+() Tj
+T*
+(create index canonical_events_type_time_idx on events.canonical_events\(event_type, occurred_at desc\);) Tj
+T*
+(create index canonical_events_tenant_time_idx on events.canonical_events\(tenant_id, occurred_at desc\);) Tj
+T*
+(create index canonical_events_source_idx on events.canonical_events\(source_system, \(provenance->>'source_record_id'\)\);) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(7.3 Event rules) Tj
+T*
+() Tj
+T*
+(- Immutability: deny update/delete to application roles; corrections are new events.) Tj
+T*
+(- Idempotency: unique idempotency_key per producer/source fact.) Tj
+T*
+(- Replay: replay jobs read ordered events and write checkpoints.) Tj
+T*
+(- Ordering: use partition_key; no global ordering guarantee.) Tj
+T*
+(- Partitioning: start with indexes; later partition by month/tenant/event_type.) Tj
+T*
+(- RLS: users do not read raw events directly; service roles and audit/admin only; safe ) Tj
+T*
+(projections expose data.) Tj
+T*
+(- Audit: every replay/admin access is logged in audit.audit_logs.) Tj
+T*
+() Tj
+T*
+(8. Ontology Tables) Tj
+T*
+() Tj
+T*
+(| Table | Purpose | Key columns |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| ontology.ontology_versions | immutable ontology releases | version text pk, status, published_at, notes, checksum |) Tj
+T*
+(| ontology.ontology_terms | canonical concepts | term_id text pk, version, term_type, label, definition, status, ) Tj
+T*
+(parent_term_id, synonyms text[], deprecated_terms text[], metadata jsonb |) Tj
+T*
+(| ontology.ontology_relationships | semantic relationships | relationship_id uuid, version, source_term_id, ) Tj
+T*
+(relationship_type, target_term_id, confidence, provenance jsonb, valid_from, valid_to |) Tj
+T*
+(| ontology.external_mappings | ESCO/O*NET/SOC/etc. | mapping_id, term_id, standard, external_id, relation, confidence,) Tj
+T*
+( jurisdiction, provenance |) Tj
+T*
+(| ontology.jurisdiction_overlays | country/regulatory overlays | overlay_id, country_code, version, term_id, ) Tj
+T*
+(overlay_type, data jsonb |) Tj
+T*
+(| ontology.institution_overlays | institution-specific mappings | overlay_id, institution_id, version, term_id, data ) Tj
+T*
+(jsonb |) Tj
+T*
+() Tj
+T*
+(Constraints:) Tj
+T*
+() Tj
+T*
+(- ontology_terms.definition is immutable within a published version.) Tj
+T*
+(- relationship_type must match ONT-001 allowed relationships.) Tj
+T*
+(- external mappings include exact/close/broader/narrower/related relation.) Tj
+T*
+() Tj
+T*
+(9. Evidence Tables) Tj
+T*
+() Tj
+T*
+(| Table | Purpose | Key columns / constraints |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| evidence.evidence_items | central evidence metadata | evidence_id, tenant_id, person_id, evidence_type, title, ) Tj
+T*
+(source_system, source_record_id, privacy_classification, consent_basis, trust_score, quality_score, freshness_at, ) Tj
+T*
+(review_status, status, timestamps |) Tj
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 4019 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(| evidence.evidence_artifacts | file/object refs | artifact_id, evidence_id, bucket, object_path, content_hash, ) Tj
+T*
+(content_type, size_bytes, scan_status |) Tj
+T*
+(| evidence.evidence_reviews | human/AI review records | review_id, evidence_id, reviewer_type, reviewer_id, decision, ) Tj
+T*
+(rationale, created_at |) Tj
+T*
+(| evidence.evidence_disputes | student/user disputes | dispute_id, evidence_id, person_id, reason, status, resolution ) Tj
+T*
+(|) Tj
+T*
+(| evidence.evidence_provenance | source lineage | provenance_id, evidence_id, source_event_id, source_system, ) Tj
+T*
+(transformer, adapter_version, raw_ref |) Tj
+T*
+(| evidence.evidence_quality_scores | score versions | score_id, evidence_id, quality, reliability, independence, ) Tj
+T*
+(recency, method_version |) Tj
+T*
+(| evidence.evidence_to_events | many-to-many evidence/events | evidence_id, event_id |) Tj
+T*
+(| evidence.evidence_to_ontology_terms | evidence semantic mapping | evidence_id, term_id, mapping_confidence, ) Tj
+T*
+(model_version, review_status |) Tj
+T*
+() Tj
+T*
+(RLS: students read own evidence; faculty reads assigned students; employers read only shared ) Tj
+T*
+(passport evidence; AI service reads only authorized evidence bundles.) Tj
+T*
+() Tj
+T*
+(10. Capability Tables) Tj
+T*
+() Tj
+T*
+(| Table | Purpose | Key columns |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| capability.capability_observations | temporal evidence-backed observations | observation_id, tenant_id, person_id, ) Tj
+T*
+(capability_term_id, context, status, maturity, ontology_version, reasoning_version, valid_from, valid_to, created_at |) Tj
+T*
+(| capability.capability_states | current projection per person/capability | state_id, person_id, capability_term_id, ) Tj
+T*
+(current_confidence, maturity, freshness_status, last_observed_at, status |) Tj
+T*
+(| capability.capability_confidence_scores | confidence history | score_id, observation_id, score numeric, band, ) Tj
+T*
+(method_version, calibration_status, uncertainty jsonb |) Tj
+T*
+(| capability.capability_evidence_links | observation/evidence support | observation_id, evidence_id, relationship, ) Tj
+T*
+(weight, rationale |) Tj
+T*
+(| capability.capability_contradictions | conflicts | contradiction_id, observation_id, evidence_id, severity, ) Tj
+T*
+(resolution_status |) Tj
+T*
+(| capability.capability_decay_rules | decay configuration | rule_id, capability_term_id, decay_type, parameters jsonb,) Tj
+T*
+( jurisdiction |) Tj
+T*
+(| capability.capability_dependencies | prereq/support/composite | dependency_id, source_capability_term_id, ) Tj
+T*
+(target_term_id, dependency_type, required boolean, min_confidence |) Tj
+T*
+(| capability.capability_transfer_mappings | transfer/similarity | mapping_id, source_capability_term_id, ) Tj
+T*
+(target_capability_term_id, transfer_confidence, context_notes |) Tj
+T*
+(| capability.capability_review_actions | review/appeal/correction | action_id, observation_id, reviewer_id, action, ) Tj
+T*
+(rationale, created_at |) Tj
+T*
+() Tj
+T*
+(Maturity enum: exposed, emerging, developing, proficient, advanced, expert, stale, revoked.) Tj
+T*
+() Tj
+T*
+(Every observation must link to at least one evidence item through capability_evidence_links ) Tj
+T*
+(before it can become accepted.) Tj
+T*
+() Tj
+T*
+(11. Reasoning & AI Tables) Tj
+T*
+() Tj
+T*
+(| Table | Purpose | Key columns |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| reasoning.reasoning_runs | reasoning lifecycle record | run_id, tenant_id, person_id, run_type, status, ) Tj
+T*
+(ontology_version, graph_snapshot_ref, started_at, completed_at, error |) Tj
+T*
+(| reasoning.reasoning_inputs | evidence/input refs | input_id, run_id, input_type, ref_id, payload jsonb |) Tj
+T*
+(| reasoning.reasoning_outputs | candidate/validated outputs | output_id, run_id, output_type, claims jsonb, ) Tj
+T*
+(validation_status, confidence_before, confidence_after, published_event_id |) Tj
+T*
+(| reasoning.ai_model_registry | model registry | model_id, provider, model_name, model_version, status, eval_version, ) Tj
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 3958 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(metadata |) Tj
+T*
+(| reasoning.ai_prompt_versions | prompt templates | prompt_id, task_type, version, template, status, checksum |) Tj
+T*
+(| reasoning.glm_requests | GLM 5.2 request log | request_id, run_id, model_id, prompt_id, input_hash, started_at, ) Tj
+T*
+(latency_ms, cost_estimate, status |) Tj
+T*
+(| reasoning.glm_responses | GLM candidate outputs | response_id, request_id, raw_response jsonb, parsed_response ) Tj
+T*
+(jsonb, validation_status, error |) Tj
+T*
+(| reasoning.ai_evaluations | eval results | evaluation_id, model_id, task_type, dataset_version, metrics jsonb, ) Tj
+T*
+(approved boolean |) Tj
+T*
+(| reasoning.human_review_queue | review tasks | review_task_id, tenant_id, person_id, target_type, target_id, ) Tj
+T*
+(priority, reason, assigned_to, status |) Tj
+T*
+(| reasoning.human_review_results | review decisions | review_result_id, review_task_id, reviewer_id, decision, ) Tj
+T*
+(rationale, event_id, created_at |) Tj
+T*
+() Tj
+T*
+(Rule: GLM outputs are candidate reasoning. Only validated outputs that pass evidence/provenance ) Tj
+T*
+(rules can publish capability or recommendation events.) Tj
+T*
+() Tj
+T*
+(12. Odyssey & Recommendation Tables) Tj
+T*
+() Tj
+T*
+(| Table | Purpose | Key columns |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| recommendations.career_intents | user goals/preferences | intent_id, person_id, target_roles, industries, ) Tj
+T*
+(geographies, salary_expectation, constraints, status |) Tj
+T*
+(| recommendations.goals | specific goals | goal_id, person_id, goal_type, title, target_date, status |) Tj
+T*
+(| recommendations.odyssey_plans | roadmap | plan_id, person_id, goal_id, version, status, generated_by_run_id |) Tj
+T*
+(| recommendations.odyssey_milestones | roadmap steps | milestone_id, plan_id, title, sequence, target_capability_id, ) Tj
+T*
+(status |) Tj
+T*
+(| recommendations.recommendations | recommendation records | recommendation_id, person_id, type, title, next_action, ) Tj
+T*
+(confidence, explanation, status, expires_at |) Tj
+T*
+(| recommendations.recommendation_reasons | basis/explanations | reason_id, recommendation_id, basis_type, basis_id, ) Tj
+T*
+(weight, rationale |) Tj
+T*
+(| recommendations.recommendation_feedback | user feedback | feedback_id, recommendation_id, person_id, rating, action,) Tj
+T*
+( comment |) Tj
+T*
+(| recommendations.learning_pathways | suggested learning path | pathway_id, person_id, target_capability_id, steps ) Tj
+T*
+(jsonb, status |) Tj
+T*
+(| recommendations.opportunity_matches | opportunity/job matches | match_id, person_id, opportunity_type, ) Tj
+T*
+(opportunity_id, score, explanation, status |) Tj
+T*
+() Tj
+T*
+(Every recommendation includes evidence basis through recommendation_reasons, confidence, ) Tj
+T*
+(explanation, next action, and status.) Tj
+T*
+() Tj
+T*
+(13. Job Passport Tables) Tj
+T*
+() Tj
+T*
+(| Table | Purpose | Key columns |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| passport.passports | passport root | passport_id, person_id, tenant_id, status, current_version, created_at |) Tj
+T*
+(| passport.passport_versions | immutable versions | passport_version_id, passport_id, version_number, issued_at, ) Tj
+T*
+(expires_at, summary, status |) Tj
+T*
+(| passport.passport_claims | capability/credential claims | claim_id, passport_version_id, claim_type, ) Tj
+T*
+(capability_observation_id, credential_id, confidence, visibility, status |) Tj
+T*
+(| passport.passport_evidence_links | claim evidence trails | claim_id, evidence_id, display_order, redaction_policy |) Tj
+T*
+(| passport.passport_shares | share links/QR | share_id, passport_id, passport_version_id, recipient_type, ) Tj
+T*
+(recipient_id, token_hash, expires_at, revoked_at, qr_ref |) Tj
+T*
+(| passport.passport_verifications | employer/verifier checks | verification_id, share_id, verifier_id, status, ) Tj
+T*
+(verified_at, details jsonb |) Tj
+T*
+(| passport.passport_revocations | revocation history | revocation_id, passport_id, claim_id, reason, revoked_by, ) Tj
+ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 3639 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(revoked_at |) Tj
+T*
+(| passport.public_capability_profiles | public profile projection | profile_id, person_id, slug, visibility, ) Tj
+T*
+(published_version, settings jsonb |) Tj
+T*
+() Tj
+T*
+(14. Portfolio Tables) Tj
+T*
+() Tj
+T*
+(| Table | Key columns | Purpose |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| portfolio.portfolios | portfolio_id, person_id, title, status, visibility | portfolio root |) Tj
+T*
+(| portfolio.portfolio_sections | section_id, portfolio_id, type, title, sequence | structure |) Tj
+T*
+(| portfolio.portfolio_items | item_id, section_id, item_type, title, description, evidence_id, capability_term_id | ) Tj
+T*
+(projects/research/reflections |) Tj
+T*
+(| portfolio.portfolio_artifacts | portfolio_artifact_id, item_id, artifact_id, display_order | artifact links |) Tj
+T*
+(| portfolio.portfolio_share_links | share_id, portfolio_id, token_hash, expires_at, revoked_at | public/private ) Tj
+T*
+(sharing |) Tj
+T*
+(| portfolio.generated_portfolio_pages | page_id, portfolio_id, generator_run_id, html_ref, pdf_ref, status | ) Tj
+T*
+(AI/generated pages |) Tj
+T*
+() Tj
+T*
+(15. Employer Tables) Tj
+T*
+() Tj
+T*
+(| Table | Key columns | Purpose |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| employer.employers | employer_id, tenant_id, organization_id, name, industry_id, verified | employer profile |) Tj
+T*
+(| employer.employer_users | employer_user_id, employer_id, user_id, role, status | employer membership |) Tj
+T*
+(| employer.employer_verifications | verification_id, employer_id, method, status, verified_at | employer trust |) Tj
+T*
+(| employer.jobs | job_id, employer_id, title, description, location, salary_range, status | jobs/opportunities |) Tj
+T*
+(| employer.job_requirements | requirement_id, job_id, ontology_term_id, requirement_type, min_confidence, weight | ) Tj
+T*
+(capability-first requirements |) Tj
+T*
+(| employer.candidate_searches | search_id, employer_id, created_by, filters jsonb, created_at | search audit |) Tj
+T*
+(| employer.candidate_matches | match_id, job_id, person_id, score, explanation, status | matching projection |) Tj
+T*
+(| employer.employer_interests | interest_id, employer_id, person_id, job_id, status, message_ref | consent-aware ) Tj
+T*
+(interest |) Tj
+T*
+(| employer.hiring_pipeline | pipeline_id, job_id, person_id, stage, updated_at | recruiting workflow |) Tj
+T*
+(| employer.hiring_feedback | feedback_id, job_id, person_id, feedback jsonb, event_id | outcome feedback |) Tj
+T*
+() Tj
+T*
+(16. Faculty Tables) Tj
+T*
+() Tj
+T*
+(| Table | Key columns | Purpose |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| faculty.faculty_course_access | access_id, faculty_person_id, course_run_id, role | course access |) Tj
+T*
+(| faculty.cohort_analytics_snapshots | snapshot_id, cohort_id, term_id, metrics jsonb, created_at | cohort dashboard |) Tj
+T*
+(| faculty.evidence_review_assignments | assignment_id, evidence_id, reviewer_person_id, status, due_at | review queues) Tj
+T*
+( |) Tj
+T*
+(| faculty.interventions | intervention_id, student_person_id, faculty_person_id, reason, status | student support |) Tj
+T*
+(| faculty.faculty_feedback | feedback_id, student_person_id, faculty_person_id, content_ref, visibility | feedback ) Tj
+T*
+(records |) Tj
+T*
+(| faculty.curriculum_mappings | mapping_id, course_id, assignment_id, ontology_term_id, mapping_confidence | ) Tj
+T*
+(curriculum intelligence |) Tj
+T*
+(| faculty.assessment_quality_signals | signal_id, assessment_id, metric_type, value, reasoning_run_id | assessment ) Tj
+T*
+(quality |) Tj
+T*
+() Tj
+T*
+(17. Government & Institutional Analytics Tables) Tj
+T*
+() Tj
+T*
+(| Table | Key columns | Purpose |) Tj
+T*
+(|---|---|---|) Tj
+ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 4454 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(| government.government_agencies | agency_id, tenant_id, organization_id, jurisdiction_id, name | government ) Tj
+T*
+(users/orgs |) Tj
+T*
+(| government.national_strategies | strategy_id, country_code, title, period_start, period_end, document_ref | national) Tj
+T*
+( vision layer |) Tj
+T*
+(| government.strategic_sectors | strategic_sector_id, strategy_id, sector_term_id, priority_level | priority sectors |) Tj
+T*
+(| government.labour_market_signals | signal_id, country_code, ontology_term_id, signal_type, value, observed_at, ) Tj
+T*
+(source | market signals |) Tj
+T*
+(| government.capability_gap_snapshots | snapshot_id, country_code, institution_id, sector_term_id, metrics jsonb, ) Tj
+T*
+(as_of | aggregate gaps |) Tj
+T*
+(| government.institutional_reports | report_id, institution_id, report_type, metrics jsonb, generated_at | ) Tj
+T*
+(institutional analytics |) Tj
+T*
+(| government.mobility_corridors | corridor_id, from_country, to_country, sector_term_id, status | corridors |) Tj
+T*
+(| government.corridor_matches | match_id, corridor_id, aggregate_group jsonb, count, status | aggregate matching |) Tj
+T*
+(| government.policy_briefs | brief_id, strategy_id, generated_by, document_ref, summary, created_at | policy outputs |) Tj
+T*
+() Tj
+T*
+(Default: aggregate/privacy-preserving data. Individual-level government access requires explicit) Tj
+T*
+( legal basis and separate policy review.) Tj
+T*
+() Tj
+T*
+(18. Integration Tables) Tj
+T*
+() Tj
+T*
+(| Table | Key columns | Purpose |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| integrations.integration_connections | connection_id, tenant_id, provider, connected_by, status, scopes, expires_at ) Tj
+T*
+(| external connections |) Tj
+T*
+(| integrations.lms_source_mappings | mapping_id, source_system, source_record_id, canonical_type, canonical_id, ) Tj
+T*
+(adapter_version | LMS anti-corruption mapping |) Tj
+T*
+(| integrations.openedx_mappings | openedx_id, canonical_type, canonical_id, course_key, metadata | Open edX-specific ) Tj
+T*
+(projection |) Tj
+T*
+(| integrations.canvas_mappings | canvas_id, canonical_type, canonical_id, metadata | Canvas-specific projection |) Tj
+T*
+(| integrations.moodle_mappings | moodle_id, canonical_type, canonical_id, metadata | Moodle-specific projection |) Tj
+T*
+(| integrations.github_connections | connection_id, person_id, github_user_hash, status, consent_id | GitHub links |) Tj
+T*
+(| integrations.linkedin_connections | connection_id, person_id, profile_hash, status, consent_id | LinkedIn links |) Tj
+T*
+(| integrations.orcid_connections | connection_id, person_id, orcid_hash, status, consent_id | ORCID links |) Tj
+T*
+(| integrations.webhooks | webhook_id, provider, target_url, secret_ref, status | outbound/inbound webhooks |) Tj
+T*
+(| integrations.sync_jobs | sync_job_id, connection_id, job_type, status, started_at, completed_at | sync operations |) Tj
+T*
+(| integrations.sync_errors | sync_error_id, sync_job_id, error_code, message, record_ref, created_at | sync failures |) Tj
+T*
+() Tj
+T*
+(External records map to canonical IDs without becoming semantic truth.) Tj
+T*
+() Tj
+T*
+(19. Storage Architecture) Tj
+T*
+() Tj
+T*
+(| Bucket | Purpose | File types | Access policy | Retention | Signed URL strategy | Scanning | Metadata table |) Tj
+T*
+(|---|---|---|---|---|---|---|---|) Tj
+T*
+(| evidence-artifacts | capability evidence artifacts | pdf, docx, images, code archives, datasets | ) Tj
+T*
+(owner/reviewer/service | long/jurisdictional | short-lived signed URLs | placeholder scan_status | ) Tj
+T*
+(evidence.evidence_artifacts |) Tj
+T*
+(| submissions | assignment submissions | pdf, text, images, zip | student/faculty/service | course policy | signed ) Tj
+T*
+(URLs per assignment | required placeholder | learning.submissions + artifacts |) Tj
+T*
+(| portfolio-assets | portfolio media/assets | images, pdf, videos | owner/share | user-controlled | signed/public ) Tj
+T*
+(based share | required | portfolio.portfolio_artifacts |) Tj
+T*
+(| passport-exports | generated passports | pdf, json, QR images | owner/share/verifier | versioned/revocable | token-) Tj
+T*
+(bound signed URLs | required | passport.passport_versions |) Tj
+T*
+(| profile-media | avatars/profile media | images | owner/public if chosen | user-controlled | public or signed | ) Tj
+T*
+(required | identity.profiles |) Tj
+T*
+(| institution-documents | curriculum/accreditation docs | pdf, docx, csv | institution admins/faculty | institutional ) Tj
+ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 2222 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(policy | signed | required | storage_meta |) Tj
+T*
+(| government-policy-documents | national strategies/policy docs | pdf, html, docx | government/admin/public per source) Tj
+T*
+( | long/permanent | signed/public source | required | government.national_strategies |) Tj
+T*
+(| generated-reports | analytics and policy briefs | pdf, csv, xlsx | authorized role | report policy | signed, ) Tj
+T*
+(expiring | required | government.policy_briefs, reports |) Tj
+T*
+() Tj
+T*
+(storage_meta.storage_objects tracks bucket, path, owner, tenant, content hash, scan status, ) Tj
+T*
+(privacy, retention, and linked domain entity.) Tj
+T*
+() Tj
+T*
+(20. Row Level Security) Tj
+T*
+() Tj
+T*
+(20.1 Helper functions) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(create schema if not exists app_security;) Tj
+T*
+() Tj
+T*
+(create or replace function app_security.current_user_id\(\)) Tj
+T*
+(returns uuid language sql stable as $$ select auth.uid\(\) $$;) Tj
+T*
+() Tj
+T*
+(create or replace function app_security.is_tenant_member\(p_tenant_id uuid\)) Tj
+T*
+(returns boolean language sql stable as $$) Tj
+T*
+(  select exists \() Tj
+T*
+(    select 1 from identity.tenant_memberships tm) Tj
+T*
+(    where tm.tenant_id = p_tenant_id) Tj
+T*
+(      and tm.user_id = auth.uid\(\)) Tj
+T*
+(      and tm.status = 'active') Tj
+T*
+(  \);) Tj
+T*
+($$;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(20.2 Example policies) Tj
+T*
+() Tj
+T*
+(Student viewing own evidence:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(alter table evidence.evidence_items enable row level security;) Tj
+T*
+(create policy evidence_select_own) Tj
+T*
+(on evidence.evidence_items for select) Tj
+T*
+(using \() Tj
+T*
+(  person_id in \(select person_id from identity.profiles where user_id = auth.uid\(\)\)) Tj
+T*
+(\);) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Faculty viewing assigned students:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(create policy evidence_select_faculty_assigned) Tj
+T*
+(on evidence.evidence_items for select) Tj
+T*
+(using \() Tj
+T*
+(  exists \() Tj
+T*
+(    select 1) Tj
+T*
+(    from institutions.faculty_assignments fa) Tj
+T*
+(    join institutions.student_enrollments se on se.cohort_id = fa.cohort_id) Tj
+T*
+(    join identity.profiles p on p.person_id = fa.faculty_person_id) Tj
+T*
+(    where p.user_id = auth.uid\(\)) Tj
+ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 2385 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(      and se.student_person_id = evidence_items.person_id) Tj
+T*
+(  \)) Tj
+T*
+(\);) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Employers viewing shared passport data only:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(create policy passport_share_select) Tj
+T*
+(on passport.passport_claims for select) Tj
+T*
+(using \() Tj
+T*
+(  exists \() Tj
+T*
+(    select 1 from passport.passport_shares ps) Tj
+T*
+(    where ps.passport_version_id = passport_claims.passport_version_id) Tj
+T*
+(      and ps.revoked_at is null) Tj
+T*
+(      and ps.expires_at > now\(\)) Tj
+T*
+(  \)) Tj
+T*
+(\);) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Government aggregate only:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(create policy gov_aggregate_select) Tj
+T*
+(on government.capability_gap_snapshots for select) Tj
+T*
+(using \(app_security.is_tenant_member\(tenant_id\)\);) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Service roles processing events should use Supabase service role only in server-side workers; ) Tj
+T*
+(client access is forbidden.) Tj
+T*
+() Tj
+T*
+(21. Indexing & Performance) Tj
+T*
+() Tj
+T*
+(Recommended indexes:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(-- tenant and person access) Tj
+T*
+(create index persons_tenant_idx on identity.persons\(tenant_id, status\);) Tj
+T*
+(create index profiles_person_idx on identity.profiles\(person_id\);) Tj
+T*
+() Tj
+T*
+(-- events) Tj
+T*
+(create index events_tenant_type_time_idx on events.canonical_events\(tenant_id, event_type, occurred_at desc\);) Tj
+T*
+(create index events_source_record_idx on events.canonical_events\(source_system, idempotency_key\);) Tj
+T*
+(create index events_subject_gin_idx on events.canonical_events using gin\(subject\);) Tj
+T*
+() Tj
+T*
+(-- ontology) Tj
+T*
+(create index ontology_terms_type_version_idx on ontology.ontology_terms\(term_type, version, status\);) Tj
+T*
+(create index ontology_relationships_source_idx on ontology.ontology_relationships\(source_term_id, relationship_type\);) Tj
+T*
+() Tj
+T*
+(-- evidence/capability) Tj
+T*
+(create index evidence_person_time_idx on evidence.evidence_items\(person_id, created_at desc\);) Tj
+T*
+(create index evidence_status_idx on evidence.evidence_items\(tenant_id, review_status, status\);) Tj
+T*
+(create index cap_state_person_idx on capability.capability_states\(person_id, current_confidence desc\);) Tj
+T*
+(create index cap_obs_person_term_idx on capability.capability_observations\(person_id, capability_term_id, valid_from ) Tj
+T*
+(desc\);) Tj
+ET
+endstream
+endobj
+28 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 29 0 R >>
+endobj
+29 0 obj
+<< /Length 2961 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+() Tj
+T*
+(-- passport/employer) Tj
+T*
+(create index passport_person_idx on passport.passports\(person_id, status\);) Tj
+T*
+(create index jobs_employer_status_idx on employer.jobs\(employer_id, status\);) Tj
+T*
+(create index candidate_matches_job_score_idx on employer.candidate_matches\(job_id, score desc\);) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Composite indexes should align to RLS and dashboard filters: tenant_id + status, person_id + ) Tj
+T*
+(occurred_at, institution_id + term_id, event_type + occurred_at, source_system + ) Tj
+T*
+(source_record_id, and job_id + score.) Tj
+T*
+() Tj
+T*
+(22. Views & Projections) Tj
+T*
+() Tj
+T*
+(| View/materialized view | Purpose | MVP? | Future path |) Tj
+T*
+(|---|---|---:|---|) Tj
+T*
+(| public.student_dashboard_view | student profile, next actions, passport status | yes | API/BFF projection |) Tj
+T*
+(| public.student_capability_summary | current capability state cards | yes | graph projection |) Tj
+T*
+(| public.evidence_timeline_view | evidence timeline by person | yes | evidence service projection |) Tj
+T*
+(| public.passport_claims_view | passport claims with evidence counts | yes | passport service projection |) Tj
+T*
+(| public.faculty_cohort_summary | cohort risk/mastery/review counts | yes | analytics projection |) Tj
+T*
+(| public.employer_candidate_match_view | candidate/job match cards | yes | matching service projection |) Tj
+T*
+(| public.government_capability_gap_view | aggregate capability gaps | yes | warehouse/materialized model |) Tj
+T*
+(| public.admin_audit_summary | audit counts/status | yes | SIEM/dashboard |) Tj
+T*
+() Tj
+T*
+(Example view:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(create view public.student_capability_summary as) Tj
+T*
+(select) Tj
+T*
+(  cs.person_id,) Tj
+T*
+(  cs.capability_term_id,) Tj
+T*
+(  ot.label as capability_label,) Tj
+T*
+(  cs.current_confidence,) Tj
+T*
+(  cs.maturity,) Tj
+T*
+(  cs.freshness_status,) Tj
+T*
+(  cs.last_observed_at) Tj
+T*
+(from capability.capability_states cs) Tj
+T*
+(join ontology.ontology_terms ot on ot.term_id = cs.capability_term_id;) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(23. Supabase Realtime) Tj
+T*
+() Tj
+T*
+(Use realtime only where user value is immediate:) Tj
+T*
+() Tj
+T*
+(| Use case | Channel/table | Rationale |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| notifications | notification projection table | immediate UX feedback |) Tj
+T*
+(| evidence review status | evidence_reviews / review queue | student/faculty updates |) Tj
+T*
+(| recommendation updates | recommendations | Odyssey refresh |) Tj
+T*
+(| passport share status | passport_shares/verifications | employer viewed/verified |) Tj
+T*
+(| sync job progress | integrations.sync_jobs | admin/integration monitoring |) Tj
+T*
+(| faculty review queue | faculty.evidence_review_assignments | review workload updates |) Tj
+T*
+() Tj
+T*
+(Avoid realtime for raw canonical events, high-volume learning activity, analytics aggregates, ) Tj
+T*
+(and government dashboards unless specifically needed.) Tj
+ET
+endstream
+endobj
+30 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 31 0 R >>
+endobj
+31 0 obj
+<< /Length 3259 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+() Tj
+T*
+(24. Migrations) Tj
+T*
+() Tj
+T*
+(Migration strategy:) Tj
+T*
+() Tj
+T*
+(1. Use Supabase CLI migrations in supabase/migrations.) Tj
+T*
+(2. Prefix with sequence and domain, e.g. 010_db001_identity.sql, 011_db001_events.sql.) Tj
+T*
+(3. Migration order: schemas/extensions -> identity -> institutions -> ontology -> events -> ) Tj
+T*
+(learning -> evidence -> capability -> reasoning -> recommendations -> passport -> ) Tj
+T*
+(employer/faculty/government -> integrations -> views/RLS -> seed.) Tj
+T*
+(4. Seed ontology terms separately from demo data.) Tj
+T*
+(5. Local development uses demo tenant and resettable seed.) Tj
+T*
+(6. Staging mirrors production RLS and service-role flows.) Tj
+T*
+(7. Production rollbacks use forward-fix migrations for data changes; destructive rollback ) Tj
+T*
+(forbidden without backup.) Tj
+T*
+(8. Every migration includes indexes and RLS before feature exposure.) Tj
+T*
+() Tj
+T*
+(25. Seed Data) Tj
+T*
+() Tj
+T*
+(Investor demo seed set:) Tj
+T*
+() Tj
+T*
+(| Seed object | Example |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Demo university | Syrka Demo University, tenant demo-university |) Tj
+T*
+(| Demo students | Aisha, Omar, Lina with different capability journeys |) Tj
+T*
+(| Demo faculty | Dr. Samir assigned to AI/Data course |) Tj
+T*
+(| Demo employer | FutureGrid Technologies with AI Analyst internship |) Tj
+T*
+(| Demo government agency | Ministry of Future Skills with AI strategic sector |) Tj
+T*
+(| Ontology terms | SQL data modeling, Python programming, economic analysis, communication, AI literacy |) Tj
+T*
+(| Capabilities | data analysis, software API design, econometric modeling, research design |) Tj
+T*
+(| Evidence examples | graded assignment, GitHub repo, research paper, credential |) Tj
+T*
+(| Recommendations | complete ML project, apply to internship, renew credential |) Tj
+T*
+(| Passport claims | verified SQL capability, Python project evidence, degree credential |) Tj
+T*
+() Tj
+T*
+(Seed scripts must create realistic evidence trails and capability observations, not only static ) Tj
+T*
+(dashboard data.) Tj
+T*
+() Tj
+T*
+(26. Security & Privacy) Tj
+T*
+() Tj
+T*
+(| Area | Design |) Tj
+T*
+(|---|---|) Tj
+T*
+(| PII minimization | Store only required PII; encrypt sensitive fields where possible; use hashes for external IDs. |) Tj
+T*
+(| Encryption assumptions | Supabase encryption at rest/in transit; application-level encryption for high sensitivity ) Tj
+T*
+(fields if needed. |) Tj
+T*
+(| Audit logs | Sensitive reads/writes, admin actions, passport shares, AI evidence access. |) Tj
+T*
+(| Access logs | Employer/government/passport views logged. |) Tj
+T*
+(| Consent sharing | Consent gates integrations, public profiles, employer passport views. |) Tj
+T*
+(| Data retention | Retention policy by table/evidence type/jurisdiction. |) Tj
+T*
+(| Deletion/anonymization | Soft delete operational rows; anonymize where law requires; immutable events may be ) Tj
+T*
+(tombstoned/anonymized by policy. |) Tj
+T*
+(| GDPR-style controls | export, rectify, erase/anonymize, restrict processing, consent revocation. |) Tj
+T*
+(| FERPA-style controls | educational records restricted to legitimate educational interest or consent. |) Tj
+T*
+() Tj
+T*
+(27. Claude Implementation Readiness) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+32 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 33 0 R >>
+endobj
+33 0 obj
+<< /Length 2498 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(27.1 SQL migration files) Tj
+T*
+() Tj
+T*
+(Recommended files:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(010_db001_extensions_and_schemas.sql) Tj
+T*
+(011_db001_identity.sql) Tj
+T*
+(012_db001_institutions.sql) Tj
+T*
+(013_db001_ontology.sql) Tj
+T*
+(014_db001_events.sql) Tj
+T*
+(015_db001_learning.sql) Tj
+T*
+(016_db001_evidence.sql) Tj
+T*
+(017_db001_capability.sql) Tj
+T*
+(018_db001_reasoning_ai.sql) Tj
+T*
+(019_db001_recommendations_odyssey.sql) Tj
+T*
+(020_db001_passport_portfolio.sql) Tj
+T*
+(021_db001_employer_faculty_government.sql) Tj
+T*
+(022_db001_integrations_storage_audit.sql) Tj
+T*
+(023_db001_views_indexes_rls.sql) Tj
+T*
+(024_db001_seed_demo.sql) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(27.2 TypeScript usage patterns) Tj
+T*
+() Tj
+T*
+(- Generate types with supabase gen types typescript.) Tj
+T*
+(- Use browser client only for RLS-safe reads/writes.) Tj
+T*
+(- Use server client for authenticated API routes.) Tj
+T*
+(- Use service role only in server-only event processors, sync jobs, and AI workers.) Tj
+T*
+(- Keep table names domain-qualified in server code.) Tj
+T*
+() Tj
+T*
+(27.3 API route mapping) Tj
+T*
+() Tj
+T*
+(| API route | Tables/views |) Tj
+T*
+(|---|---|) Tj
+T*
+(| /api/students/profile | identity.profiles, identity.persons, recommendations.career_intents |) Tj
+T*
+(| /api/students/adaptive-path | capability states, recommendations, odyssey tables |) Tj
+T*
+(| /api/students/job-recommendations | employer.jobs, candidate_matches, capability_states |) Tj
+T*
+(| /api/students/weekly-signal | evidence/capability/recommendation projections |) Tj
+T*
+(| /api/university/curriculum-evolution | faculty.curriculum_mappings, government.labour_market_signals |) Tj
+T*
+(| /api/research/* | research/evidence/government projections as applicable |) Tj
+T*
+(| /api/export/policy-brief | government.policy_briefs, generated-reports bucket |) Tj
+T*
+() Tj
+T*
+(27.4 RLS test plan) Tj
+T*
+() Tj
+T*
+(1. Student can read own profile/evidence/capabilities/passport.) Tj
+T*
+(2. Student cannot read another student's private evidence.) Tj
+T*
+(3. Faculty can read assigned cohort evidence only.) Tj
+T*
+(4. Employer can read only shared passport/candidate data.) Tj
+T*
+(5. Government can read aggregate snapshots only.) Tj
+T*
+(6. Service role can insert events and process queues.) Tj
+T*
+(7. Anonymous user can read only public profile/share views.) Tj
+T*
+() Tj
+T*
+(27.5 Table dependency order) Tj
+T*
+() Tj
+T*
+(tenants -> persons/profiles -> organizations -> institutions -> programmes/cohorts -> ) Tj
+ET
+endstream
+endobj
+34 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 35 0 R >>
+endobj
+35 0 obj
+<< /Length 2325 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(ontology_versions/terms -> event_schemas/events -> learning -> evidence -> capability -> ) Tj
+T*
+(reasoning -> recommendations -> passport/portfolio -> employer/faculty/government -> ) Tj
+T*
+(integrations -> audit/storage_meta -> views.) Tj
+T*
+() Tj
+T*
+(28. MVP Scope) Tj
+T*
+() Tj
+T*
+(Must Build Now) Tj
+T*
+() Tj
+T*
+(- identity: profiles, persons, tenants, memberships, roles, consent) Tj
+T*
+(- institutions: institutions, programmes, cohorts, enrollments) Tj
+T*
+(- learning: courses, assignments, submissions, grades) Tj
+T*
+(- events: canonical_events, event_payloads, event_schemas) Tj
+T*
+(- ontology: versions, terms, relationships) Tj
+T*
+(- evidence: items, artifacts, provenance, reviews) Tj
+T*
+(- capability: observations, states, confidence, evidence links) Tj
+T*
+(- reasoning: runs, AI model registry, GLM request/response, human review queue) Tj
+T*
+(- recommendations: career intents, goals, recommendations, odyssey milestones) Tj
+T*
+(- passport: passports, versions, claims, shares) Tj
+T*
+(- employer: employers, jobs, requirements, matches) Tj
+T*
+(- faculty: course access, review assignments, interventions) Tj
+T*
+(- government: strategies, signals, gap snapshots) Tj
+T*
+(- integrations: source mappings, GitHub/ORCID/LMS connections) Tj
+T*
+(- audit/storage metadata) Tj
+T*
+() Tj
+T*
+(Build Later) Tj
+T*
+() Tj
+T*
+(- full credential ledger) Tj
+T*
+(- advanced corridor operations) Tj
+T*
+(- parent portal) Tj
+T*
+(- advanced public profile SEO) Tj
+T*
+(- automated malware scanning service integration) Tj
+T*
+(- complex graph snapshot management) Tj
+T*
+(- advanced warehouse-grade analytics) Tj
+T*
+() Tj
+T*
+(Future External Systems) Tj
+T*
+() Tj
+T*
+(- graph database for HCG) Tj
+T*
+(- vector database for embeddings/RAG) Tj
+T*
+(- Kafka/NATS/event lake for canonical events) Tj
+T*
+(- data warehouse for analytics) Tj
+T*
+(- dedicated verifiable credential ledger) Tj
+T*
+() Tj
+T*
+(29. Mermaid ER Diagrams) Tj
+T*
+() Tj
+T*
+(29.1 Identity) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(erDiagram) Tj
+T*
+(    TENANTS ||--o{ TENANT_MEMBERSHIPS : has) Tj
+T*
+(    PERSONS ||--o{ PROFILES : owns) Tj
+T*
+(    PERSONS ||--o{ CONSENT_GRANTS : grants) Tj
+T*
+(    USERS ||--o{ PROFILES : authenticates) Tj
+T*
+(    ROLES ||--o{ USER_ROLES : grants) Tj
+T*
+(    TENANT_MEMBERSHIPS ||--o{ USER_ROLES : scoped_by) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+36 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 37 0 R >>
+endobj
+37 0 obj
+<< /Length 2237 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+() Tj
+T*
+(29.2 Institution and learning) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(erDiagram) Tj
+T*
+(    INSTITUTIONS ||--o{ DEPARTMENTS : has) Tj
+T*
+(    INSTITUTIONS ||--o{ PROGRAMMES : offers) Tj
+T*
+(    PROGRAMMES ||--o{ COHORTS : contains) Tj
+T*
+(    COURSES ||--o{ COURSE_RUNS : has) Tj
+T*
+(    COURSE_RUNS ||--o{ ASSIGNMENTS : includes) Tj
+T*
+(    ASSIGNMENTS ||--o{ SUBMISSIONS : receives) Tj
+T*
+(    SUBMISSIONS ||--o{ GRADES : evaluated_by) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(29.3 Events) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(erDiagram) Tj
+T*
+(    EVENT_SCHEMAS ||--o{ CANONICAL_EVENTS : validates) Tj
+T*
+(    CANONICAL_EVENTS ||--|| EVENT_PAYLOADS : stores) Tj
+T*
+(    CANONICAL_EVENTS ||--o{ EVENT_DEAD_LETTERS : may_fail) Tj
+T*
+(    EVENT_REPLAY_JOBS ||--o{ EVENT_PROCESSING_CHECKPOINTS : updates) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(29.4 Ontology/evidence/capability) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(erDiagram) Tj
+T*
+(    ONTOLOGY_VERSIONS ||--o{ ONTOLOGY_TERMS : defines) Tj
+T*
+(    ONTOLOGY_TERMS ||--o{ ONTOLOGY_RELATIONSHIPS : source) Tj
+T*
+(    EVIDENCE_ITEMS ||--o{ EVIDENCE_ARTIFACTS : has) Tj
+T*
+(    EVIDENCE_ITEMS ||--o{ EVIDENCE_TO_EVENTS : derives) Tj
+T*
+(    EVIDENCE_ITEMS ||--o{ CAPABILITY_EVIDENCE_LINKS : supports) Tj
+T*
+(    CAPABILITY_OBSERVATIONS ||--o{ CAPABILITY_CONFIDENCE_SCORES : scored_by) Tj
+T*
+(    CAPABILITY_OBSERVATIONS ||--o{ CAPABILITY_EVIDENCE_LINKS : evidenced_by) Tj
+T*
+(    CAPABILITY_STATES ||--o{ CAPABILITY_OBSERVATIONS : summarizes) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(29.5 Reasoning/recommendations/passport) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(erDiagram) Tj
+T*
+(    REASONING_RUNS ||--o{ REASONING_INPUTS : uses) Tj
+T*
+(    REASONING_RUNS ||--o{ REASONING_OUTPUTS : produces) Tj
+T*
+(    REASONING_RUNS ||--o{ GLM_REQUESTS : calls) Tj
+T*
+(    GLM_REQUESTS ||--o{ GLM_RESPONSES : returns) Tj
+T*
+(    CAREER_INTENTS ||--o{ GOALS : guides) Tj
+T*
+(    ODYSSEY_PLANS ||--o{ ODYSSEY_MILESTONES : contains) Tj
+T*
+(    RECOMMENDATIONS ||--o{ RECOMMENDATION_REASONS : explained_by) Tj
+T*
+(    PASSPORTS ||--o{ PASSPORT_VERSIONS : versions) Tj
+T*
+(    PASSPORT_VERSIONS ||--o{ PASSPORT_CLAIMS : includes) Tj
+T*
+(    PASSPORT_CLAIMS ||--o{ PASSPORT_EVIDENCE_LINKS : evidenced_by) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(29.6 Employer and analytics) Tj
+ET
+endstream
+endobj
+38 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 39 0 R >>
+endobj
+39 0 obj
+<< /Length 1280 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+() Tj
+T*
+() Tj
+T*
+(erDiagram) Tj
+T*
+(    EMPLOYERS ||--o{ EMPLOYER_USERS : has) Tj
+T*
+(    EMPLOYERS ||--o{ JOBS : posts) Tj
+T*
+(    JOBS ||--o{ JOB_REQUIREMENTS : requires) Tj
+T*
+(    JOBS ||--o{ CANDIDATE_MATCHES : matches) Tj
+T*
+(    JOBS ||--o{ HIRING_PIPELINE : tracks) Tj
+T*
+(    NATIONAL_STRATEGIES ||--o{ STRATEGIC_SECTORS : prioritizes) Tj
+T*
+(    STRATEGIC_SECTORS ||--o{ CAPABILITY_GAP_SNAPSHOTS : measures) Tj
+T*
+(    MOBILITY_CORRIDORS ||--o{ CORRIDOR_MATCHES : contains) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(30. Final Deliverable) Tj
+T*
+() Tj
+T*
+(DB-001 defines the Supabase MVP database architecture for Syrka. It is implementation-ready for ) Tj
+T*
+(Claude Sonnet, Supabase setup, backend engineering, security review, and investor technical ) Tj
+T*
+(review.) Tj
+T*
+() Tj
+T*
+(The database is intentionally MVP-buildable while preserving Syrka's long-term architecture: ) Tj
+T*
+(canonical events remain append-only, ontology terms remain canonical, evidence and capability ) Tj
+T*
+(observations include provenance, AI outputs remain candidate reasoning until validated, RLS ) Tj
+T*
+(protects tenant/user boundaries, and future graph/vector/event-store/warehouse systems can ) Tj
+T*
+(evolve out of the schema without rewriting the product.) Tj
+ET
+endstream
+endobj
+xref
+0 40
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000239 00000 n 
+0000000309 00000 n 
+0000000435 00000 n 
+0000004269 00000 n 
+0000004395 00000 n 
+0000008970 00000 n 
+0000009096 00000 n 
+0000013749 00000 n 
+0000013877 00000 n 
+0000017866 00000 n 
+0000017994 00000 n 
+0000020817 00000 n 
+0000020945 00000 n 
+0000024197 00000 n 
+0000024325 00000 n 
+0000028397 00000 n 
+0000028525 00000 n 
+0000032536 00000 n 
+0000032664 00000 n 
+0000036356 00000 n 
+0000036484 00000 n 
+0000040991 00000 n 
+0000041119 00000 n 
+0000043394 00000 n 
+0000043522 00000 n 
+0000045960 00000 n 
+0000046088 00000 n 
+0000049102 00000 n 
+0000049230 00000 n 
+0000052542 00000 n 
+0000052670 00000 n 
+0000055221 00000 n 
+0000055349 00000 n 
+0000057727 00000 n 
+0000057855 00000 n 
+0000060145 00000 n 
+0000060273 00000 n 
+trailer
+<< /Size 40 /Root 1 0 R /Info << /Title (DB-001 - Syrka Supabase MVP Database Architecture) /Author (Syrka Architecture) >> >>
+startxref
+61606
+%%EOF
