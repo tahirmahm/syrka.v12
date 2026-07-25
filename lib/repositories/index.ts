@@ -1,0 +1,5 @@
+export * from './capability-repository'
+export * from './evidence-repository'
+export * from './odyssey-repository'
+export * from './passport-repository'
+export * from './institution-repository'
