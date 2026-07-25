@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Panel } from '@/components/ui/Panel'
-import type { OdysseyGenerationResult } from '@/lib/campus-types'
+import type { OdysseyGenerationApiResponse } from './odyssey-client-types'
 
 const WORKLOAD_OPTIONS = [
   { value: 'light', label: 'Light' },
@@ -22,7 +22,7 @@ const ACTION_TYPE_OPTIONS = [
 
 export interface OdysseyGenerateFormProps {
   defaultDestinationTitle: string
-  onResult: (result: OdysseyGenerationResult) => void
+  onResult: (result: OdysseyGenerationApiResponse) => void
   onClose: () => void
 }
 
@@ -56,7 +56,7 @@ export function OdysseyGenerateForm({ defaultDestinationTitle, onResult, onClose
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ destinationTitle, destinationDescription, workloadPreference, timeHorizon, preferredActionTypes }),
       })
-      const result: OdysseyGenerationResult = await response.json()
+      const result: OdysseyGenerationApiResponse = await response.json()
       onResult(result)
       if (result.status === 'success') {
         onClose()

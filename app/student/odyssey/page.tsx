@@ -87,7 +87,9 @@ export default async function StudentOdysseyPage() {
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
         <Badge tone="neutral">Version {currentPlanVersion.version}</Badge>
         <Badge tone="blue">Recommendation confidence: {currentPlanVersion.recommendationConfidence}</Badge>
-        {currentPlanVersion.providerStatus === 'fallback_typed' && <Badge tone="amber">Demonstration plan</Badge>}
+        {currentPlanVersion.providerStatus === 'ai_generated' && <Badge tone="green">AI-generated Odyssey</Badge>}
+        {currentPlanVersion.providerStatus === 'fallback_typed' && <Badge tone="amber">Demonstration fallback plan</Badge>}
+        {currentPlanVersion.providerStatus === 'previous_preserved' && <Badge tone="neutral">Previous plan retained</Badge>}
       </div>
     </div>
   )

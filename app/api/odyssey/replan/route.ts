@@ -22,8 +22,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await replanOdyssey(currentUser, adjustmentInstruction)
-    return NextResponse.json(result)
+    const { result, source, requestDurationMs, fallbackReasonCategory } = await replanOdyssey(currentUser, adjustmentInstruction, body.simulate)
+    return NextResponse.json({ ...result, meta: { generationSource: source, requestDurationMs, fallbackReasonCategory } })
   } catch {
     return NextResponse.json(
       { status: 'provider_error', validation: { valid: false, issues: [] }, message: 'Odyssey replanning failed unexpectedly.' },

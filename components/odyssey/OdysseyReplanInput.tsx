@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Panel } from '@/components/ui/Panel'
-import type { OdysseyGenerationResult } from '@/lib/campus-types'
+import type { OdysseyGenerationApiResponse } from './odyssey-client-types'
 
 const EXAMPLE_PROMPTS = [
   'Reduce the workload this semester.',
@@ -13,7 +13,7 @@ const EXAMPLE_PROMPTS = [
 ]
 
 export interface OdysseyReplanInputProps {
-  onResult: (result: OdysseyGenerationResult) => void
+  onResult: (result: OdysseyGenerationApiResponse) => void
   onClose: () => void
 }
 
@@ -39,7 +39,7 @@ export function OdysseyReplanInput({ onResult, onClose }: OdysseyReplanInputProp
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ adjustmentInstruction }),
       })
-      const result: OdysseyGenerationResult = await response.json()
+      const result: OdysseyGenerationApiResponse = await response.json()
       onResult(result)
       if (result.status === 'success') {
         onClose()

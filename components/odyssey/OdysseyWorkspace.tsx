@@ -4,9 +4,10 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { X } from '@phosphor-icons/react/dist/ssr'
 import type { Node, Edge } from '@xyflow/react'
 import { Button } from '@/components/ui/Button'
-import type { OdysseyPlanVersion, OdysseyGenerationResult } from '@/lib/campus-types'
+import type { OdysseyPlanVersion } from '@/lib/campus-types'
 import type { OdysseyNodeData } from '@/lib/utilities/odyssey-projection'
 import type { ResolvedOdysseyMilestone } from '@/lib/utilities/odyssey-detail'
+import type { OdysseyGenerationApiResponse } from './odyssey-client-types'
 import { OdysseyRoadmapLoader } from './graph/OdysseyRoadmapLoader'
 import { OdysseyTextualRoadmap } from './OdysseyTextualRoadmap'
 import { OdysseyMilestoneInspector } from './OdysseyMilestoneInspector'
@@ -49,7 +50,7 @@ export function OdysseyWorkspace({
   const [viewMode, setViewMode] = useState<'graph' | 'list'>('graph')
   const [selectedMilestoneId, setSelectedMilestoneId] = useState<string>()
   const [activePanel, setActivePanel] = useState<ActivePanel>('none')
-  const [bannerResult, setBannerResult] = useState<OdysseyGenerationResult>()
+  const [bannerResult, setBannerResult] = useState<OdysseyGenerationApiResponse>()
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.innerWidth < 640) setViewMode('list')
@@ -107,7 +108,12 @@ export function OdysseyWorkspace({
                 : 'border-campus-red-600 text-campus-red-600 dark:border-campus-red-dark dark:text-campus-red-dark'
           }`}
         >
-          <span>{bannerResult.message}</span>
+          <span>
+            {bannerResult.status === 'success' && bannerResult.meta?.generationSource === 'deepseek' && (
+              <span className="mr-1.5 font-campus-mono text-[10px] uppercase tracking-wide">AI-generated Odyssey ·</span>
+            )}
+            {bannerResult.message}
+          </span>
           <button type="button" onClick={() => setBannerResult(undefined)} aria-label="Dismiss message">
             <X size={14} aria-hidden="true" />
           </button>

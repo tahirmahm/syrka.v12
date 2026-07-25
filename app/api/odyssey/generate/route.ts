@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await generateOdysseyPlan(currentUser, {
+    const { result, source, requestDurationMs, fallbackReasonCategory } = await generateOdysseyPlan(currentUser, {
       destinationTitle,
       destinationDescription: typeof body.destinationDescription === 'string' ? body.destinationDescription : undefined,
       workloadPreference: typeof body.workloadPreference === 'string' && WORKLOAD_PREFERENCES.has(body.workloadPreference)
@@ -34,8 +34,13 @@ export async function POST(request: Request) {
       preferredActionTypes: Array.isArray(body.preferredActionTypes)
         ? body.preferredActionTypes.filter((t): t is string => typeof t === 'string')
         : undefined,
+      simulate: body.simulate,
     })
-    return NextResponse.json(result)
+    // meta carries only safe, non-sensitive provenance — never a prompt, key, or raw provider payload.
+    return NextResponse.json({
+      ...result,
+      meta: { generationSource: source, requestDurationMs, fallbackReasonCategory },
+    })
   } catch {
     // Never surface the underlying error/stack trace to the client.
     return NextResponse.json(
