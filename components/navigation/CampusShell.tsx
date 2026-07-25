@@ -11,6 +11,7 @@ import { BrandMark } from '@/components/ui/BrandMark'
 
 export interface CampusShellProps {
   user: CampusUser
+  institutionName?: string
   children: React.ReactNode
 }
 
@@ -19,7 +20,7 @@ export interface CampusShellProps {
  * The demo role switcher is a visually distinct, clearly labelled
  * demonstration control — never confused with real navigation.
  */
-export function CampusShell({ user, children }: CampusShellProps) {
+export function CampusShell({ user, institutionName, children }: CampusShellProps) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -36,6 +37,7 @@ export function CampusShell({ user, children }: CampusShellProps) {
         </div>
         <div className="px-5 pb-4">
           <span className="font-campus-mono text-[10px] uppercase tracking-widest text-campus-muted">{sectionLabel}</span>
+          {institutionName && <p className="mt-0.5 font-campus-sans text-campus-sm text-campus-text">{institutionName}</p>}
         </div>
         <nav className="flex flex-1 flex-col gap-0.5 px-3">
           {navItems.map((item) => {
@@ -44,7 +46,7 @@ export function CampusShell({ user, children }: CampusShellProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-campus-sm px-3 py-2 font-campus-sans text-campus-sm transition-colors duration-campus-fast ${
+                className={`rounded-campus-sm px-3 py-2 font-campus-sans text-campus-sm transition-colors duration-campus-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600 ${
                   active ? 'bg-campus-surface-raised font-medium text-campus-text' : 'text-campus-muted hover:bg-campus-surface-raised hover:text-campus-text'
                 }`}
                 aria-current={active ? 'page' : undefined}
@@ -62,7 +64,7 @@ export function CampusShell({ user, children }: CampusShellProps) {
         <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-campus-border bg-campus-surface px-4 md:px-8">
           <button
             type="button"
-            className="rounded-campus-sm p-2 text-campus-text md:hidden"
+            className="rounded-campus-sm p-2 text-campus-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={mobileOpen}
@@ -83,7 +85,7 @@ export function CampusShell({ user, children }: CampusShellProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-campus-sm px-3 py-2 font-campus-sans text-campus-sm text-campus-text hover:bg-campus-surface-raised"
+                className="rounded-campus-sm px-3 py-2 font-campus-sans text-campus-sm text-campus-text hover:bg-campus-surface-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600"
                 onClick={() => setMobileOpen(false)}
               >
                 {item.label}
