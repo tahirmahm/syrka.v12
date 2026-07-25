@@ -1,12 +1,12 @@
 'use client'
 
 import { useRef } from 'react'
-import { useScroll, motion } from 'framer-motion'
+import { useScroll, useTransform, motion } from 'framer-motion'
 import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 import { CaretDown } from '@phosphor-icons/react/dist/ssr'
 import { MotionReveal } from '@/components/motion/MotionReveal'
 import { CapabilityFlowDiagram } from './CapabilityFlowDiagram'
-import { SyrkaWordmark } from './SyrkaWordmark'
+import { EnvironmentalArchitectureType } from './hero/EnvironmentalArchitectureType'
 
 /**
  * The opening scroll sequence. Scrolling through the hero's extra height
@@ -19,12 +19,10 @@ export function CorporateHero() {
   const reduceMotion = useReducedMotionSafe()
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
+  const environmentalOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.55])
 
   const content = (
-    <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10">
-      <MotionReveal>
-        <SyrkaWordmark priority width={220} className="w-[190px] md:w-[220px] h-auto" />
-      </MotionReveal>
+    <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 md:px-10">
       <MotionReveal delay={0.05}>
         <h1 className="mt-5 max-w-4xl font-campus-sans text-[clamp(40px,7vw,88px)] font-semibold leading-[0.98] tracking-tight text-syrka-offwhite">
           The Operating System for Human Capability.
@@ -56,10 +54,23 @@ export function CorporateHero() {
   return (
     <section
       ref={ref}
-      className={reduceMotion ? 'border-b border-syrka-hairline py-24' : 'relative border-b border-syrka-hairline'}
+      className={reduceMotion ? 'relative border-b border-syrka-hairline py-24' : 'relative border-b border-syrka-hairline'}
       style={reduceMotion ? undefined : { height: '180vh' }}
     >
-      <div className={reduceMotion ? '' : 'sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-24'}>
+      <div
+        className={
+          reduceMotion
+            ? 'relative flex min-h-screen flex-col justify-center overflow-hidden py-24'
+            : 'sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-24'
+        }
+      >
+        {reduceMotion ? (
+          <EnvironmentalArchitectureType />
+        ) : (
+          <motion.div style={{ opacity: environmentalOpacity }}>
+            <EnvironmentalArchitectureType />
+          </motion.div>
+        )}
         {content}
         {!reduceMotion && (
           <motion.div

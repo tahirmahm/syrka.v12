@@ -121,3 +121,113 @@
 @media (prefers-reduced-motion: reduce) {
   .skeleton { animation: none !important; }
 }
+
+/*
+ * Corporate hero environmental typography (EnvironmentalArchitectureType).
+ * Decorative background words only — scoped to the corporate homepage hero,
+ * never referenced outside components/corporate/hero/. Positions/opacity
+ * here are the single source of truth the component's data structure
+ * defers to.
+ */
+.environmental-type {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.environmental-word {
+  position: absolute;
+  display: inline-block;
+  white-space: nowrap;
+  line-height: 1;
+  font-weight: 500;
+  user-select: none;
+  animation-name: environmental-breathe;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.environmental-char {
+  color: rgb(190 190 190);
+  opacity: 0.12;
+}
+
+.environmental-highlight {
+  color: rgb(225 225 225);
+  opacity: 0.22;
+}
+
+@keyframes environmental-breathe {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(-1.5px); opacity: 0.86; }
+}
+
+.environmental-word--systematic {
+  top: -4%;
+  left: -3%;
+  font-size: clamp(5.5rem, 10vw, 12rem);
+  animation-duration: 27s;
+  animation-delay: -4s;
+}
+
+.environmental-word--relational {
+  top: 19%;
+  left: 51%;
+  font-size: clamp(4rem, 8vw, 9.5rem);
+  animation-duration: 24s;
+  animation-delay: -11s;
+}
+
+.environmental-word--knowledge {
+  top: 53%;
+  left: 55%;
+  font-size: clamp(3.5rem, 7.5vw, 9rem);
+  animation-duration: 30s;
+  animation-delay: -18s;
+}
+
+.environmental-word--architecture {
+  top: 66%;
+  left: 30%;
+  font-size: clamp(4rem, 8.5vw, 10rem);
+  animation-duration: 22s;
+  animation-delay: -8s;
+}
+
+@media (max-width: 767px) {
+  .environmental-word { animation: none; }
+
+  .environmental-word--systematic {
+    top: 1%;
+    left: -6%;
+    font-size: clamp(3.5rem, 18vw, 5.5rem);
+  }
+
+  .environmental-word--relational {
+    top: 15%;
+    left: 44%;
+    font-size: clamp(3rem, 15vw, 4.5rem);
+  }
+
+  .environmental-word--knowledge {
+    top: 46%;
+    left: 28%;
+    font-size: clamp(2.8rem, 13vw, 4rem);
+  }
+
+  .environmental-word--architecture {
+    top: 63%;
+    left: 6%;
+    font-size: clamp(3rem, 15vw, 4.8rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .environmental-word {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
