@@ -1,19 +1,19 @@
 import type { Metadata, Viewport } from 'next'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Syrka — National Human Capital Intelligence',
-  description: 'From National Vision to Human Capital Reality.',
+  title: 'Syrka Campus',
+  description: 'The AI operating system for universities — evidence-backed human capability intelligence.',
   icons: { icon: '/syrka.png', apple: '/syrka.png' },
 }
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: 'cover',
-  themeColor: '#111417',
+  themeColor: '#F4F3EF',
 }
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

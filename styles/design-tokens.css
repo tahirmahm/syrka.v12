@@ -1,0 +1,85 @@
+/**
+ * Syrka Campus design tokens — sourced verbatim from
+ * docs/adr/DESIGN-001-visual-identity-design-system-constitution.md
+ *
+ * Namespaced under --campus-* to avoid colliding with the preserved
+ * legacy National Human Capital Intelligence tokens in styles/tokens.css
+ * and Tailwind's own default palette. New Campus UI should consume these
+ * exclusively; legacy routes under app/[country]/* are untouched.
+ */
+
+:root {
+  /* Raw palette — light mode (DESIGN-001 §4 "Light mode tokens") */
+  --campus-ink-950: #050505;
+  --campus-ink-900: #111111;
+  --campus-ink-700: #2E2E2E;
+  --campus-stone-500: #71716C;
+  --campus-stone-300: #C8C7C0;
+  --campus-stone-100: #F4F3EF;
+  --campus-white: #FFFFFF;
+  --campus-silver: #E7E5DE;
+  --campus-gold-500: #B89B5E;
+  --campus-blue-600: #2F5F8F;
+  --campus-green-600: #2F6B4F;
+  --campus-amber-600: #9A6A20;
+  --campus-red-600: #8E2F2F;
+  --campus-purple-600: #5D4A7A;
+
+  /* Semantic roles — resolve to light values by default */
+  --campus-bg: var(--campus-stone-100);
+  --campus-surface: var(--campus-white);
+  --campus-surface-raised: var(--campus-white);
+  --campus-border: var(--campus-stone-300);
+  --campus-text: var(--campus-ink-950);
+  --campus-text-secondary: var(--campus-ink-700);
+  --campus-muted: var(--campus-stone-500);
+  --campus-gold: var(--campus-gold-500);
+  --campus-blue: var(--campus-blue-600);
+  --campus-green: var(--campus-green-600);
+  --campus-amber: var(--campus-amber-600);
+  --campus-red: var(--campus-red-600);
+  --campus-purple: var(--campus-purple-600);
+
+  /* Radius (DESIGN-001 §7) */
+  --campus-radius-sm: 6px;
+  --campus-radius-md: 10px;
+  --campus-radius-lg: 16px;
+  --campus-radius-xl: 24px;
+
+  /* Elevation */
+  --campus-shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --campus-shadow-panel: 0 12px 32px rgba(0, 0, 0, 0.10);
+
+  /* Motion (DESIGN-001 §7, §11) */
+  --campus-duration-fast: 120ms;
+  --campus-duration-base: 180ms;
+  --campus-duration-slow: 280ms;
+  --campus-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --campus-opacity-disabled: 0.45;
+}
+
+/* Dark mode overrides (DESIGN-001 §4 "Dark mode tokens") */
+.dark {
+  --campus-bg: #050505;
+  --campus-surface: #111111;
+  --campus-surface-raised: #181818;
+  --campus-border: #303030;
+  --campus-text: #F6F5F0;
+  --campus-text-secondary: #F6F5F0;
+  --campus-muted: #A8A8A0;
+  --campus-gold: #D4BE7F;
+  --campus-blue: #78A6D1;
+  --campus-green: #78B892;
+  --campus-amber: #D0A04F;
+  --campus-red: #D17B7B;
+  --campus-purple: #A997CA;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --campus-duration-fast: 0ms;
+    --campus-duration-base: 0ms;
+    --campus-duration-slow: 0ms;
+  }
+}
