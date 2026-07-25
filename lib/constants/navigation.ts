@@ -27,12 +27,17 @@ export const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { href: '/faculty/analytics', label: 'Analytics' },
   ],
   university_administrator: [
-    { href: '/university', label: 'Institution' },
+    { href: '/university', label: 'Overview' },
     { href: '/university/departments', label: 'Departments' },
     { href: '/university/programmes', label: 'Programmes' },
-    { href: '/university/users', label: 'Users' },
+    { href: '/university/capabilities', label: 'Capabilities' },
+    { href: '/university/evidence', label: 'Evidence' },
+    { href: '/university/faculty', label: 'Faculty' },
+    { href: '/university/students', label: 'Students' },
+    { href: '/university/odyssey', label: 'Odyssey' },
+    { href: '/university/passports', label: 'Passports' },
+    { href: '/university/governance', label: 'Governance' },
     { href: '/university/analytics', label: 'Analytics' },
-    { href: '/university/reports', label: 'Reports' },
   ],
 }
 
