@@ -37,10 +37,12 @@ export const NAV_ITEMS: Record<UserRole, NavItem[]> = {
 }
 
 export const DEPARTMENT_SCOPED_NAV_ITEMS: NavItem[] = [
-  { href: '/department', label: 'Programme Health' },
+  { href: '/department', label: 'Overview' },
   { href: '/department/programmes', label: 'Programmes' },
-  { href: '/department/curriculum', label: 'Curriculum' },
+  { href: '/department/courses', label: 'Courses' },
+  { href: '/department/capabilities', label: 'Capabilities' },
+  { href: '/department/evidence', label: 'Evidence' },
   { href: '/department/faculty', label: 'Faculty' },
-  { href: '/department/capability-reports', label: 'Capability Reports' },
+  { href: '/department/students', label: 'Students' },
   { href: '/department/analytics', label: 'Analytics' },
 ]
