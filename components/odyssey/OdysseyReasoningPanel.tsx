@@ -5,16 +5,16 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { CaretDown } from '@phosphor-icons/react/dist/ssr'
 import { Panel } from '@/components/ui/Panel'
 import { Badge } from '@/components/ui/Badge'
-import type { OdysseyReasoningFactor, OdysseyAlternative } from '@/lib/campus-types'
+import type { OdysseyRecommendationFactor, OdysseyAlternativeAction } from '@/lib/campus-types'
 import { REASONING_FACTOR_LABELS } from '@/lib/constants/odyssey'
 
 export interface OdysseyReasoningPanelProps {
-  factors: OdysseyReasoningFactor[]
-  alternatives: OdysseyAlternative[]
-  uncertaintyNote?: string
+  planSummary: string
+  factors: OdysseyRecommendationFactor[]
+  alternatives: (OdysseyAlternativeAction & { milestoneTitle: string })[]
 }
 
-export function OdysseyReasoningPanel({ factors, alternatives, uncertaintyNote }: OdysseyReasoningPanelProps) {
+export function OdysseyReasoningPanel({ planSummary, factors, alternatives }: OdysseyReasoningPanelProps) {
   const [open, setOpen] = useState(false)
   const reduceMotion = useReducedMotion()
   const contentId = useId()
@@ -42,6 +42,7 @@ export function OdysseyReasoningPanel({ factors, alternatives, uncertaintyNote }
             className="overflow-hidden"
           >
             <div className="flex flex-col gap-4 border-t border-campus-border p-5">
+              <p className="font-campus-sans text-campus-sm text-campus-text">{planSummary}</p>
               <p className="font-campus-sans text-campus-xs uppercase tracking-wide text-campus-muted">
                 Odyssey is a recommendation and progression system, not an infallible authority. Every factor below is inspectable.
               </p>
@@ -57,17 +58,15 @@ export function OdysseyReasoningPanel({ factors, alternatives, uncertaintyNote }
                 ))}
               </ul>
 
-              {uncertaintyNote && (
-                <p className="font-campus-sans text-campus-sm text-campus-amber-600 dark:text-campus-amber-dark">{uncertaintyNote}</p>
-              )}
-
               {alternatives.length > 0 && (
                 <div className="border-t border-campus-border pt-4">
-                  <p className="mb-2 font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Alternative paths</p>
+                  <p className="mb-2 font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Alternative routes</p>
                   <ul className="flex flex-col gap-3">
                     {alternatives.map((alt) => (
                       <li key={alt.id}>
-                        <p className="font-campus-sans text-campus-sm font-medium text-campus-text">{alt.title}</p>
+                        <p className="font-campus-sans text-campus-sm font-medium text-campus-text">
+                          {alt.title} <span className="font-normal text-campus-muted">— instead of {alt.milestoneTitle}</span>
+                        </p>
                         <p className="font-campus-sans text-campus-xs text-campus-muted">{alt.description}</p>
                         <p className="mt-0.5 font-campus-sans text-campus-xs text-campus-muted">Trade-off: {alt.tradeoff}</p>
                       </li>
