@@ -1,29 +1,53 @@
-import type { OdysseyMilestoneStatus, OdysseyReasoningFactorType } from '@/lib/campus-types'
+import type { OdysseyMilestoneStatus, OdysseyMilestoneType, OdysseyRecommendationFactorType } from '@/lib/campus-types'
 import type { BadgeTone } from '@/components/ui/Badge'
 
 export const MILESTONE_STATUS_LABELS: Record<OdysseyMilestoneStatus, string> = {
-  not_started: 'Not started',
-  available: 'Available',
+  recommended: 'Recommended',
+  accepted: 'Accepted',
+  planned: 'Planned',
   in_progress: 'In progress',
+  evidence_pending: 'Evidence pending',
+  under_review: 'Under review',
+  completed: 'Completed',
+  verified: 'Verified',
+  deferred: 'Deferred',
   blocked: 'Blocked',
-  awaiting_evidence: 'Awaiting evidence',
-  awaiting_review: 'Awaiting review',
-  complete: 'Complete',
+  superseded: 'Superseded',
   no_longer_relevant: 'No longer relevant',
 }
 
 export const MILESTONE_STATUS_TONES: Record<OdysseyMilestoneStatus, BadgeTone> = {
-  not_started: 'neutral',
-  available: 'blue',
+  recommended: 'blue',
+  accepted: 'blue',
+  planned: 'neutral',
   in_progress: 'blue',
+  evidence_pending: 'amber',
+  under_review: 'amber',
+  completed: 'green',
+  verified: 'green',
+  deferred: 'neutral',
   blocked: 'red',
-  awaiting_evidence: 'amber',
-  awaiting_review: 'amber',
-  complete: 'green',
+  superseded: 'neutral',
   no_longer_relevant: 'neutral',
 }
 
-export const REASONING_FACTOR_LABELS: Record<OdysseyReasoningFactorType, string> = {
+export const MILESTONE_TYPE_LABELS: Record<OdysseyMilestoneType, string> = {
+  goal: 'Goal',
+  capability_target: 'Capability target',
+  capability_gap: 'Capability gap',
+  course: 'Course',
+  module: 'Module',
+  project: 'Project',
+  assessment: 'Assessment',
+  research_opportunity: 'Research opportunity',
+  internship: 'Internship',
+  competition: 'Competition',
+  credential: 'Credential',
+  career_milestone: 'Career milestone',
+  human_review: 'Human review',
+}
+
+export const REASONING_FACTOR_LABELS: Record<OdysseyRecommendationFactorType, string> = {
   intent: 'Your intent',
   programme_context: 'Programme context',
   capability_claim: 'Current capability',
@@ -33,5 +57,8 @@ export const REASONING_FACTOR_LABELS: Record<OdysseyReasoningFactorType, string>
   prerequisite: 'Prerequisite',
   completed_work: 'Completed work',
   institutional_constraint: 'Institutional constraint',
+  workload_constraint: 'Workload constraint',
+  time_constraint: 'Time constraint',
+  student_preference: 'Your preference',
   uncertainty: 'Uncertainty',
 }

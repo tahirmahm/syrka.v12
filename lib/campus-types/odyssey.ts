@@ -1,47 +1,137 @@
-import type { ConfidenceScore } from './confidence'
+import type { ConfidenceBand } from './confidence'
 import type { CapabilityMaturity } from './capability'
+import type { EvidenceSourceType } from './evidence'
 
 /**
  * Odyssey — the growth/progression and navigation layer (UX-001, ADR-002 §3).
  * Sequence: Evidence -> Capability -> Odyssey -> Academic Passport.
+ *
+ * The domain model here is the source of truth. The visual roadmap
+ * (lib/utilities/odyssey-projection.ts) is only a projection of it —
+ * coordinates, renderer types, and viewport state never live on these
+ * types, and never get written back into them.
  */
+
+export type OdysseyMilestoneType =
+  | 'goal'
+  | 'capability_target'
+  | 'capability_gap'
+  | 'course'
+  | 'module'
+  | 'project'
+  | 'assessment'
+  | 'research_opportunity'
+  | 'internship'
+  | 'competition'
+  | 'credential'
+  | 'career_milestone'
+  | 'human_review'
+
 export type OdysseyMilestoneStatus =
-  | 'not_started'
-  | 'available'
+  | 'recommended'
+  | 'accepted'
+  | 'planned'
   | 'in_progress'
+  | 'evidence_pending'
+  | 'under_review'
+  | 'completed'
+  | 'verified'
+  | 'deferred'
   | 'blocked'
-  | 'awaiting_evidence'
-  | 'awaiting_review'
-  | 'complete'
+  | 'superseded'
   | 'no_longer_relevant'
 
-/** A capability precondition for a milestone — references the canonical capability, not a duplicate definition. */
-export interface OdysseyMilestoneRequirement {
-  capabilityId: string
-  minimumMaturity: CapabilityMaturity
-}
-
+/**
+ * One node in the plan. References canonical capabilities, evidence
+ * requirements, actions, etc. by id — never duplicates their content.
+ */
 export interface OdysseyMilestone {
   id: string
-  order: number
+  type: OdysseyMilestoneType
   title: string
-  /** What the milestone represents. */
   description: string
-  /** Why it matters for the goal. */
-  rationale: string
+
+  capabilityIds: string[]
+  prerequisiteMilestoneIds: string[]
+
+  currentMaturity?: CapabilityMaturity
+  targetMaturity?: CapabilityMaturity
+  currentConfidence?: ConfidenceBand
+  targetConfidence?: ConfidenceBand
+
+  actionIds: string[]
+  evidenceRequirementIds: string[]
+  expectedImpactIds: string[]
+
+  estimatedEffort?: string
+  /** Concise, product-level reasoning — never raw model chain-of-thought. */
+  reasoningSummary: string
+  alternativeActionIds: string[]
+  constraintIds: string[]
+
+  recommendationConfidence: ConfidenceBand
   status: OdysseyMilestoneStatus
-  requirements: OdysseyMilestoneRequirement[]
-  /** Evidence that would satisfy or has satisfied this milestone. */
-  requiredEvidenceIds: string[]
+
+  /** What produced this milestone — recommendation factor ids, evidence ids, etc. */
+  sourceSignalIds: string[]
+  planVersionId: string
+
   /** Present only when status is 'blocked'. */
   blockedReason?: string
-  /** The concrete next action a student can take right now. */
-  recommendedAction?: string
   /** What completing this milestone would change. */
   completionImpact: string
 }
 
-export type OdysseyReasoningFactorType =
+export type OdysseyActionType =
+  | 'course'
+  | 'module'
+  | 'project'
+  | 'research'
+  | 'assessment'
+  | 'competition'
+  | 'internship'
+  | 'simulation'
+  | 'presentation'
+  | 'collaboration'
+  | 'laboratory'
+  | 'faculty_review'
+
+/** An Evidence-producing mission a milestone recommends. */
+export interface OdysseyAction {
+  id: string
+  type: OdysseyActionType
+  title: string
+  description: string
+  developsCapabilityIds: string[]
+  producesEvidenceRequirementIds: string[]
+  requiresReview: boolean
+  /** Set when this action is a canonical institutional resource. */
+  resourceId?: string
+  /** True when DeepSeek proposed this action without a matching canonical record. */
+  isAiProposed: boolean
+  /** Present only when isAiProposed — an isolated, non-institutional identifier. */
+  proposalId?: string
+}
+
+export interface OdysseyEvidenceRequirement {
+  id: string
+  description: string
+  sourceTypeHint?: EvidenceSourceType
+  /** Populated once real evidence has been submitted against this requirement. */
+  satisfiedByEvidenceIds: string[]
+}
+
+/** A projected — never guaranteed — capability effect of completing an action or milestone. */
+export interface OdysseyExpectedImpact {
+  id: string
+  capabilityId: string
+  projectedMaturity: CapabilityMaturity
+  projectedConfidence: ConfidenceBand
+  /** Always true — expected impact is a projection, not an outcome. */
+  isProjection: true
+}
+
+export type OdysseyRecommendationFactorType =
   | 'intent'
   | 'programme_context'
   | 'capability_claim'
@@ -51,44 +141,123 @@ export type OdysseyReasoningFactorType =
   | 'prerequisite'
   | 'completed_work'
   | 'institutional_constraint'
+  | 'workload_constraint'
+  | 'time_constraint'
+  | 'student_preference'
   | 'uncertainty'
 
-/** One inspectable input to the "why this path" explanation — REASON-001 explanation schema, translated to UI language. */
-export interface OdysseyReasoningFactor {
+export interface OdysseyRecommendationFactor {
   id: string
-  type: OdysseyReasoningFactorType
+  type: OdysseyRecommendationFactorType
   summary: string
   relatedCapabilityId?: string
 }
 
-export interface OdysseyRecommendation {
+export type OdysseyConstraintType = 'workload' | 'time' | 'financial' | 'geography' | 'accessibility' | 'preference' | 'institutional'
+
+export interface OdysseyConstraint {
   id: string
-  title: string
-  reason: string
-  confidence: ConfidenceScore
-  evidenceIds: string[]
-  capabilityId: string
-  /** Present when the recommendation rests on limited or weak evidence — never hidden. */
-  uncertaintyNote?: string
+  type: OdysseyConstraintType
+  description: string
 }
 
-export interface OdysseyAlternative {
+export interface OdysseyBlocker {
   id: string
+  milestoneId: string
+  reason: string
+  unblockedBy?: string
+}
+
+/** A milestone-level alternative to the recommended action — not a whole competing plan. */
+export interface OdysseyAlternativeAction {
+  id: string
+  milestoneId: string
   title: string
   description: string
   tradeoff: string
 }
 
+export type OdysseyResourceType =
+  | 'course'
+  | 'module'
+  | 'reading'
+  | 'workshop'
+  | 'laboratory'
+  | 'project'
+  | 'research_opportunity'
+  | 'competition'
+  | 'internship'
+  | 'mentor'
+  | 'faculty_support'
+  | 'institutional_service'
+
+/** A canonical, institution-provided resource DeepSeek may select from — never invented. */
+export interface OdysseyInstitutionalResource {
+  id: string
+  type: OdysseyResourceType
+  title: string
+  description: string
+  relatedCapabilityIds: string[]
+  workloadEstimate?: string
+  deliveryMode?: string
+}
+
+export interface OdysseyDestination {
+  id: string
+  title: string
+  description: string
+}
+
+export type OdysseyPlanVersionTrigger =
+  | 'initial_generation'
+  | 'replan_request'
+  | 'evidence_update'
+  | 'capability_update'
+  | 'manual_adjustment'
+  | 'faculty_intervention'
+
+export type OdysseyProviderStatus = 'ai_generated' | 'fallback_typed' | 'previous_preserved'
+export type OdysseyValidationStatus = 'valid' | 'invalid' | 'fallback'
+
+/**
+ * A single versioned snapshot of the plan — the unit that actually carries
+ * plan content. OdysseyPlan itself is just a stable anchor pointing at the
+ * current version; history lives here, not by mutating milestones in place.
+ */
+export interface OdysseyPlanVersion {
+  id: string
+  planId: string
+  version: number
+  createdAt: string
+  trigger: OdysseyPlanVersionTrigger
+  triggerSummary: string
+  previousVersionId?: string
+
+  title: string
+  destinationId: string
+  reasoningSummary: string
+  recommendationConfidence: ConfidenceBand
+
+  milestoneIds: string[]
+  milestonesAddedIds: string[]
+  milestonesRemovedIds: string[]
+  milestonesReorderedIds: string[]
+  milestonesChangedIds: string[]
+  milestonesSupersededIds: string[]
+
+  validationStatus: OdysseyValidationStatus
+  providerStatus: OdysseyProviderStatus
+}
+
 export interface OdysseyPlan {
   id: string
   studentId: string
-  targetOutcome: string
-  /** Declared or inferred student intent behind the target outcome. */
-  intentSummary: string
-  currentStage: string
-  currentPositionSummary: string
-  milestones: OdysseyMilestone[]
-  reasoningFactors: OdysseyReasoningFactor[]
-  recommendations: OdysseyRecommendation[]
-  alternatives: OdysseyAlternative[]
+  currentVersionId: string
+}
+
+export interface OdysseyAdjustmentRequest {
+  id: string
+  planId: string
+  requestedAt: string
+  instructionText: string
 }

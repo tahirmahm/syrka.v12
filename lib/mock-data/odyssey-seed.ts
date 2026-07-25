@@ -1,0 +1,277 @@
+import type {
+  OdysseyDestination,
+  OdysseyInstitutionalResource,
+  OdysseyPlan,
+  OdysseyPlanVersion,
+  OdysseyMilestone,
+  OdysseyAction,
+  OdysseyEvidenceRequirement,
+  OdysseyExpectedImpact,
+  OdysseyRecommendationFactor,
+  OdysseyConstraint,
+  OdysseyBlocker,
+  OdysseyAlternativeAction,
+} from '@/lib/campus-types'
+
+/**
+ * The typed fallback Odyssey plan — rendered whenever DeepSeek is
+ * unavailable, errors, times out, or returns a response that fails
+ * validation. Also the initial seed for the in-memory plan-version store
+ * before any AI generation has run. providerStatus is honestly
+ * 'fallback_typed' throughout, never disguised as AI-generated.
+ */
+
+export const odysseyDestination: OdysseyDestination = {
+  id: 'dest-1',
+  title: 'Data Scientist',
+  description: 'A role combining statistical reasoning, data modeling, and applied machine learning to draw actionable conclusions from data.',
+}
+
+export const odysseyInstitutionalResources: OdysseyInstitutionalResource[] = [
+  { id: 'res-1', type: 'course', title: 'CS301 Data Analysis', description: 'Foundational statistical reasoning and data modeling coursework.', relatedCapabilityIds: ['cap-1', 'cap-2'], workloadEstimate: 'One semester, standard load', deliveryMode: 'In-person' },
+  { id: 'res-2', type: 'course', title: 'CS410 Advanced Research Methods', description: 'Rigorous research design for graduate-level readiness.', relatedCapabilityIds: ['cap-3'], workloadEstimate: 'One semester, standard load', deliveryMode: 'In-person' },
+  { id: 'res-3', type: 'course', title: 'Applied Machine Learning', description: 'Supervised and unsupervised learning methods, building on statistics and data modeling.', relatedCapabilityIds: ['cap-4'], workloadEstimate: 'One semester, intensive', deliveryMode: 'In-person' },
+  { id: 'res-4', type: 'research_opportunity', title: 'Undergraduate Data Science Research Assistantship', description: 'Faculty-supervised research producing a research design and analysis portfolio.', relatedCapabilityIds: ['cap-3', 'cap-4'], workloadEstimate: '5-8 hours/week', deliveryMode: 'In-person' },
+  { id: 'res-5', type: 'project', title: 'Independent Regression Modeling Project', description: 'Self-directed project extending regression coursework with a real dataset.', relatedCapabilityIds: ['cap-2'], workloadEstimate: '20-30 hours total' },
+  { id: 'res-6', type: 'workshop', title: 'Spreadsheet Modeling Refresher Workshop', description: 'A short faculty-run workshop refreshing spreadsheet-based modeling technique.', relatedCapabilityIds: ['cap-5'], workloadEstimate: 'One afternoon' },
+  { id: 'res-7', type: 'competition', title: 'Inter-University Data Challenge', description: 'A competitive data analysis challenge producing a judged portfolio artifact.', relatedCapabilityIds: ['cap-1', 'cap-4'], workloadEstimate: '2-3 weeks, part-time' },
+  { id: 'res-8', type: 'faculty_support', title: 'Faculty Office Hours — Dr. Maria Santos', description: 'Direct faculty support for data modeling and research design questions.', relatedCapabilityIds: ['cap-2', 'cap-3'] },
+]
+
+export const odysseyPlan: OdysseyPlan = {
+  id: 'plan-1',
+  studentId: 'student-1',
+  currentVersionId: 'planv-1',
+}
+
+export const odysseyRecommendationFactors: OdysseyRecommendationFactor[] = [
+  { id: 'rf-1', type: 'intent', summary: 'You indicated interest in data-driven career paths during programme onboarding.' },
+  { id: 'rf-2', type: 'programme_context', summary: 'Your BSc Computer Science programme includes a data analysis concentration pathway.' },
+  { id: 'rf-3', type: 'capability_claim', summary: 'You hold a Proficient claim in Statistical Reasoning, supported by two verified evidence items.', relatedCapabilityId: 'cap-1' },
+  { id: 'rf-4', type: 'maturity_gap', summary: 'Data Modeling is Developing, short of the Proficient level Applied Machine Learning requires.', relatedCapabilityId: 'cap-2' },
+  { id: 'rf-5', type: 'confidence_gap', summary: 'Research Design confidence (Emerging, 45%) is below the level most graduate programmes expect.', relatedCapabilityId: 'cap-3' },
+  { id: 'rf-6', type: 'evidence_gap', summary: 'Machine Learning Foundations has no supporting evidence yet.', relatedCapabilityId: 'cap-4' },
+  { id: 'rf-7', type: 'prerequisite', summary: 'Machine Learning Foundations requires both Statistical Reasoning and Data Modeling at Proficient.', relatedCapabilityId: 'cap-4' },
+  { id: 'rf-8', type: 'completed_work', summary: 'You completed CS301 Data Analysis, establishing your strongest capability claim to date.', relatedCapabilityId: 'cap-1' },
+  { id: 'rf-9', type: 'institutional_constraint', summary: 'Meridian University requires faculty verification before evidence counts toward capability confidence.' },
+  { id: 'rf-10', type: 'workload_constraint', summary: 'A standard course load already includes CS301 and CS410 this year.' },
+  { id: 'rf-11', type: 'uncertainty', summary: 'The Applied Machine Learning recommendation rests on evidence from a single course context (CS301); evidence from an additional context would strengthen it.' },
+]
+
+export const odysseyConstraints: OdysseyConstraint[] = [
+  { id: 'con-1', type: 'workload', description: 'Standard course load already includes CS301 and CS410 this academic year.' },
+  { id: 'con-2', type: 'institutional', description: 'Faculty verification is required before submitted evidence counts toward capability confidence.' },
+]
+
+export const odysseyBlockers: OdysseyBlocker[] = [
+  { id: 'blk-1', milestoneId: 'ms-3', reason: 'Requires Proficient in both Statistical Reasoning (met) and Data Modeling (currently Developing).', unblockedBy: 'Data Modeling reaching Proficient.' },
+]
+
+export const odysseyAlternativeActions: OdysseyAlternativeAction[] = [
+  { id: 'aa-1', milestoneId: 'ms-2', title: 'Independent Regression Modeling Project', description: 'A self-directed project instead of waiting on the current course evidence review.', tradeoff: 'Faster path to new evidence, but without built-in course structure or a scheduled faculty checkpoint.' },
+  { id: 'aa-2', milestoneId: 'ms-3', title: 'Undergraduate Data Science Research Assistantship', description: 'Build Machine Learning Foundations through supervised research instead of coursework.', tradeoff: 'Deeper, faculty-mentored evidence, but a slower and more competitive path to start.' },
+]
+
+export const odysseyActions: OdysseyAction[] = [
+  { id: 'action-1', type: 'course', title: 'Complete CS301 Data Analysis', description: 'Foundational coursework in statistical reasoning and data modeling.', developsCapabilityIds: ['cap-1', 'cap-2'], producesEvidenceRequirementIds: ['evreq-1'], requiresReview: true, resourceId: 'res-1', isAiProposed: false },
+  { id: 'action-2', type: 'assessment', title: 'Submit remaining CS301 data modeling evidence', description: 'Await and respond to faculty review of ML Lab 6 and the Early Regression Draft.', developsCapabilityIds: ['cap-2'], producesEvidenceRequirementIds: ['evreq-2'], requiresReview: true, resourceId: 'res-1', isAiProposed: false },
+  { id: 'action-3', type: 'course', title: 'Enroll in Applied Machine Learning', description: 'Begin building initial Machine Learning Foundations evidence.', developsCapabilityIds: ['cap-4'], producesEvidenceRequirementIds: ['evreq-3'], requiresReview: true, resourceId: 'res-3', isAiProposed: false },
+  { id: 'action-4', type: 'course', title: 'Complete CS410 Research Methods', description: 'Verified research design capability for graduate-level readiness.', developsCapabilityIds: ['cap-3'], producesEvidenceRequirementIds: ['evreq-4'], requiresReview: true, resourceId: 'res-2', isAiProposed: false },
+  { id: 'action-5', type: 'laboratory', title: 'Attend the Spreadsheet Modeling Refresher Workshop', description: 'Refresh evidence for a capability whose confidence has decayed since its last verification.', developsCapabilityIds: ['cap-5'], producesEvidenceRequirementIds: ['evreq-5'], requiresReview: true, resourceId: 'res-6', isAiProposed: false },
+]
+
+export const odysseyEvidenceRequirements: OdysseyEvidenceRequirement[] = [
+  { id: 'evreq-1', description: 'Coursework evidence demonstrating statistical reasoning and data modeling.', sourceTypeHint: 'project', satisfiedByEvidenceIds: ['ev-1', 'ev-4'] },
+  { id: 'evreq-2', description: 'Verified data modeling evidence across at least two contexts.', sourceTypeHint: 'assignment', satisfiedByEvidenceIds: ['ev-2', 'ev-5'] },
+  { id: 'evreq-3', description: 'Initial machine learning foundations evidence.', sourceTypeHint: 'project', satisfiedByEvidenceIds: [] },
+  { id: 'evreq-4', description: 'Verified research design evidence.', sourceTypeHint: 'assignment', satisfiedByEvidenceIds: ['ev-7'] },
+  { id: 'evreq-5', description: 'Refreshed spreadsheet-based modeling artifact.', sourceTypeHint: 'project', satisfiedByEvidenceIds: [] },
+]
+
+export const odysseyExpectedImpacts: OdysseyExpectedImpact[] = [
+  { id: 'impact-1', capabilityId: 'cap-1', projectedMaturity: 'Proficient', projectedConfidence: 'Strong', isProjection: true },
+  { id: 'impact-2', capabilityId: 'cap-2', projectedMaturity: 'Proficient', projectedConfidence: 'Strong', isProjection: true },
+  { id: 'impact-3', capabilityId: 'cap-4', projectedMaturity: 'Exposed', projectedConfidence: 'Emerging', isProjection: true },
+  { id: 'impact-4', capabilityId: 'cap-3', projectedMaturity: 'Developing', projectedConfidence: 'Supported', isProjection: true },
+  { id: 'impact-5', capabilityId: 'cap-5', projectedMaturity: 'Proficient', projectedConfidence: 'Supported', isProjection: true },
+]
+
+export const odysseyMilestones: OdysseyMilestone[] = [
+  {
+    id: 'ms-1',
+    type: 'course',
+    title: 'Complete CS301 Data Analysis',
+    description: 'Foundational statistical reasoning and data modeling coursework.',
+    capabilityIds: ['cap-1'],
+    prerequisiteMilestoneIds: [],
+    currentMaturity: 'Proficient',
+    targetMaturity: 'Proficient',
+    currentConfidence: 'Strong',
+    targetConfidence: 'Strong',
+    actionIds: ['action-1'],
+    evidenceRequirementIds: ['evreq-1'],
+    expectedImpactIds: ['impact-1'],
+    reasoningSummary: 'Statistical Reasoning is a prerequisite for Machine Learning Foundations and the strongest capability data scientists are evaluated on early.',
+    alternativeActionIds: [],
+    constraintIds: [],
+    recommendationConfidence: 'Strong',
+    status: 'verified',
+    sourceSignalIds: ['rf-1', 'rf-8'],
+    planVersionId: 'planv-1',
+    completionImpact: 'Established your strongest capability claim to date and unlocked eligibility for the Applied Machine Learning recommendation.',
+  },
+  {
+    id: 'ms-2',
+    type: 'capability_gap',
+    title: 'Advance Data Modeling to Proficient',
+    description: 'Additional verified evidence across varied contexts.',
+    capabilityIds: ['cap-2'],
+    prerequisiteMilestoneIds: [],
+    currentMaturity: 'Developing',
+    targetMaturity: 'Proficient',
+    currentConfidence: 'Supported',
+    targetConfidence: 'Strong',
+    actionIds: ['action-2'],
+    evidenceRequirementIds: ['evreq-2'],
+    expectedImpactIds: ['impact-2'],
+    reasoningSummary: 'Applied Machine Learning requires Data Modeling at Proficient; it is currently Developing.',
+    alternativeActionIds: ['aa-1'],
+    constraintIds: ['con-2'],
+    recommendationConfidence: 'Strong',
+    status: 'under_review',
+    sourceSignalIds: ['rf-4'],
+    planVersionId: 'planv-1',
+    completionImpact: 'Would raise Data Modeling to Proficient, clearing one of two prerequisites for Machine Learning Foundations.',
+  },
+  {
+    id: 'ms-3',
+    type: 'capability_target',
+    title: 'Establish Machine Learning Foundations',
+    description: 'Build an initial capability claim in machine learning fundamentals.',
+    capabilityIds: ['cap-4'],
+    prerequisiteMilestoneIds: ['ms-1', 'ms-2'],
+    currentMaturity: 'Exposed',
+    targetMaturity: 'Exposed',
+    currentConfidence: 'Unsupported',
+    targetConfidence: 'Emerging',
+    actionIds: ['action-3'],
+    evidenceRequirementIds: ['evreq-3'],
+    expectedImpactIds: ['impact-3'],
+    reasoningSummary: 'Directly required for the Data Scientist destination; currently has no supporting evidence.',
+    alternativeActionIds: ['aa-2'],
+    constraintIds: ['con-1'],
+    recommendationConfidence: 'Supported',
+    status: 'blocked',
+    sourceSignalIds: ['rf-6', 'rf-7'],
+    planVersionId: 'planv-1',
+    blockedReason: 'Requires Proficient in both Statistical Reasoning (met) and Data Modeling (currently Developing).',
+    completionImpact: 'Would move Machine Learning Foundations from Exposed to an initial evidenced claim.',
+  },
+  {
+    id: 'ms-4',
+    type: 'course',
+    title: 'Complete CS410 Research Methods',
+    description: 'Verified research design capability for graduate-level readiness.',
+    capabilityIds: ['cap-3'],
+    prerequisiteMilestoneIds: [],
+    currentMaturity: 'Emerging',
+    targetMaturity: 'Proficient',
+    currentConfidence: 'Emerging',
+    targetConfidence: 'Supported',
+    actionIds: ['action-4'],
+    evidenceRequirementIds: ['evreq-4'],
+    expectedImpactIds: ['impact-4'],
+    reasoningSummary: 'Supports alternative graduate-programme pathways and strengthens research-oriented Passport claims.',
+    alternativeActionIds: [],
+    constraintIds: ['con-2'],
+    recommendationConfidence: 'Supported',
+    status: 'under_review',
+    sourceSignalIds: ['rf-5'],
+    planVersionId: 'planv-1',
+    completionImpact: 'Would raise Research Design confidence from Emerging toward Supported.',
+  },
+  {
+    id: 'ms-5',
+    type: 'credential',
+    title: 'Refresh Spreadsheet-Based Modeling evidence',
+    description: 'Submit new evidence for a capability whose confidence has decayed since its last verification.',
+    capabilityIds: ['cap-5'],
+    prerequisiteMilestoneIds: [],
+    currentMaturity: 'Stale',
+    targetMaturity: 'Proficient',
+    currentConfidence: 'Supported',
+    targetConfidence: 'Supported',
+    actionIds: ['action-5'],
+    evidenceRequirementIds: ['evreq-5'],
+    expectedImpactIds: ['impact-5'],
+    reasoningSummary: 'This capability is Stale — it still counts toward your Passport but will not strengthen it further without new evidence.',
+    alternativeActionIds: [],
+    constraintIds: [],
+    recommendationConfidence: 'Supported',
+    status: 'recommended',
+    sourceSignalIds: [],
+    planVersionId: 'planv-1',
+    completionImpact: 'Would restore Spreadsheet-Based Modeling from Stale back to an active, current claim.',
+  },
+  {
+    id: 'ms-6',
+    type: 'career_milestone',
+    title: 'Data Scientist readiness review',
+    description: 'A checkpoint milestone representing overall readiness for the Data Scientist destination.',
+    capabilityIds: ['cap-1', 'cap-2', 'cap-3', 'cap-4'],
+    prerequisiteMilestoneIds: ['ms-1', 'ms-2', 'ms-3', 'ms-4'],
+    actionIds: [],
+    evidenceRequirementIds: [],
+    expectedImpactIds: [],
+    reasoningSummary: 'The natural checkpoint once Machine Learning Foundations, Data Modeling, and Research Design have progressed.',
+    alternativeActionIds: [],
+    constraintIds: [],
+    recommendationConfidence: 'Supported',
+    status: 'planned',
+    sourceSignalIds: [],
+    planVersionId: 'planv-1',
+    completionImpact: 'Would confirm readiness to pursue Data Scientist roles or graduate study.',
+  },
+  {
+    id: 'ms-7',
+    type: 'credential',
+    title: 'Introductory Programming certification path',
+    description: 'An external certification path considered earlier in the programme.',
+    capabilityIds: ['cap-6'],
+    prerequisiteMilestoneIds: [],
+    actionIds: [],
+    evidenceRequirementIds: [],
+    expectedImpactIds: [],
+    reasoningSummary: 'Superseded once the department began requiring CS-coursework-based evidence instead of external certificates for this capability.',
+    alternativeActionIds: [],
+    constraintIds: [],
+    recommendationConfidence: 'Unsupported',
+    status: 'no_longer_relevant',
+    sourceSignalIds: [],
+    planVersionId: 'planv-1',
+    completionImpact: 'No further action — this path was replaced by in-programme coursework.',
+  },
+]
+
+export const odysseyPlanVersions: OdysseyPlanVersion[] = [
+  {
+    id: 'planv-1',
+    planId: 'plan-1',
+    version: 1,
+    createdAt: '2026-07-01T00:00:00.000Z',
+    trigger: 'initial_generation',
+    triggerSummary: 'Initial plan generated from declared intent and current capability profile.',
+    title: 'Path to Data Scientist',
+    destinationId: 'dest-1',
+    reasoningSummary: 'Builds on your Proficient Statistical Reasoning and Developing Data Modeling toward Machine Learning Foundations, with Research Methods as a supporting track.',
+    recommendationConfidence: 'Strong',
+    milestoneIds: ['ms-1', 'ms-2', 'ms-3', 'ms-4', 'ms-5', 'ms-6', 'ms-7'],
+    milestonesAddedIds: ['ms-1', 'ms-2', 'ms-3', 'ms-4', 'ms-5', 'ms-6', 'ms-7'],
+    milestonesRemovedIds: [],
+    milestonesReorderedIds: [],
+    milestonesChangedIds: [],
+    milestonesSupersededIds: [],
+    validationStatus: 'valid',
+    providerStatus: 'fallback_typed',
+  },
+]

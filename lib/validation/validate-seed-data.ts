@@ -4,8 +4,18 @@ import type {
   CapabilityRelationEdge,
   EvidenceRecord,
   EvidenceReview,
-  OdysseyPlan,
   Passport,
+  OdysseyPlan,
+  OdysseyPlanVersion,
+  OdysseyMilestone,
+  OdysseyAction,
+  OdysseyEvidenceRequirement,
+  OdysseyExpectedImpact,
+  OdysseyRecommendationFactor,
+  OdysseyConstraint,
+  OdysseyBlocker,
+  OdysseyAlternativeAction,
+  OdysseyInstitutionalResource,
 } from '@/lib/campus-types'
 
 export interface SeedDataInput {
@@ -14,8 +24,18 @@ export interface SeedDataInput {
   capabilityRelationEdges: CapabilityRelationEdge[]
   evidenceRecords: EvidenceRecord[]
   evidenceReviews: EvidenceReview[]
-  odysseyPlan: OdysseyPlan
   passport: Passport
+  odysseyPlan: OdysseyPlan
+  odysseyPlanVersions: OdysseyPlanVersion[]
+  odysseyMilestones: OdysseyMilestone[]
+  odysseyActions: OdysseyAction[]
+  odysseyEvidenceRequirements: OdysseyEvidenceRequirement[]
+  odysseyExpectedImpacts: OdysseyExpectedImpact[]
+  odysseyRecommendationFactors: OdysseyRecommendationFactor[]
+  odysseyConstraints: OdysseyConstraint[]
+  odysseyBlockers: OdysseyBlocker[]
+  odysseyAlternativeActions: OdysseyAlternativeAction[]
+  odysseyInstitutionalResources: OdysseyInstitutionalResource[]
 }
 
 /**
@@ -72,18 +92,6 @@ export function validateSeedData(data: SeedDataInput): string[] {
     missingCapability(edge.toCapabilityId, `Relation edge "${edge.id}"`)
   }
 
-  // Odyssey milestones reference real capabilities and evidence.
-  for (const milestone of data.odysseyPlan.milestones) {
-    milestone.requirements.forEach((req) => missingCapability(req.capabilityId, `Odyssey milestone "${milestone.id}"`))
-    milestone.requiredEvidenceIds.forEach((id) => missingEvidence(id, `Odyssey milestone "${milestone.id}"`))
-    if (milestone.status === 'blocked' && !milestone.blockedReason) errors.push(`Milestone "${milestone.id}" is blocked but has no blockedReason`)
-    if (milestone.status !== 'blocked' && milestone.blockedReason) errors.push(`Milestone "${milestone.id}" has a blockedReason but is not blocked`)
-  }
-  data.odysseyPlan.recommendations.forEach((rec) => {
-    missingCapability(rec.capabilityId, `Odyssey recommendation "${rec.id}"`)
-    rec.evidenceIds.forEach((id) => missingEvidence(id, `Odyssey recommendation "${rec.id}"`))
-  })
-
   // Passport claims/withheld reference real capabilities and evidence; claim ids unique per version.
   for (const version of data.passport.versions) {
     const seenClaimIds = new Set<string>()
@@ -100,6 +108,135 @@ export function validateSeedData(data: SeedDataInput): string[] {
     }
     version.withheld.forEach((w) => missingCapability(w.capabilityId, `Passport v${version.version} withheld entry`))
   }
+
+  // --- Odyssey ---
+
+  const resourceIds = new Set(data.odysseyInstitutionalResources.map((r) => r.id))
+  const actionIds = new Set(data.odysseyActions.map((a) => a.id))
+  const evidenceRequirementIds = new Set(data.odysseyEvidenceRequirements.map((r) => r.id))
+  const expectedImpactIds = new Set(data.odysseyExpectedImpacts.map((i) => i.id))
+  const recommendationFactorIds = new Set(data.odysseyRecommendationFactors.map((f) => f.id))
+  const constraintIds = new Set(data.odysseyConstraints.map((c) => c.id))
+  const alternativeActionIds = new Set(data.odysseyAlternativeActions.map((a) => a.id))
+  const milestoneIds = new Set<string>()
+  for (const m of data.odysseyMilestones) {
+    if (milestoneIds.has(m.id)) errors.push(`Duplicate Odyssey milestone id "${m.id}"`)
+    milestoneIds.add(m.id)
+  }
+  const planVersionIds = new Set(data.odysseyPlanVersions.map((v) => v.id))
+
+  data.odysseyInstitutionalResources.forEach((r) => r.relatedCapabilityIds.forEach((id) => missingCapability(id, `Odyssey resource "${r.id}"`)))
+
+  for (const action of data.odysseyActions) {
+    action.developsCapabilityIds.forEach((id) => missingCapability(id, `Odyssey action "${action.id}"`))
+    action.producesEvidenceRequirementIds.forEach((id) => {
+      if (!evidenceRequirementIds.has(id)) errors.push(`Odyssey action "${action.id}" references unknown evidence requirement "${id}"`)
+    })
+    if (action.resourceId && !resourceIds.has(action.resourceId)) errors.push(`Odyssey action "${action.id}" references unknown resource "${action.resourceId}"`)
+    if (action.isAiProposed && !action.proposalId) errors.push(`Odyssey action "${action.id}" is AI-proposed but has no proposalId`)
+    if (!action.isAiProposed && action.proposalId) errors.push(`Odyssey action "${action.id}" is not AI-proposed but has a proposalId`)
+  }
+
+  for (const req of data.odysseyEvidenceRequirements) {
+    req.satisfiedByEvidenceIds.forEach((id) => missingEvidence(id, `Odyssey evidence requirement "${req.id}"`))
+  }
+
+  for (const impact of data.odysseyExpectedImpacts) {
+    missingCapability(impact.capabilityId, `Odyssey expected impact "${impact.id}"`)
+  }
+
+  data.odysseyRecommendationFactors.forEach((f) => {
+    if (f.relatedCapabilityId) missingCapability(f.relatedCapabilityId, `Odyssey recommendation factor "${f.id}"`)
+  })
+
+  for (const alt of data.odysseyAlternativeActions) {
+    if (!milestoneIds.has(alt.milestoneId)) errors.push(`Odyssey alternative action "${alt.id}" references unknown milestone "${alt.milestoneId}"`)
+  }
+
+  for (const blocker of data.odysseyBlockers) {
+    if (!milestoneIds.has(blocker.milestoneId)) errors.push(`Odyssey blocker "${blocker.id}" references unknown milestone "${blocker.milestoneId}"`)
+  }
+
+  for (const version of data.odysseyPlanVersions) {
+    if (version.planId !== data.odysseyPlan.id) errors.push(`Odyssey plan version "${version.id}" references unknown plan "${version.planId}"`)
+    if (version.previousVersionId && !planVersionIds.has(version.previousVersionId)) {
+      errors.push(`Odyssey plan version "${version.id}" references unknown previous version "${version.previousVersionId}"`)
+    }
+    version.milestoneIds.forEach((id) => {
+      if (!milestoneIds.has(id)) errors.push(`Odyssey plan version "${version.id}" references unknown milestone "${id}"`)
+    })
+    for (const idListName of ['milestonesAddedIds', 'milestonesChangedIds', 'milestonesReorderedIds'] as const) {
+      version[idListName].forEach((id) => {
+        if (!version.milestoneIds.includes(id)) errors.push(`Odyssey plan version "${version.id}" lists "${id}" in ${idListName} but not in milestoneIds`)
+      })
+    }
+  }
+  if (!planVersionIds.has(data.odysseyPlan.currentVersionId)) {
+    errors.push(`Odyssey plan "${data.odysseyPlan.id}" currentVersionId references unknown version "${data.odysseyPlan.currentVersionId}"`)
+  }
+
+  for (const milestone of data.odysseyMilestones) {
+    milestone.capabilityIds.forEach((id) => missingCapability(id, `Odyssey milestone "${milestone.id}"`))
+    milestone.actionIds.forEach((id) => {
+      if (!actionIds.has(id)) errors.push(`Odyssey milestone "${milestone.id}" references unknown action "${id}"`)
+    })
+    milestone.evidenceRequirementIds.forEach((id) => {
+      if (!evidenceRequirementIds.has(id)) errors.push(`Odyssey milestone "${milestone.id}" references unknown evidence requirement "${id}"`)
+    })
+    milestone.expectedImpactIds.forEach((id) => {
+      if (!expectedImpactIds.has(id)) errors.push(`Odyssey milestone "${milestone.id}" references unknown expected impact "${id}"`)
+    })
+    milestone.alternativeActionIds.forEach((id) => {
+      if (!alternativeActionIds.has(id)) errors.push(`Odyssey milestone "${milestone.id}" references unknown alternative action "${id}"`)
+    })
+    milestone.constraintIds.forEach((id) => {
+      if (!constraintIds.has(id)) errors.push(`Odyssey milestone "${milestone.id}" references unknown constraint "${id}"`)
+    })
+    milestone.sourceSignalIds.forEach((id) => {
+      if (!recommendationFactorIds.has(id) && !evidenceIds.has(id)) {
+        errors.push(`Odyssey milestone "${milestone.id}" references unknown source signal "${id}"`)
+      }
+    })
+    if (!planVersionIds.has(milestone.planVersionId)) {
+      errors.push(`Odyssey milestone "${milestone.id}" references unknown plan version "${milestone.planVersionId}"`)
+    }
+    milestone.prerequisiteMilestoneIds.forEach((id) => {
+      if (!milestoneIds.has(id)) errors.push(`Odyssey milestone "${milestone.id}" references unknown prerequisite milestone "${id}"`)
+      if (id === milestone.id) errors.push(`Odyssey milestone "${milestone.id}" lists itself as a prerequisite`)
+    })
+    if (milestone.status === 'blocked' && !milestone.blockedReason) errors.push(`Odyssey milestone "${milestone.id}" is blocked but has no blockedReason`)
+    if (milestone.status !== 'blocked' && milestone.blockedReason) errors.push(`Odyssey milestone "${milestone.id}" has a blockedReason but is not blocked`)
+    if (milestone.status === 'verified' && milestone.evidenceRequirementIds.some((id) => {
+      const req = data.odysseyEvidenceRequirements.find((r) => r.id === id)
+      return req && req.satisfiedByEvidenceIds.length === 0
+    })) {
+      errors.push(`Odyssey milestone "${milestone.id}" is verified but has an unsatisfied evidence requirement`)
+    }
+  }
+
+  // Circular prerequisite detection (DFS with recursion-stack tracking).
+  const milestoneById = new Map(data.odysseyMilestones.map((m) => [m.id, m]))
+  const visitState = new Map<string, 'visiting' | 'done'>()
+  const reportedCycles = new Set<string>()
+  const detectCycle = (id: string, path: string[]) => {
+    const state = visitState.get(id)
+    if (state === 'done') return
+    if (state === 'visiting') {
+      const cycleKey = [...path, id].sort().join('>')
+      if (!reportedCycles.has(cycleKey)) {
+        reportedCycles.add(cycleKey)
+        errors.push(`Circular prerequisite chain detected involving milestone "${id}"`)
+      }
+      return
+    }
+    visitState.set(id, 'visiting')
+    const milestone = milestoneById.get(id)
+    milestone?.prerequisiteMilestoneIds.forEach((prereqId) => {
+      if (milestoneById.has(prereqId)) detectCycle(prereqId, [...path, id])
+    })
+    visitState.set(id, 'done')
+  }
+  data.odysseyMilestones.forEach((m) => detectCycle(m.id, []))
 
   return errors
 }

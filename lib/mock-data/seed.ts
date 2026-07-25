@@ -8,13 +8,41 @@ import type {
   CapabilityRelationEdge,
   EvidenceRecord,
   EvidenceReview,
-  OdysseyPlan,
   Passport,
   DisclosureSettings,
   CampusUser,
 } from '@/lib/campus-types'
 import { DEFAULT_DISCLOSURE_SETTINGS } from '@/lib/constants/passport'
 import { validateSeedData } from '@/lib/validation/validate-seed-data'
+import {
+  odysseyDestination,
+  odysseyInstitutionalResources,
+  odysseyPlan,
+  odysseyPlanVersions,
+  odysseyMilestones,
+  odysseyActions,
+  odysseyEvidenceRequirements,
+  odysseyExpectedImpacts,
+  odysseyRecommendationFactors,
+  odysseyConstraints,
+  odysseyBlockers,
+  odysseyAlternativeActions,
+} from '@/lib/mock-data/odyssey-seed'
+
+export {
+  odysseyDestination,
+  odysseyInstitutionalResources,
+  odysseyPlan,
+  odysseyPlanVersions,
+  odysseyMilestones,
+  odysseyActions,
+  odysseyEvidenceRequirements,
+  odysseyExpectedImpacts,
+  odysseyRecommendationFactors,
+  odysseyConstraints,
+  odysseyBlockers,
+  odysseyAlternativeActions,
+}
 
 /**
  * Minimal, internally-coherent seed data proving the repository pattern.
@@ -182,138 +210,6 @@ export const evidenceReviews: EvidenceReview[] = [
   { id: 'rev-9', evidenceId: 'ev-9', status: 'verified', reviewedAt: '2025-02-14T00:00:00.000Z', reviewedBy: 'fac-1', rationale: 'Workshop artifact demonstrates correct spreadsheet-based model structure.' },
 ]
 
-export const odysseyPlan: OdysseyPlan = {
-  id: 'odyssey-1',
-  studentId: 'student-1',
-  targetOutcome: 'Data Scientist',
-  intentSummary: 'Declared interest in data-driven roles during programme enrollment, reinforced by consistent enrollment in data analysis and research methods coursework.',
-  currentStage: 'Building foundational data analysis capability',
-  currentPositionSummary: 'Proficient in statistical reasoning; developing data modeling; early research design evidence; machine learning foundations not yet started.',
-  milestones: [
-    {
-      id: 'ms-1',
-      order: 1,
-      title: 'Complete CS301 Data Analysis',
-      description: 'Foundational statistical reasoning and data modeling coursework.',
-      rationale: 'Statistical Reasoning is a prerequisite for Machine Learning Foundations and the strongest capability data scientists are evaluated on early.',
-      status: 'complete',
-      requirements: [{ capabilityId: 'cap-1', minimumMaturity: 'Proficient' }],
-      requiredEvidenceIds: ['ev-1', 'ev-4'],
-      completionImpact: 'Established your strongest capability claim to date and unlocked eligibility for the Applied Machine Learning recommendation below.',
-    },
-    {
-      id: 'ms-2',
-      order: 2,
-      title: 'Advance Data Modeling to Proficient',
-      description: 'Additional verified evidence across varied contexts.',
-      rationale: 'Machine Learning Foundations requires Data Modeling at Proficient; it is currently Developing.',
-      status: 'awaiting_review',
-      requirements: [{ capabilityId: 'cap-2', minimumMaturity: 'Proficient' }],
-      requiredEvidenceIds: ['ev-2', 'ev-5'],
-      recommendedAction: 'Await faculty review of ML Lab 6 and revise Early Regression Draft per the reviewer’s feedback.',
-      completionImpact: 'Would raise Data Modeling to Proficient, clearing one of two prerequisites for Machine Learning Foundations.',
-    },
-    {
-      id: 'ms-3',
-      order: 3,
-      title: 'Demonstrate Machine Learning Foundations',
-      description: 'Establish an initial capability claim in machine learning fundamentals.',
-      rationale: 'Directly required for the Applied Machine Learning recommendation and the Data Scientist outcome.',
-      status: 'blocked',
-      requirements: [
-        { capabilityId: 'cap-1', minimumMaturity: 'Proficient' },
-        { capabilityId: 'cap-2', minimumMaturity: 'Proficient' },
-      ],
-      requiredEvidenceIds: [],
-      blockedReason: 'Requires Proficient in both Statistical Reasoning (met) and Data Modeling (currently Developing).',
-      completionImpact: 'Would move Machine Learning Foundations from Exposed to an initial evidenced claim.',
-    },
-    {
-      id: 'ms-4',
-      order: 4,
-      title: 'Complete CS410 Research Methods',
-      description: 'Verified research design capability for graduate-level readiness.',
-      rationale: 'Supports alternative graduate-programme pathways and strengthens research-oriented Passport claims.',
-      status: 'awaiting_review',
-      requirements: [{ capabilityId: 'cap-3', minimumMaturity: 'Proficient' }],
-      requiredEvidenceIds: ['ev-7'],
-      recommendedAction: 'Await faculty review of the revised Research Proposal.',
-      completionImpact: 'Would raise Research Design confidence from Emerging toward Supported.',
-    },
-    {
-      id: 'ms-5',
-      order: 5,
-      title: 'Refresh Spreadsheet-Based Modeling evidence',
-      description: 'Submit new evidence for a capability whose confidence has decayed since its last verification.',
-      rationale: 'This capability is Stale — it still counts toward your Passport but will not strengthen it further without new evidence.',
-      status: 'available',
-      requirements: [{ capabilityId: 'cap-5', minimumMaturity: 'Proficient' }],
-      requiredEvidenceIds: [],
-      recommendedAction: 'Submit updated evidence to refresh this capability before it affects your next Passport reissue.',
-      completionImpact: 'Would restore Spreadsheet-Based Modeling from Stale back to an active, current claim.',
-    },
-    {
-      id: 'ms-6',
-      order: 6,
-      title: 'Complete Applied Machine Learning',
-      description: 'Enroll in and complete the recommended follow-on course.',
-      rationale: 'The natural next step once Machine Learning Foundations is established.',
-      status: 'not_started',
-      requirements: [{ capabilityId: 'cap-4', minimumMaturity: 'Developing' }],
-      requiredEvidenceIds: [],
-      completionImpact: 'Would begin building direct evidence toward the Data Scientist outcome.',
-    },
-    {
-      id: 'ms-7',
-      order: 0,
-      title: 'Complete Introductory Programming certification',
-      description: 'An external certification path considered earlier in the programme.',
-      rationale: 'Superseded once the department began requiring CS-coursework-based evidence instead of external certificates for this capability.',
-      status: 'no_longer_relevant',
-      requirements: [{ capabilityId: 'cap-6', minimumMaturity: 'Developing' }],
-      requiredEvidenceIds: ['ev-8'],
-      completionImpact: 'No further action — this path was replaced by in-programme coursework.',
-    },
-  ],
-  reasoningFactors: [
-    { id: 'rf-1', type: 'intent', summary: 'You indicated interest in data-driven career paths during programme onboarding.' },
-    { id: 'rf-2', type: 'programme_context', summary: 'Your BSc Computer Science programme includes a data analysis concentration pathway.' },
-    { id: 'rf-3', type: 'capability_claim', summary: 'You hold a Proficient claim in Statistical Reasoning, supported by two verified evidence items.', relatedCapabilityId: 'cap-1' },
-    { id: 'rf-4', type: 'maturity_gap', summary: 'Data Modeling is Developing, short of the Proficient level Machine Learning Foundations requires.', relatedCapabilityId: 'cap-2' },
-    { id: 'rf-5', type: 'confidence_gap', summary: 'Research Design confidence (Emerging, 45%) is below the level most graduate programmes expect.', relatedCapabilityId: 'cap-3' },
-    { id: 'rf-6', type: 'evidence_gap', summary: 'Machine Learning Foundations has no supporting evidence yet.', relatedCapabilityId: 'cap-4' },
-    { id: 'rf-7', type: 'prerequisite', summary: 'Machine Learning Foundations requires both Statistical Reasoning and Data Modeling at Proficient.', relatedCapabilityId: 'cap-4' },
-    { id: 'rf-8', type: 'completed_work', summary: 'You completed CS301 Data Analysis, establishing your strongest capability claim to date.', relatedCapabilityId: 'cap-1' },
-    { id: 'rf-9', type: 'institutional_constraint', summary: 'Meridian University requires faculty verification before evidence counts toward capability confidence.' },
-    { id: 'rf-10', type: 'uncertainty', summary: 'The Applied Machine Learning recommendation rests on evidence from a single course context (CS301); evidence from an additional context would strengthen it.' },
-  ],
-  recommendations: [
-    {
-      id: 'rec-1',
-      title: 'Enroll in Applied Machine Learning',
-      reason: 'Builds directly on your Proficient statistical reasoning and Developing data modeling capabilities.',
-      confidence: { score: 0.81, band: 'Strong' },
-      evidenceIds: ['ev-1', 'ev-2'],
-      capabilityId: 'cap-2',
-      uncertaintyNote: 'Based on evidence from a single course context; confidence would strengthen with evidence from an additional context.',
-    },
-  ],
-  alternatives: [
-    {
-      id: 'alt-1',
-      title: 'Data Analyst track',
-      description: 'Less research emphasis, more applied reporting and dashboarding work.',
-      tradeoff: 'Faster path to industry roles, but builds fewer of the research-oriented capabilities graduate programmes look for.',
-    },
-    {
-      id: 'alt-2',
-      title: 'ML Engineering track',
-      description: 'More systems and engineering emphasis alongside machine learning.',
-      tradeoff: 'Requires additional software-engineering capability evidence not yet established in your profile.',
-    },
-  ],
-}
-
 export const disclosureSettings: DisclosureSettings = { ...DEFAULT_DISCLOSURE_SETTINGS }
 
 export const passport: Passport = {
@@ -480,8 +376,18 @@ const seedDataErrors = validateSeedData({
   capabilityRelationEdges,
   evidenceRecords,
   evidenceReviews,
-  odysseyPlan,
   passport,
+  odysseyPlan,
+  odysseyPlanVersions,
+  odysseyMilestones,
+  odysseyActions,
+  odysseyEvidenceRequirements,
+  odysseyExpectedImpacts,
+  odysseyRecommendationFactors,
+  odysseyConstraints,
+  odysseyBlockers,
+  odysseyAlternativeActions,
+  odysseyInstitutionalResources,
 })
 if (seedDataErrors.length > 0) {
   throw new Error(`Seed data integrity check failed:\n${seedDataErrors.join('\n')}`)
