@@ -21,13 +21,15 @@ export default async function CapabilityDetailPage({ params }: { params: { capab
   const definition = await mockCapabilityRepository.getDefinition(params.capabilityId)
   if (!definition) notFound()
 
-  const [claim, evidence, relationEdges, odyssey, allDefinitions] = await Promise.all([
+  const [claim, evidence, relationEdges, currentPlanVersion, allDefinitions, destination] = await Promise.all([
     mockCapabilityRepository.getClaimForCapability(currentUser.id, definition.id),
     mockEvidenceRepository.listForCapability(definition.id),
     mockCapabilityRepository.listRelationEdges(),
-    mockOdysseyRepository.getPlanForStudent(currentUser.id),
+    mockOdysseyRepository.getCurrentPlanVersion(currentUser.id),
     mockCapabilityRepository.listDefinitions(),
+    mockOdysseyRepository.getDestination(currentUser.id),
   ])
+  const odysseyMilestones = currentPlanVersion ? await mockOdysseyRepository.getMilestonesForVersion(currentUser.id, currentPlanVersion.id) : []
 
   const definitionById = new Map(allDefinitions.map((d) => [d.id, d]))
   const prerequisites = relationEdges.filter((e) => e.type === 'REQUIRES' && e.fromCapabilityId === definition.id)
@@ -37,8 +39,8 @@ export default async function CapabilityDetailPage({ params }: { params: { capab
   const verifiedEvidence = evidence.filter((e) => e.review.status === 'verified')
   const strongestEvidence = [...verifiedEvidence].sort((a, b) => new Date(b.record.submittedAt).getTime() - new Date(a.record.submittedAt).getTime())[0]
 
-  const odysseyMilestone = odyssey?.milestones.find((m) => m.requirements.some((r) => r.capabilityId === definition.id))
-  const odysseyRecommendation = odyssey?.recommendations.find((r) => r.capabilityId === definition.id)
+  const odysseyMilestone = odysseyMilestones.find((m) => m.capabilityIds.includes(definition.id))
+  const odysseyRecommendation = odysseyMilestones.find((m) => m.capabilityIds.includes(definition.id) && m.status === 'recommended')
 
   const latestAssessment = claim?.history[claim.history.length - 1]
 
@@ -84,14 +86,14 @@ export default async function CapabilityDetailPage({ params }: { params: { capab
         <Panel>
           <p className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Odyssey relevance</p>
           <p className="mt-1 font-campus-sans text-campus-sm text-campus-text">
-            Required for milestone <span className="font-medium">{odysseyMilestone.title}</span>, toward {odyssey?.targetOutcome}.
+            Required for milestone <span className="font-medium">{odysseyMilestone.title}</span>, toward {destination?.title ?? 'your Odyssey destination'}.
           </p>
         </Panel>
       )}
       {odysseyRecommendation && (
         <Panel>
           <p className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Recommended next action</p>
-          <p className="mt-1 font-campus-sans text-campus-sm text-campus-text">{odysseyRecommendation.title} — {odysseyRecommendation.reason}</p>
+          <p className="mt-1 font-campus-sans text-campus-sm text-campus-text">{odysseyRecommendation.title} — {odysseyRecommendation.reasoningSummary}</p>
         </Panel>
       )}
 

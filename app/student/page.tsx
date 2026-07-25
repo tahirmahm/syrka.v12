@@ -17,16 +17,19 @@ import { getActiveMilestone } from '@/lib/utilities/odyssey'
 import { currentUser } from '@/lib/mock-data/seed'
 
 export const metadata = { title: 'Dashboard — Syrka Campus' }
+// Reflects the in-memory Odyssey plan-version store, which generate/replan mutate.
+export const dynamic = 'force-dynamic'
 
 export default async function StudentDashboardPage() {
-  const [capabilityClaims, evidence, odyssey, passport, programme] = await Promise.all([
+  const [capabilityClaims, evidence, currentPlanVersion, passport, programme] = await Promise.all([
     mockCapabilityRepository.listClaimsForSubject(currentUser.id),
     mockEvidenceRepository.listForStudent(currentUser.id),
-    mockOdysseyRepository.getPlanForStudent(currentUser.id),
+    mockOdysseyRepository.getCurrentPlanVersion(currentUser.id),
     mockPassportRepository.getForStudent(currentUser.id),
     currentUser.programmeId ? mockInstitutionRepository.getProgramme(currentUser.programmeId) : Promise.resolve(undefined),
   ])
   const institution = await mockInstitutionRepository.getInstitution(currentUser.institutionId)
+  const odysseyMilestones = currentPlanVersion ? await mockOdysseyRepository.getMilestonesForVersion(currentUser.id, currentPlanVersion.id) : []
 
   const capabilityCards = (
     await Promise.all(
@@ -41,8 +44,7 @@ export default async function StudentDashboardPage() {
 
   const recentEvidence = [...evidence].sort((a, b) => new Date(b.record.submittedAt).getTime() - new Date(a.record.submittedAt).getTime()).slice(0, 4)
   const pendingEvidence = evidence.filter((item) => item.review.status === 'pending')
-  const currentMilestone = odyssey ? getActiveMilestone(odyssey.milestones) : undefined
-  const topRecommendation = odyssey?.recommendations[0]
+  const currentMilestone = getActiveMilestone(odysseyMilestones)
   const latestPassportVersion = passport?.versions.find((v) => v.version === passport.currentVersion)
 
   return (
@@ -79,14 +81,6 @@ export default async function StudentDashboardPage() {
               <Link href="/student/odyssey" className="flex items-center gap-1 font-campus-sans text-campus-sm text-campus-blue-600 hover:underline dark:text-campus-blue-dark">
                 View <ArrowRight size={14} aria-hidden="true" />
               </Link>
-            </Card>
-          )}
-          {topRecommendation && (
-            <Card className="flex items-center justify-between gap-4 p-4">
-              <div className="flex items-center gap-3">
-                <Badge tone="purple">Recommended</Badge>
-                <p className="font-campus-sans text-campus-sm text-campus-text">{topRecommendation.title}</p>
-              </div>
             </Card>
           )}
         </div>

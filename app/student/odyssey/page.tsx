@@ -5,97 +5,111 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { Panel } from '@/components/ui/Panel'
 import { Badge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { OdysseyMilestoneRow } from '@/components/odyssey/OdysseyMilestoneRow'
+import { OdysseyWorkspace } from '@/components/odyssey/OdysseyWorkspace'
 import { OdysseyReasoningPanel } from '@/components/odyssey/OdysseyReasoningPanel'
 import { mockOdysseyRepository, mockCapabilityRepository, mockPassportRepository } from '@/lib/repositories'
 import { currentUser } from '@/lib/mock-data/seed'
 import { getActiveMilestone } from '@/lib/utilities/odyssey'
-import { MILESTONE_STATUS_LABELS, MILESTONE_STATUS_TONES } from '@/lib/constants/odyssey'
+import { orderMilestonesForDisplay, resolveMilestones } from '@/lib/utilities/odyssey-detail'
+import { buildOdysseyRoadmap } from '@/lib/utilities/odyssey-projection'
 
 export const metadata = { title: 'Odyssey — Syrka Campus' }
+// This page reads from the in-memory Odyssey plan-version store, which
+// generate/replan mutate — it must never be statically cached.
+export const dynamic = 'force-dynamic'
 
 export default async function StudentOdysseyPage() {
-  const [odyssey, definitions, passport] = await Promise.all([
-    mockOdysseyRepository.getPlanForStudent(currentUser.id),
+  const [destination, currentPlanVersion, definitions, passport, allVersions] = await Promise.all([
+    mockOdysseyRepository.getDestination(currentUser.id),
+    mockOdysseyRepository.getCurrentPlanVersion(currentUser.id),
     mockCapabilityRepository.listDefinitions(),
     mockPassportRepository.getForStudent(currentUser.id),
+    mockOdysseyRepository.listPlanVersions(currentUser.id),
   ])
 
-  if (!odyssey) {
+  const capabilityById = new Map(definitions.map((d) => [d.id, d]))
+  const latestPassportVersion = passport?.versions.find((v) => v.version === passport.currentVersion)
+
+  const milestoneTitlesByVersion: Record<string, Record<string, string>> = {}
+  await Promise.all(
+    allVersions.map(async (version) => {
+      const versionMilestones = await mockOdysseyRepository.getMilestonesForVersion(currentUser.id, version.id)
+      milestoneTitlesByVersion[version.id] = Object.fromEntries(versionMilestones.map((m) => [m.id, m.title]))
+    })
+  )
+
+  if (!destination || !currentPlanVersion) {
     return (
       <div className="mx-auto flex max-w-3xl flex-col gap-6">
         <PageHeader title="Odyssey" breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Odyssey' }]} />} />
-        <EmptyState title="No Odyssey plan yet" description="A progression plan is generated once enough capability evidence has been observed." />
+        <EmptyState title="No Odyssey plan yet" description="Generate an Odyssey plan to get an evidence-backed roadmap toward a destination you choose." />
       </div>
     )
   }
 
-  const capabilityById = new Map(definitions.map((d) => [d.id, d]))
-  const activeMilestone = getActiveMilestone(odyssey.milestones)
-  const orderedMilestones = [...odyssey.milestones].sort((a, b) => a.order - b.order)
-  const blockedMilestones = odyssey.milestones.filter((m) => m.status === 'blocked')
-  const topRecommendation = odyssey.recommendations[0]
-  const latestPassportVersion = passport?.versions.find((v) => v.version === passport.currentVersion)
+  const milestones = await mockOdysseyRepository.getMilestonesForVersion(currentUser.id, currentPlanVersion.id)
+  const milestoneIds = milestones.map((m) => m.id)
+
+  const [actions, evidenceRequirements, expectedImpacts, recommendationFactors, alternatives, blockers] = await Promise.all([
+    mockOdysseyRepository.getActionsByIds(currentUser.id, milestones.flatMap((m) => m.actionIds)),
+    mockOdysseyRepository.getEvidenceRequirementsByIds(currentUser.id, milestones.flatMap((m) => m.evidenceRequirementIds)),
+    mockOdysseyRepository.getExpectedImpactsByIds(currentUser.id, milestones.flatMap((m) => m.expectedImpactIds)),
+    mockOdysseyRepository.listRecommendationFactors(currentUser.id),
+    mockOdysseyRepository.getAlternativeActionsForMilestones(currentUser.id, milestoneIds),
+    mockOdysseyRepository.getBlockersForMilestones(currentUser.id, milestoneIds),
+  ])
+
+  const milestoneById = new Map(milestones.map((m) => [m.id, m]))
+  const alternativesByMilestoneId = new Map<string, typeof alternatives>()
+  alternatives.forEach((a) => alternativesByMilestoneId.set(a.milestoneId, [...(alternativesByMilestoneId.get(a.milestoneId) ?? []), a]))
+  const blockersByMilestoneId = new Map<string, typeof blockers>()
+  blockers.forEach((b) => blockersByMilestoneId.set(b.milestoneId, [...(blockersByMilestoneId.get(b.milestoneId) ?? []), b]))
+
+  const orderedMilestones = orderMilestonesForDisplay(milestones)
+  const orderedResolved = resolveMilestones(orderedMilestones, {
+    capabilityById,
+    actionById: new Map(actions.map((a) => [a.id, a])),
+    evidenceRequirementById: new Map(evidenceRequirements.map((r) => [r.id, r])),
+    expectedImpactById: new Map(expectedImpacts.map((i) => [i.id, i])),
+    alternativesByMilestoneId,
+    blockersByMilestoneId,
+  })
+
+  const recommendedNext = getActiveMilestone(milestones)
+  const { nodes, edges } = buildOdysseyRoadmap(milestones, destination, alternatives, blockers)
+  const alternativesWithTitles = alternatives.map((a) => ({ ...a, milestoneTitle: milestoneById.get(a.milestoneId)?.title ?? a.milestoneId }))
+
+  const headerSummary = (
+    <div className="max-w-2xl">
+      <p className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Destination</p>
+      <h2 className="font-campus-sans text-campus-xl font-semibold text-campus-text">{destination.title}</h2>
+      <p className="mt-1 font-campus-sans text-campus-sm text-campus-text">{currentPlanVersion.title} — {currentPlanVersion.reasoningSummary}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+        <Badge tone="neutral">Version {currentPlanVersion.version}</Badge>
+        <Badge tone="blue">Recommendation confidence: {currentPlanVersion.recommendationConfidence}</Badge>
+        {currentPlanVersion.providerStatus === 'fallback_typed' && <Badge tone="amber">Demonstration plan</Badge>}
+      </div>
+    </div>
+  )
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-8">
-      <PageHeader
-        title="Odyssey"
-        subtitle={odyssey.currentStage}
-        breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Odyssey' }]} />}
+    <div className="mx-auto flex max-w-6xl flex-col gap-8">
+      <PageHeader title="Odyssey" breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Odyssey' }]} />} />
+
+      <OdysseyWorkspace
+        headerSummary={headerSummary}
+        hasCurrentPlan
+        destinationTitle={destination.title}
+        nodes={nodes}
+        edges={edges}
+        orderedResolved={orderedResolved}
+        recommendedNextId={recommendedNext?.id}
+        versions={allVersions}
+        milestoneTitlesByVersion={milestoneTitlesByVersion}
       />
 
-      {/* Where am I trying to go */}
-      <Panel className="flex flex-col gap-2">
-        <p className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Target outcome</p>
-        <h2 className="font-campus-sans text-campus-2xl font-semibold text-campus-text">{odyssey.targetOutcome}</h2>
-        <p className="font-campus-sans text-campus-sm text-campus-text">{odyssey.intentSummary}</p>
-        <p className="mt-1 font-campus-sans text-campus-sm text-campus-muted">{odyssey.currentPositionSummary}</p>
-      </Panel>
+      <OdysseyReasoningPanel planSummary={currentPlanVersion.reasoningSummary} factors={recommendationFactors} alternatives={alternativesWithTitles} />
 
-      {/* What to do next */}
-      {activeMilestone && (
-        <Panel className="flex flex-col gap-2 border-campus-blue-600 dark:border-campus-blue-dark">
-          <div className="flex items-center justify-between">
-            <p className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">What to do next</p>
-            <Badge tone={MILESTONE_STATUS_TONES[activeMilestone.status]}>{MILESTONE_STATUS_LABELS[activeMilestone.status]}</Badge>
-          </div>
-          <p className="font-campus-sans text-campus-base font-medium text-campus-text">{activeMilestone.title}</p>
-          {activeMilestone.recommendedAction && <p className="font-campus-sans text-campus-sm text-campus-text">{activeMilestone.recommendedAction}</p>}
-        </Panel>
-      )}
-
-      {blockedMilestones.length > 0 && (
-        <Panel className="flex flex-col gap-2">
-          <p className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Currently blocked</p>
-          {blockedMilestones.map((m) => (
-            <p key={m.id} className="font-campus-sans text-campus-sm text-campus-text">
-              <span className="font-medium">{m.title}</span> — {m.blockedReason}
-            </p>
-          ))}
-        </Panel>
-      )}
-
-      {/* Milestone sequence — structured text, not a visual-only timeline */}
-      <section aria-labelledby="milestones-heading">
-        <h2 id="milestones-heading" className="mb-3 font-campus-sans text-campus-lg font-medium text-campus-text">
-          Milestone sequence
-        </h2>
-        <ol className="flex flex-col gap-3">
-          {orderedMilestones.map((milestone) => (
-            <OdysseyMilestoneRow key={milestone.id} milestone={milestone} capabilityById={capabilityById} />
-          ))}
-        </ol>
-      </section>
-
-      {/* Why this path */}
-      <OdysseyReasoningPanel
-        factors={odyssey.reasoningFactors}
-        alternatives={odyssey.alternatives}
-        uncertaintyNote={topRecommendation?.uncertaintyNote}
-      />
-
-      {/* Connection to Academic Passport */}
       <section aria-labelledby="passport-connection-heading">
         <h2 id="passport-connection-heading" className="mb-3 font-campus-sans text-campus-lg font-medium text-campus-text">
           Effect on your Academic Passport
@@ -103,7 +117,7 @@ export default async function StudentOdysseyPage() {
         <Panel className="flex items-center justify-between gap-4">
           <p className="font-campus-sans text-campus-sm text-campus-text">
             {latestPassportVersion
-              ? `${latestPassportVersion.claims.length} capability ${latestPassportVersion.claims.length === 1 ? 'claim is' : 'claims are'} currently shareable. Completing the milestones above would add or strengthen claims as capabilities cross the confidence threshold.`
+              ? `${latestPassportVersion.claims.length} capability ${latestPassportVersion.claims.length === 1 ? 'claim is' : 'claims are'} currently shareable. Completing the milestones above would add or strengthen claims as capabilities cross the confidence threshold, once reviewed.`
               : 'No Passport has been issued yet.'}
           </p>
           <Link href="/student/passport" className="flex shrink-0 items-center gap-1 font-campus-sans text-campus-sm text-campus-blue-600 hover:underline dark:text-campus-blue-dark">
