@@ -28,6 +28,14 @@ import {
   odysseyBlockers,
   odysseyAlternativeActions,
 } from '@/lib/mock-data/odyssey-seed'
+import {
+  programmeOutcomes,
+  programmeCapabilityRelationships,
+  assessmentEvidenceRequirements,
+  cohorts,
+  curriculumAlignmentIssues,
+  departmentInterventions,
+} from '@/lib/mock-data/department-seed'
 
 export {
   odysseyDestination,
@@ -42,6 +50,12 @@ export {
   odysseyConstraints,
   odysseyBlockers,
   odysseyAlternativeActions,
+  programmeOutcomes,
+  programmeCapabilityRelationships,
+  assessmentEvidenceRequirements,
+  cohorts,
+  curriculumAlignmentIssues,
+  departmentInterventions,
 }
 
 /**
@@ -388,6 +402,13 @@ const seedDataErrors = validateSeedData({
   odysseyBlockers,
   odysseyAlternativeActions,
   odysseyInstitutionalResources,
+  courses,
+  programmeOutcomes,
+  programmeCapabilityRelationships,
+  assessmentEvidenceRequirements,
+  cohorts,
+  curriculumAlignmentIssues,
+  departmentInterventions,
 })
 if (seedDataErrors.length > 0) {
   throw new Error(`Seed data integrity check failed:\n${seedDataErrors.join('\n')}`)

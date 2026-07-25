@@ -16,6 +16,13 @@ import type {
   OdysseyBlocker,
   OdysseyAlternativeAction,
   OdysseyInstitutionalResource,
+  Course,
+  ProgrammeOutcome,
+  ProgrammeCapabilityRelationship,
+  AssessmentEvidenceRequirement,
+  Cohort,
+  CurriculumAlignmentIssue,
+  DepartmentIntervention,
 } from '@/lib/campus-types'
 
 export interface SeedDataInput {
@@ -36,6 +43,13 @@ export interface SeedDataInput {
   odysseyBlockers: OdysseyBlocker[]
   odysseyAlternativeActions: OdysseyAlternativeAction[]
   odysseyInstitutionalResources: OdysseyInstitutionalResource[]
+  courses: Course[]
+  programmeOutcomes: ProgrammeOutcome[]
+  programmeCapabilityRelationships: ProgrammeCapabilityRelationship[]
+  assessmentEvidenceRequirements: AssessmentEvidenceRequirement[]
+  cohorts: Cohort[]
+  curriculumAlignmentIssues: CurriculumAlignmentIssue[]
+  departmentInterventions: DepartmentIntervention[]
 }
 
 /**
@@ -237,6 +251,73 @@ export function validateSeedData(data: SeedDataInput): string[] {
     visitState.set(id, 'done')
   }
   data.odysseyMilestones.forEach((m) => detectCycle(m.id, []))
+
+  // --- Department ---
+
+  const courseIds = new Set(data.courses.map((c) => c.id))
+  const outcomeIds = new Set(data.programmeOutcomes.map((o) => o.id))
+  const cohortIds = new Set(data.cohorts.map((c) => c.id))
+  const facultyIds = new Set(['fac-1']) // no separate faculty-directory seed yet; extend when one exists
+
+  const seenOutcomeIds = new Set<string>()
+  for (const outcome of data.programmeOutcomes) {
+    if (seenOutcomeIds.has(outcome.id)) errors.push(`Duplicate programme outcome id "${outcome.id}"`)
+    seenOutcomeIds.add(outcome.id)
+    outcome.capabilityIds.forEach((id) => missingCapability(id, `Programme outcome "${outcome.id}"`))
+  }
+
+  const seenRelationshipIds = new Set<string>()
+  for (const rel of data.programmeCapabilityRelationships) {
+    if (seenRelationshipIds.has(rel.id)) errors.push(`Duplicate programme-capability relationship id "${rel.id}"`)
+    seenRelationshipIds.add(rel.id)
+    if (!courseIds.has(rel.courseId)) errors.push(`Programme-capability relationship "${rel.id}" references unknown course "${rel.courseId}"`)
+    if (!outcomeIds.has(rel.outcomeId)) errors.push(`Programme-capability relationship "${rel.id}" references unknown outcome "${rel.outcomeId}"`)
+    missingCapability(rel.capabilityId, `Programme-capability relationship "${rel.id}"`)
+  }
+
+  const seenAssessmentIds = new Set<string>()
+  for (const assessment of data.assessmentEvidenceRequirements) {
+    if (seenAssessmentIds.has(assessment.id)) errors.push(`Duplicate assessment evidence requirement id "${assessment.id}"`)
+    seenAssessmentIds.add(assessment.id)
+    if (!courseIds.has(assessment.courseId)) errors.push(`Assessment evidence requirement "${assessment.id}" references unknown course "${assessment.courseId}"`)
+    assessment.capabilityIds.forEach((id) => missingCapability(id, `Assessment evidence requirement "${assessment.id}"`))
+  }
+
+  const seenCohortIds = new Set<string>()
+  for (const cohort of data.cohorts) {
+    if (seenCohortIds.has(cohort.id)) errors.push(`Duplicate cohort id "${cohort.id}"`)
+    seenCohortIds.add(cohort.id)
+  }
+
+  const seenAlignmentIssueIds = new Set<string>()
+  for (const issue of data.curriculumAlignmentIssues) {
+    if (seenAlignmentIssueIds.has(issue.id)) errors.push(`Duplicate curriculum alignment issue id "${issue.id}"`)
+    seenAlignmentIssueIds.add(issue.id)
+    if (!outcomeIds.has(issue.outcomeId)) errors.push(`Curriculum alignment issue "${issue.id}" references unknown outcome "${issue.outcomeId}"`)
+    missingCapability(issue.capabilityId, `Curriculum alignment issue "${issue.id}"`)
+    issue.affectedCourseIds.forEach((id) => {
+      if (!courseIds.has(id)) errors.push(`Curriculum alignment issue "${issue.id}" references unknown course "${id}"`)
+    })
+    issue.affectedCohortIds.forEach((id) => {
+      if (!cohortIds.has(id)) errors.push(`Curriculum alignment issue "${issue.id}" references unknown cohort "${id}"`)
+    })
+  }
+
+  const validInterventionStatuses = new Set(['planned', 'active', 'awaiting_evaluation', 'complete', 'discontinued'])
+  const seenInterventionIds = new Set<string>()
+  for (const intervention of data.departmentInterventions) {
+    if (seenInterventionIds.has(intervention.id)) errors.push(`Duplicate intervention id "${intervention.id}"`)
+    seenInterventionIds.add(intervention.id)
+    if (!validInterventionStatuses.has(intervention.status)) errors.push(`Intervention "${intervention.id}" has invalid status "${intervention.status}"`)
+    if (intervention.courseId && !courseIds.has(intervention.courseId)) errors.push(`Intervention "${intervention.id}" references unknown course "${intervention.courseId}"`)
+    if (intervention.cohortId && !cohortIds.has(intervention.cohortId)) errors.push(`Intervention "${intervention.id}" references unknown cohort "${intervention.cohortId}"`)
+    if (!facultyIds.has(intervention.ownerId) && !intervention.ownerId.startsWith('admin-')) {
+      errors.push(`Intervention "${intervention.id}" references unknown owner "${intervention.ownerId}"`)
+    }
+    intervention.capabilityIds.forEach((id) => missingCapability(id, `Intervention "${intervention.id}"`))
+    if (!intervention.rationale) errors.push(`Intervention "${intervention.id}" has no rationale`)
+    if (!intervention.expectedEffect) errors.push(`Intervention "${intervention.id}" has no expectedEffect`)
+  }
 
   return errors
 }
