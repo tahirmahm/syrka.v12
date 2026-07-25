@@ -25,8 +25,26 @@ const SIMULATION_KINDS: SimulationKind[] = [
   'rate_limited',
 ]
 
+/**
+ * True in an actual production deployment — Vercel Production, or any other
+ * host running with NODE_ENV=production. Vercel Preview sets NODE_ENV=production
+ * too, which is why VERCEL_ENV (unique per Vercel environment) is checked
+ * first: only VERCEL_ENV==='production' counts as production there, so an
+ * explicitly-configured Preview can still opt into simulation for testing.
+ */
+export function isProductionRuntime(): boolean {
+  return process.env.VERCEL_ENV === 'production' || (!process.env.VERCEL_ENV && process.env.NODE_ENV === 'production')
+}
+
+/**
+ * The single, central gate every simulation call must pass through. Reads
+ * only server-side env vars — never request headers, query params, or body
+ * fields — so nothing a client sends can influence this decision, and it
+ * cannot be bypassed per-request even if ODYSSEY_ALLOW_SIMULATION is
+ * mistakenly left set in a real production environment.
+ */
 export function isSimulationAllowed(): boolean {
-  return process.env.ODYSSEY_ALLOW_SIMULATION === 'true'
+  return process.env.ODYSSEY_ALLOW_SIMULATION === 'true' && !isProductionRuntime()
 }
 
 export function parseSimulationKind(value: unknown): SimulationKind | undefined {
