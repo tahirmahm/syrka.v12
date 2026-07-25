@@ -18,8 +18,8 @@ import { currentUser } from '@/lib/mock-data/seed'
 export const metadata = { title: 'Dashboard — Syrka Campus' }
 
 export default async function StudentDashboardPage() {
-  const [capabilityStates, evidence, odyssey, passport, programme] = await Promise.all([
-    mockCapabilityRepository.listStatesForSubject(currentUser.id),
+  const [capabilityClaims, evidence, odyssey, passport, programme] = await Promise.all([
+    mockCapabilityRepository.listClaimsForSubject(currentUser.id),
     mockEvidenceRepository.listForStudent(currentUser.id),
     mockOdysseyRepository.getPlanForStudent(currentUser.id),
     mockPassportRepository.getForStudent(currentUser.id),
@@ -27,14 +27,19 @@ export default async function StudentDashboardPage() {
   ])
   const institution = await mockInstitutionRepository.getInstitution(currentUser.institutionId)
 
-  const capabilityCards = await Promise.all(
-    capabilityStates.map(async (state) => ({
-      state,
-      definition: await mockCapabilityRepository.getDefinition(state.capabilityId),
-    }))
+  const capabilityCards = (
+    await Promise.all(
+      capabilityClaims.map(async (claim) => ({
+        claim,
+        definition: await mockCapabilityRepository.getDefinition(claim.capabilityId),
+      }))
+    )
   )
+    .sort((a, b) => new Date(b.claim.lastObservedAt).getTime() - new Date(a.claim.lastObservedAt).getTime())
+    .slice(0, 4)
 
-  const pendingEvidence = evidence.filter((item) => item.status === 'pending')
+  const recentEvidence = [...evidence].sort((a, b) => new Date(b.record.submittedAt).getTime() - new Date(a.record.submittedAt).getTime()).slice(0, 4)
+  const pendingEvidence = evidence.filter((item) => item.review.status === 'pending')
   const currentMilestone = odyssey?.milestones.find((m) => m.status === 'current')
   const topRecommendation = odyssey?.recommendations[0]
   const latestPassportVersion = passport?.versions.find((v) => v.version === passport.currentVersion)
@@ -53,11 +58,11 @@ export default async function StudentDashboardPage() {
         </h2>
         <div className="flex flex-col gap-2">
           {pendingEvidence.map((item) => (
-            <Card key={item.id} className="flex items-center justify-between gap-4 p-4">
+            <Card key={item.record.id} className="flex items-center justify-between gap-4 p-4">
               <div className="flex items-center gap-3">
                 <Badge tone="amber">Pending</Badge>
                 <p className="font-campus-sans text-campus-sm text-campus-text">
-                  <span className="font-medium">{item.title}</span> is awaiting faculty review.
+                  <span className="font-medium">{item.record.title}</span> is awaiting faculty review.
                 </p>
               </div>
             </Card>
@@ -97,14 +102,16 @@ export default async function StudentDashboardPage() {
           </Link>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          {capabilityCards.map(({ state, definition }) => (
-            <Card key={state.id} className="p-5">
-              <h3 className="font-campus-sans text-campus-base font-medium text-campus-text">{definition?.name}</h3>
-              <p className="mt-1 font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">{state.maturity}</p>
-              <div className="mt-4">
-                <ConfidenceMeter confidence={state.confidence} />
-              </div>
-            </Card>
+          {capabilityCards.map(({ claim, definition }) => (
+            <Link key={claim.id} href={`/student/capabilities/${claim.capabilityId}`}>
+              <Card interactive className="p-5">
+                <h3 className="font-campus-sans text-campus-base font-medium text-campus-text">{definition?.name}</h3>
+                <p className="mt-1 font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">{claim.maturity}</p>
+                <div className="mt-4">
+                  <ConfidenceMeter confidence={claim.confidence} />
+                </div>
+              </Card>
+            </Link>
           ))}
         </div>
       </section>
@@ -121,14 +128,16 @@ export default async function StudentDashboardPage() {
             </Link>
           </div>
           <div className="flex flex-col gap-2">
-            {evidence.map((item) => (
-              <Card key={item.id} className="flex items-center justify-between p-4">
-                <div>
-                  <p className="font-campus-sans text-campus-sm font-medium text-campus-text">{item.title}</p>
-                  <p className="font-campus-mono text-campus-xs text-campus-muted">{item.provenance}</p>
-                </div>
-                <Status tone={item.status} />
-              </Card>
+            {recentEvidence.map((item) => (
+              <Link key={item.record.id} href={`/student/evidence/${item.record.id}`}>
+                <Card interactive className="flex items-center justify-between p-4">
+                  <div>
+                    <p className="font-campus-sans text-campus-sm font-medium text-campus-text">{item.record.title}</p>
+                    <p className="font-campus-mono text-campus-xs text-campus-muted">{item.record.provenance}</p>
+                  </div>
+                  <Status tone={item.review.status} />
+                </Card>
+              </Link>
             ))}
           </div>
         </section>

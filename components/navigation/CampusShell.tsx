@@ -28,6 +28,15 @@ export function CampusShell({ user, institutionName, children }: CampusShellProp
   const navItems = isDepartmentScoped ? DEPARTMENT_SCOPED_NAV_ITEMS : NAV_ITEMS[user.role]
   const sectionLabel = isDepartmentScoped ? 'Department' : user.role === 'university_administrator' ? 'University' : user.role === 'faculty' ? 'Faculty' : 'Student'
 
+  // Longest-matching href wins, so a nested route (e.g. /student/evidence/ev-1)
+  // highlights "Evidence", not "Dashboard", even though both are prefixes.
+  const activeHref = navItems.reduce<string | undefined>((best, item) => {
+    const matches = pathname === item.href || pathname.startsWith(`${item.href}/`)
+    if (!matches) return best
+    if (!best || item.href.length > best.length) return item.href
+    return best
+  }, undefined)
+
   return (
     <div className="flex min-h-[100dvh] bg-campus-bg font-campus-sans text-campus-text">
       {/* Desktop sidebar */}
@@ -41,7 +50,7 @@ export function CampusShell({ user, institutionName, children }: CampusShellProp
         </div>
         <nav className="flex flex-1 flex-col gap-0.5 px-3">
           {navItems.map((item) => {
-            const active = pathname === item.href
+            const active = activeHref === item.href
             return (
               <Link
                 key={item.href}
@@ -81,16 +90,22 @@ export function CampusShell({ user, institutionName, children }: CampusShellProp
 
         {mobileOpen && (
           <nav className="flex flex-col gap-0.5 border-b border-campus-border bg-campus-surface px-3 py-3 md:hidden">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-campus-sm px-3 py-2 font-campus-sans text-campus-sm text-campus-text hover:bg-campus-surface-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600"
-                onClick={() => setMobileOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const active = activeHref === item.href
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={`rounded-campus-sm px-3 py-2 font-campus-sans text-campus-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600 ${
+                    active ? 'bg-campus-surface-raised font-medium text-campus-text' : 'text-campus-text hover:bg-campus-surface-raised'
+                  }`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              )
+            })}
           </nav>
         )}
 
