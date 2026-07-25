@@ -40,7 +40,7 @@ export function CampusShell({ user, institutionName, children }: CampusShellProp
   return (
     <div className="flex min-h-[100dvh] bg-campus-bg font-campus-sans text-campus-text">
       {/* Desktop sidebar */}
-      <aside className="fixed left-0 top-0 hidden h-screen w-60 flex-col border-r border-campus-border bg-campus-surface md:flex">
+      <aside className="fixed left-0 top-0 hidden h-screen w-60 flex-col border-r border-campus-border bg-campus-surface md:flex print:hidden">
         <div className="flex items-center gap-2 px-5 py-6">
           <BrandMark />
         </div>
@@ -69,8 +69,8 @@ export function CampusShell({ user, institutionName, children }: CampusShellProp
       </aside>
 
       {/* Main column */}
-      <div className="flex flex-1 flex-col md:ml-60">
-        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-campus-border bg-campus-surface px-4 md:px-8">
+      <div className="flex flex-1 flex-col md:ml-60 print:ml-0">
+        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-campus-border bg-campus-surface px-4 md:px-8 print:hidden">
           <button
             type="button"
             className="rounded-campus-sm p-2 text-campus-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600 md:hidden"
