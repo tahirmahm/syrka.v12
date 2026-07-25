@@ -4,6 +4,7 @@ import { MotionReveal } from '@/components/motion/MotionReveal'
 
 export interface ProductChapterProps {
   id: string
+  index: number
   eyebrow: string
   tagline: string
   name: string
@@ -11,6 +12,8 @@ export interface ProductChapterProps {
   description: string
   audience: string
   dark: boolean
+  /** A short scroll-linked technical phrase (e.g. "Evidence becomes Capability.") — the connective thread between chapters. */
+  technicalPhrase: string
   cta?: { label: string; href: string }
   status?: string
   children?: ReactNode
@@ -22,7 +25,7 @@ export interface ProductChapterProps {
  * generic SaaS card. `children` renders a per-product detail list or
  * conceptual visual.
  */
-export function ProductChapter({ id, eyebrow, tagline, name, descriptor, description, audience, dark, cta, status, children }: ProductChapterProps) {
+export function ProductChapter({ id, index, eyebrow, tagline, name, descriptor, description, audience, dark, technicalPhrase, cta, status, children }: ProductChapterProps) {
   const surface = dark ? 'bg-syrka-obsidian text-syrka-offwhite' : 'bg-syrka-offwhite text-syrka-obsidian'
   const muted = dark ? 'text-syrka-steel' : 'text-syrka-obsidian/60'
   const border = dark ? 'border-syrka-hairline' : 'border-syrka-obsidian/10'
@@ -32,11 +35,15 @@ export function ProductChapter({ id, eyebrow, tagline, name, descriptor, descrip
       <div className="mx-auto max-w-[1400px] px-6 py-24 md:px-10 md:py-32">
         <div className="grid gap-10 md:grid-cols-[1fr_1fr]">
           <div>
-            <MotionReveal>
+            <MotionReveal className="flex items-center gap-3">
+              <span className="font-campus-mono text-[11px] text-syrka-signal">{String(index).padStart(2, '0')}</span>
               <p className={`font-campus-mono text-[11px] uppercase tracking-widest ${muted}`}>{eyebrow}</p>
             </MotionReveal>
             <MotionReveal delay={0.05}>
               <h2 className="mt-3 font-campus-sans text-[clamp(28px,4vw,48px)] font-semibold leading-[1.05] tracking-tight">{tagline}</h2>
+            </MotionReveal>
+            <MotionReveal delay={0.07}>
+              <p className={`mt-2 font-campus-mono text-[13px] italic ${muted}`}>{technicalPhrase}</p>
             </MotionReveal>
             <MotionReveal delay={0.1}>
               <p className="mt-6 font-campus-sans text-campus-lg font-medium">{name}</p>

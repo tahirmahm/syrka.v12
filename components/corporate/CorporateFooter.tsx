@@ -1,5 +1,5 @@
-import Image from 'next/image'
 import Link from 'next/link'
+import { SyrkaWordmark } from './SyrkaWordmark'
 
 const SOFTWARE_LINKS = [
   { href: '#campus', label: 'Syrka Campus' },
@@ -15,7 +15,7 @@ export function CorporateFooter() {
       <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-10">
         <div className="grid gap-10 md:grid-cols-[2fr_1fr_1fr]">
           <div>
-            <Image src="/brand/syrka-logo.png" alt="Syrka" width={2172} height={724} className="h-6 w-auto" />
+            <SyrkaWordmark className="h-8 w-auto" />
             <p className="mt-4 max-w-sm font-campus-sans text-campus-sm text-syrka-steel">
               The operating system for human capability — from academic Evidence to national capability strategy.
             </p>

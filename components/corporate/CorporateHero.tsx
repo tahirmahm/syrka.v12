@@ -1,0 +1,74 @@
+'use client'
+
+import { useRef } from 'react'
+import { useScroll, useReducedMotion, motion } from 'framer-motion'
+import { CaretDown } from '@phosphor-icons/react/dist/ssr'
+import { MotionReveal } from '@/components/motion/MotionReveal'
+import { CapabilityFlowDiagram } from './CapabilityFlowDiagram'
+import { SyrkaWordmark } from './SyrkaWordmark'
+
+/**
+ * The opening scroll sequence. Scrolling through the hero's extra height
+ * progressively reveals the Human Capability Graph while the headline
+ * stays pinned and dominant — then the page continues naturally into the
+ * capability-lifecycle sequence. Reduced motion renders the same content
+ * at natural height with the graph already fully drawn (no pinning).
+ */
+export function CorporateHero() {
+  const reduceMotion = useReducedMotion()
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
+
+  const content = (
+    <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10">
+      <MotionReveal>
+        <SyrkaWordmark priority className="h-8 w-auto md:h-9" />
+      </MotionReveal>
+      <MotionReveal delay={0.05}>
+        <h1 className="mt-5 max-w-4xl font-campus-sans text-[clamp(40px,7vw,88px)] font-semibold leading-[0.98] tracking-tight text-syrka-offwhite">
+          The Operating System for Human Capability.
+        </h1>
+      </MotionReveal>
+      <MotionReveal delay={0.12}>
+        <p className="mt-8 max-w-2xl font-campus-sans text-campus-lg text-syrka-steel">
+          Syrka connects how capability is developed, directed, proven, put to work, and coordinated — across individuals, institutions, employers, and nations.
+        </p>
+      </MotionReveal>
+      <MotionReveal delay={0.18} className="mt-10 flex flex-wrap gap-4">
+        <a href="#software" className="border border-syrka-offwhite px-5 py-3 font-campus-sans text-campus-sm font-medium text-syrka-offwhite hover:bg-syrka-offwhite hover:text-syrka-obsidian">
+          Explore our software
+        </a>
+        <a href="#closing" className="border border-syrka-signal bg-syrka-signal px-5 py-3 font-campus-sans text-campus-sm font-medium text-syrka-white hover:opacity-90">
+          Deploy Syrka
+        </a>
+      </MotionReveal>
+      <div className="mt-16 md:mt-20">
+        <CapabilityFlowDiagram variant="hero" scrollProgress={reduceMotion ? undefined : scrollYProgress} />
+      </div>
+    </div>
+  )
+
+  if (reduceMotion) {
+    return (
+      <section className="border-b border-syrka-hairline py-24">
+        {content}
+      </section>
+    )
+  }
+
+  return (
+    <section ref={ref} className="relative border-b border-syrka-hairline" style={{ height: '180vh' }}>
+      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-24">
+        {content}
+        <motion.div
+          className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1"
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <span className="font-campus-mono text-[10px] uppercase tracking-widest text-syrka-steel">Scroll to explore</span>
+          <CaretDown size={14} className="text-syrka-steel" aria-hidden="true" />
+        </motion.div>
+      </div>
+    </section>
+  )
+}
