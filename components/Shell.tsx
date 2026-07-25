@@ -53,7 +53,6 @@ export default function Shell({ children, country, activeTrack }: ShellProps) {
         {/* Navigation */}
         <nav className="flex-1 flex flex-col gap-0">
           <SidebarItem href={`/${country}/ministry`} label="Ministry" icon="analytics" active={activeTrack === 'ministry'} />
-          <SidebarItem href={`/${country}/university`} label="University" icon="school" active={activeTrack === 'university'} />
           <SidebarItem href={`/${country}/employer`} label="Employer" icon="query_stats" active={activeTrack === 'employer'} />
           <SidebarItem href={`/${country}/student`} label="Student" icon="person" active={activeTrack === 'student'} />
         </nav>
@@ -102,7 +101,7 @@ export default function Shell({ children, country, activeTrack }: ShellProps) {
             </button>
             <a href="/" className="text-lg font-headline font-bold text-primary md:hidden" style={{ letterSpacing: '0.35em', textDecoration: 'none' }}>SYRKA</a>
             <nav className="hidden lg:flex items-center gap-6">
-              {(['ministry', 'university', 'employer', 'student'] as const).map(track => (
+              {(['ministry', 'employer', 'student'] as const).map(track => (
                 <a key={track} href={`/${country}/${track}`}
                    className={`font-body text-sm transition-opacity duration-150 pb-1 ${activeTrack === track ? 'text-primary border-b border-primary' : 'text-on-surface-variant hover:text-primary'}`}
                    style={{ textDecoration: 'none' }}>
@@ -142,10 +141,10 @@ export default function Shell({ children, country, activeTrack }: ShellProps) {
                 </button>
               </div>
               <nav className="flex-1 flex flex-col">
-                {(['ministry', 'university', 'employer', 'student'] as const).map(track => (
+                {(['ministry', 'employer', 'student'] as const).map(track => (
                   <SidebarItem key={track} href={`/${country}/${track}`}
                                label={track.charAt(0).toUpperCase() + track.slice(1)}
-                               icon={track === 'ministry' ? 'analytics' : track === 'university' ? 'school' : track === 'employer' ? 'query_stats' : 'person'}
+                               icon={track === 'ministry' ? 'analytics' : track === 'employer' ? 'query_stats' : 'person'}
                                active={activeTrack === track}
                                onClick={() => setMobileNavOpen(false)} />
                 ))}
@@ -164,7 +163,6 @@ export default function Shell({ children, country, activeTrack }: ShellProps) {
              style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           {[
             { id: 'ministry', label: 'Ministry', icon: 'analytics' },
-            { id: 'university', label: 'University', icon: 'school' },
             { id: 'employer', label: 'Employer', icon: 'query_stats' },
             { id: 'student', label: 'Student', icon: 'person' },
           ].map(item => (
