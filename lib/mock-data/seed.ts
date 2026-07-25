@@ -4,8 +4,10 @@ import type {
   Programme,
   Course,
   CapabilityDefinition,
-  CapabilityState,
-  EvidenceItem,
+  CapabilityClaim,
+  CapabilityRelationEdge,
+  EvidenceRecord,
+  EvidenceReview,
   OdysseyPlan,
   Passport,
   CampusUser,
@@ -13,9 +15,11 @@ import type {
 
 /**
  * Minimal, internally-coherent seed data proving the repository pattern.
- * One student (Alex Chen), one institution/department/programme, a handful
- * of capabilities/evidence/odyssey milestones/passport claims that all
- * reference the same ids consistently. Expanded per-screen in later phases.
+ * One student (Alex Chen), one institution/department/programme, and a
+ * capability/evidence/Odyssey/Passport dataset wide enough to demonstrate
+ * every real product state (verified, pending, disputed, revoked, stale,
+ * insufficient evidence, superseded evidence) without fabricating a
+ * uniformly high-achieving profile.
  */
 
 export const institution: Institution = {
@@ -49,16 +53,20 @@ export const capabilityDefinitions: CapabilityDefinition[] = [
   { id: 'cap-1', name: 'Statistical Reasoning', domain: 'Data Analysis', description: 'Applying statistical methods to draw valid conclusions from data.' },
   { id: 'cap-2', name: 'Data Modeling', domain: 'Data Analysis', description: 'Structuring and representing data for analysis and storage.' },
   { id: 'cap-3', name: 'Research Design', domain: 'Research Methods', description: 'Designing rigorous, well-controlled research studies.' },
+  { id: 'cap-4', name: 'Machine Learning Foundations', domain: 'Data Analysis', description: 'Core concepts underlying supervised and unsupervised learning methods.' },
+  { id: 'cap-5', name: 'Spreadsheet-Based Modeling', domain: 'Data Analysis', description: 'Building analytical models using spreadsheet tools.' },
+  { id: 'cap-6', name: 'Introductory Programming', domain: 'Computer Science', description: 'Writing and reasoning about basic procedural programs.' },
 ]
 
-export const capabilityStates: CapabilityState[] = [
+export const capabilityClaims: CapabilityClaim[] = [
   {
-    id: 'capstate-1',
+    id: 'claim-cap-1',
     capabilityId: 'cap-1',
     subjectId: 'student-1',
     maturity: 'Proficient',
     confidence: { score: 0.76, band: 'Strong', model: 'confidence@1.0.0' },
-    evidenceCount: 4,
+    evidenceCount: 2,
+    evidenceIds: ['ev-1', 'ev-4'],
     courseIds: ['course-1'],
     lastObservedAt: '2026-07-06T00:00:00.000Z',
     history: [
@@ -67,12 +75,13 @@ export const capabilityStates: CapabilityState[] = [
     ],
   },
   {
-    id: 'capstate-2',
+    id: 'claim-cap-2',
     capabilityId: 'cap-2',
     subjectId: 'student-1',
     maturity: 'Developing',
     confidence: { score: 0.62, band: 'Supported', model: 'confidence@1.0.0' },
     evidenceCount: 2,
+    evidenceIds: ['ev-2', 'ev-5'],
     courseIds: ['course-1'],
     lastObservedAt: '2026-06-20T00:00:00.000Z',
     history: [
@@ -80,57 +89,94 @@ export const capabilityStates: CapabilityState[] = [
     ],
   },
   {
-    id: 'capstate-3',
+    id: 'claim-cap-3',
     capabilityId: 'cap-3',
     subjectId: 'student-1',
     maturity: 'Emerging',
     confidence: { score: 0.45, band: 'Emerging', model: 'confidence@1.0.0' },
-    evidenceCount: 1,
+    evidenceCount: 2,
+    evidenceIds: ['ev-3', 'ev-7'],
     courseIds: ['course-2'],
     lastObservedAt: '2026-07-08T00:00:00.000Z',
     history: [
       { at: '2026-07-08T00:00:00.000Z', maturity: 'Emerging', confidence: { score: 0.45, band: 'Emerging' }, cause: 'Evidence submitted: Research Proposal' },
     ],
   },
+  {
+    id: 'claim-cap-4',
+    capabilityId: 'cap-4',
+    subjectId: 'student-1',
+    maturity: 'Exposed',
+    confidence: { score: 0.15, band: 'Unsupported', model: 'confidence@1.0.0' },
+    evidenceCount: 0,
+    evidenceIds: [],
+    courseIds: [],
+    lastObservedAt: '2026-06-01T00:00:00.000Z',
+    history: [
+      { at: '2026-06-01T00:00:00.000Z', maturity: 'Exposed', confidence: { score: 0.15, band: 'Unsupported' }, cause: 'Referenced in CS301 lecture materials; no performance evidence yet' },
+    ],
+  },
+  {
+    id: 'claim-cap-5',
+    capabilityId: 'cap-5',
+    subjectId: 'student-1',
+    maturity: 'Stale',
+    confidence: { score: 0.65, band: 'Supported', model: 'confidence@1.0.0' },
+    evidenceCount: 1,
+    evidenceIds: ['ev-9'],
+    courseIds: [],
+    lastObservedAt: '2025-02-14T00:00:00.000Z',
+    history: [
+      { at: '2025-02-14T00:00:00.000Z', maturity: 'Proficient', confidence: { score: 0.71, band: 'Strong' }, cause: 'Evidence verified: Spreadsheet Modeling Workshop' },
+      { at: '2026-02-14T00:00:00.000Z', maturity: 'Stale', confidence: { score: 0.65, band: 'Supported' }, cause: 'Confidence decayed after 12 months without new evidence' },
+    ],
+  },
+  {
+    id: 'claim-cap-6',
+    capabilityId: 'cap-6',
+    subjectId: 'student-1',
+    maturity: 'Revoked',
+    confidence: { score: 0.1, band: 'Unsupported', model: 'confidence@1.0.0' },
+    evidenceCount: 0,
+    evidenceIds: [],
+    courseIds: [],
+    lastObservedAt: '2026-03-02T00:00:00.000Z',
+    history: [
+      { at: '2025-09-01T00:00:00.000Z', maturity: 'Developing', confidence: { score: 0.55, band: 'Emerging' }, cause: 'Evidence observed: Intro to Programming Certificate' },
+      { at: '2026-03-02T00:00:00.000Z', maturity: 'Revoked', confidence: { score: 0.1, band: 'Unsupported' }, cause: 'Sole supporting evidence revoked: issuing body could not be verified' },
+    ],
+  },
 ]
 
-export const evidenceItems: EvidenceItem[] = [
-  {
-    id: 'ev-1',
-    title: 'Data Analysis Project',
-    sourceType: 'project',
-    status: 'verified',
-    studentId: 'student-1',
-    courseId: 'course-1',
-    capabilityIds: ['cap-1'],
-    submittedAt: '2026-07-01T00:00:00.000Z',
-    reviewedAt: '2026-07-06T00:00:00.000Z',
-    reviewedBy: 'fac-1',
-    reviewerNote: 'Strong methodology, correct statistical tests applied.',
-    provenance: 'Submitted via CS301 course project pipeline.',
-  },
-  {
-    id: 'ev-2',
-    title: 'ML Lab 6',
-    sourceType: 'assignment',
-    status: 'pending',
-    studentId: 'student-1',
-    courseId: 'course-1',
-    capabilityIds: ['cap-2'],
-    submittedAt: '2026-07-06T00:00:00.000Z',
-    provenance: 'Submitted via CS301 lab assignment pipeline.',
-  },
-  {
-    id: 'ev-3',
-    title: 'Research Proposal',
-    sourceType: 'assignment',
-    status: 'pending',
-    studentId: 'student-1',
-    courseId: 'course-2',
-    capabilityIds: ['cap-3'],
-    submittedAt: '2026-07-08T00:00:00.000Z',
-    provenance: 'Submitted via CS410 course assignment pipeline.',
-  },
+export const capabilityRelationEdges: CapabilityRelationEdge[] = [
+  { id: 'edge-1', type: 'REQUIRES', fromCapabilityId: 'cap-4', toCapabilityId: 'cap-1', confidence: { score: 0.82, band: 'Strong' } },
+  { id: 'edge-2', type: 'REQUIRES', fromCapabilityId: 'cap-4', toCapabilityId: 'cap-2', confidence: { score: 0.78, band: 'Strong' } },
+  { id: 'edge-3', type: 'DEPENDS_ON', fromCapabilityId: 'cap-3', toCapabilityId: 'cap-1', confidence: { score: 0.6, band: 'Supported' } },
+  { id: 'edge-4', type: 'DEPENDS_ON', fromCapabilityId: 'cap-5', toCapabilityId: 'cap-2', confidence: { score: 0.55, band: 'Supported' } },
+]
+
+export const evidenceRecords: EvidenceRecord[] = [
+  { id: 'ev-1', title: 'Data Analysis Project', sourceType: 'project', studentId: 'student-1', courseId: 'course-1', capabilityIds: ['cap-1'], submittedAt: '2026-07-01T00:00:00.000Z', provenance: 'Submitted via CS301 course project pipeline.' },
+  { id: 'ev-2', title: 'ML Lab 6', sourceType: 'assignment', studentId: 'student-1', courseId: 'course-1', capabilityIds: ['cap-2'], submittedAt: '2026-07-06T00:00:00.000Z', provenance: 'Submitted via CS301 lab assignment pipeline.' },
+  { id: 'ev-3', title: 'Research Proposal', sourceType: 'assignment', studentId: 'student-1', courseId: 'course-2', capabilityIds: ['cap-3'], submittedAt: '2026-07-08T00:00:00.000Z', provenance: 'Submitted via CS410 course assignment pipeline.' },
+  { id: 'ev-4', title: 'Data Analysis Midterm', sourceType: 'assessment', studentId: 'student-1', courseId: 'course-1', capabilityIds: ['cap-1'], submittedAt: '2026-06-15T00:00:00.000Z', provenance: 'Recorded via CS301 assessment pipeline.' },
+  { id: 'ev-5', title: 'Early Regression Draft', sourceType: 'project', studentId: 'student-1', courseId: 'course-1', capabilityIds: ['cap-2'], submittedAt: '2026-06-25T00:00:00.000Z', provenance: 'Submitted via CS301 course project pipeline.' },
+  { id: 'ev-6', title: 'Legacy Statistics Certificate', sourceType: 'external_credential', studentId: 'student-1', capabilityIds: ['cap-1'], submittedAt: '2025-01-10T00:00:00.000Z', provenance: 'Self-reported external credential upload.' },
+  { id: 'ev-7', title: 'Research Proposal (Revised)', sourceType: 'assignment', studentId: 'student-1', courseId: 'course-2', capabilityIds: ['cap-3'], submittedAt: '2026-07-15T00:00:00.000Z', provenance: 'Submitted via CS410 course assignment pipeline.', supersedesEvidenceId: 'ev-3' },
+  { id: 'ev-8', title: 'Intro to Programming Certificate', sourceType: 'external_credential', studentId: 'student-1', capabilityIds: ['cap-6'], submittedAt: '2025-08-20T00:00:00.000Z', provenance: 'Self-reported external credential upload.' },
+  { id: 'ev-9', title: 'Spreadsheet Modeling Workshop', sourceType: 'project', studentId: 'student-1', capabilityIds: ['cap-5'], submittedAt: '2025-02-10T00:00:00.000Z', provenance: 'Faculty-run workshop artifact submission.' },
+]
+
+export const evidenceReviews: EvidenceReview[] = [
+  { id: 'rev-1', evidenceId: 'ev-1', status: 'verified', reviewedAt: '2026-07-06T00:00:00.000Z', reviewedBy: 'fac-1', rationale: 'Strong methodology, correct statistical tests applied.' },
+  { id: 'rev-2', evidenceId: 'ev-2', status: 'pending' },
+  { id: 'rev-3', evidenceId: 'ev-3', status: 'pending' },
+  { id: 'rev-4', evidenceId: 'ev-4', status: 'verified', reviewedAt: '2026-06-18T00:00:00.000Z', reviewedBy: 'fac-1', rationale: 'Correct application of hypothesis testing across all sections.' },
+  { id: 'rev-5', evidenceId: 'ev-5', status: 'disputed', reviewedAt: '2026-06-28T00:00:00.000Z', reviewedBy: 'fac-1', rationale: 'Methodology unclear — please clarify variable selection before this can support the claim.' },
+  { id: 'rev-6', evidenceId: 'ev-6', status: 'revoked', reviewedAt: '2025-02-01T00:00:00.000Z', reviewedBy: 'fac-1', rationale: 'Issuing body could not be verified.' },
+  { id: 'rev-7', evidenceId: 'ev-7', status: 'pending' },
+  { id: 'rev-8', evidenceId: 'ev-8', status: 'revoked', reviewedAt: '2026-03-02T00:00:00.000Z', reviewedBy: 'fac-1', rationale: 'Issuing body could not be verified.' },
+  { id: 'rev-9', evidenceId: 'ev-9', status: 'verified', reviewedAt: '2025-02-14T00:00:00.000Z', reviewedBy: 'fac-1', rationale: 'Workshop artifact demonstrates correct spreadsheet-based model structure.' },
 ]
 
 export const odysseyPlan: OdysseyPlan = {
