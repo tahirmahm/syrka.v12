@@ -2,8 +2,8 @@
 
 import { ReactFlow, ReactFlowProvider, Background, useReactFlow, type Node, type Edge } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { useReducedMotion } from 'framer-motion'
 import { MagnifyingGlassPlus, MagnifyingGlassMinus, CornersOut } from '@phosphor-icons/react/dist/ssr'
+import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 import { CapabilityNode } from './CapabilityNode'
 import { DomainLabelNode } from './DomainLabelNode'
 import type { CapabilityNodeData, DomainLabelNodeData } from '@/lib/utilities/capability-graph-layout'
@@ -16,7 +16,7 @@ export interface CapabilityGraphViewProps {
 }
 
 export function CapabilityGraphView({ nodes, edges }: CapabilityGraphViewProps) {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotionSafe()
 
   return (
     <div className="h-[520px] w-full rounded-campus-md border border-campus-border bg-campus-surface">

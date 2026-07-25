@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
+import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 
 const PRODUCTS = [
   { name: 'Campus', offset: -60 },
@@ -17,7 +18,7 @@ const PRODUCTS = [
  * overlaps or interferes with clicking them.
  */
 export function ClosingConvergence() {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotionSafe()
 
   return (
     <div className="mb-10 flex flex-wrap items-center gap-x-6 gap-y-2" aria-hidden="true">

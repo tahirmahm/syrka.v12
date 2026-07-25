@@ -1,7 +1,8 @@
 'use client'
 
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import type { ReactNode } from 'react'
+import { useReducedMotionSafe } from './useReducedMotionSafe'
 
 export interface MotionRevealProps {
   children: ReactNode
@@ -15,7 +16,7 @@ export interface MotionRevealProps {
  * Fully inert under prefers-reduced-motion.
  */
 export function MotionReveal({ children, delay = 0, className }: MotionRevealProps) {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotionSafe()
 
   if (reduceMotion) {
     return <div className={className}>{children}</div>

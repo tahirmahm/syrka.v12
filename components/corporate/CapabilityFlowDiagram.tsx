@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, useMotionValue, useMotionValueEvent, useReducedMotion, type MotionValue } from 'framer-motion'
+import { motion, useMotionValue, useMotionValueEvent, type MotionValue } from 'framer-motion'
+import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 
 const STAGES = [
   { id: 'evidence', label: 'Evidence', detail: 'Coursework, projects, assessments' },
@@ -32,7 +33,7 @@ function clamp01(n: number) {
  * plain viewport-triggered reveal. Plain SVG/CSS — no image assets.
  */
 export function CapabilityFlowDiagram({ variant = 'hero', className = '', scrollProgress, activeIndex }: CapabilityFlowDiagramProps) {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotionSafe()
   const showDetail = variant === 'architecture'
   const [revealProgress, setRevealProgress] = useState(scrollProgress ? 0 : 1)
   const fallbackProgress = useMotionValue(0)
@@ -56,7 +57,7 @@ export function CapabilityFlowDiagram({ variant = 'hero', className = '', scroll
 
   return (
     <div className={`w-full overflow-x-auto ${className}`} role="img" aria-label="Evidence flows into Capability, which directs Odyssey, is carried by the Career Passport, is put to work through Praxis, and is coordinated nationally through Maxima.">
-      <div className="flex min-w-[720px] items-center justify-between gap-1 px-2">
+      <div className={`flex items-center justify-between gap-1 px-2 ${showDetail ? 'min-w-[560px]' : 'min-w-[720px]'}`}>
         {STAGES.map((stage, i) => {
           const state = nodeState(i)
           const isActive = activeIndex === i
@@ -76,7 +77,10 @@ export function CapabilityFlowDiagram({ variant = 'hero', className = '', scroll
                   transition={{ duration: 0.5, delay: reduceMotion ? 0 : i * 0.08, ease: [0.2, 0.8, 0.2, 1] }}
                   className={`flex flex-1 flex-col items-center gap-2 rounded-none text-center ${isActive ? 'scale-110' : ''} transition-transform duration-300`}
                 >
-                  <span className={`h-2.5 w-2.5 rounded-full ${isActive ? 'bg-syrka-signal' : i === 0 ? 'bg-syrka-signal' : 'bg-syrka-steel'}`} aria-hidden="true" />
+                  <span
+                    className={`h-2.5 w-2.5 rounded-full ${isActive || (activeIndex === undefined && i === 0) ? 'bg-syrka-signal' : 'bg-syrka-steel'}`}
+                    aria-hidden="true"
+                  />
                   <span className={`font-campus-mono text-[11px] uppercase tracking-widest ${isActive ? 'text-syrka-offwhite' : 'text-syrka-offwhite/70'}`}>{stage.label}</span>
                   {showDetail && <span className="max-w-[9rem] font-campus-sans text-[11px] text-syrka-steel">{stage.detail}</span>}
                 </motion.div>
@@ -84,7 +88,7 @@ export function CapabilityFlowDiagram({ variant = 'hero', className = '', scroll
               {i < STAGES.length - 1 && (
                 <div
                   style={scrollProgress ? { transform: `scaleX(${lineState(i)})`, transformOrigin: 'left' } : undefined}
-                  className={scrollProgress ? 'mx-1 h-px flex-1 bg-syrka-hairline md:w-10' : 'mx-1 h-px flex-1 bg-syrka-hairline md:w-10'}
+                  className="mx-1 h-px flex-1 bg-syrka-hairline md:w-10"
                   aria-hidden="true"
                 />
               )}
@@ -93,7 +97,7 @@ export function CapabilityFlowDiagram({ variant = 'hero', className = '', scroll
         })}
       </div>
       {showDetail && (
-        <div className="mt-6 flex min-w-[720px] items-center justify-between px-2 font-campus-mono text-[10px] uppercase tracking-widest text-syrka-steel">
+        <div className="mt-6 flex min-w-[560px] items-center justify-between px-2 font-campus-mono text-[10px] uppercase tracking-widest text-syrka-steel">
           <span>Individual capability record</span>
           <span className="text-syrka-signal">Governed aggregation boundary</span>
           <span>National capability intelligence</span>

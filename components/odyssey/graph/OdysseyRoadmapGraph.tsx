@@ -3,8 +3,8 @@
 import { useMemo } from 'react'
 import { ReactFlow, ReactFlowProvider, Background, useReactFlow, type Node, type Edge } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { useReducedMotion } from 'framer-motion'
 import { MagnifyingGlassPlus, MagnifyingGlassMinus, CornersOut, ArrowsOut } from '@phosphor-icons/react/dist/ssr'
+import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 import { OdysseyMilestoneNode } from './OdysseyMilestoneNode'
 import { OdysseyDestinationNode } from './OdysseyDestinationNode'
 import { OdysseyAlternativeNode } from './OdysseyAlternativeNode'
@@ -25,7 +25,7 @@ export interface OdysseyRoadmapGraphProps {
 }
 
 export function OdysseyRoadmapGraph({ nodes, edges, selectedMilestoneId, onSelectMilestone }: OdysseyRoadmapGraphProps) {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotionSafe()
 
   const interactiveNodes = useMemo(
     () =>

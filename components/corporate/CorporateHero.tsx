@@ -1,7 +1,8 @@
 'use client'
 
 import { useRef } from 'react'
-import { useScroll, useReducedMotion, motion } from 'framer-motion'
+import { useScroll, motion } from 'framer-motion'
+import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 import { CaretDown } from '@phosphor-icons/react/dist/ssr'
 import { MotionReveal } from '@/components/motion/MotionReveal'
 import { CapabilityFlowDiagram } from './CapabilityFlowDiagram'
@@ -15,7 +16,7 @@ import { SyrkaWordmark } from './SyrkaWordmark'
  * at natural height with the graph already fully drawn (no pinning).
  */
 export function CorporateHero() {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotionSafe()
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
 
@@ -48,26 +49,28 @@ export function CorporateHero() {
     </div>
   )
 
-  if (reduceMotion) {
-    return (
-      <section className="border-b border-syrka-hairline py-24">
-        {content}
-      </section>
-    )
-  }
-
+  // The scroll-target ref must stay mounted even under reduced motion —
+  // useScroll throws "Target ref is defined but not hydrated" if its target
+  // never renders — so both branches render the same section, and only the
+  // pinning/height styles and scroll indicator differ.
   return (
-    <section ref={ref} className="relative border-b border-syrka-hairline" style={{ height: '180vh' }}>
-      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-24">
+    <section
+      ref={ref}
+      className={reduceMotion ? 'border-b border-syrka-hairline py-24' : 'relative border-b border-syrka-hairline'}
+      style={reduceMotion ? undefined : { height: '180vh' }}
+    >
+      <div className={reduceMotion ? '' : 'sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-24'}>
         {content}
-        <motion.div
-          className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1"
-          animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <span className="font-campus-mono text-[10px] uppercase tracking-widest text-syrka-steel">Scroll to explore</span>
-          <CaretDown size={14} className="text-syrka-steel" aria-hidden="true" />
-        </motion.div>
+        {!reduceMotion && (
+          <motion.div
+            className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1"
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <span className="font-campus-mono text-[10px] uppercase tracking-widest text-syrka-steel">Scroll to explore</span>
+            <CaretDown size={14} className="text-syrka-steel" aria-hidden="true" />
+          </motion.div>
+        )}
       </div>
     </section>
   )

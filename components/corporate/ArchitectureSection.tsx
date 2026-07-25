@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useReducedMotion } from 'framer-motion'
+import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 import { MotionReveal } from '@/components/motion/MotionReveal'
 import { CapabilityFlowDiagram } from './CapabilityFlowDiagram'
 
@@ -21,7 +21,7 @@ const LAYERS = [
  * architecture reads as one continuous system, ending on the complete graph.
  */
 export function ArchitectureSection() {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotionSafe()
   const [activeIndex, setActiveIndex] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
 

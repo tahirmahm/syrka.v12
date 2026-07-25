@@ -1,7 +1,8 @@
 'use client'
 
 import { useRef, useState, type ReactNode } from 'react'
-import { useScroll, useMotionValueEvent, useReducedMotion } from 'framer-motion'
+import { useScroll, useMotionValueEvent } from 'framer-motion'
+import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 
 export interface ScrollStageSequenceProps {
   stageCount: number
@@ -27,7 +28,7 @@ export interface ScrollStageSequenceProps {
  * genuinely different, simpler presentation with nothing pinned.
  */
 export function ScrollStageSequence({ stageCount, vhPerStage = 100, children, fallback, stageIds }: ScrollStageSequenceProps) {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotionSafe()
   const ref = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [progress, setProgress] = useState(0)
@@ -45,14 +46,23 @@ export function ScrollStageSequence({ stageCount, vhPerStage = 100, children, fa
           <div key={i}>{fallback(i)}</div>
         ))}
       </div>
-      {!reduceMotion && (
-        <div ref={ref} style={{ height: `${stageCount * vhPerStage}vh` }} className="relative hidden md:block">
-          {stageIds?.map((stageId, i) => (
-            <span key={stageId} id={stageId} className="absolute left-0 h-px w-px" style={{ top: `${(i / stageCount) * 100}%` }} aria-hidden="true" />
-          ))}
-          <div className="sticky top-0 flex h-screen items-center overflow-hidden">{children(activeIndex, progress)}</div>
-        </div>
-      )}
+      {/*
+        The scroll-target ref must stay mounted even under reduced motion —
+        useScroll throws "Target ref is defined but not hydrated" if its
+        target never renders — so this stays in the tree, just hidden via
+        CSS, and its (unused, in this case) progress/activeIndex values are
+        harmless since `children` is never invoked when reduceMotion is set.
+      */}
+      <div
+        ref={ref}
+        style={reduceMotion ? undefined : { height: `${stageCount * vhPerStage}vh` }}
+        className={reduceMotion ? 'hidden' : 'relative hidden md:block'}
+      >
+        {stageIds?.map((stageId, i) => (
+          <span key={stageId} id={stageId} className="absolute left-0 h-px w-px" style={{ top: `${(i / stageCount) * 100}%` }} aria-hidden="true" />
+        ))}
+        {!reduceMotion && <div className="sticky top-0 flex h-screen items-center overflow-hidden">{children(activeIndex, progress)}</div>}
+      </div>
     </>
   )
 }

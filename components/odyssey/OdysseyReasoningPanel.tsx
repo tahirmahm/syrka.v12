@@ -1,10 +1,11 @@
 'use client'
 
 import { useId, useState } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { CaretDown } from '@phosphor-icons/react/dist/ssr'
 import { Panel } from '@/components/ui/Panel'
 import { Badge } from '@/components/ui/Badge'
+import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 import type { OdysseyRecommendationFactor, OdysseyAlternativeAction } from '@/lib/campus-types'
 import { REASONING_FACTOR_LABELS } from '@/lib/constants/odyssey'
 
@@ -16,7 +17,7 @@ export interface OdysseyReasoningPanelProps {
 
 export function OdysseyReasoningPanel({ planSummary, factors, alternatives }: OdysseyReasoningPanelProps) {
   const [open, setOpen] = useState(false)
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotionSafe()
   const contentId = useId()
 
   return (
