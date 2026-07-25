@@ -1,9 +1,18 @@
+import { MarketingNav } from '@/components/marketing/MarketingNav'
+import { MarketingFooter } from '@/components/marketing/MarketingFooter'
+
 /**
- * Scaffolding for the Phase 2 public marketing site (landing page, etc).
- * No page.tsx yet: the legacy homepage still owns "/" (app/page.tsx).
- * Where the Campus marketing home ultimately lives — replacing "/" or a
- * distinct path — needs an explicit decision before Phase 2 begins.
+ * Shared chrome for the Campus public marketing site. The landing page
+ * itself is built at (marketing)/campus-preview for review; once approved
+ * it moves to (marketing)/page.tsx to take over "/" — this layout applies
+ * either way without change.
  */
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return (
+    <div className="flex min-h-[100dvh] flex-col bg-campus-bg text-campus-text">
+      <MarketingNav />
+      <main className="flex-1">{children}</main>
+      <MarketingFooter />
+    </div>
+  )
 }
