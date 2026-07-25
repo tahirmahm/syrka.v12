@@ -36,6 +36,7 @@ import {
   curriculumAlignmentIssues,
   departmentInterventions,
 } from '@/lib/mock-data/department-seed'
+import { governancePolicies, governanceProposals, institutionalInterventions } from '@/lib/mock-data/university-seed'
 
 export {
   odysseyDestination,
@@ -56,6 +57,9 @@ export {
   cohorts,
   curriculumAlignmentIssues,
   departmentInterventions,
+  governancePolicies,
+  governanceProposals,
+  institutionalInterventions,
 }
 
 /**
@@ -409,6 +413,11 @@ const seedDataErrors = validateSeedData({
   cohorts,
   curriculumAlignmentIssues,
   departmentInterventions,
+  departments: [department],
+  programmes: [programme],
+  governancePolicies,
+  governanceProposals,
+  institutionalInterventions,
 })
 if (seedDataErrors.length > 0) {
   throw new Error(`Seed data integrity check failed:\n${seedDataErrors.join('\n')}`)

@@ -23,6 +23,11 @@ import type {
   Cohort,
   CurriculumAlignmentIssue,
   DepartmentIntervention,
+  Department,
+  Programme,
+  GovernancePolicy,
+  GovernanceProposal,
+  InstitutionalIntervention,
 } from '@/lib/campus-types'
 
 export interface SeedDataInput {
@@ -50,6 +55,11 @@ export interface SeedDataInput {
   cohorts: Cohort[]
   curriculumAlignmentIssues: CurriculumAlignmentIssue[]
   departmentInterventions: DepartmentIntervention[]
+  departments: Department[]
+  programmes: Programme[]
+  governancePolicies: GovernancePolicy[]
+  governanceProposals: GovernanceProposal[]
+  institutionalInterventions: InstitutionalIntervention[]
 }
 
 /**
@@ -317,6 +327,47 @@ export function validateSeedData(data: SeedDataInput): string[] {
     intervention.capabilityIds.forEach((id) => missingCapability(id, `Intervention "${intervention.id}"`))
     if (!intervention.rationale) errors.push(`Intervention "${intervention.id}" has no rationale`)
     if (!intervention.expectedEffect) errors.push(`Intervention "${intervention.id}" has no expectedEffect`)
+  }
+
+  // --- University ---
+
+  const departmentIds = new Set(data.departments.map((d) => d.id))
+  const programmeIdsForUniversity = new Set(data.programmes.map((p) => p.id))
+
+  const seenPolicyIds = new Set<string>()
+  const validPolicyStates = new Set(['active_policy', 'proposed_policy', 'demo_configuration', 'requires_backend_integration'])
+  for (const policy of data.governancePolicies) {
+    if (seenPolicyIds.has(policy.id)) errors.push(`Duplicate governance policy id "${policy.id}"`)
+    seenPolicyIds.add(policy.id)
+    if (!validPolicyStates.has(policy.state)) errors.push(`Governance policy "${policy.id}" has invalid state "${policy.state}"`)
+  }
+
+  const seenProposalIds = new Set<string>()
+  const validProposalStatuses = new Set(['draft', 'under_review', 'accepted', 'rejected'])
+  for (const proposal of data.governanceProposals) {
+    if (seenProposalIds.has(proposal.id)) errors.push(`Duplicate governance proposal id "${proposal.id}"`)
+    seenProposalIds.add(proposal.id)
+    if (!validProposalStatuses.has(proposal.status)) errors.push(`Governance proposal "${proposal.id}" has invalid status "${proposal.status}"`)
+  }
+
+  const validInstitutionalStatuses = new Set(['planned', 'active', 'awaiting_evaluation', 'complete', 'discontinued'])
+  const seenInstitutionalInterventionIds = new Set<string>()
+  for (const intervention of data.institutionalInterventions) {
+    if (seenInstitutionalInterventionIds.has(intervention.id)) errors.push(`Duplicate institutional intervention id "${intervention.id}"`)
+    seenInstitutionalInterventionIds.add(intervention.id)
+    if (!validInstitutionalStatuses.has(intervention.status)) errors.push(`Institutional intervention "${intervention.id}" has invalid status "${intervention.status}"`)
+    intervention.affectedDepartmentIds.forEach((id) => {
+      if (!departmentIds.has(id)) errors.push(`Institutional intervention "${intervention.id}" references unknown department "${id}"`)
+    })
+    intervention.affectedProgrammeIds.forEach((id) => {
+      if (!programmeIdsForUniversity.has(id)) errors.push(`Institutional intervention "${intervention.id}" references unknown programme "${id}"`)
+    })
+    intervention.affectedCapabilityIds.forEach((id) => missingCapability(id, `Institutional intervention "${intervention.id}"`))
+    intervention.affectedCohortIds.forEach((id) => {
+      if (!cohortIds.has(id)) errors.push(`Institutional intervention "${intervention.id}" references unknown cohort "${id}"`)
+    })
+    if (!intervention.rationale) errors.push(`Institutional intervention "${intervention.id}" has no rationale`)
+    if (!intervention.expectedEffect) errors.push(`Institutional intervention "${intervention.id}" has no expectedEffect`)
   }
 
   return errors
