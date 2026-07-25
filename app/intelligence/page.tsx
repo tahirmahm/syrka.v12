@@ -239,7 +239,7 @@ export default function IntelligenceFeedPage() {
                 {[
                   { href: '/model-cards', label: 'Model Cards', desc: 'AI transparency documentation' },
                   { href: '/model-cards/audit', label: 'Audit Trail', desc: 'Full AI decision log' },
-                  { href: '/saudi/faculty', label: 'Faculty Dashboard', desc: 'Curriculum & experiments' },
+                  { href: '/faculty', label: 'Faculty Dashboard', desc: 'Evidence review & Capability coverage' },
                   { href: '/saudi/ministry', label: 'Ministry Portal', desc: 'Vision gap intelligence' },
                   { href: '/saudi/student', label: 'Student Portal', desc: 'Career & skills engine' },
                 ].map((link) => (
