@@ -23,7 +23,7 @@ export function CorporateHero() {
   const content = (
     <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10">
       <MotionReveal>
-        <SyrkaWordmark priority className="h-8 w-auto md:h-9" />
+        <SyrkaWordmark priority width={220} className="w-[190px] md:w-[220px] h-auto" />
       </MotionReveal>
       <MotionReveal delay={0.05}>
         <h1 className="mt-5 max-w-4xl font-campus-sans text-[clamp(40px,7vw,88px)] font-semibold leading-[0.98] tracking-tight text-syrka-offwhite">

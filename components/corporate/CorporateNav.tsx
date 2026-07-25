@@ -38,7 +38,7 @@ export function CorporateNav() {
     >
       <div className={`mx-auto flex max-w-[1400px] items-center justify-between px-6 transition-all duration-300 md:px-10 ${scrolled ? 'h-14' : 'h-16'}`}>
         <Link href="/" aria-label="Syrka home" className="shrink-0">
-          <SyrkaWordmark priority className="h-8 w-auto" />
+          <SyrkaWordmark priority width={118} className="w-[98px] lg:w-[118px] h-auto" />
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">

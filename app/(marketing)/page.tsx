@@ -184,7 +184,7 @@ export default function SyrkaCorporateHomePage() {
       <section id="closing" className="border-t border-syrka-hairline bg-syrka-obsidian px-6 py-28 md:px-10">
         <div className="mx-auto max-w-[1400px]">
           <MotionReveal className="mb-8">
-            <SyrkaWordmark className="h-8 w-auto" />
+            <SyrkaWordmark width={210} className="w-[210px] h-auto" />
           </MotionReveal>
           <ClosingConvergence />
           <MotionReveal>

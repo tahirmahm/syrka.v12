@@ -15,7 +15,7 @@ export function CorporateFooter() {
       <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-10">
         <div className="grid gap-10 md:grid-cols-[2fr_1fr_1fr]">
           <div>
-            <SyrkaWordmark className="h-8 w-auto" />
+            <SyrkaWordmark width={170} className="w-[170px] h-auto" />
             <p className="mt-4 max-w-sm font-campus-sans text-campus-sm text-syrka-steel">
               The operating system for human capability — from academic Evidence to national capability strategy.
             </p>

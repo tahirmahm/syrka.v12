@@ -2,27 +2,30 @@ import Image from 'next/image'
 
 interface SyrkaWordmarkProps {
   className?: string
-  /** Dark corporate surfaces (obsidian/carbon) need the artwork flipped to white; off-white surfaces use the original dark rendering. */
-  surface?: 'dark' | 'light'
+  /** Rendered width in px; height is derived from the SVG's native aspect ratio so it's never stretched. */
+  width: number
   priority?: boolean
 }
 
-/**
- * Transparent Syrka wordmark (public/brand/syrka-wordmark-transparent.png).
- * The source artwork is dark. On dark surfaces its visible pixels are
- * rendered white via a non-destructive CSS filter (brightness-0 invert),
- * preserving the PNG's transparency — the asset itself is never recoloured,
- * redrawn, re-encoded, or cropped.
- */
-export function SyrkaWordmark({ className = '', surface = 'dark', priority = false }: SyrkaWordmarkProps) {
+// public/brand/syrka-wordmark-white.svg is a tightly cropped, pre-coloured
+// white mark (viewBox 0 0 1826 208) — no padding to size around, no invert
+// filter needed, unlike the padded transparent PNG this replaces on the
+// corporate homepage.
+const NATIVE_WIDTH = 1826
+const NATIVE_HEIGHT = 208
+
+export function SyrkaWordmark({ className = '', width, priority = false }: SyrkaWordmarkProps) {
+  const height = Math.round((width * NATIVE_HEIGHT) / NATIVE_WIDTH)
+
   return (
     <Image
-      src="/brand/syrka-wordmark-transparent.png"
+      src="/brand/syrka-wordmark-white.svg"
       alt="Syrka"
-      width={1536}
-      height={1024}
+      width={width}
+      height={height}
+      unoptimized
       priority={priority}
-      className={`${surface === 'dark' ? 'brightness-0 invert' : ''} ${className}`}
+      className={className}
     />
   )
 }
