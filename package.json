@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
@@ -14,6 +15,7 @@
     "@langchain/core": "^1.1.39",
     "@langchain/langgraph": "^1.2.7",
     "@observablehq/plot": "^0.6.17",
+    "@phosphor-icons/react": "^2.1.10",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.100.0",
     "@tailwindcss/container-queries": "^0.1.1",
@@ -21,6 +23,7 @@
     "echarts": "^6.0.0",
     "echarts-for-react": "^3.0.6",
     "framer-motion": "^12.38.0",
+    "geist": "^1.7.2",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.7.0",
     "mammoth": "^1.12.0",
