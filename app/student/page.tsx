@@ -13,6 +13,7 @@ import {
   mockPassportRepository,
   mockInstitutionRepository,
 } from '@/lib/repositories'
+import { getActiveMilestone } from '@/lib/utilities/odyssey'
 import { currentUser } from '@/lib/mock-data/seed'
 
 export const metadata = { title: 'Dashboard — Syrka Campus' }
@@ -40,7 +41,7 @@ export default async function StudentDashboardPage() {
 
   const recentEvidence = [...evidence].sort((a, b) => new Date(b.record.submittedAt).getTime() - new Date(a.record.submittedAt).getTime()).slice(0, 4)
   const pendingEvidence = evidence.filter((item) => item.review.status === 'pending')
-  const currentMilestone = odyssey?.milestones.find((m) => m.status === 'current')
+  const currentMilestone = odyssey ? getActiveMilestone(odyssey.milestones) : undefined
   const topRecommendation = odyssey?.recommendations[0]
   const latestPassportVersion = passport?.versions.find((v) => v.version === passport.currentVersion)
 

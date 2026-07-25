@@ -37,7 +37,7 @@ export default async function CapabilityDetailPage({ params }: { params: { capab
   const verifiedEvidence = evidence.filter((e) => e.review.status === 'verified')
   const strongestEvidence = [...verifiedEvidence].sort((a, b) => new Date(b.record.submittedAt).getTime() - new Date(a.record.submittedAt).getTime())[0]
 
-  const odysseyMilestone = odyssey?.milestones.find((m) => m.requiredCapabilityIds.includes(definition.id))
+  const odysseyMilestone = odyssey?.milestones.find((m) => m.requirements.some((r) => r.capabilityId === definition.id))
   const odysseyRecommendation = odyssey?.recommendations.find((r) => r.capabilityId === definition.id)
 
   const latestAssessment = claim?.history[claim.history.length - 1]
