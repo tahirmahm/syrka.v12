@@ -57,6 +57,19 @@ const config: Config = {
         'campus-text-secondary': 'var(--campus-text-secondary)',
         'campus-muted': 'var(--campus-muted)',
 
+        // Syrka corporate homepage tokens — isolated from Campus (campus-*)
+        // and the legacy palette below. Used only by the "/" corporate
+        // marketing site and its components/corporate/* — never by
+        // authenticated Campus routes.
+        'syrka-obsidian': '#050505',
+        'syrka-carbon': '#111214',
+        'syrka-graphite': '#202226',
+        'syrka-offwhite': '#F2F0EA',
+        'syrka-white': '#FFFFFF',
+        'syrka-steel': '#7A7E85',
+        'syrka-hairline': '#34363A',
+        'syrka-signal': '#2864FF',
+
         // Legacy National Human Capital Intelligence palette — preserved as-is.
         'background': '#111417',
         'surface': '#111417',
