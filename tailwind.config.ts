@@ -104,8 +104,11 @@ const config: Config = {
         label: ['Inter', 'sans-serif'],
         // Syrka Campus typography (DESIGN-001 §5) — Geist, loaded via
         // next/font in app/layout.tsx as --font-geist-sans / --font-geist-mono.
-        sans: ['var(--font-geist-sans)', 'Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        mono: ['var(--font-geist-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        // Deliberately NOT registered under the default `sans`/`mono` keys:
+        // Tailwind's preflight applies those globally to <html>, which would
+        // reach legacy routes. campus-sans/campus-mono are additive-only.
+        'campus-sans': ['var(--font-geist-sans)', 'Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        'campus-mono': ['var(--font-geist-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       fontSize: {
         'display-lg': ['clamp(56px, 8vw, 96px)', { lineHeight: '0.9', letterSpacing: '-0.03em', fontWeight: '700' }],
@@ -119,21 +122,18 @@ const config: Config = {
         'label-lg': ['12px', { lineHeight: '1', letterSpacing: '0.1em', fontWeight: '600' }],
         'label-md': ['11px', { lineHeight: '1', letterSpacing: '0.08em', fontWeight: '600' }],
         'label-sm': ['10px', { lineHeight: '1', letterSpacing: '0.08em', fontWeight: '700' }],
-        // Syrka Campus type scale (DESIGN-001 §5) — overrides Tailwind's
-        // default text-xs…text-5xl. Legacy components mostly use the
-        // custom display-*/headline-*/body-*/label-* keys above; the few
-        // legacy spots using bare text-3xl/4xl/5xl will render at the
-        // Campus scale (slightly larger) rather than Tailwind's defaults —
-        // a disclosed, non-breaking cosmetic trade-off for one coherent scale.
-        'xs': ['12px', { lineHeight: '16px' }],
-        'sm': ['14px', { lineHeight: '20px' }],
-        'base': ['16px', { lineHeight: '24px' }],
-        'lg': ['18px', { lineHeight: '28px' }],
-        'xl': ['20px', { lineHeight: '30px' }],
-        '2xl': ['24px', { lineHeight: '32px' }],
-        '3xl': ['32px', { lineHeight: '40px' }],
-        '4xl': ['44px', { lineHeight: '52px' }],
-        '5xl': ['56px', { lineHeight: '64px' }],
+        // Syrka Campus type scale (DESIGN-001 §5) — additive campus-* keys.
+        // Tailwind's own text-xs…text-5xl keys are left untouched so legacy
+        // routes keep their original rendered sizes exactly.
+        'campus-xs': ['12px', { lineHeight: '16px' }],
+        'campus-sm': ['14px', { lineHeight: '20px' }],
+        'campus-base': ['16px', { lineHeight: '24px' }],
+        'campus-lg': ['18px', { lineHeight: '28px' }],
+        'campus-xl': ['20px', { lineHeight: '30px' }],
+        'campus-2xl': ['24px', { lineHeight: '32px' }],
+        'campus-3xl': ['32px', { lineHeight: '40px' }],
+        'campus-4xl': ['44px', { lineHeight: '52px' }],
+        'campus-5xl': ['56px', { lineHeight: '64px' }],
       },
       transitionDuration: {
         'campus-fast': '120ms',

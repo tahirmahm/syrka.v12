@@ -33,7 +33,7 @@ export function ConfidenceMeter({ confidence, explanation }: ConfidenceMeterProp
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-2">
         <Badge tone={bandBadgeTone[confidence.band]}>{confidence.band}</Badge>
-        <span className="font-mono text-xs tabular-nums text-campus-muted">{percent}%</span>
+        <span className="font-campus-mono text-campus-xs tabular-nums text-campus-muted">{percent}%</span>
       </div>
       <div
         role="meter"
@@ -48,7 +48,7 @@ export function ConfidenceMeter({ confidence, explanation }: ConfidenceMeterProp
           style={{ width: `${percent}%` }}
         />
       </div>
-      {explanation && <p className="font-sans text-xs text-campus-muted">{explanation}</p>}
+      {explanation && <p className="font-campus-sans text-campus-xs text-campus-muted">{explanation}</p>}
     </div>
   )
 }

@@ -12,8 +12,8 @@ const variantClasses: Record<ButtonVariant, string> = {
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'text-sm px-3 py-1.5 gap-1.5',
-  md: 'text-sm px-4 py-2 gap-2',
+  sm: 'text-campus-sm px-3 py-1.5 gap-1.5',
+  md: 'text-campus-sm px-4 py-2 gap-2',
 }
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -35,7 +35,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center rounded-campus-sm font-sans font-medium transition-colors duration-campus-fast ease-campus-standard disabled:opacity-campus-disabled disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600 ${variant !== 'link' ? sizeClasses[size] : ''} ${variantClasses[variant]} ${className}`}
+      className={`inline-flex items-center justify-center rounded-campus-sm font-campus-sans font-medium transition-colors duration-campus-fast ease-campus-standard disabled:opacity-campus-disabled disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600 ${variant !== 'link' ? sizeClasses[size] : ''} ${variantClasses[variant]} ${className}`}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       {...props}

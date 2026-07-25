@@ -12,7 +12,7 @@ export default async function UniversityInstitutionPage() {
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <PageHeader title={institution?.name ?? 'Institution'} subtitle="Institution-wide administration and intelligence arrive in Phase 7." />
       <Card className="p-6">
-        <p className="font-sans text-sm text-campus-muted">
+        <p className="font-campus-sans text-campus-sm text-campus-muted">
           This route validates the shared Campus shell for the University Administrator role, institution-wide scope. Full analytics, governance, and reporting views are built in Phase 7.
         </p>
       </Card>
