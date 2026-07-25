@@ -18,7 +18,7 @@ export function MarketingNav() {
   return (
     <header className="sticky top-0 z-50 border-b border-campus-border bg-campus-surface/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="/" aria-label="Syrka Campus home">
+        <Link href="/campus" aria-label="Syrka Campus home">
           <BrandMark />
         </Link>
 
