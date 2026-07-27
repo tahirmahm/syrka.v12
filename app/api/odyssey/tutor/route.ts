@@ -15,6 +15,7 @@ export const dynamic = 'force-dynamic'
 
 const VALID_ACTIONS = new Set<OdysseyTutorAction>([
   'explain_milestone',
+  'explain_why_on_path',
   'teach_concept',
   'quiz_me',
   'study_plan',

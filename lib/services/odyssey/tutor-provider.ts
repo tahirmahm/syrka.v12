@@ -4,6 +4,7 @@ import { ODYSSEY_PROVIDER_CONFIG } from './provider'
 
 export type OdysseyTutorAction =
   | 'explain_milestone'
+  | 'explain_why_on_path'
   | 'teach_concept'
   | 'quiz_me'
   | 'study_plan'
@@ -80,6 +81,7 @@ export interface OdysseyTutorRequest {
 
 const ACTION_INSTRUCTIONS: Record<OdysseyTutorAction, string> = {
   explain_milestone: 'Explain what this milestone represents and why it appears in this Odyssey, in plain language a student would understand.',
+  explain_why_on_path: "Explain specifically why this milestone is on the student's path right now — which prerequisite, capability gap, or goal it connects to — using only the reasoning and prerequisites on record, not a generic justification.",
   teach_concept: "Teach the underlying concept behind this milestone's capability area as if the student is encountering it for the first time. Be concrete and use a small example.",
   quiz_me: "Ask 3 short questions to test understanding of this milestone's capability area. Do not reveal the answers.",
   study_plan: 'Propose a short, concrete study plan (a few steps, with rough time estimates) to work toward this milestone.',

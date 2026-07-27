@@ -15,18 +15,20 @@ export interface OdysseyMilestoneTutorTabProps {
   milestoneTitle?: string
 }
 
+/** The four primary contextual entry points, always listed first — everything after is a secondary action. */
 const SUGGESTED_ACTIONS: TutorSuggestedAction<OdysseyTutorAction>[] = [
-  { action: 'explain_milestone', label: 'Explain this milestone', requiresContext: true },
+  { action: 'explain_milestone', label: 'Help me understand this step', requiresContext: true },
+  { action: 'explain_why_on_path', label: 'Explain why this is on my path', requiresContext: true },
+  { action: 'recommend_next_action', label: 'What should I do next?' },
+  { action: 'quiz_me', label: 'Test my readiness', requiresContext: true },
   { action: 'teach_concept', label: 'Teach me the underlying concept', requiresContext: true },
   { action: 'study_plan', label: 'Create a study plan' },
-  { action: 'quiz_me', label: 'Quiz me', requiresContext: true },
   { action: 'suggest_project', label: 'Suggest an Evidence-producing project' },
   { action: 'why_blocked', label: 'Explain why this is blocked', requiresContext: true },
   { action: 'compare_alternatives', label: 'Compare alternatives', requiresContext: true },
   { action: 'prepare_faculty_questions', label: 'Prepare questions for Faculty' },
   { action: 'passport_effect', label: 'Show my Career Passport implication', requiresContext: true },
   { action: 'generate_practice_exercise', label: 'Generate a practice exercise', requiresContext: true },
-  { action: 'recommend_next_action', label: 'Recommend my next action' },
   { action: 'summarize_changes', label: 'Summarise what changed' },
   { action: 'replan_with_constraint', label: 'Replan with a new constraint' },
 ]
