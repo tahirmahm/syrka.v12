@@ -76,7 +76,15 @@ function validateDomainIntegrity(data: ProfileDataInput): string[] {
     if (!provenanceIds.has(a.provenanceId)) errors.push(`ImportedAssertion "${a.id}" references unknown provenance "${a.provenanceId}"`)
   })
   data.evidenceCandidates.forEach((c) => {
-    if (!assertionIds.has(c.importedAssertionId)) errors.push(`EvidenceCandidate "${c.id}" references unknown imported assertion "${c.importedAssertionId}"`)
+    if (!c.importedAssertionId && !c.learningOriginId) {
+      errors.push(`EvidenceCandidate "${c.id}" has neither importedAssertionId nor learningOriginId — every candidate must declare exactly one origin`)
+    }
+    if (c.importedAssertionId && c.learningOriginId) {
+      errors.push(`EvidenceCandidate "${c.id}" sets both importedAssertionId and learningOriginId — exactly one origin is allowed`)
+    }
+    if (c.importedAssertionId && !assertionIds.has(c.importedAssertionId)) {
+      errors.push(`EvidenceCandidate "${c.id}" references unknown imported assertion "${c.importedAssertionId}"`)
+    }
     if (!provenanceIds.has(c.provenanceId)) errors.push(`EvidenceCandidate "${c.id}" references unknown provenance "${c.provenanceId}"`)
     if (c.linkedEvidenceRecordId && data.nativeEvidenceIds && !data.nativeEvidenceIds.has(c.linkedEvidenceRecordId)) {
       errors.push(`EvidenceCandidate "${c.id}" links to unknown native EvidenceRecord "${c.linkedEvidenceRecordId}"`)

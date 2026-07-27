@@ -1,5 +1,6 @@
 import type { ConfidenceScore } from './confidence'
 import type { CapabilityMaturity } from './capability'
+import type { LearningEvidenceSubtype } from './learning-evidence'
 
 /**
  * Passport Intelligence — Layer 1, the private Capability Profile
@@ -95,7 +96,12 @@ export interface ImportedAssertion {
 export interface EvidenceCandidate {
   id: string
   studentId: string
-  importedAssertionId: string
+  /** Present when this candidate originated from an external-source ImportedAssertion (CV/LinkedIn/GitHub/Scholar/Discord). A Learning-derived candidate instead sets learningOriginId — an AssessmentAttempt or LearningObservation is not an ImportedAssertion, and Learning does not get a parallel inference system to route around this field. */
+  importedAssertionId?: string
+  /** Present when this candidate originated from Syrka Learning — an AssessmentAttempt.id or LearningObservation.id (lib/campus-types/learning-assessment.ts / learning-observation.ts). Exactly one of importedAssertionId / learningOriginId is set. */
+  learningOriginId?: string
+  /** Only set alongside learningOriginId — the additional classification Learning needs without a new top-level SourceCategory. */
+  learningEvidenceSubtype?: LearningEvidenceSubtype
   proposedCapabilityIds: string[]
   rationale: string
   /** Set only once the student has actually submitted this into the existing native Evidence flow (lib/campus-types/evidence.ts EvidenceRecord.id). */
