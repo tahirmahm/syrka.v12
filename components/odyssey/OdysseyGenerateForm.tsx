@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Panel } from '@/components/ui/Panel'
+import { AIActivityIndicator } from '@/components/motion/AIActivityIndicator'
 import type { OdysseyGenerationApiResponse } from './odyssey-client-types'
 
 const WORKLOAD_OPTIONS = [
@@ -149,13 +150,14 @@ export function OdysseyGenerateForm({ defaultDestinationTitle, onResult, onClose
 
         {error && <p className="font-campus-sans text-campus-sm text-campus-red-600 dark:text-campus-red-dark">{error}</p>}
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Button type="submit" loading={pending}>
             Generate Odyssey
           </Button>
           <Button type="button" variant="secondary" onClick={onClose} disabled={pending}>
             Cancel
           </Button>
+          {pending && <AIActivityIndicator state="shaping" label="Generating your Odyssey" />}
         </div>
       </form>
     </Panel>

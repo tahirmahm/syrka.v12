@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { PaperPlaneTilt, Sparkle } from '@phosphor-icons/react/dist/ssr'
 import { Badge } from '@/components/ui/Badge'
-import { ThinkingIndicator } from '@/components/motion/ThinkingIndicator'
+import { AIActivityIndicator } from '@/components/motion/AIActivityIndicator'
 import type { OdysseyTutorAction } from '@/lib/services/odyssey/tutor-provider'
 
 export interface OdysseyMilestoneTutorTabProps {
@@ -133,7 +133,7 @@ export function OdysseyMilestoneTutorTab({ milestoneId, milestoneTitle }: Odysse
 
       {pending && (
         <div className="flex items-center justify-between rounded-campus-sm border border-campus-border p-2.5">
-          <ThinkingIndicator state="thinking" />
+          <AIActivityIndicator state="composing" />
           <button type="button" onClick={stop} className="font-campus-sans text-campus-xs text-campus-muted hover:text-campus-text">
             Stop
           </button>
