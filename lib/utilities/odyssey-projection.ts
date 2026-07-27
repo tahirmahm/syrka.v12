@@ -35,10 +35,26 @@ export interface OdysseyAlternativeNodeData extends Record<string, unknown> {
 
 export type OdysseyNodeData = OdysseyMilestoneNodeData | OdysseyDestinationNodeData | OdysseyAlternativeNodeData
 
-const COLUMN_WIDTH = 280
-const ROW_HEIGHT = 170
-const ALTERNATIVE_OFFSET_X = 240
-const ALTERNATIVE_OFFSET_Y = 90
+const COLUMN_WIDTH = 220
+const ROW_HEIGHT = 150
+const ALTERNATIVE_OFFSET_X = 200
+const ALTERNATIVE_OFFSET_Y = 76
+
+/**
+ * Edge semantics (see OdysseyGraphLegend): solid = required prerequisite,
+ * dotted = alternative/optional route, muted grey = leads to a superseded
+ * or no-longer-relevant milestone, red dashed = leads to a blocked
+ * milestone. Never decorative — every edge style maps to a real relationship.
+ */
+function prerequisiteEdgeStyle(targetMilestone: OdysseyMilestone): Pick<Edge, 'style'> {
+  if (targetMilestone.status === 'blocked') {
+    return { style: { strokeDasharray: '5 4', stroke: 'var(--campus-red-600, #dc2626)' } }
+  }
+  if (targetMilestone.status === 'superseded' || targetMilestone.status === 'no_longer_relevant') {
+    return { style: { stroke: 'var(--campus-stone-400, #a8a29e)', opacity: 0.5 } }
+  }
+  return {}
+}
 
 function computeDepths(milestones: OdysseyMilestone[]): Map<string, number> {
   const byId = new Map(milestones.map((m) => [m.id, m]))
@@ -110,7 +126,7 @@ export function buildOdysseyRoadmap(
           target: milestone.id,
           type: 'smoothstep',
           animated: false,
-          style: milestone.status === 'blocked' ? { strokeDasharray: '5 4', stroke: 'var(--campus-red-600, #dc2626)' } : undefined,
+          ...prerequisiteEdgeStyle(milestone),
         })
       })
 
@@ -158,6 +174,7 @@ export function buildOdysseyRoadmap(
       target: 'destination',
       type: 'smoothstep',
       animated: false,
+      style: m.status === 'superseded' || m.status === 'no_longer_relevant' ? { stroke: 'var(--campus-stone-400, #a8a29e)', opacity: 0.5 } : undefined,
     })
   })
 

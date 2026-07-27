@@ -14,6 +14,18 @@ import {
   Certificate,
   FlagCheckered,
   UserCheck,
+  Star,
+  CircleDashed,
+  Circle,
+  PlayCircle,
+  Hourglass,
+  Eye,
+  CheckCircle,
+  SealCheck,
+  PauseCircle,
+  XCircle,
+  Archive,
+  ProhibitInset,
 } from '@phosphor-icons/react/dist/ssr'
 import type { OdysseyMilestoneType, OdysseyMilestoneStatus } from '@/lib/campus-types'
 
@@ -52,4 +64,30 @@ export const MILESTONE_STATUS_BORDER: Record<OdysseyMilestoneStatus, string> = {
   blocked: 'border-campus-red-600 dark:border-campus-red-dark border-dashed',
   superseded: 'border-campus-border opacity-50',
   no_longer_relevant: 'border-campus-border opacity-50',
+}
+
+export interface MilestoneStatusMarker {
+  icon: ComponentType<IconProps>
+  /** Compact label for the always-visible corner marker — short enough to fit at roadmap scale. */
+  shortLabel: string
+  accentClass: string
+}
+
+/**
+ * A small, always-present status marker per status — communicates state
+ * through icon + short label + colour together, never colour alone.
+ */
+export const MILESTONE_STATUS_MARKER: Record<OdysseyMilestoneStatus, MilestoneStatusMarker> = {
+  recommended: { icon: Star, shortLabel: 'Next', accentClass: 'text-campus-blue-600 dark:text-campus-blue-dark' },
+  accepted: { icon: CircleDashed, shortLabel: 'Accepted', accentClass: 'text-campus-blue-600 dark:text-campus-blue-dark' },
+  planned: { icon: Circle, shortLabel: 'Planned', accentClass: 'text-campus-muted' },
+  in_progress: { icon: PlayCircle, shortLabel: 'In progress', accentClass: 'text-campus-blue-600 dark:text-campus-blue-dark' },
+  evidence_pending: { icon: Hourglass, shortLabel: 'Evidence pending', accentClass: 'text-campus-amber-600 dark:text-campus-amber-dark' },
+  under_review: { icon: Eye, shortLabel: 'Under review', accentClass: 'text-campus-amber-600 dark:text-campus-amber-dark' },
+  completed: { icon: CheckCircle, shortLabel: 'Complete', accentClass: 'text-campus-green-600 dark:text-campus-green-dark' },
+  verified: { icon: SealCheck, shortLabel: 'Verified', accentClass: 'text-campus-green-600 dark:text-campus-green-dark' },
+  deferred: { icon: PauseCircle, shortLabel: 'Deferred', accentClass: 'text-campus-muted' },
+  blocked: { icon: XCircle, shortLabel: 'Blocked', accentClass: 'text-campus-red-600 dark:text-campus-red-dark' },
+  superseded: { icon: Archive, shortLabel: 'Superseded', accentClass: 'text-campus-muted' },
+  no_longer_relevant: { icon: ProhibitInset, shortLabel: 'Not relevant', accentClass: 'text-campus-muted' },
 }

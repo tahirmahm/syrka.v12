@@ -20,6 +20,10 @@ export interface OdysseyRoadmapLoaderProps {
   edges: Edge[]
   selectedMilestoneId?: string
   onSelectMilestone: (milestoneId: string) => void
+  hideCompleted?: boolean
+  focusActive?: boolean
+  onToggleHideCompleted?: () => void
+  onToggleFocusActive?: () => void
 }
 
 export function OdysseyRoadmapLoader(props: OdysseyRoadmapLoaderProps) {

@@ -6,18 +6,33 @@ const STATUS_LEGEND: { label: string; className: string }[] = [
   { label: 'Superseded / not relevant', className: 'border-campus-border opacity-50' },
 ]
 
+const EDGE_LEGEND: { label: string; lineClassName: string }[] = [
+  { label: 'Required prerequisite', lineClassName: 'border-t border-campus-muted' },
+  { label: 'Alternative / optional route', lineClassName: 'border-t border-dashed border-campus-muted' },
+  { label: 'Blocked route', lineClassName: 'border-t border-dashed border-campus-red-600 dark:border-campus-red-dark' },
+  { label: 'Superseded / inactive route', lineClassName: 'border-t border-campus-muted opacity-40' },
+]
+
+/** Every node and edge treatment here is described in text — status and edge meaning are never colour-only. */
 export function OdysseyGraphLegend() {
   return (
-    <div className="flex flex-wrap gap-x-5 gap-y-2 font-campus-sans text-campus-xs text-campus-muted">
-      {STATUS_LEGEND.map((item) => (
-        <span key={item.label} className="flex items-center gap-1.5">
-          <span className={`h-2.5 w-2.5 rounded-full border-2 bg-campus-surface ${item.className}`} aria-hidden="true" />
-          {item.label}
-        </span>
-      ))}
-      <span className="flex items-center gap-1.5">
-        <span className="h-px w-4 border-t border-dashed border-campus-muted" aria-hidden="true" /> alternative route
-      </span>
+    <div className="flex flex-col gap-2 font-campus-sans text-campus-xs text-campus-muted">
+      <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+        {STATUS_LEGEND.map((item) => (
+          <span key={item.label} className="flex items-center gap-1.5">
+            <span className={`h-2.5 w-2.5 rounded-full border-2 bg-campus-surface ${item.className}`} aria-hidden="true" />
+            {item.label}
+          </span>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-x-4 gap-y-1.5 border-t border-campus-border pt-1.5">
+        {EDGE_LEGEND.map((item) => (
+          <span key={item.label} className="flex items-center gap-1.5">
+            <span className={`h-0 w-4 ${item.lineClassName}`} aria-hidden="true" />
+            {item.label}
+          </span>
+        ))}
+      </div>
     </div>
   )
 }
