@@ -96,6 +96,14 @@ export default function NcertChapterPage({ params }: { params: { spaceId: string
       <div className="rounded-campus-md border border-campus-border bg-campus-surface p-4">
         <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Odyssey connection</p>
         <p className="mt-1 font-campus-sans text-campus-xs text-campus-text">{chapter.capability.pathwayAdvisory}</p>
+        {adaptiveView && (
+          <>
+            <p className="mt-2 border-t border-campus-border pt-2 font-campus-sans text-campus-xs text-campus-text">
+              Your preparedness signal here moved because of the Evidence from Session 3 — independent transfer to a new context, confirmed by a delayed retention check — not from completing the chapter alone.
+            </p>
+            <p className="mt-1 font-campus-mono text-[10px] text-campus-muted">Still missing: this is one concept in one chapter — broader term-level development in {chapter.subject} is not yet demonstrated. This is a preparedness signal, never a career prediction.</p>
+          </>
+        )}
       </div>
 
       <div className="rounded-campus-md border border-campus-border bg-campus-surface p-4">
