@@ -43,6 +43,7 @@ export const NAV_ITEMS: Record<UserRole, NavItem[]> = {
   faculty: [
     { href: '/faculty', label: 'Dashboard', icon: SquaresFour },
     { href: '/faculty/courses', label: 'Courses', icon: ChalkboardTeacher },
+    { href: '/faculty/learning-spaces', label: 'Learning Spaces', icon: BookOpen },
     { href: '/faculty/evidence', label: 'Evidence Review', icon: ClipboardText },
     { href: '/faculty/students', label: 'Students', icon: Users },
     { href: '/faculty/analytics', label: 'Analytics', icon: ChartLineUp },
