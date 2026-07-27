@@ -1,0 +1,1426 @@
+%PDF-1.4
+%
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R] /Count 12 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 2961 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+(REASON-001 - Syrka Evidence & Reasoning Constitution) Tj
+T*
+() Tj
+T*
+(Status: Constitutional Engineering Specification) Tj
+T*
+(Version: 1.0) Tj
+T*
+(Date: 2026-07-08) Tj
+T*
+(Builds upon: Product Suite; ADR-001; ADR-002; CEA-001; ONT-001; GRAPH-001) Tj
+T*
+(Decision owners: AI Science / Knowledge Engineering / Ontology / Platform Architecture / ) Tj
+T*
+(Research) Tj
+T*
+(Scope: Epistemology, evidence evaluation, reasoning lifecycle, confidence constitution, conflict) Tj
+T*
+( resolution, explainability, human review, AI-provider independence, and reasoning diagrams) Tj
+T*
+() Tj
+T*
+(1. Executive Overview) Tj
+T*
+() Tj
+T*
+(REASON-001 defines how Syrka reasons. It does not define a model, prompt, vendor, or runtime ) Tj
+T*
+(implementation. It defines the constitutional rules that every inference engine, recommendation ) Tj
+T*
+(engine, AI agent, ranking service, employer matcher, Job Passport generator, workforce mobility ) Tj
+T*
+(engine, dashboard, and future intelligent service must obey.) Tj
+T*
+() Tj
+T*
+(Syrka does not make guesses. Syrka constructs evidence-backed explanations. A conclusion is ) Tj
+T*
+(acceptable only when it is grounded in canonical events, mapped to ontology concepts, ) Tj
+T*
+(represented in the Human Capability Graph, scored with calibrated confidence, and accompanied by) Tj
+T*
+( provenance and uncertainty.) Tj
+T*
+() Tj
+T*
+(Reasoning is separated from AI models because AI models are implementation details. GLM, Claude,) Tj
+T*
+( GPT, Gemini, open-source models, symbolic reasoners, rules engines, graph algorithms, and ) Tj
+T*
+(future systems may all participate in reasoning. None is the source of truth. The source of ) Tj
+T*
+(truth is the chain:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Canonical Events -> Evidence -> Ontology Mapping -> Graph Assertions -> Reasoning Outputs -> Human/Policy Review -> ) Tj
+T*
+(Product Decisions) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Reasoning must survive LLM-provider changes because Syrka's strategic value is not a prompt ) Tj
+T*
+(tuned for one model. Syrka's strategic value is the epistemic system: what counts as evidence, ) Tj
+T*
+(how evidence is weighed, how uncertainty is exposed, how conflicting evidence is represented, ) Tj
+T*
+(how humans review decisions, and how every conclusion can be reproduced from events and graph ) Tj
+T*
+(state.) Tj
+T*
+() Tj
+T*
+(First principles:) Tj
+T*
+() Tj
+T*
+(1. Evidence precedes inference.) Tj
+T*
+(2. Observations are not conclusions.) Tj
+T*
+(3. Capabilities are inferred, never declared.) Tj
+T*
+(4. Confidence is earned.) Tj
+T*
+(5. Conflicting evidence is represented, not discarded.) Tj
+T*
+(6. AI must expose uncertainty.) Tj
+T*
+(7. Provenance is mandatory.) Tj
+T*
+(8. Human review can override AI, but never erase history.) Tj
+T*
+(9. Every conclusion is reproducible from canonical events.) Tj
+T*
+() Tj
+T*
+(2. Epistemology) Tj
+T*
+() Tj
+T*
+(| Concept | Canonical definition | Justification and boundary |) Tj
+T*
+(|---|---|---|) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 4717 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+(| Observation | A captured event or signal that something occurred. | Observations are raw or lightly normalized ) Tj
+T*
+(facts. A lesson view is an observation, not proof of mastery. |) Tj
+T*
+(| Signal | A measurable indicator that may be relevant to a claim. | Signals can be weak, noisy, or indirect. They ) Tj
+T*
+(require interpretation before becoming evidence. |) Tj
+T*
+(| Evidence | A provenance-bearing observation, artifact, assessment, credential, or external signal that can support ) Tj
+T*
+(or weaken a claim. | Evidence is evaluated for relevance, quality, trust, and freshness. It is not automatically ) Tj
+T*
+(conclusive. |) Tj
+T*
+(| Fact | An accepted immutable canonical event or verified graph assertion about something that occurred or was ) Tj
+T*
+(recorded. | Facts are not necessarily final truth; they are accepted records in Syrka's system. |) Tj
+T*
+(| Claim | A statement that may be true, false, uncertain, disputed, or context-dependent. | Capability assertions, ) Tj
+T*
+(passport claims, and recommendations are claims requiring support. |) Tj
+T*
+(| Hypothesis | A tentative claim proposed for evaluation. | A hypothesis may guide investigation but cannot appear as ) Tj
+T*
+(verified capability. |) Tj
+T*
+(| Inference | A reasoned conclusion derived from evidence, ontology, graph relationships, rules, models, and ) Tj
+T*
+(confidence evaluation. | Inference is not raw AI output; it is structured reasoning with provenance. |) Tj
+T*
+(| Explanation | Human- and machine-readable account of why a conclusion was reached. | Must include supporting ) Tj
+T*
+(evidence, conflicting evidence, ontology concepts, graph paths, confidence, uncertainty, and limitations. |) Tj
+T*
+(| Confidence | Calibrated degree of support for a claim under known uncertainty. | Confidence is earned from evidence ) Tj
+T*
+(and can decay, increase, or be overridden. |) Tj
+T*
+(| Uncertainty | Known and unknown limits affecting confidence. | Includes missing evidence, ambiguity, source ) Tj
+T*
+(unreliability, recency, model disagreement, bias, and context mismatch. |) Tj
+T*
+(| Belief | Syrka's current confidence-weighted stance toward a claim. | Belief is provisional and changes with new ) Tj
+T*
+(evidence. |) Tj
+T*
+(| Verification | Process of checking authenticity, issuer trust, integrity, or external validity. | Verification can ) Tj
+T*
+(raise trust but does not automatically prove broad capability. |) Tj
+T*
+(| Validation | Process of checking conformance to schema, ontology, rubric, policy, or quality standard. | Validation ) Tj
+T*
+(ensures structure and rule compliance, not necessarily truth. |) Tj
+T*
+(| Truth | Correspondence between a claim and reality. | Syrka approximates truth through evidence-backed confidence; ) Tj
+T*
+(it does not claim absolute certainty for human capability. |) Tj
+T*
+(| Contradiction | Evidence or reasoning that materially conflicts with a claim or other evidence. | Contradictions are) Tj
+T*
+( modeled explicitly and may lower confidence or trigger review. |) Tj
+T*
+(| Assumption | A premise used in reasoning that is not fully established by available evidence. | Assumptions must be ) Tj
+T*
+(declared and minimized in high-impact reasoning. |) Tj
+T*
+(| Reasoning | The governed process of transforming observations and evidence into explanations, confidence, ) Tj
+T*
+(assertions, recommendations, or decisions. | Reasoning is constitutional and model-independent. |) Tj
+T*
+(| Decision | A committed outcome that affects state, eligibility, access, ranking, disclosure, mobility, or user ) Tj
+T*
+(action. | High-impact decisions require auditability, explainability, and appeal. |) Tj
+T*
+(| Recommendation | An explainable suggestion that proposes a course of action but does not itself force an outcome. | ) Tj
+T*
+(Recommendations must be traceable to graph paths and evidence. |) Tj
+T*
+() Tj
+T*
+(3. Evidence Evaluation) Tj
+T*
+() Tj
+T*
+(3.1 Evidence evaluation dimensions) Tj
+T*
+() Tj
+T*
+(Every evidence item is evaluated across these dimensions:) Tj
+T*
+() Tj
+T*
+(| Dimension | Meaning | Constitutional rule |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Quality | Fitness of evidence for its intended inference purpose. | Low-quality evidence cannot support high-) Tj
+T*
+(confidence claims alone. |) Tj
+T*
+(| Strength | Degree to which evidence directly supports or contradicts a claim. | Direct assessed performance is ) Tj
+T*
+(stronger than passive activity. |) Tj
+T*
+(| Freshness | Whether evidence remains current for the capability context. | Time-sensitive capabilities require ) Tj
+T*
+(recent evidence. |) Tj
+T*
+(| Recency | Time elapsed since evidence was observed/verified. | Recency contributes to decay and current capability ) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 3629 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+(confidence. |) Tj
+T*
+(| Completeness | Whether evidence covers all required aspects of a capability. | Partial evidence supports partial ) Tj
+T*
+(confidence only. |) Tj
+T*
+(| Reliability | Trustworthiness and consistency of source/method. | Reliable sources weigh more than untrusted ) Tj
+T*
+(sources. |) Tj
+T*
+(| Independence | Degree to which evidence sources are non-duplicative. | Independent corroboration increases ) Tj
+T*
+(confidence more than repetition. |) Tj
+T*
+(| Conflict | Whether evidence contradicts other evidence or claims. | Conflicts must be represented and reasoned over.) Tj
+T*
+( |) Tj
+T*
+(| Decay | Reduction in evidence value over time or context change. | Decay functions are capability-specific. |) Tj
+T*
+(| Aggregation | Combining multiple evidence items into claim support. | Aggregation must be reproducible and ) Tj
+T*
+(explainable. |) Tj
+T*
+(| Weighting | Assigned contribution of evidence to confidence. | Weights must be governed, versioned, and auditable. |) Tj
+T*
+(| Redundancy | Duplicate or near-duplicate evidence. | Redundant evidence should not inflate confidence. |) Tj
+T*
+(| Provenance | Source, lineage, transformation, reviewer/model, and event IDs. | Evidence without provenance cannot ) Tj
+T*
+(support high-impact claims. |) Tj
+T*
+() Tj
+T*
+(3.2 Evidence source classes) Tj
+T*
+() Tj
+T*
+(| Evidence class | Examples | Default stance | Review requirement |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| Human-reviewed evidence | instructor rubric, verified portfolio review | strong if assessor trusted | required for ) Tj
+T*
+(high-impact claims when available |) Tj
+T*
+(| AI-generated evidence | rubric extraction, code analysis, semantic mapping | provisional | human/policy review for ) Tj
+T*
+(high-impact uses |) Tj
+T*
+(| External evidence | GitHub, LinkedIn, ORCID, OpenAlex, employer systems | variable | consent and source verification) Tj
+T*
+( required |) Tj
+T*
+(| Employer evidence | hiring feedback, work performance, employer interest | strong for work context but may be biased) Tj
+T*
+( | bias and conflict checks required |) Tj
+T*
+(| Research evidence | publication, dataset, citation, lab project | strong for research capability if authorship clear) Tj
+T*
+( | authorship/contribution review required |) Tj
+T*
+(| Portfolio evidence | curated artifacts, reflections, project demos | medium to strong | authenticity and artifact ) Tj
+T*
+(review required |) Tj
+T*
+(| Assessment evidence | quizzes, exams, assignments, rubrics | medium to strong | assessment validity required |) Tj
+T*
+(| Behavioral evidence | attendance, collaboration, punctuality, discussion | weak to medium | high bias risk; never ) Tj
+T*
+(sole source for high-impact decisions |) Tj
+T*
+() Tj
+T*
+(3.3 Evidence scoring model) Tj
+T*
+() Tj
+T*
+(Evidence support is computed as a reproducible, versioned function:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(support\(evidence, claim\) = relevance  quality  reliability  independence  authenticity  freshness  context_match) Tj
+T*
+(  difficulty - conflict_penalty) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Rules:) Tj
+T*
+() Tj
+T*
+(1. Evidence scores are not universal; they are claim-specific.) Tj
+T*
+(2. The same evidence may strongly support one claim and weakly support another.) Tj
+T*
+(3. Evidence used in high-impact claims must have provenance, source trust, and retention policy.) Tj
+T*
+(4. Evidence must link to canonical events and graph nodes.) Tj
+T*
+(5. Revoked or invalid evidence cannot positively support current claims.) Tj
+T*
+(6. Expired evidence can support historical claims but only weakly supports current claims unless) Tj
+T*
+( refreshed.) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 2541 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+() Tj
+T*
+(4. Reasoning Pipeline) Tj
+T*
+() Tj
+T*
+(4.1 Lifecycle overview) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Observation) Tj
+T*
+(  v) Tj
+T*
+(Evidence) Tj
+T*
+(  v) Tj
+T*
+(Evidence Validation) Tj
+T*
+(  v) Tj
+T*
+(Ontology Mapping) Tj
+T*
+(  v) Tj
+T*
+(Graph Update) Tj
+T*
+(  v) Tj
+T*
+(Capability Hypothesis) Tj
+T*
+(  v) Tj
+T*
+(Confidence Evaluation) Tj
+T*
+(  v) Tj
+T*
+(Conflict Resolution) Tj
+T*
+(  v) Tj
+T*
+(Human Review \(if required\)) Tj
+T*
+(  v) Tj
+T*
+(Capability Assertion) Tj
+T*
+(  v) Tj
+T*
+(Recommendation) Tj
+T*
+(  v) Tj
+T*
+(Job Passport Update) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(4.2 Stage definitions) Tj
+T*
+() Tj
+T*
+(| Stage | Purpose | Inputs | Outputs | Constitutional requirements |) Tj
+T*
+(|---|---|---|---|---|) Tj
+T*
+(| Observation | Capture something that happened. | canonical event, source signal | observation node/event | Must not ) Tj
+T*
+(be treated as conclusion. |) Tj
+T*
+(| Evidence | Identify observation/artifact as relevant to claim. | observation, artifact, credential | evidence item |) Tj
+T*
+( Must include provenance and relevance. |) Tj
+T*
+(| Evidence Validation | Check structure, authenticity, consent, source, and quality. | evidence item | ) Tj
+T*
+(validated/rejected evidence | Invalid evidence cannot support claims. |) Tj
+T*
+(| Ontology Mapping | Map evidence to canonical concepts. | validated evidence, ontology | concept mappings | Must use ) Tj
+T*
+(ontology version and mapping confidence. |) Tj
+T*
+(| Graph Update | Instantiate evidence and relationships in HCG. | events/evidence/mappings | graph assertions | Must ) Tj
+T*
+(be reproducible from canonical events. |) Tj
+T*
+(| Capability Hypothesis | Propose candidate capability claim. | evidence, graph paths, ontology | hypothesis | Must ) Tj
+T*
+(remain provisional until evaluated. |) Tj
+T*
+(| Confidence Evaluation | Score support and uncertainty. | hypothesis, evidence weights, graph state | confidence ) Tj
+T*
+(score | Must be calibrated and explainable. |) Tj
+T*
+(| Conflict Resolution | Identify and reason over contradictions. | claim/evidence/conflicts | adjusted confidence or ) Tj
+T*
+(review | Conflicts must not be hidden. |) Tj
+T*
+(| Human Review | Human adjudication when risk/uncertainty requires. | evidence, explanation, conflicts | review ) Tj
+T*
+(event/outcome | Review changes history through new events. |) Tj
+T*
+(| Capability Assertion | Publish accepted capability observation/update. | hypothesis, confidence, review | ) Tj
+T*
+(CapabilityObserved / CapabilityUpdated | Must cite evidence and provenance. |) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 2402 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+(| Recommendation | Suggest next action/pathway/opportunity. | graph, intent, market, capabilities | ) Tj
+T*
+(RecommendationGenerated | Must explain path and uncertainty. |) Tj
+T*
+(| Job Passport Update | Include/revise portable claims. | verified capability/credential events | PassportUpdated | ) Tj
+T*
+(Must include evidence trail and disclosure policy. |) Tj
+T*
+() Tj
+T*
+(4.3 Reproducibility rule) Tj
+T*
+() Tj
+T*
+(A reasoning output is valid only if Syrka can reproduce or audit it from:) Tj
+T*
+() Tj
+T*
+(- canonical event IDs) Tj
+T*
+(- evidence references) Tj
+T*
+(- ontology version) Tj
+T*
+(- graph snapshot or replay range) Tj
+T*
+(- confidence model version) Tj
+T*
+(- reasoning rule/model version) Tj
+T*
+(- prompt/template version if AI-assisted) Tj
+T*
+(- human review event if applicable) Tj
+T*
+() Tj
+T*
+(5. Confidence Constitution) Tj
+T*
+() Tj
+T*
+(5.1 Confidence generation) Tj
+T*
+() Tj
+T*
+(Confidence is generated by evaluating evidence support, contradiction, uncertainty, source ) Tj
+T*
+(trust, context fit, and model/rule reliability. Confidence is never copied from a grade, badge, ) Tj
+T*
+(employer statement, or AI model output without calibration.) Tj
+T*
+() Tj
+T*
+(5.2 Confidence calibration) Tj
+T*
+() Tj
+T*
+(Calibration requires comparing predicted confidence against reviewed outcomes over time. ) Tj
+T*
+(Confidence models must be evaluated by cohort, institution, country, language, accessibility ) Tj
+T*
+(context, and evidence type to detect systematic error.) Tj
+T*
+() Tj
+T*
+(5.3 Confidence decay) Tj
+T*
+() Tj
+T*
+(Confidence decays when:) Tj
+T*
+() Tj
+T*
+(- evidence becomes stale) Tj
+T*
+(- capability context changes) Tj
+T*
+(- technology changes) Tj
+T*
+(- contradiction appears) Tj
+T*
+(- credential expires) Tj
+T*
+(- source trust decreases) Tj
+T*
+(- ontology mapping is superseded) Tj
+T*
+() Tj
+T*
+(Decay is capability-specific. For example, compliance certifications may expire sharply, while ) Tj
+T*
+(foundational mathematics may decay slowly.) Tj
+T*
+() Tj
+T*
+(5.4 Confidence inheritance) Tj
+T*
+() Tj
+T*
+(Confidence inheritance is constrained:) Tj
+T*
+() Tj
+T*
+(| Source path | Inheritance rule |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Skill -> Capability | Skill evidence contributes only to capability aspects requiring that skill. |) Tj
+T*
+(| Credential -> Capability | Credential supports mapped capabilities only if credential criteria are known. |) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 2363 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+(| Course completion -> Capability | Weak support unless linked to assessed evidence. |) Tj
+T*
+(| Project -> Occupation | Supports occupation fit through required capability coverage. |) Tj
+T*
+(| Similar capability -> adjacent capability | Transfer confidence decays by semantic distance and context mismatch. |) Tj
+T*
+() Tj
+T*
+(5.5 Confidence aggregation) Tj
+T*
+() Tj
+T*
+(Aggregation must account for:) Tj
+T*
+() Tj
+T*
+(- independent evidence count) Tj
+T*
+(- diversity of evidence contexts) Tj
+T*
+(- strongest evidence item) Tj
+T*
+(- weakest required component) Tj
+T*
+(- recency distribution) Tj
+T*
+(- contradictions) Tj
+T*
+(- uncertainty) Tj
+T*
+(- assessor/source trust) Tj
+T*
+(- rubric validity) Tj
+T*
+(- model disagreement) Tj
+T*
+() Tj
+T*
+(Aggregation cannot be a naive average unless explicitly justified and documented.) Tj
+T*
+() Tj
+T*
+(5.6 Confidence conflicts) Tj
+T*
+() Tj
+T*
+(When high-confidence evidence conflicts with other high-confidence evidence, Syrka must lower ) Tj
+T*
+(certainty, expose contradiction, and trigger review if the claim is high-impact.) Tj
+T*
+() Tj
+T*
+(5.7 Thresholds) Tj
+T*
+() Tj
+T*
+(| Threshold band | Range | Meaning | Permitted use |) Tj
+T*
+(|---|---:|---|---|) Tj
+T*
+(| Unsupported | 0.00-0.39 | Not enough evidence. | no capability claim; may guide data collection |) Tj
+T*
+(| Emerging | 0.40-0.59 | Early support. | learning recommendations only |) Tj
+T*
+(| Supported | 0.60-0.74 | Meaningful support. | dashboards with caveats |) Tj
+T*
+(| Strong | 0.75-0.89 | Strong evidence. | passport candidate claim after policy checks |) Tj
+T*
+(| Verified | 0.90-1.00 | Very strong, current, verified support. | high-impact claims where allowed |) Tj
+T*
+() Tj
+T*
+(5.8 Human overrides and model disagreement) Tj
+T*
+() Tj
+T*
+(Human overrides change confidence by publishing review events. They never erase AI outputs. ) Tj
+T*
+(Model disagreement is represented as uncertainty and may trigger ensemble adjudication or human ) Tj
+T*
+(review.) Tj
+T*
+() Tj
+T*
+(5.9 Explainability requirements) Tj
+T*
+() Tj
+T*
+(Every confidence score must explain:) Tj
+T*
+() Tj
+T*
+(- evidence used) Tj
+T*
+(- evidence excluded and why) Tj
+T*
+(- weights applied) Tj
+T*
+(- contradiction handling) Tj
+T*
+(- model/rule version) Tj
+T*
+(- calibration status) Tj
+T*
+(- uncertainty drivers) Tj
+T*
+(- human review status) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 2987 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+(6. Conflict Resolution) Tj
+T*
+() Tj
+T*
+(6.1 Constitutional conflict rules) Tj
+T*
+() Tj
+T*
+(1. Conflicting evidence must be represented, not discarded.) Tj
+T*
+(2. Source trust affects weighting but cannot erase contradictions.) Tj
+T*
+(3. Recent strong evidence may outweigh stale evidence, but stale evidence remains in history.) Tj
+T*
+(4. Context matters: failure in exams may contradict academic mastery but not necessarily ) Tj
+T*
+(practical project capability.) Tj
+T*
+(5. High-impact contradictions require human review.) Tj
+T*
+(6. Jurisdiction-specific conflicts are resolved through overlays, not global semantic changes.) Tj
+T*
+(7. Conflicting AI models do not vote by popularity; they trigger uncertainty analysis.) Tj
+T*
+() Tj
+T*
+(6.2 Scenario rules) Tj
+T*
+() Tj
+T*
+(| Scenario | Reasoning rule |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Excellent grades but poor portfolio | Separate assessment performance from artifact/project capability. Lower ) Tj
+T*
+(confidence in applied capability until portfolio evidence improves. |) Tj
+T*
+(| Excellent GitHub but failed exams | Recognize practical engineering evidence while representing academic knowledge ) Tj
+T*
+(gaps. Do not collapse both into one score. |) Tj
+T*
+(| Employer praises but assessments disagree | Weight employer evidence for workplace context; inspect bias, ) Tj
+T*
+(specificity, and role relevance. Trigger review if passport claim affected. |) Tj
+T*
+(| Outdated certifications vs recent projects | Expired certifications lose current verification strength; recent ) Tj
+T*
+(strong project evidence may support current capability separately. |) Tj
+T*
+(| Conflicting AI models | Compare evidence references, ontology mappings, calibration, and uncertainty. Do not average) Tj
+T*
+( blindly. |) Tj
+T*
+(| Multiple institutions | Preserve institution provenance and assessment validity differences. Normalize through ) Tj
+T*
+(ontology, not grade equivalence alone. |) Tj
+T*
+(| Different jurisdictions | Apply jurisdiction overlays for regulated capabilities and credentials. Global capability ) Tj
+T*
+(may remain while local eligibility differs. |) Tj
+T*
+() Tj
+T*
+(6.3 Conflict outcomes) Tj
+T*
+() Tj
+T*
+(Possible outcomes:) Tj
+T*
+() Tj
+T*
+(- confidence reduced) Tj
+T*
+(- claim narrowed to context) Tj
+T*
+(- claim split into separate capabilities) Tj
+T*
+(- additional evidence requested) Tj
+T*
+(- human review required) Tj
+T*
+(- evidence revoked or corrected) Tj
+T*
+(- ontology mapping revised) Tj
+T*
+(- recommendation withheld) Tj
+T*
+(- passport claim excluded or downgraded) Tj
+T*
+() Tj
+T*
+(7. Explainability) Tj
+T*
+() Tj
+T*
+(Every inference must answer:) Tj
+T*
+() Tj
+T*
+(| Question | Required answer |) Tj
+T*
+(|---|---|) Tj
+T*
+(| What evidence supports this? | List evidence IDs, source events, artifacts, assessments, credentials, and reviews. |) Tj
+T*
+(| Why was conflicting evidence discounted? | Explain recency, context mismatch, source trust, revocation, or lower ) Tj
+T*
+(relevance. |) Tj
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 3313 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+(| Which ontology concepts were used? | Include concept IDs and ontology version. |) Tj
+T*
+(| Which graph relationships were traversed? | Provide graph path or path summary. |) Tj
+T*
+(| Which canonical events contributed? | Include event IDs and event types. |) Tj
+T*
+(| What confidence exists? | Include score, band, threshold, calibration status. |) Tj
+T*
+(| What uncertainty remains? | Missing evidence, model disagreement, bias risk, context limitations, stale data. |) Tj
+T*
+() Tj
+T*
+(Minimum explanation object:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+({) Tj
+T*
+(  "claim_id": "cap_obs_123",) Tj
+T*
+(  "claim_type": "CapabilityObserved",) Tj
+T*
+(  "conclusion": "Person demonstrates SQL data modeling capability in academic project context.",) Tj
+T*
+(  "confidence": { "score": 0.84, "band": "Strong", "model": "confidence_model@1.0.0" },) Tj
+T*
+(  "ontology": { "version": "1.0.0", "concept_ids": ["capability:sql_data_modeling"] },) Tj
+T*
+(  "supporting_evidence": ["evidence_assignment_789", "artifact_schema_project"],) Tj
+T*
+(  "conflicting_evidence": [],) Tj
+T*
+(  "graph_paths": ["Person->CapabilityObservation->Evidence->CanonicalEvent"],) Tj
+T*
+(  "source_events": ["AssignmentSubmitted:abc", "AssignmentGraded:def"],) Tj
+T*
+(  "uncertainty": ["academic context, not production setting"],) Tj
+T*
+(  "human_review": { "required": false, "status": "not_required" }) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(8. Human Review) Tj
+T*
+() Tj
+T*
+(8.1 Review types) Tj
+T*
+() Tj
+T*
+(| Review type | Purpose | Reviewer | Output event |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| Faculty review | Validate educational evidence, rubrics, assessment interpretation. | instructor/faculty | ) Tj
+T*
+(HumanReviewCompleted or domain-specific review event |) Tj
+T*
+(| Employer verification | Validate workplace evidence, role performance, hiring feedback. | employer-authorized ) Tj
+T*
+(reviewer | EmployerEvidenceVerified |) Tj
+T*
+(| Peer review | Validate collaboration, research, portfolio, code review signals. | peers/reviewers | ) Tj
+T*
+(PeerReviewCompleted |) Tj
+T*
+(| Student challenge | Allow subject to dispute evidence, inference, or disclosure. | student + review team | ) Tj
+T*
+(CapabilityDisputed, EvidenceDisputed |) Tj
+T*
+(| Appeal process | Formal review of high-impact adverse decision. | independent reviewer/committee | AppealResolved |) Tj
+T*
+(| Correction process | Correct erroneous evidence, mapping, or score. | domain owner/reviewer | EvidenceCorrected, ) Tj
+T*
+(InferenceCorrected |) Tj
+T*
+(| Evidence revocation | Invalidate evidence or credential. | issuer/source/domain owner | EvidenceRevoked, ) Tj
+T*
+(CredentialRevoked |) Tj
+T*
+(| Capability revocation | Invalidate or supersede capability assertion. | capability authority/review team | ) Tj
+T*
+(CapabilityRevoked or CapabilityUpdated |) Tj
+T*
+() Tj
+T*
+(8.2 Human review principles) Tj
+T*
+() Tj
+T*
+(1. Reviewers must see supporting and conflicting evidence.) Tj
+T*
+(2. Review decisions must include rationale.) Tj
+T*
+(3. Reviews create new canonical events.) Tj
+T*
+(4. Reviews can override AI confidence but cannot delete history.) Tj
+T*
+(5. High-impact reviews require reviewer identity, role, timestamp, and policy basis.) Tj
+T*
+(6. Student-visible decisions must provide challenge/appeal path where appropriate.) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 2155 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+(8.3 Appeal and correction flow) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Student challenge) Tj
+T*
+(  -> evidence/inference freeze for high-impact use if policy requires) Tj
+T*
+(  -> reviewer assignment) Tj
+T*
+(  -> evidence packet review) Tj
+T*
+(  -> decision: uphold / correct / revoke / request more evidence) Tj
+T*
+(  -> canonical review event) Tj
+T*
+(  -> graph update) Tj
+T*
+(  -> dashboard/passport/recommendation projection update) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(9. AI Independence) Tj
+T*
+() Tj
+T*
+(9.1 Provider independence) Tj
+T*
+() Tj
+T*
+(The reasoning layer is independent of GLM, Claude, GPT, Gemini, open-source models, symbolic ) Tj
+T*
+(engines, and future models. Providers may generate candidate interpretations, summaries, ) Tj
+T*
+(embeddings, classifications, or reasoning traces, but Syrka accepts only outputs that pass ) Tj
+T*
+(constitutional validation.) Tj
+T*
+() Tj
+T*
+(9.2 Model adapter rule) Tj
+T*
+() Tj
+T*
+(Each AI provider is an adapter behind a reasoning interface:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Evidence Bundle + Ontology Context + Graph Context + Reasoning Task) Tj
+T*
+(  -> Model Adapter) Tj
+T*
+(  -> Structured Candidate Output) Tj
+T*
+(  -> Validator) Tj
+T*
+(  -> Confidence/Conflict Engine) Tj
+T*
+(  -> Canonical Event) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(9.3 Replaceability requirements) Tj
+T*
+() Tj
+T*
+(- Prompts are versioned but not constitutional truth.) Tj
+T*
+(- Model outputs must be structured and schema-valid.) Tj
+T*
+(- Outputs must cite evidence IDs and ontology concept IDs.) Tj
+T*
+(- Model-specific confidence is not accepted as Syrka confidence without calibration.) Tj
+T*
+(- Model replacement requires regression evaluation on reasoning test sets.) Tj
+T*
+(- No provider-specific opaque field may be required for downstream graph/passport/recommendation) Tj
+T*
+( logic.) Tj
+T*
+() Tj
+T*
+(9.4 Reasoning test sets) Tj
+T*
+() Tj
+T*
+(Syrka maintains model-independent reasoning tests:) Tj
+T*
+() Tj
+T*
+(- evidence sufficiency cases) Tj
+T*
+(- evidence conflict cases) Tj
+T*
+(- stale evidence cases) Tj
+T*
+(- jurisdiction overlay cases) Tj
+T*
+(- bias/sensitive attribute cases) Tj
+T*
+(- adversarial portfolio cases) Tj
+ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 1964 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+(- credential revocation cases) Tj
+T*
+(- recommendation explanation cases) Tj
+T*
+() Tj
+T*
+(A new model must pass these tests before production use.) Tj
+T*
+() Tj
+T*
+(10. Mermaid Diagrams) Tj
+T*
+() Tj
+T*
+(10.1 Reasoning pipeline) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    Observation --> Evidence) Tj
+T*
+(    Evidence --> Validation[Evidence Validation]) Tj
+T*
+(    Validation --> Mapping[Ontology Mapping]) Tj
+T*
+(    Mapping --> Graph[Graph Update]) Tj
+T*
+(    Graph --> Hypothesis[Capability Hypothesis]) Tj
+T*
+(    Hypothesis --> Confidence[Confidence Evaluation]) Tj
+T*
+(    Confidence --> Conflict[Conflict Resolution]) Tj
+T*
+(    Conflict --> Review{Human review required?}) Tj
+T*
+(    Review -- yes --> HumanReview[Human Review]) Tj
+T*
+(    Review -- no --> Assertion[Capability Assertion]) Tj
+T*
+(    HumanReview --> Assertion) Tj
+T*
+(    Assertion --> Recommendation) Tj
+T*
+(    Recommendation --> Passport[Job Passport Update]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(10.2 Evidence lifecycle) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(stateDiagram-v2) Tj
+T*
+(    [*] --> Observed) Tj
+T*
+(    Observed --> CandidateEvidence) Tj
+T*
+(    CandidateEvidence --> Validated) Tj
+T*
+(    CandidateEvidence --> Rejected) Tj
+T*
+(    Validated --> Weighted) Tj
+T*
+(    Weighted --> UsedInInference) Tj
+T*
+(    UsedInInference --> Supporting) Tj
+T*
+(    UsedInInference --> Contradicting) Tj
+T*
+(    Supporting --> Expired) Tj
+T*
+(    Supporting --> Revoked) Tj
+T*
+(    Contradicting --> Resolved) Tj
+T*
+(    Revoked --> [*]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(10.3 Confidence lifecycle) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    EvidenceWeights --> InitialConfidence) Tj
+T*
+(    InitialConfidence --> Calibration) Tj
+T*
+(    Calibration --> CurrentConfidence) Tj
+T*
+(    CurrentConfidence --> Decay) Tj
+T*
+(    CurrentConfidence --> ConflictAdjustment) Tj
+T*
+(    ConflictAdjustment --> ReviewAdjustment) Tj
+T*
+(    ReviewAdjustment --> UpdatedConfidence) Tj
+ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 2336 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+(    Decay --> UpdatedConfidence) Tj
+T*
+(    UpdatedConfidence --> SupersededConfidence) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(10.4 Conflict resolution flow) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TB) Tj
+T*
+(    NewEvidence --> Compare[Compare with existing graph assertions]) Tj
+T*
+(    Compare --> ConflictFound{Conflict found?}) Tj
+T*
+(    ConflictFound -- no --> UpdateConfidence) Tj
+T*
+(    ConflictFound -- yes --> Classify[Classify conflict type]) Tj
+T*
+(    Classify --> Context[Check context, recency, trust, jurisdiction]) Tj
+T*
+(    Context --> HighImpact{High impact?}) Tj
+T*
+(    HighImpact -- yes --> HumanReview) Tj
+T*
+(    HighImpact -- no --> Adjust[Adjust confidence and explanation]) Tj
+T*
+(    HumanReview --> ReviewEvent[Publish review event]) Tj
+T*
+(    ReviewEvent --> GraphUpdate) Tj
+T*
+(    Adjust --> GraphUpdate) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(10.5 Capability derivation flow) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(sequenceDiagram) Tj
+T*
+(    participant Event as Canonical Event) Tj
+T*
+(    participant Evidence as Evidence Service) Tj
+T*
+(    participant Ont as Ontology) Tj
+T*
+(    participant Graph as HCG) Tj
+T*
+(    participant Reason as Reasoning Engine) Tj
+T*
+(    participant Bus as Event Bus) Tj
+T*
+(    Event->>Evidence: observation/artifact event) Tj
+T*
+(    Evidence->>Evidence: validate evidence) Tj
+T*
+(    Evidence->>Ont: map to concepts) Tj
+T*
+(    Evidence->>Graph: update evidence nodes/edges via event consumer) Tj
+T*
+(    Graph->>Reason: retrieve evidence neighborhood) Tj
+T*
+(    Reason->>Reason: evaluate confidence/conflicts) Tj
+T*
+(    Reason->>Bus: CapabilityObserved / ReviewRequired) Tj
+T*
+(    Bus->>Graph: apply accepted assertion) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(10.6 Human review flow) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    ReviewRequired --> Packet[Assemble evidence packet]) Tj
+T*
+(    Packet --> Reviewer[Authorized reviewer]) Tj
+T*
+(    Reviewer --> Decision{Decision}) Tj
+T*
+(    Decision -->|approve| ApproveEvent[ReviewApproved]) Tj
+T*
+(    Decision -->|downgrade| DowngradeEvent[ReviewDowngraded]) Tj
+T*
+(    Decision -->|reject| RejectEvent[ReviewRejected]) Tj
+T*
+(    Decision -->|request more evidence| MoreEvidence[EvidenceRequested]) Tj
+T*
+(    ApproveEvent --> GraphUpdate) Tj
+T*
+(    DowngradeEvent --> GraphUpdate) Tj
+T*
+(    RejectEvent --> GraphUpdate) Tj
+ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 783 >>
+stream
+BT
+/F1 8.5 Tf
+12.3 TL
+42 752 Td
+(    MoreEvidence --> Recommendation[Recommend evidence collection]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(11. Final Decision) Tj
+T*
+() Tj
+T*
+(REASON-001 establishes Syrka's epistemological constitution. Every capability, recommendation, ) Tj
+T*
+(passport claim, employer match, ranking, AI inference, and mobility decision must be evidence-) Tj
+T*
+(backed, reproducible, explainable, confidence-scored, provenance-rich, and open to review where ) Tj
+T*
+(appropriate.) Tj
+T*
+() Tj
+T*
+(AI models are interchangeable implementation details. Syrka's reasoning truth comes from ) Tj
+T*
+(canonical events, evaluated evidence, ontology definitions, graph relationships, calibrated ) Tj
+T*
+(confidence, conflict representation, and human-governed review processes.) Tj
+ET
+endstream
+endobj
+xref
+0 28
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000197 00000 n 
+0000000267 00000 n 
+0000000393 00000 n 
+0000003406 00000 n 
+0000003532 00000 n 
+0000008301 00000 n 
+0000008427 00000 n 
+0000012108 00000 n 
+0000012236 00000 n 
+0000014830 00000 n 
+0000014958 00000 n 
+0000017413 00000 n 
+0000017541 00000 n 
+0000019957 00000 n 
+0000020085 00000 n 
+0000023125 00000 n 
+0000023253 00000 n 
+0000026619 00000 n 
+0000026747 00000 n 
+0000028955 00000 n 
+0000029083 00000 n 
+0000031100 00000 n 
+0000031228 00000 n 
+0000033617 00000 n 
+0000033745 00000 n 
+trailer
+<< /Size 28 /Root 1 0 R /Info << /Title (REASON-001 - Syrka Evidence and Reasoning Constitution) /Author (Syrka Architecture) >> >>
+startxref
+34580
+%%EOF

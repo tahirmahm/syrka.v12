@@ -1,0 +1,10 @@
+{
+  "name": "Syrka",
+  "short_name": "Syrka",
+  "description": "National Human Capital Intelligence",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111417",
+  "theme_color": "#111417",
+  "icons": [{ "src": "/syrka.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }]
+}

@@ -1,0 +1,28 @@
+MIT COURSE: 6.036 — Introduction to Machine Learning
+SECTION: Readings | FETCHED: April 28, 2026
+
+=== TEXTBOOKS ===
+Course notes on site (no required textbook).
+Supplementary: Deep Learning — Goodfellow, Bengio, Courville (MIT Press, 2016). ISBN: 9780262035613.
+
+=== READING LIST BY WEEK ===
+Wk 1: Introduction — supervised vs unsupervised, hypothesis class, bias-variance
+Wk 2: Linear classifiers — perceptron, convergence theorem, geometric interpretation
+Wk 3: Logistic regression — cross-entropy loss, gradient descent, probabilistic view
+Wk 4: Regression — OLS, ridge, lasso, elastic net, regularisation theory
+Wk 5: Neural networks I — feedforward, activation functions (ReLU, sigmoid, tanh)
+Wk 6: Neural networks II — backpropagation derivation via chain rule
+Wk 7: CNNs — convolutional layers, pooling, batch norm, dropout, architectures
+Wk 8: Deep learning — transfer learning, data augmentation, training tricks
+Wk 9: RNNs — sequence modelling, LSTM gates, GRU, language modelling
+Wk 10: MDPs — states, actions, rewards, discount factor, policy
+Wk 11: Reinforcement learning — Q-learning, Bellman equation, value iteration
+Wk 12: Decision trees — CART, information gain, Gini impurity, bagging
+Wk 13: Clustering — k-means, Gaussian mixture models, EM algorithm
+Wk 14: Unsupervised — autoencoders, PCA, t-SNE, dimensionality reduction
+
+=== KEY CONCEPTS ===
+Bias-variance tradeoff, perceptron convergence theorem, cross-entropy loss,
+gradient descent variants (SGD, mini-batch), L1/L2 regularisation, backpropagation
+chain rule derivation, convolutional weight sharing, LSTM gate mechanism,
+Bellman optimality, CART splitting criteria, EM algorithm for GMMs

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase'
 import { maltaSeedData } from '@/lib/seed-data/malta'
 import { saudiSeedData } from '@/lib/seed-data/saudi'
+import { ukSeedData } from '@/lib/seed-data/uk'
 
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('secret')
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
     await supabase.from('national_visions').delete().neq('id', '00000000-0000-0000-0000-000000000000')
     results.push('Cleared existing data')
 
-    for (const seedData of [maltaSeedData, saudiSeedData]) {
+    for (const seedData of [maltaSeedData, saudiSeedData, ukSeedData]) {
       // 1. Insert vision
       const { data: vision, error: visionError } = await supabase
         .from('national_visions')
@@ -147,7 +148,21 @@ export async function GET(req: NextRequest) {
         ],
       }
 
-      const templates = vision.slug === 'saudi' ? saudiProgrammeTemplates : programmeTemplates
+      const ukProgrammeTemplates: Record<string, { name: string; level: string; duration: number; sector: string }[]> = {
+        'university': [
+          { name: 'BSc Computer Science with AI', level: 'bachelor', duration: 3, sector: 'AI and Machine Learning' },
+          { name: 'MSc Machine Learning', level: 'master', duration: 1, sector: 'AI and Machine Learning' },
+          { name: 'BSc Cybersecurity', level: 'bachelor', duration: 3, sector: 'Cybersecurity' },
+          { name: 'MSc Data Science', level: 'master', duration: 1, sector: 'Data Science and Analytics' },
+          { name: 'BSc Health Informatics', level: 'bachelor', duration: 3, sector: 'Health and Public Sector AI' },
+        ],
+        'vocational': [
+          { name: 'AI Foundations Certificate', level: 'certificate', duration: 1, sector: 'Digital Foundations' },
+          { name: 'Diploma in Cloud Engineering', level: 'diploma', duration: 2, sector: 'Cloud and Infrastructure' },
+        ],
+      }
+
+      const templates = vision.slug === 'saudi' ? saudiProgrammeTemplates : vision.slug === 'uk' ? ukProgrammeTemplates : programmeTemplates
 
       let allProgrammes: { id: string; institution_id: string; name: string }[] = []
 

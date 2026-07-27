@@ -6,23 +6,34 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
     "@langchain/core": "^1.1.39",
     "@langchain/langgraph": "^1.2.7",
     "@observablehq/plot": "^0.6.17",
+    "@phosphor-icons/react": "^2.1.10",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.100.0",
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.11",
+    "@xyflow/react": "^12.11.2",
     "echarts": "^6.0.0",
     "echarts-for-react": "^3.0.6",
+    "framer-motion": "^12.38.0",
+    "geist": "^1.7.2",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.7.0",
+    "mammoth": "^1.12.0",
     "next": "14.2.35",
     "openai": "^6.33.0",
     "pdf-parse": "^2.4.5",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "thinking-orbs": "^0.1.1"
   },
   "devDependencies": {
     "@types/node": "^20",

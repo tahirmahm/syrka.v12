@@ -175,7 +175,7 @@ export default function PolicyInterventionSimulator({
   const maxStartYear = sector.target_year - 1
 
   return (
-    <aside className="rounded-xl bg-white p-6 shadow-sm border border-slate-100">
+    <aside className="rounded-xl bg-[#0D1117] p-6 shadow-sm border border-slate-100">
       {/* Header */}
       <h3 className="font-display text-lg text-slate-900 mb-1">
         Policy Intervention Simulator
@@ -424,7 +424,7 @@ export default function PolicyInterventionSimulator({
         <div className="mt-6 space-y-4">
           <div
             className="rounded-xl px-5 py-5 space-y-4"
-            style={{ backgroundColor: '#0A1628' }}
+            style={{ backgroundColor: '#161B22' }}
           >
             {/* Gap Closure + Verdict */}
             <div className="flex items-center justify-between">
@@ -479,7 +479,7 @@ export default function PolicyInterventionSimulator({
             className={`w-full rounded-lg px-4 py-2.5 text-sm font-medium border transition-colors ${
               saved
                 ? 'border-emerald-200 bg-emerald-50 text-emerald-700 cursor-default'
-                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                : 'border-slate-200 bg-[#0D1117] text-slate-700 hover:bg-slate-50'
             }`}
           >
             {saving

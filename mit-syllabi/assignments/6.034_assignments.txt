@@ -1,0 +1,22 @@
+MIT COURSE: 6.034 — Artificial Intelligence
+SECTION: Assignments | FETCHED: April 28, 2026
+
+=== ASSIGNMENT LIST ===
+PS1: Search (DFS, BFS, A*, hill climbing)
+PS2: Games and constraint satisfaction
+PS3: Decision trees and neural networks
+PS4: SVMs and boosting
+PS5: Bayesian networks
+4 in-class quizzes + 5-part final exam
+
+=== SKILLS DEMONSTRATED ===
+- Implement A* search with custom heuristic functions in Python
+- Prove heuristic admissibility and consistency
+- Implement minimax with alpha-beta pruning for game trees
+- Implement backtracking CSP with arc consistency (AC-3)
+- Implement ID3 decision tree with information gain splitting
+- Implement neural network backpropagation from scratch
+- Implement AdaBoost with correct weight update rule
+- Compute probabilities from Bayesian network via variable elimination
+- Implement belief propagation on singly-connected Bayesian networks
+- Evaluate classifiers: accuracy, precision, recall, confusion matrix

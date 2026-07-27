@@ -1,0 +1,40 @@
+MIT 6.0002 — Introduction to Computational Thinking and Data Science
+Source: MIT OpenCourseWare
+URL: https://ocw.mit.edu/courses/6-0002-introduction-to-computational-thinking-and-data-science-fall-2016/
+
+=== COURSE DESCRIPTION ===
+6.0002 is the continuation of 6.0001 Introduction to Computer Science and Programming in Python and is intended for students with little or no programming experience. It aims to provide students with an understanding of the role computation can play in solving problems and to help students feel justifiably confident of their ability to write small programs that allow them to accomplish useful goals.
+
+The course focuses on computational thinking, data science, and machine learning fundamentals. Students learn optimization techniques, stochastic thinking, Monte Carlo simulation, and data analysis methods using Python.
+
+=== LECTURE TOPICS ===
+1. Introduction and Optimization Problems
+2. Optimization Problems (continued)
+3. Graph-theoretic Models
+4. Stochastic Thinking
+5. Random Walks
+6. Monte Carlo Simulation
+7. Confidence Intervals
+8. Sampling and Standard Error
+9. Understanding Experimental Data
+10. Introduction to Machine Learning
+11. Introduction to Machine Learning (continued)
+12. Clustering
+13. Classification
+14. Statistical Fallacies
+15. Final Review
+
+=== SKILLS TAUGHT ===
+- Computational thinking and problem formulation
+- Optimization problem modelling (knapsack, graph)
+- Greedy algorithm implementation
+- Dynamic programming for optimization
+- Graph theory and network modelling
+- Stochastic process simulation
+- Monte Carlo method implementation
+- Confidence interval calculation
+- Statistical sampling techniques
+- Curve fitting and regression
+- Introduction to supervised learning
+- K-means clustering implementation
+- Classification with k-nearest neighbours

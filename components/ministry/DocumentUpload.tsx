@@ -122,7 +122,7 @@ export default function DocumentUpload({ country, accentColor }: DocumentUploadP
           {documents.map((doc) => (
             <li
               key={doc.id}
-              className="flex items-center gap-2 px-2 py-1.5 rounded-md text-white/40 hover:bg-white/[0.03] group"
+              className="flex items-center gap-2 px-2 py-1.5 rounded-md text-white/40 hover:bg-[#0D1117]/[0.03] group"
             >
               <FileText size={13} style={{ color: accentColor }} />
               <span className="text-[11px] truncate flex-1">{doc.filename}</span>

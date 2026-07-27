@@ -1,0 +1,56 @@
+MIT 6.005 — Elements of Software Construction
+Source: MIT OpenCourseWare
+URL: https://ocw.mit.edu/courses/6-005-elements-of-software-construction-fall-2011/
+
+=== COURSE DESCRIPTION ===
+This course introduces fundamental principles and techniques of software development. Students learn how to write software that is safe from bugs, easy to understand, and ready for change. Topics include specifications and invariants; testing, debugging, and version control; abstract data types, representation independence, and interfaces; design patterns for object-oriented programming; concurrent programming, including message passing and shared memory concurrency.
+
+The course emphasizes writing correct, clear, and changeable code, with a strong focus on testing as a first-class engineering activity.
+
+=== LECTURE TOPICS ===
+1. Static Checking
+2. Basic Java
+3. Testing
+4. Code Review
+5. Version Control (Git)
+6. Specifications
+7. Designing Specifications
+8. Mutability and Immutability
+9. Avoiding Debugging
+10. Abstract Data Types
+11. Abstraction Functions and Rep Invariants
+12. Interfaces
+13. Equality
+14. Recursive Data Types
+15. Regular Expressions and Grammars
+16. Parser Generators
+17. Concurrency
+18. Thread Safety
+19. Sockets and Networking
+20. Queues and Message Passing
+21. Locks and Synchronization
+22. Map, Filter, Reduce
+23. Graphical User Interfaces
+24. Little Languages
+25. Team Version Control
+26. Design Patterns
+27. Final Project Presentations
+
+=== SKILLS TAUGHT ===
+- Static type checking and type safety
+- Unit testing with JUnit
+- Test-first programming methodology
+- Code review techniques
+- Git version control operations
+- Specification writing (preconditions, postconditions)
+- Designing modular specifications
+- Immutability and defensive copying
+- Abstract data type design
+- Representation invariant definition
+- Abstraction function implementation
+- Interface design and implementation
+- Recursive data type construction
+- Regular expression pattern matching
+- Grammar definition and parsing
+- Concurrent programming with threads
+- Thread safety and race condition prevention

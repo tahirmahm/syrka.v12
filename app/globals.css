@@ -1,91 +1,233 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Instrument+Serif:ital@0;1&display=swap');
+/* Legacy National Human Capital Intelligence fonts — preserved for app/[country]/* only. */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+/* Syrka Campus design tokens (DESIGN-001) — new frontend only. */
+@import '../styles/design-tokens.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --navy: #0A1628;
-  --navy-light: #0F1D32;
-  --navy-lighter: #162440;
-  --surface: #FFFFFF;
-  --surface-dim: #F4F5F7;
-  --text-primary: #0A1628;
-  --text-secondary: #5A6478;
-  --text-muted: #8B95A8;
-  --border: #E2E5EB;
-  --border-subtle: #ECEEF2;
-  --accent: #C9A84C;
-  --accent-malta: #1B6B5A;
-  --accent-saudi: #C9A84C;
-  --success: #16A34A;
-  --danger: #DC2626;
-  --warning: #D97706;
+@layer base {
+  body {
+    @apply bg-background text-on-background font-body antialiased;
+    font-size: 15px;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-headline;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+    font-size: 1.25rem;
+  }
+  ::selection {
+    @apply bg-primary text-on-primary;
+  }
 }
 
-body {
-  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
-  color: var(--text-primary);
-  background: var(--surface-dim);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer components {
+  .ghost-border {
+    border: 1px solid rgba(71, 71, 71, 0.15);
+  }
+
+  .nav-glass {
+    background: rgba(17, 20, 23, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .nav-active {
+    @apply text-primary bg-surface-container-highest border-l-2 border-primary;
+    font-weight: 700;
+  }
+
+  .data-chip {
+    @apply bg-surface-container-highest text-primary font-label uppercase px-2 py-1;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  .status-critical {
+    @apply bg-error-container text-error font-label uppercase px-2 py-1;
+    font-size: 10px;
+  }
+
+  .status-active {
+    @apply bg-surface-container-highest text-primary font-label uppercase px-2 py-1;
+    font-size: 10px;
+  }
+
+  .metric-display {
+    @apply font-headline text-primary tracking-tight;
+  }
+
+  .bento-card {
+    @apply bg-surface-container-low p-8;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-on-primary font-label uppercase tracking-widest px-6 py-3 transition-colors duration-150;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    border: none;
+    cursor: pointer;
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-primary:hover {
+    background: #A9ABAF;
+  }
+
+  .btn-ghost {
+    @apply text-primary font-label uppercase tracking-widest px-6 py-3 transition-colors duration-150;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    border: 1px solid rgba(145, 145, 145, 0.20);
+    background: transparent;
+    cursor: pointer;
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-ghost:hover {
+    background: #323538;
+  }
+
+  .badge-live {
+    @apply inline-flex items-center gap-2 px-3 py-1 bg-surface-container-highest text-primary font-label uppercase;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
 }
 
-h1, h2, h3, .font-display {
-  font-family: 'Instrument Serif', Georgia, serif;
+@layer utilities {
+  .tracking-ultra { letter-spacing: 0.25em; }
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-}
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #474747; }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--text-muted);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
-}
-
-.custom-tooltip {
-  background: var(--navy) !important;
-  border: 1px solid var(--navy-lighter) !important;
-  border-radius: 6px !important;
-  padding: 12px 16px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24) !important;
-}
-
-.custom-tooltip p {
-  color: #fff;
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.custom-tooltip .label {
-  font-weight: 600;
-  margin-bottom: 4px;
-  color: #fff;
-}
-
-@keyframes pulse-subtle {
+@keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  50% { opacity: 0.5; }
 }
 
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
+.skeleton {
+  background: #1D2023;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
-[data-accent="malta"] {
-  --accent: #1B6B5A;
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none !important; }
 }
 
-[data-accent="saudi"] {
-  --accent: #C9A84C;
+/*
+ * Corporate hero environmental typography (EnvironmentalArchitectureType).
+ * Decorative background words only — scoped to the corporate homepage hero,
+ * never referenced outside components/corporate/hero/. Positions/opacity
+ * here are the single source of truth the component's data structure
+ * defers to.
+ */
+.environmental-type {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.environmental-word {
+  position: absolute;
+  display: inline-block;
+  white-space: nowrap;
+  line-height: 1;
+  font-weight: 500;
+  user-select: none;
+  animation-name: environmental-breathe;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.environmental-char {
+  color: rgb(190 190 190);
+  opacity: 0.12;
+}
+
+.environmental-highlight {
+  color: rgb(225 225 225);
+  opacity: 0.22;
+}
+
+@keyframes environmental-breathe {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(-1.5px); opacity: 0.86; }
+}
+
+.environmental-word--systematic {
+  top: -4%;
+  left: -3%;
+  font-size: clamp(5.5rem, 10vw, 12rem);
+  animation-duration: 27s;
+  animation-delay: -4s;
+}
+
+.environmental-word--relational {
+  top: 19%;
+  left: 51%;
+  font-size: clamp(4rem, 8vw, 9.5rem);
+  animation-duration: 24s;
+  animation-delay: -11s;
+}
+
+.environmental-word--knowledge {
+  top: 53%;
+  left: 55%;
+  font-size: clamp(3.5rem, 7.5vw, 9rem);
+  animation-duration: 30s;
+  animation-delay: -18s;
+}
+
+.environmental-word--architecture {
+  top: 66%;
+  left: 30%;
+  font-size: clamp(4rem, 8.5vw, 10rem);
+  animation-duration: 22s;
+  animation-delay: -8s;
+}
+
+@media (max-width: 767px) {
+  .environmental-word { animation: none; }
+
+  .environmental-word--systematic {
+    top: 1%;
+    left: -6%;
+    font-size: clamp(3.5rem, 18vw, 5.5rem);
+  }
+
+  .environmental-word--relational {
+    top: 15%;
+    left: 44%;
+    font-size: clamp(3rem, 15vw, 4.5rem);
+  }
+
+  .environmental-word--knowledge {
+    top: 46%;
+    left: 28%;
+    font-size: clamp(2.8rem, 13vw, 4rem);
+  }
+
+  .environmental-word--architecture {
+    top: 63%;
+    left: 6%;
+    font-size: clamp(3rem, 15vw, 4.8rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .environmental-word {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
 }

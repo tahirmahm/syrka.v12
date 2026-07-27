@@ -1,0 +1,26 @@
+MIT COURSE: 6.042J — Mathematics for Computer Science
+SECTION: Readings | FETCHED: April 28, 2026
+
+=== TEXTBOOKS ===
+Mathematics for Computer Science — open textbook by Prof. Albert R. Meyer and Prof. Adam Chlipala.
+URL: https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/resources/mit6_042js15_textbook/
+
+=== READING LIST BY UNIT ===
+UNIT 1 PROOFS: Ch 1.1–1.6 (logic, predicates) | Ch 1.7–1.9 (induction) | Ch 2 (well ordering)
+Ch 3.1–3.5 (number theory, GCD) | Ch 3.6 (RSA) | Ch 4.1–4.5 (state machines, structural induction)
+Ch 5 (graph theory) | Ch 6 (directed graphs, DAGs) | Ch 7 (trees)
+
+UNIT 2 STRUCTURES: Ch 8 (sums, asymptotics) | Ch 9 (recurrences, Master theorem)
+Ch 10 (infinite sets, cardinality) | Ch 11–12 (Euler's theorem, RSA revisited) | Ch 13 (random walks, PageRank)
+
+UNIT 3 COUNTING: Ch 14 (counting rules) | Ch 15 (pigeonhole) | Ch 16 (inclusion-exclusion)
+Ch 17 (generating functions) | Ch 18 (combinatorial proofs)
+
+UNIT 4 PROBABILITY: Ch 16 (discrete probability) | Ch 17 (conditional prob, Bayes)
+Ch 18 (independence, random variables) | Ch 19 (expectation, linearity)
+Ch 20 (variance, Markov/Chebyshev bounds)
+
+=== KEY CONCEPTS ===
+Mathematical proofs (direct, contradiction, induction), number theory, RSA cryptography,
+graph theory, asymptotics, recurrence solving, counting, combinatorics, discrete probability,
+Bayes theorem, expectation, variance, deviation bounds

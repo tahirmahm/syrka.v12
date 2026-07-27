@@ -39,7 +39,7 @@ export default function NationalShortageAlerts({ skills, accentColor }: National
           return (
             <div
               key={skill.id}
-              className="bg-white rounded-lg border border-red-100 p-5 space-y-4 relative overflow-hidden"
+              className="bg-[#0D1117] rounded-lg border border-red-100 p-5 space-y-4 relative overflow-hidden"
             >
               {/* Urgency indicator stripe */}
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-red-500" />

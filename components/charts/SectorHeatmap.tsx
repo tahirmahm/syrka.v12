@@ -72,11 +72,11 @@ export default function SectorHeatmap({ skills, accentColor }: SectorHeatmapProp
         containLabel: true,
       },
       tooltip: {
-        backgroundColor: '#0A1628',
+        backgroundColor: 'transparent',
         borderColor: 'rgba(255,255,255,0.1)',
         borderWidth: 1,
         padding: [12, 16],
-        textStyle: { color: '#fff', fontSize: 12 },
+        textStyle: { color: '#E6EDF3', fontSize: 12 },
         formatter(params: {
           value: [number, number, number, string | null]
           name: string
@@ -155,7 +155,7 @@ export default function SectorHeatmap({ skills, accentColor }: SectorHeatmapProp
             formatter(params: { value: [number, number, number] }) {
               return `${params.value[2]}`
             },
-            color: '#fff',
+            color: '#E6EDF3',
             fontSize: 10,
           },
         },

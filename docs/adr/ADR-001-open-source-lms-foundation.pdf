@@ -1,0 +1,1578 @@
+%PDF-1.4
+%
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R] /Count 13 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 2440 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+(ADR-001 - Selection of the Open-Source LMS Foundation for Syrka) Tj
+T*
+() Tj
+T*
+(Status: Accepted) Tj
+T*
+(Date: 2026-07-07) Tj
+T*
+(Decision owners: Architecture / Engineering) Tj
+T*
+(Scope: Syrka LMS operational layer and its evolution into AI-native Human Capital ) Tj
+T*
+(Infrastructure) Tj
+T*
+() Tj
+T*
+(1. Decision) Tj
+T*
+() Tj
+T*
+(Syrka should use a hybrid approach with Open edX as the primary open-source LMS foundation, ) Tj
+T*
+(not a direct long-lived fork of a traditional LMS.) Tj
+T*
+() Tj
+T*
+(The recommended foundation is:) Tj
+T*
+() Tj
+T*
+(1. Adopt Open edX concepts, data/event patterns, XBlock/LTI compatibility, course-authoring ) Tj
+T*
+(semantics, assessment primitives, and selected service boundaries as the Syrka LMS skeleton.) Tj
+T*
+(2. Do not make the Open edX monolith the permanent Syrka product core. Instead, wrap it ) Tj
+T*
+(during phase 1 and progressively extract domain capabilities into Syrka-native services on ) Tj
+T*
+(the existing Next.js/Supabase stack.) Tj
+T*
+(3. Use LTI 1.3 / Advantage as the integration contract for external tools, assignments, ) Tj
+T*
+(simulations, code workspaces, AI tutors, and assessment engines.) Tj
+T*
+(4. Treat the LMS as a capability-data collection engine whose primary product responsibility) Tj
+T*
+( is to produce normalized learning, evidence, credential, and collaboration events for the ) Tj
+T*
+(Syrka Ontology, Human Capability Graph, Capability Inference Engine, Career Intent Engine, ) Tj
+T*
+(Odyssey, Job Passport, and Workforce Mobility Engine.) Tj
+T*
+() Tj
+T*
+(This is not a recommendation to become "an Open edX company." It is a recommendation to use ) Tj
+T*
+(Open edX as the strongest available open-source educational operating substrate while ) Tj
+T*
+(protecting Syrka's long-term architecture with an anti-corruption layer, canonical event ) Tj
+T*
+(schema, independent ontology/graph services, and Syrka-native user experiences.) Tj
+T*
+() Tj
+T*
+(2. Context and constraints) Tj
+T*
+() Tj
+T*
+(Syrka is not a conventional LMS. The long-term hierarchy is:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Syrka LMS) Tj
+T*
+(  v) Tj
+T*
+(Syrka Ontology) Tj
+T*
+(  v) Tj
+T*
+(Human Capability Graph) Tj
+T*
+(  v) Tj
+T*
+(Capability Inference Engine) Tj
+T*
+(  v) Tj
+T*
+(Career Intent Engine) Tj
+T*
+(  v) Tj
+T*
+(Syrka Odyssey) Tj
+T*
+(  v) Tj
+T*
+(Job Passport) Tj
+T*
+(  v) Tj
+T*
+(Workforce Mobility Engine) Tj
+T*
+(  v) Tj
+T*
+(Cross-Border Capability Corridors) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 3573 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+() Tj
+T*
+() Tj
+T*
+(The LMS must therefore provide reliable educational operations while becoming a high-) Tj
+T*
+(fidelity instrumentation layer. It must capture evidence such as assignment submissions, ) Tj
+T*
+(quiz attempts, rubric outcomes, peer review, forum participation, project artifacts, ) Tj
+T*
+(attendance, collaboration, research outputs, GitHub activity, external credentials, and ) Tj
+T*
+(employer signals.) Tj
+T*
+() Tj
+T*
+(The target Syrka stack in this repository is already oriented around Next.js application ) Tj
+T*
+(surfaces, API routes, Supabase/PostgreSQL storage, research intelligence, ) Tj
+T*
+(country/institution/employer/student dashboards, skill extraction, adaptive paths, ) Tj
+T*
+(CV/profile generation, fairness checks, and intelligence routes. The selected LMS foundation) Tj
+T*
+( must therefore be compatible with a future in which the modern Syrka experience lives ) Tj
+T*
+(outside the LMS monolith.) Tj
+T*
+() Tj
+T*
+(3. Investigation method and limitation) Tj
+T*
+() Tj
+T*
+(The required repositories were investigated using available repository metadata, public ) Tj
+T*
+(documentation, GitHub-rendered source views, and local repository commands. A direct shallow) Tj
+T*
+( clone of the six upstream repositories was attempted from the working container, but GitHub) Tj
+T*
+( clone access failed with CONNECT tunnel failed, response 403. Because this was an ) Tj
+T*
+(infrastructure/network limitation, the architecture decision relies on public repository ) Tj
+T*
+(source/documentation inspection available through GitHub and project documentation rather ) Tj
+T*
+(than local full clones.) Tj
+T*
+() Tj
+T*
+(Repositories evaluated:) Tj
+T*
+() Tj
+T*
+(- Moodle - https://github.com/moodle/moodle.git) Tj
+T*
+(- Canvas LMS - https://github.com/instructure/canvas-lms.git) Tj
+T*
+(- Open edX - https://github.com/openedx/openedx-platform.git) Tj
+T*
+(- Chamilo - https://github.com/chamilo/chamilo-lms.git) Tj
+T*
+(- ILIAS - https://github.com/ILIAS-eLearning/ILIAS.git) Tj
+T*
+(- Sakai - https://github.com/sakaiproject/sakai.git) Tj
+T*
+() Tj
+T*
+(4. Executive comparison) Tj
+T*
+() Tj
+T*
+(| Platform | Primary stack | License | Architectural shape | Best fit | Critical concern | Syrka score |) Tj
+T*
+(|---|---:|---:|---|---|---|---:|) Tj
+T*
+(| Moodle | PHP, JS, SQL | GPL-3.0 | Plugin-rich modular monolith | Broad institutional LMS and plugin ) Tj
+T*
+(ecosystem | Legacy PHP patterns; modernization friction | 7.2 |) Tj
+T*
+(| Canvas LMS | Ruby/Rails, JS/React, PostgreSQL | AGPL-3.0 | Large Rails monolith with strong APIs | ) Tj
+T*
+(Modern higher-ed LMS operations | AGPL obligations, vendor-shaped complexity | 7.7 |) Tj
+T*
+(| Open edX | Python/Django, JS/React MFEs, MySQL, services | AGPL-3.0 | Modular monolith + services + ) Tj
+T*
+(MFEs + event direction | Scalable online learning platform and extensible education runtime | Heavy ) Tj
+T*
+(operational footprint and complex domain model | 8.4 |) Tj
+T*
+(| Chamilo | PHP/Symfony/Twig direction, MySQL | GPL-3.0+ | Simpler PHP LMS | Lightweight deployments | ) Tj
+T*
+(Smaller ecosystem and weaker AI/event foundation | 5.6 |) Tj
+T*
+(| ILIAS | PHP, MySQL/MariaDB | GPL-3.0 | Mature modular monolith | European institutional LMS with ) Tj
+T*
+(governance | Modernization and developer ramp-up | 6.2 |) Tj
+T*
+(| Sakai | Java, Maven, Tomcat, RDBMS | ECL-2.0 | Service-oriented Java tool framework | Higher-ed ) Tj
+T*
+(collaboration and extensibility | Older Java web architecture and smaller modern frontend story | 6.6 |) Tj
+T*
+() Tj
+T*
+(5. Candidate analyses) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 3322 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+(5.1 Moodle) Tj
+T*
+() Tj
+T*
+(Overview. Moodle is the most widely recognized open-source LMS. It targets schools, ) Tj
+T*
+(universities, governments, NGOs, and enterprises. It is GPL-3.0, written primarily in PHP ) Tj
+T*
+(with JavaScript, uses relational databases, and supports self-hosted deployment. It has a ) Tj
+T*
+(large plugin ecosystem, long release history, and broad global community.) Tj
+T*
+() Tj
+T*
+(Architecture. Moodle is a plugin-based modular monolith. Core subsystems provide course, ) Tj
+T*
+(enrolment, authentication, role/capability, gradebook, files, messaging, events, logging, ) Tj
+T*
+(and web services. Plugins extend activities, blocks, reports, enrolment, auth, repositories,) Tj
+T*
+( themes, local customizations, and admin tools.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Browser / mobile / integrations) Tj
+T*
+(        v) Tj
+T*
+(Moodle PHP application) Tj
+T*
+(        v) Tj
+T*
+(Core subsystems: course, user, role, gradebook, files, events, web services) Tj
+T*
+(        v) Tj
+T*
+(Plugin types: mod, block, local, report, enrol, auth, repository, theme) Tj
+T*
+(        v) Tj
+T*
+(RDBMS + file storage) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Repository and implementation shape. Moodle has a broad root-level layout organized around ) Tj
+T*
+(product subsystems and plugin types. The mod family implements activity modules; auth, ) Tj
+T*
+(enrol, grade, course, user, files, message, calendar, report, admin, and lib carry the core.) Tj
+T*
+( Database installation and upgrade code is distributed through component db directories. ) Tj
+T*
+(Tests include PHPUnit and Behat. Configuration is PHP-centric.) Tj
+T*
+() Tj
+T*
+(Core LMS coverage. Moodle is very strong in authentication, user/role management, enrolment,) Tj
+T*
+( course management, assignments, quizzes, gradebook, messaging, notifications, calendar, ) Tj
+T*
+(file storage, permissions, reports, and learning analytics. Its role/capability system is ) Tj
+T*
+(mature.) Tj
+T*
+() Tj
+T*
+(Extensibility and events. Moodle has a mature Events API, log stores, web services, and many) Tj
+T*
+( plugin types. Assignment submitted, quiz attempted, forum posted, course viewed, grade ) Tj
+T*
+(updated, and completion events can be observed. It is realistic to stream events into Syrka,) Tj
+T*
+( but the canonical capability model would need to live outside Moodle.) Tj
+T*
+() Tj
+T*
+(AI readiness. Moodle is extensible enough to add AI plugins and event exporters, but it is ) Tj
+T*
+(not architected as an AI-native data platform. PHP plugin development and deep Moodle ) Tj
+T*
+(conventions would slow Claude-assisted modernization relative to Python/React or Rails/React) Tj
+T*
+( platforms.) Tj
+T*
+() Tj
+T*
+(Database and API. Moodle supports several RDBMS engines and has long-lived schema upgrade ) Tj
+T*
+(patterns, but its schema is LMS-first and historically broad. PostgreSQL is supported, but ) Tj
+T*
+(Supabase-native use would require an integration layer, not direct cohabitation.) Tj
+T*
+() Tj
+T*
+(Migration potential. Keep authentication integration, course containers, enrolment, ) Tj
+T*
+(assignments/quizzes, gradebook, files, calendar, and events. Rewrite frontend, ontology, ) Tj
+T*
+(graph, inference, recommendations, employer/career systems, analytics, and credentials ) Tj
+T*
+(outside Moodle. Estimated effort: medium-high.) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 3148 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+(Verdict. Excellent operational LMS skeleton, but long-term Syrka modernization would fight a) Tj
+T*
+( large PHP monolith.) Tj
+T*
+() Tj
+T*
+(5.2 Canvas LMS) Tj
+T*
+() Tj
+T*
+(Overview. Canvas LMS is an open-source LMS developed by Instructure and used heavily in ) Tj
+T*
+(higher education. It is AGPL-3.0, primarily Ruby on Rails with JavaScript/React frontend ) Tj
+T*
+(components and PostgreSQL-oriented deployment. It has strong APIs, LTI support, mature ) Tj
+T*
+(course/assignment/gradebook operations, and corporate backing.) Tj
+T*
+() Tj
+T*
+(Architecture. Canvas is a large Rails monolith with substantial modular boundaries, ) Tj
+T*
+(background jobs, APIs, LTI support, and increasingly modern frontend islands.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Web / mobile / LTI / REST clients) Tj
+T*
+(        v) Tj
+T*
+(Rails application: controllers, models, services, jobs) Tj
+T*
+(        v) Tj
+T*
+(Domain modules: courses, enrollments, assignments, submissions, grades, discussions) Tj
+T*
+(        v) Tj
+T*
+(PostgreSQL + Redis/cache + background workers + file services) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Repository and implementation shape. The repository follows Rails conventions but is very ) Tj
+T*
+(large. Key areas include application models/controllers/views, frontend packages, database ) Tj
+T*
+(migrations, API controllers, background jobs, config, tests/specs, and deployment scripts. ) Tj
+T*
+(Canvas has a serious test culture but a high setup burden.) Tj
+T*
+() Tj
+T*
+(Core LMS coverage. Canvas is excellent for users, roles, courses, sections, enrolments, ) Tj
+T*
+(assignments, submissions, gradebook, rubrics, discussions, notifications, calendar, files, ) Tj
+T*
+(outcomes, analytics integrations, LTI, and permissions.) Tj
+T*
+() Tj
+T*
+(Extensibility and events. Canvas has excellent REST APIs, webhooks/live events in hosted ) Tj
+T*
+(contexts, and LTI. Its event and API surface is very useful for Syrka. However, self-hosted ) Tj
+T*
+(parity and operational complexity need due diligence. Deep modifications are harder because ) Tj
+T*
+(Instructure's SaaS roadmap shapes the code.) Tj
+T*
+() Tj
+T*
+(AI readiness. Stronger than Moodle for API-driven integration and modern frontend embedding.) Tj
+T*
+( However, the platform remains a large Rails LMS. AI capability inference should be ) Tj
+T*
+(externalized.) Tj
+T*
+() Tj
+T*
+(Database and API. PostgreSQL alignment is a major advantage for Supabase-adjacent thinking, ) Tj
+T*
+(although Canvas's schema should not be merged into Syrka's Supabase schema. APIs are among ) Tj
+T*
+(the best in the group.) Tj
+T*
+() Tj
+T*
+(Migration potential. Keep courses, enrolments, assignments, submissions, gradebook, files, ) Tj
+T*
+(LTI, calendar, and API/event integration. Replace or bypass much of the frontend. Build ) Tj
+T*
+(graph/ontology/inference externally. Estimated effort: high because of Rails monolith ) Tj
+T*
+(complexity and AGPL implications.) Tj
+T*
+() Tj
+T*
+(Verdict. Technically attractive and modern enough, but less aligned than Open edX with ) Tj
+T*
+(modular learning content, event standardization, and independent learning runtime evolution.) Tj
+T*
+() Tj
+T*
+(5.3 Open edX) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 3281 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+() Tj
+T*
+(Overview. Open edX is the open-source platform behind edX-style online learning. It is ) Tj
+T*
+(AGPL-3.0 and uses Python/Django, JavaScript, React micro-frontends, a modular monolith, ) Tj
+T*
+(independently deployable applications, XBlock extensibility, LTI, event tracking, analytics ) Tj
+T*
+(history, and a large provider/community ecosystem.) Tj
+T*
+() Tj
+T*
+(Architecture. Open edX is a modular monolith with service extraction patterns, micro-) Tj
+T*
+(frontends, plugin hooks, XBlocks, event tracking, and a well-established deployment ) Tj
+T*
+(ecosystem through Tutor.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Learner / author / admin frontends) Tj
+T*
+(        v) Tj
+T*
+(React MFEs + legacy web UI) Tj
+T*
+(        v) Tj
+T*
+(Django LMS + Studio modular monolith) Tj
+T*
+(        v) Tj
+T*
+(XBlocks, plugins, LTI tools, event tracking, APIs) Tj
+T*
+(        v) Tj
+T*
+(MySQL + object storage + cache/search/queues) Tj
+T*
+(        v) Tj
+T*
+(External analytics, data pipelines, IDAs, event consumers) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Repository and implementation shape. openedx-platform contains LMS and Studio applications, ) Tj
+T*
+(Django apps, common libraries, XBlock runtime integration, courseware, grades, discussions ) Tj
+T*
+(integrations, content libraries, tests, configuration, management commands, APIs, and legacy) Tj
+T*
+( plus modern frontend integration. The Open edX ecosystem also includes separate MFEs, ) Tj
+T*
+(events libraries, Tutor deployment, and IDAs.) Tj
+T*
+() Tj
+T*
+(Core LMS coverage. Open edX covers learners, instructors, course authoring, sequencing, ) Tj
+T*
+(content blocks, enrolment, assessments, grading, certificates, discussions integrations, ) Tj
+T*
+(files/assets, teams, cohorts, analytics/event tracking, and external tool integrations. It ) Tj
+T*
+(is less institutionally comprehensive than Moodle/Canvas in some traditional campus LMS ) Tj
+T*
+(workflows, but stronger as a scalable learning experience runtime.) Tj
+T*
+() Tj
+T*
+(Extensibility and events. This is the strongest candidate for Syrka's event-driven future. ) Tj
+T*
+(XBlocks permit new learning and assessment components. LTI permits external tools. The ) Tj
+T*
+(tracking/event tradition and newer event-bus direction are well aligned with capability ) Tj
+T*
+(inference. Educational events can be normalized and streamed into Syrka's canonical evidence) Tj
+T*
+( ledger.) Tj
+T*
+() Tj
+T*
+(AI readiness. Open edX is the best fit for AI-native augmentation because Python/Django ) Tj
+T*
+(integrates naturally with LLM orchestration, embeddings, graph/ontology services, evaluation) Tj
+T*
+( pipelines, and ML tooling. React MFEs are more compatible with Syrka's modern UX trajectory) Tj
+T*
+( than older PHP/Java template stacks.) Tj
+T*
+() Tj
+T*
+(Database and API. The default database is MySQL, which is a mismatch with Supabase ) Tj
+T*
+(PostgreSQL. This should be addressed by not merging schemas. Syrka should use Open edX as an) Tj
+T*
+( operational LMS bounded context and stream canonical events into Supabase/PostgreSQL and ) Tj
+T*
+(graph stores.) Tj
+T*
+() Tj
+T*
+(Migration potential. Keep course runtime semantics, XBlock/LTI extension points, assessment ) Tj
+T*
+(primitives, event tracking concepts, certificates where useful, content libraries, enrolment) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 3098 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+( concepts, and selected APIs. Rewrite identity/profile unification, ontology, graph, ) Tj
+T*
+(inference, career intent, market signals, government/employer dashboards, job passport, ) Tj
+T*
+(verified credential ledger, and public profiles as Syrka-native services. Estimated effort: ) Tj
+T*
+(high initially, but best long-term compounding value.) Tj
+T*
+() Tj
+T*
+(Verdict. Best architectural foundation if treated as a bounded operational substrate rather ) Tj
+T*
+(than a permanent monolithic core.) Tj
+T*
+() Tj
+T*
+(5.4 Chamilo) Tj
+T*
+() Tj
+T*
+(Overview. Chamilo is a PHP/MySQL open-source LMS focused on ease of use and accessibility. ) Tj
+T*
+(It is GPL-3.0+ and has been used globally since 2010, with a smaller but active community.) Tj
+T*
+() Tj
+T*
+(Architecture. Chamilo is a simpler PHP LMS, moving in a more Symfony/Twig direction in newer) Tj
+T*
+( versions. It is less complex than Moodle/Canvas/Open edX and easier to self-host, but the ) Tj
+T*
+(ecosystem and architectural primitives are thinner.) Tj
+T*
+() Tj
+T*
+(Core LMS coverage. Chamilo covers users, courses, enrolments, learning paths, tests, ) Tj
+T*
+(documents, assignments, reporting, skills-related features, and basic communication. It is ) Tj
+T*
+(practical for conventional e-learning.) Tj
+T*
+() Tj
+T*
+(Extensibility and events. Extensibility exists, but it is not as broad or event-rich as ) Tj
+T*
+(Moodle/Open edX/Canvas for a capability inference system. Syrka would quickly outgrow it.) Tj
+T*
+() Tj
+T*
+(AI readiness. Low-to-medium. Simplicity helps initial modification but hurts long-term ) Tj
+T*
+(platform ambition.) Tj
+T*
+() Tj
+T*
+(Migration potential. Keep little beyond basic course/user/content concepts. Most Syrka ) Tj
+T*
+(modules would be new systems. Estimated effort: medium initially, very high over time.) Tj
+T*
+() Tj
+T*
+(Verdict. Too small and conventional for Syrka's intended infrastructure role.) Tj
+T*
+() Tj
+T*
+(5.5 ILIAS) Tj
+T*
+() Tj
+T*
+(Overview. ILIAS is a mature GPL-3.0 PHP LMS with strong European institutional adoption, ) Tj
+T*
+(governance, assessment, repository, and permission capabilities.) Tj
+T*
+() Tj
+T*
+(Architecture. ILIAS is a mature modular monolith centered around a repository-object model, ) Tj
+T*
+(services, components, plugins, and deep role/permission concepts.) Tj
+T*
+() Tj
+T*
+(Core LMS coverage. Strong in users, roles, repository objects, courses/groups, learning ) Tj
+T*
+(modules, tests, surveys, exercises, SCORM, files, communication, calendar, reporting, and ) Tj
+T*
+(permissions.) Tj
+T*
+() Tj
+T*
+(Extensibility and events. ILIAS has plugin slots and a disciplined component architecture, ) Tj
+T*
+(but its conventions are specialized. Event-driven capability inference would be possible but) Tj
+T*
+( not natural.) Tj
+T*
+() Tj
+T*
+(AI readiness. Medium. Strong institutional data model, weaker modern AI/React/Python ) Tj
+T*
+(ecosystem fit.) Tj
+T*
+() Tj
+T*
+(Migration potential. Keep repository, role, assessment, file, and course structures if ) Tj
+T*
+(adopting it. Rewrite most Syrka intelligence services. Estimated effort: high.) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 2676 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+(Verdict. Mature and serious, but less globally extensible and less AI-native than Open edX.) Tj
+T*
+() Tj
+T*
+(5.6 Sakai) Tj
+T*
+() Tj
+T*
+(Overview. Sakai is a Java/Tomcat open-source LMS and collaboration environment governed ) Tj
+T*
+(through the Apereo ecosystem. It is licensed under Educational Community License 2.0, which ) Tj
+T*
+(is more permissive than GPL/AGPL alternatives.) Tj
+T*
+() Tj
+T*
+(Architecture. Sakai is a service-oriented Java application with tools depending on shared ) Tj
+T*
+(services for site, user, authorization, content, events, assignments, gradebook, and ) Tj
+T*
+(collaboration.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Portal / tools) Tj
+T*
+(        v) Tj
+T*
+(Sakai services and kernel) Tj
+T*
+(        v) Tj
+T*
+(Tool implementations: assignments, gradebook, tests, forums, resources, calendar) Tj
+T*
+(        v) Tj
+T*
+(RDBMS + content/file storage + Tomcat runtime) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Core LMS coverage. Strong in higher-ed collaboration, sites/courses, assignments, gradebook,) Tj
+T*
+( tests/quizzes, resources, announcements, calendar, messaging, and permissions.) Tj
+T*
+() Tj
+T*
+(Extensibility and events. The service/tool model is extensible and the license is ) Tj
+T*
+(attractive. However, the modern frontend and AI ecosystem fit is weaker than Open edX. Java ) Tj
+T*
+(services can be robust but slower for rapid AI-native iteration in Syrka's current stack.) Tj
+T*
+() Tj
+T*
+(AI readiness. Medium. Good for enterprise Java integration; less ideal for ) Tj
+T*
+(LLM/embedding/graph experimentation and modern UX replacement.) Tj
+T*
+() Tj
+T*
+(Migration potential. Keep assignments, gradebook, site/user/role services, resources, and ) Tj
+T*
+(event concepts. Rewrite Syrka intelligence services and UX. Estimated effort: high.) Tj
+T*
+() Tj
+T*
+(Verdict. Solid and permissively licensed, but lower momentum for the desired product ) Tj
+T*
+(architecture.) Tj
+T*
+() Tj
+T*
+(6. Detailed scorecard) Tj
+T*
+() Tj
+T*
+(Scores are 1-10, where 10 is strongest alignment with Syrka's long-term architecture.) Tj
+T*
+() Tj
+T*
+(| Criterion | Moodle | Canvas | Open edX | Chamilo | ILIAS | Sakai |) Tj
+T*
+(|---|---:|---:|---:|---:|---:|---:|) Tj
+T*
+(| Architecture | 7 | 8 | 9 | 5 | 7 | 7 |) Tj
+T*
+(| Code quality | 7 | 8 | 7 | 5 | 7 | 7 |) Tj
+T*
+(| Documentation | 9 | 7 | 8 | 6 | 7 | 7 |) Tj
+T*
+(| Developer experience | 7 | 6 | 7 | 6 | 5 | 6 |) Tj
+T*
+(| Scalability | 8 | 9 | 9 | 5 | 7 | 8 |) Tj
+T*
+(| Security | 8 | 8 | 8 | 6 | 8 | 8 |) Tj
+T*
+(| Testing | 8 | 8 | 8 | 6 | 7 | 7 |) Tj
+T*
+(| Performance | 7 | 8 | 8 | 6 | 7 | 7 |) Tj
+T*
+(| API quality | 7 | 9 | 8 | 5 | 6 | 6 |) Tj
+T*
+(| Plugin architecture | 10 | 7 | 9 | 6 | 8 | 7 |) Tj
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 3880 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+(| Community | 10 | 8 | 8 | 6 | 6 | 6 |) Tj
+T*
+(| Maintainability | 7 | 7 | 7 | 6 | 6 | 7 |) Tj
+T*
+(| AI readiness | 6 | 7 | 9 | 4 | 5 | 6 |) Tj
+T*
+(| Knowledge graph compatibility | 6 | 7 | 9 | 4 | 5 | 6 |) Tj
+T*
+(| Ontology integration | 7 | 7 | 9 | 5 | 6 | 6 |) Tj
+T*
+(| Ease of forking | 6 | 5 | 5 | 8 | 6 | 7 |) Tj
+T*
+(| Ease of modernization | 5 | 7 | 8 | 6 | 5 | 5 |) Tj
+T*
+(| Suitability for Vercel | 3 | 4 | 6 | 3 | 3 | 3 |) Tj
+T*
+(| Suitability for Supabase PostgreSQL | 6 | 8 | 5 | 4 | 4 | 6 |) Tj
+T*
+(| Suitability for Claude-assisted development | 6 | 7 | 8 | 6 | 5 | 6 |) Tj
+T*
+(| Long-term technical debt risk | 6 | 6 | 7 | 4 | 5 | 6 |) Tj
+T*
+(| Weighted Syrka fit | 7.2 | 7.7 | 8.4 | 5.6 | 6.2 | 6.6 |) Tj
+T*
+() Tj
+T*
+(7. Syrka module compatibility) Tj
+T*
+() Tj
+T*
+(| Syrka module | Moodle | Canvas | Open edX | Chamilo | ILIAS | Sakai | Reuse vs. build |) Tj
+T*
+(|---|---|---|---|---|---|---|---|) Tj
+T*
+(| Syrka LMS | Strong | Strong | Strong | Adequate | Strong | Strong | Reuse LMS primitives |) Tj
+T*
+(| Syrka Ontology | External | External | Best external fit | External | External | External | Build new ) Tj
+T*
+(ontology service |) Tj
+T*
+(| Human Capability Graph | External | External | Best event feed | External | External | External | Build) Tj
+T*
+( graph service |) Tj
+T*
+(| Capability Inference Engine | External | External | Best Python/event fit | External | External | ) Tj
+T*
+(External | Build new inference service |) Tj
+T*
+(| Career Intent Engine | External | External | External | External | External | External | Build new ) Tj
+T*
+(service |) Tj
+T*
+(| Syrka Odyssey | External UX | External UX | Strong learning-path basis | Weak | Medium | Medium | Build) Tj
+T*
+( Syrka-native UX, reuse course evidence |) Tj
+T*
+(| Market Signal Engine | None | None | None | None | None | None | Build new service |) Tj
+T*
+(| National Vision Layer | None | None | None | None | None | None | Build new service |) Tj
+T*
+(| Research Intelligence | None | None | Possible event/content input | None | None | Collaboration input ) Tj
+T*
+(| Build new service |) Tj
+T*
+(| GitHub Intelligence | External tool | External tool | LTI/XBlock fit | External | External | External |) Tj
+T*
+( Build new integration |) Tj
+T*
+(| LinkedIn Intelligence | External | External | External | External | External | External | Build new ) Tj
+T*
+(integration |) Tj
+T*
+(| Capability Dashboard | Report plugin | API dashboard | Event dashboard | Basic | Report plugin | Tool |) Tj
+T*
+( Build Syrka-native dashboard |) Tj
+T*
+(| Portfolio Generator | Limited | Outcomes/files | Certificates/content evidence | Limited | Repository ) Tj
+T*
+(objects | Resources | Build new generator |) Tj
+T*
+(| Opportunity Engine | None | None | None | None | None | None | Build new service |) Tj
+T*
+(| Research Collaboration Engine | Forum/wiki input | Discussion input | Teams/discussions input | Basic |) Tj
+T*
+( Collaboration input | Strong collaboration input | Build new service |) Tj
+T*
+(| Employer Dashboard | None | Limited admin patterns | None | None | None | None | Build new dashboard |) Tj
+T*
+(| Faculty Dashboard | Existing reports | Strong | Strong course analytics | Basic | Strong | Strong | ) Tj
+T*
+(Reuse data, build Syrka UX |) Tj
+T*
+(| Curriculum Intelligence | Course metadata | Course/outcomes | Strong content model | Medium | Strong ) Tj
+T*
+(repository | Medium | Build new AI layer |) Tj
+T*
+(| Institutional Analytics | Strong | Strong | Strong event base | Basic | Strong | Medium | Reuse data ) Tj
+T*
+(feeds, build analytics |) Tj
+T*
+(| Job Passport | None | Credentials input | Certificate/evidence input | None | Certificates input | None) Tj
+T*
+( | Build new passport/ledger |) Tj
+T*
+(| Verified Credential Ledger | Badges/certs | Credentials input | Certificates input | Limited | ) Tj
+T*
+(Certificates | Limited | Build new ledger |) Tj
+ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 2921 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+(| Workforce Mobility Engine | None | None | None | None | None | None | Build new service |) Tj
+T*
+(| Syrka Corridors | None | None | None | None | None | None | Build new service |) Tj
+T*
+(| Public Capability Profile | Profile extension | Profile/API | Profile/evidence feed | Profile | Profile) Tj
+T*
+( | Profile | Build new public profile |) Tj
+T*
+(| AI-Native Learning Analytics | Logs | Events/APIs | Best fit | Weak | Medium | Medium | Build AI ) Tj
+T*
+(analytics on canonical events |) Tj
+T*
+() Tj
+T*
+(8. Event architecture conclusion) Tj
+T*
+() Tj
+T*
+(For Syrka, event architecture is the decisive criterion. The selected foundation must emit ) Tj
+T*
+(granular, semantically useful educational events and permit clean interception without ) Tj
+T*
+(modifying every activity implementation.) Tj
+T*
+() Tj
+T*
+(Required event families:) Tj
+T*
+() Tj
+T*
+(- Identity and enrolment events.) Tj
+T*
+(- Course, unit, module, and learning-path progress events.) Tj
+T*
+(- Assignment creation, submission, resubmission, grading, rubric, and feedback events.) Tj
+T*
+(- Quiz/problem attempt events including timing, correctness, hints, retries, and mastery.) Tj
+T*
+(- Discussion, peer review, team, collaboration, and research events.) Tj
+T*
+(- File, portfolio, repository, external tool, and project artifact events.) Tj
+T*
+(- Attendance and synchronous participation events.) Tj
+T*
+(- Credential, certificate, badge, and verification events.) Tj
+T*
+() Tj
+T*
+(Ranking for Syrka event architecture:) Tj
+T*
+() Tj
+T*
+(1. Open edX - strongest because of event tracking heritage, XBlock runtime, LTI ) Tj
+T*
+(compatibility, and Python ecosystem.) Tj
+T*
+(2. Canvas - excellent APIs and event possibilities, but hosted/self-hosted differences and ) Tj
+T*
+(Rails monolith concerns.) Tj
+T*
+(3. Moodle - mature event API and plugins, but less AI-native architecture.) Tj
+T*
+(4. Sakai - service/tool events are useful, but modernization cost is higher.) Tj
+T*
+(5. ILIAS - strong permissions/repository model, less natural event-stream architecture.) Tj
+T*
+(6. Chamilo - simplest, but least capable for deep capability inference.) Tj
+T*
+() Tj
+T*
+(9. Target architecture after adopting Open edX hybrid) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(                          Syrka Next.js applications) Tj
+T*
+(                          student / faculty / employer) Tj
+T*
+(                          ministry / public profiles) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(                         ?) Tj
+T*
+(                          Syrka API gateway / BFF) Tj
+T*
+(                          auth, policy, aggregation) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(                    ? ?) Tj
+T*
+(                     Open edX bounded    Syrka-native) Tj
+T*
+(                     LMS context         intelligence services) Tj
+T*
+(                     LMS + Studio        ontology, graph, AI) Tj
+T*
+(                     XBlock + LTI        career, market, jobs) Tj
+ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 2369 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+() Tj
+T*
+() Tj
+T*
+(                         ??) Tj
+T*
+(                          Canonical Syrka Event Bus) Tj
+T*
+(                          evidence + capability events) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(                ?       ?) Tj
+T*
+(                 Supabase/Postgres         Graph/vector stores) Tj
+T*
+(                 operational views         capability graph) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Open edX should be isolated behind an anti-corruption layer. Syrka's canonical events should) Tj
+T*
+( not mirror Open edX tables one-to-one. They should express Syrka concepts: learner, ) Tj
+T*
+(evidence item, capability, context, assessor, confidence, provenance, validity window, ) Tj
+T*
+(market alignment, and credential claim.) Tj
+T*
+() Tj
+T*
+(10. Components to reuse) Tj
+T*
+() Tj
+T*
+(From Open edX:) Tj
+T*
+() Tj
+T*
+(- Course authoring and course runtime concepts.) Tj
+T*
+(- XBlock component model for new learning objects, assessments, simulations, AI exercises, ) Tj
+T*
+(and project evidence capture.) Tj
+T*
+(- LTI integration patterns for external tools.) Tj
+T*
+(- Learner progress and grading primitives.) Tj
+T*
+(- Content sequencing and courseware concepts.) Tj
+T*
+(- Certificates only as an input to Syrka's future credential ledger, not as the final ) Tj
+T*
+(credential architecture.) Tj
+T*
+(- Event tracking concepts and event consumers.) Tj
+T*
+(- Existing deployment practices as an operational reference, preferably through Tutor during) Tj
+T*
+( evaluation/prototyping.) Tj
+T*
+() Tj
+T*
+(From Canvas/Moodle as reference patterns only:) Tj
+T*
+() Tj
+T*
+(- Canvas API design, assignment/submission ergonomics, gradebook UX patterns, LTI maturity.) Tj
+T*
+(- Moodle plugin taxonomy and role/capability lessons.) Tj
+T*
+() Tj
+T*
+(Do not copy multiple codebases into Syrka. Use them as architecture references unless a ) Tj
+T*
+(specific license-compatible module is intentionally isolated and reviewed.) Tj
+T*
+() Tj
+T*
+(11. Components to rewrite or build as Syrka-native systems) Tj
+T*
+() Tj
+T*
+(The following should be built outside the LMS foundation:) Tj
+T*
+() Tj
+T*
+(- Syrka Ontology.) Tj
+T*
+(- Human Capability Graph.) Tj
+T*
+(- Capability Inference Engine.) Tj
+T*
+(- Career Intent Engine.) Tj
+T*
+(- Syrka Odyssey user experience.) Tj
+T*
+(- Market Signal Engine.) Tj
+T*
+(- National Vision Layer.) Tj
+T*
+(- Research Intelligence.) Tj
+ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 2579 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+(- GitHub Intelligence.) Tj
+T*
+(- LinkedIn Intelligence.) Tj
+T*
+(- Employer Dashboard.) Tj
+T*
+(- Faculty Dashboard beyond conventional LMS reports.) Tj
+T*
+(- Curriculum Intelligence.) Tj
+T*
+(- Institutional Analytics.) Tj
+T*
+(- Job Passport.) Tj
+T*
+(- Verified Credential Ledger.) Tj
+T*
+(- Workforce Mobility Engine.) Tj
+T*
+(- Cross-Border Capability Corridors.) Tj
+T*
+(- Public Capability Profile.) Tj
+T*
+(- AI-native analytics, recommendation, ranking, fairness, and explainability services.) Tj
+T*
+() Tj
+T*
+(12. Why alternatives were rejected) Tj
+T*
+() Tj
+T*
+(Build completely from scratch) Tj
+T*
+() Tj
+T*
+(Rejected because Syrka would spend years rebuilding commodity LMS operations: enrolments, ) Tj
+T*
+(assignments, quizzes, gradebooks, content handling, course authoring, roles, permissions, ) Tj
+T*
+(and LTI. The strategic value is not a blank LMS; it is capability inference and workforce ) Tj
+T*
+(mobility. Scratch-building the operational LMS delays the actual company-defining platform.) Tj
+T*
+() Tj
+T*
+(Fork Moodle) Tj
+T*
+() Tj
+T*
+(Rejected as primary direction because Moodle's strengths are plugin breadth and ) Tj
+T*
+(institutional maturity, not AI-native architecture. It is viable as an operational LMS, but ) Tj
+T*
+(a long-lived Syrka fork would inherit a large PHP monolith and modernization drag.) Tj
+T*
+() Tj
+T*
+(Fork Canvas LMS) Tj
+T*
+() Tj
+T*
+(Rejected as primary direction despite strong APIs and PostgreSQL alignment because it is a ) Tj
+T*
+(large Rails product shaped by Instructure's SaaS priorities, has AGPL obligations, and is ) Tj
+T*
+(less naturally aligned with modular learning component authoring and Python AI pipelines ) Tj
+T*
+(than Open edX.) Tj
+T*
+() Tj
+T*
+(Fork Open edX directly) Tj
+T*
+() Tj
+T*
+(Rejected as stated because a permanent direct fork risks trapping Syrka inside a heavy ) Tj
+T*
+(monolith. The accepted decision is Open edX hybrid: adopt, wrap, instrument, and extract.) Tj
+T*
+() Tj
+T*
+(Fork Chamilo) Tj
+T*
+() Tj
+T*
+(Rejected because it is too lightweight for Syrka's long-term capability infrastructure and ) Tj
+T*
+(event/AI ambitions.) Tj
+T*
+() Tj
+T*
+(Fork ILIAS) Tj
+T*
+() Tj
+T*
+(Rejected because it is mature but specialized, PHP-heavy, and less compatible with the ) Tj
+T*
+(modern AI-native, graph-driven, Vercel/Next.js/Supabase-oriented Syrka direction.) Tj
+T*
+() Tj
+T*
+(Fork Sakai) Tj
+T*
+() Tj
+T*
+(Rejected because its license and service orientation are attractive, but the Java/Tomcat ) Tj
+T*
+(architecture and older frontend model are not the best fit for rapid AI-native product ) Tj
+ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 2915 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+(evolution.) Tj
+T*
+() Tj
+T*
+(13. Phased migration strategy) Tj
+T*
+() Tj
+T*
+(Phase 0 - Due diligence hardening, 2-4 weeks) Tj
+T*
+() Tj
+T*
+(- Resolve network access and perform full local clones of all six repositories.) Tj
+T*
+(- Run repository-level static analysis, test sampling, dependency audits, and local ) Tj
+T*
+(bootstraps for Open edX and Canvas.) Tj
+T*
+(- Validate AGPL obligations with counsel.) Tj
+T*
+(- Produce a canonical Syrka learning event schema.) Tj
+T*
+(- Identify the minimum viable Open edX installation profile.) Tj
+T*
+() Tj
+T*
+(Phase 1 - Bounded Open edX pilot, 6-10 weeks) Tj
+T*
+() Tj
+T*
+(- Deploy Open edX in an isolated environment.) Tj
+T*
+(- Integrate Syrka identity through SSO/OIDC where feasible.) Tj
+T*
+(- Create an event export pipeline into Syrka's Supabase/PostgreSQL environment.) Tj
+T*
+(- Build initial XBlock or LTI proof of concept for capability evidence capture.) Tj
+T*
+(- Map Open edX events to Syrka evidence entities.) Tj
+T*
+(- Keep learner-facing Syrka UX in Next.js where possible.) Tj
+T*
+() Tj
+T*
+(Phase 2 - Canonical capability event ledger, 8-12 weeks) Tj
+T*
+() Tj
+T*
+(- Define canonical events: learning.activity.started, assessment.submitted, ) Tj
+T*
+(assessment.evaluated, capability.evidence.observed, credential.claim.issued, ) Tj
+T*
+(collaboration.signal.detected, and related schemas.) Tj
+T*
+(- Implement event ingestion, validation, provenance, idempotency, and replay.) Tj
+T*
+(- Store operational projections in Supabase/PostgreSQL.) Tj
+T*
+(- Store capability relationships in a graph database or graph-compatible layer.) Tj
+T*
+(- Add vector indexes for evidence retrieval and LLM grounding.) Tj
+T*
+() Tj
+T*
+(Phase 3 - Syrka-native intelligence services, 12-20 weeks) Tj
+T*
+() Tj
+T*
+(- Build the Syrka Ontology service.) Tj
+T*
+(- Build Human Capability Graph service.) Tj
+T*
+(- Build Capability Inference Engine with transparent confidence/provenance.) Tj
+T*
+(- Build Career Intent Engine and Odyssey recommendations.) Tj
+T*
+(- Integrate market signals, research intelligence, GitHub evidence, and employer feedback.) Tj
+T*
+() Tj
+T*
+(Phase 4 - UX replacement and module extraction, 20-40 weeks) Tj
+T*
+() Tj
+T*
+(- Replace learner, faculty, employer, and ministry workflows with Syrka-native Next.js ) Tj
+T*
+(experiences.) Tj
+T*
+(- Use Open edX primarily as runtime/content/assessment infrastructure where still valuable.) Tj
+T*
+(- Extract or replace Open edX modules that conflict with Syrka's product model.) Tj
+T*
+(- Introduce Syrka Job Passport and Verified Credential Ledger.) Tj
+T*
+() Tj
+T*
+(Phase 5 - Human Capital Infrastructure, ongoing) Tj
+T*
+() Tj
+T*
+(- Operate cross-border capability corridors.) Tj
+T*
+(- Provide verified public profiles.) Tj
+T*
+(- Offer workforce mobility analytics to governments and employers.) Tj
+T*
+(- Maintain LMS compatibility through LTI, event adapters, and standard credential formats.) Tj
+ET
+endstream
+endobj
+28 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 29 0 R >>
+endobj
+29 0 obj
+<< /Length 2323 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+54 740 Td
+() Tj
+T*
+(14. Consequences) Tj
+T*
+() Tj
+T*
+(Positive) Tj
+T*
+() Tj
+T*
+(- Syrka avoids wasting years rebuilding commodity LMS functionality.) Tj
+T*
+(- Open edX provides the best combination of scalable learning runtime, extensibility, ) Tj
+T*
+(events, Python ecosystem, and modern frontend direction.) Tj
+T*
+(- The architecture protects Syrka's strategic systems from LMS lock-in.) Tj
+T*
+(- XBlocks and LTI provide practical hooks for AI-native assessment and evidence capture.) Tj
+T*
+(- The anti-corruption layer gives Syrka freedom to modernize incrementally.) Tj
+T*
+() Tj
+T*
+(Negative) Tj
+T*
+() Tj
+T*
+(- Open edX is operationally heavy.) Tj
+T*
+(- The default MySQL data layer does not align with Supabase PostgreSQL.) Tj
+T*
+(- AGPL obligations require careful legal/product planning.) Tj
+T*
+(- The team must maintain a boundary between Open edX domain concepts and Syrka canonical ) Tj
+T*
+(capability concepts.) Tj
+T*
+(- Full local clone/test due diligence must still be completed when network access permits.) Tj
+T*
+() Tj
+T*
+(15. Final recommendation) Tj
+T*
+() Tj
+T*
+(Choose the hybrid approach: use Open edX as the primary LMS foundation and learning runtime,) Tj
+T*
+( but build Syrka's intelligence, ontology, graph, career, credential, employer, government, ) Tj
+T*
+(and workforce mobility systems as independent Syrka-native services.) Tj
+T*
+() Tj
+T*
+(Open edX is selected because it has the strongest alignment with Syrka's need for modular ) Tj
+T*
+(learning experiences, event-rich educational telemetry, AI/ML-friendly Python ) Tj
+T*
+(infrastructure, React-compatible modernization, and scalable online learning patterns. ) Tj
+T*
+(Moodle and Canvas are stronger conventional LMS products in certain institutional workflows,) Tj
+T*
+( but Syrka's defining advantage is not conventional LMS completeness. Syrka's advantage is ) Tj
+T*
+(converting educational activity into trustworthy capability intelligence and workforce ) Tj
+T*
+(mobility infrastructure.) Tj
+T*
+() Tj
+T*
+(The company should not bet its future on a permanent fork of any LMS monolith. It should use) Tj
+T*
+( Open edX to accelerate the operational layer, then systematically move the center of ) Tj
+T*
+(gravity to Syrka's canonical event ledger, ontology, graph, inference, passport, and ) Tj
+T*
+(corridor services.) Tj
+ET
+endstream
+endobj
+xref
+0 30
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000204 00000 n 
+0000000274 00000 n 
+0000000400 00000 n 
+0000002892 00000 n 
+0000003018 00000 n 
+0000006643 00000 n 
+0000006769 00000 n 
+0000010143 00000 n 
+0000010271 00000 n 
+0000013472 00000 n 
+0000013600 00000 n 
+0000016934 00000 n 
+0000017062 00000 n 
+0000020213 00000 n 
+0000020341 00000 n 
+0000023070 00000 n 
+0000023198 00000 n 
+0000027131 00000 n 
+0000027259 00000 n 
+0000030233 00000 n 
+0000030361 00000 n 
+0000032783 00000 n 
+0000032911 00000 n 
+0000035543 00000 n 
+0000035671 00000 n 
+0000038639 00000 n 
+0000038767 00000 n 
+trailer
+<< /Size 30 /Root 1 0 R /Info << /Title (ADR-001 - Selection of the Open-Source LMS Foundation for Syrka) /Author (Syrka Architecture) >> >>
+startxref
+41143
+%%EOF

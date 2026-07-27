@@ -73,51 +73,51 @@ export default function AddCountryModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
+      <div className="bg-[#0D1117] rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-display text-xl text-gray-900">Add New Country</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg">&times;</button>
+          <h2 className="font-display text-xl text-[#E6EDF3]">Add New Country</h2>
+          <button onClick={onClose} className="text-[#484F58] hover:text-[#C9D1D9] text-lg">&times;</button>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Country name</label>
+            <label className="block text-xs text-[#8B949E] mb-1">Country name</label>
             <input
               value={name} onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+              className="w-full border border-[#21262D] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#484F58]"
               placeholder="e.g. United Arab Emirates"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1">National vision name</label>
+            <label className="block text-xs text-[#8B949E] mb-1">National vision name</label>
             <input
               value={visionName} onChange={(e) => setVisionName(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+              className="w-full border border-[#21262D] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#484F58]"
               placeholder="e.g. UAE Vision 2031"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Vision year</label>
+              <label className="block text-xs text-[#8B949E] mb-1">Vision year</label>
               <input
                 type="number" value={visionYear} onChange={(e) => setVisionYear(Number(e.target.value))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+                className="w-full border border-[#21262D] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#484F58]"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Target workforce gap</label>
+              <label className="block text-xs text-[#8B949E] mb-1">Target workforce gap</label>
               <input
                 type="number" value={gapNumber} onChange={(e) => setGapNumber(Number(e.target.value))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+                className="w-full border border-[#21262D] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#484F58]"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Primary sector</label>
+              <label className="block text-xs text-[#8B949E] mb-1">Primary sector</label>
               <select
                 value={sector} onChange={(e) => setSector(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+                className="w-full border border-[#21262D] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#484F58]"
               >
                 {['Technology', 'Finance', 'Energy', 'Tourism', 'Health', 'Manufacturing'].map((s) => (
                   <option key={s}>{s}</option>
@@ -125,22 +125,22 @@ export default function AddCountryModal({ onClose }: { onClose: () => void }) {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Accent colour</label>
+              <label className="block text-xs text-[#8B949E] mb-1">Accent colour</label>
               <input
                 type="color" value={accentColour} onChange={(e) => setAccentColour(e.target.value)}
-                className="w-full h-[38px] border border-gray-200 rounded-lg cursor-pointer"
+                className="w-full h-[38px] border border-[#21262D] rounded-lg cursor-pointer"
               />
             </div>
           </div>
 
           {/* Wikidata search */}
-          <div className="pt-2 border-t border-gray-100">
-            <label className="block text-xs text-gray-500 mb-2">Search universities via Wikidata</label>
+          <div className="pt-2 border-t border-[#21262D]">
+            <label className="block text-xs text-[#8B949E] mb-2">Search universities via Wikidata</label>
             <div className="flex gap-2">
               <input
                 value={name}
                 readOnly
-                className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-500"
+                className="flex-1 border border-[#21262D] rounded-lg px-3 py-2 text-sm bg-[#0D1117] text-[#8B949E]"
               />
               <button
                 onClick={searchWikidata}
@@ -154,7 +154,7 @@ export default function AddCountryModal({ onClose }: { onClose: () => void }) {
             {institutions.length > 0 && (
               <div className="mt-3 space-y-2">
                 {institutions.map((inst, i) => (
-                  <label key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <label key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#0D1117] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={selected.has(i)}
@@ -169,9 +169,9 @@ export default function AddCountryModal({ onClose }: { onClose: () => void }) {
                       className="rounded"
                     />
                     <div>
-                      <span className="text-sm text-gray-800">{inst.name}</span>
+                      <span className="text-sm text-[#E6EDF3]">{inst.name}</span>
                       {inst.students && (
-                        <span className="text-xs text-gray-400 ml-2">— {inst.students.toLocaleString()} students</span>
+                        <span className="text-xs text-[#484F58] ml-2">— {inst.students.toLocaleString()} students</span>
                       )}
                     </div>
                   </label>
@@ -181,19 +181,19 @@ export default function AddCountryModal({ onClose }: { onClose: () => void }) {
 
             {searched && institutions.length === 0 && !searching && (
               <div className="mt-3">
-                <p className="text-xs text-gray-400 mb-2">No results from Wikidata. Add an institution manually:</p>
+                <p className="text-xs text-[#484F58] mb-2">No results from Wikidata. Add an institution manually:</p>
                 <input
                   value={manualInst}
                   onChange={(e) => setManualInst(e.target.value)}
                   placeholder="Institution name"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+                  className="w-full border border-[#21262D] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#484F58]"
                 />
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex gap-3 mt-6 pt-4 border-t border-gray-100">
+        <div className="flex gap-3 mt-6 pt-4 border-t border-[#21262D]">
           <button
             onClick={handleSubmit}
             disabled={!name || saving}
@@ -203,7 +203,7 @@ export default function AddCountryModal({ onClose }: { onClose: () => void }) {
           </button>
           <button
             onClick={onClose}
-            className="px-6 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-gray-400"
+            className="px-6 py-2.5 rounded-lg border border-[#21262D] text-sm text-[#8B949E] hover:border-[#484F58]"
           >
             Cancel
           </button>

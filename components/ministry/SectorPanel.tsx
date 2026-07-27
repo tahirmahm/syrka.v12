@@ -49,7 +49,7 @@ export default function SectorPanel({
   )
 
   return (
-    <div className="rounded-xl bg-white p-6 shadow-sm border border-slate-100">
+    <div className="rounded-xl bg-[#0D1117] p-6 shadow-sm border border-slate-100">
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>

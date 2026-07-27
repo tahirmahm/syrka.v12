@@ -1,0 +1,51 @@
+:root {
+  /* Surfaces */
+  --bg-base: #0A0C10;
+  --bg-surface: #0D1117;
+  --bg-elevated: #161B22;
+  --bg-overlay: #1C2128;
+
+  /* Borders */
+  --border-subtle: #21262D;
+  --border-default: #30363D;
+  --border-emphasis: #484F58;
+
+  /* Text */
+  --text-primary: #E6EDF3;
+  --text-secondary: #C9D1D9;
+  --text-muted: #8B949E;
+  --text-faint: #484F58;
+
+  /* Country accents */
+  --accent-saudi: #C9A84C;
+  --accent-saudi-dim: rgba(201,168,76,0.08);
+  --accent-saudi-hover: rgba(201,168,76,0.18);
+  --accent-malta: #1D9E75;
+  --accent-malta-dim: rgba(29,158,117,0.08);
+  --accent-uk: #3B8BD4;
+  --accent-uk-dim: rgba(59,139,212,0.08);
+
+  /* Status */
+  --danger: #F85149;
+  --danger-bg: #2D1116;
+  --danger-border: #3D1C1C;
+  --warning: #E3B341;
+  --warning-bg: #271C0A;
+  --warning-border: #3D2C12;
+  --success: #3FB950;
+  --success-bg: #0D2215;
+  --success-border: #1C3526;
+
+  /* Radius */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-xl: 12px;
+
+  /* Animation */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast: 120ms;
+  --t-base: 200ms;
+  --t-slow: 350ms;
+}

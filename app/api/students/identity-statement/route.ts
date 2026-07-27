@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { resolveDeepSeekModel } from '@/lib/deepseek'
 
 const BANNED_WORDS = ['passionate', 'dynamic', 'results-driven', 'dedicated professional', 'leveraging', 'cutting-edge', 'synergy']
 
@@ -11,9 +12,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ statement: 'Career Identity Statement generation requires AI configuration.' })
     }
 
-    const countryContext = country === 'saudi'
-      ? "Saudi Arabia's Vision 2030 economy"
-      : "Malta's Vision 2050 digital economy"
+    const countryContexts: Record<string, string> = {
+      saudi: "Saudi Arabia's Vision 2030 economy",
+      malta: "Malta's Vision 2050 digital economy",
+      uk: "the UK AI Opportunities Action Plan 2030 economy",
+    }
+    const countryContext = countryContexts[country] || countryContexts.saudi
 
     const client = new OpenAI({
       baseURL: 'https://api.deepseek.com/v1',
@@ -24,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     for (let attempt = 0; attempt < 2; attempt++) {
       const completion = await client.chat.completions.create({
-        model: 'deepseek-chat',
+        model: resolveDeepSeekModel().model,
         messages: [
           {
             role: 'user',

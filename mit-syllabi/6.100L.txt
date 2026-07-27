@@ -1,0 +1,63 @@
+MIT 6.100L — Introduction to Computer Science and Programming Using Python
+Source: MIT OpenCourseWare
+URL: https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/
+
+=== COURSE DESCRIPTION ===
+This course is aimed at students with little or no programming experience. It aims to provide students with an understanding of the role computation can play in solving problems and to help students, regardless of their major, feel justifiably confident of their ability to write small programs that allow them to accomplish useful goals. The class uses the Python 3 programming language.
+
+The course covers the fundamentals of programming, computational problem solving, data structures, algorithms, and introduces key concepts in computer science. Students learn to think computationally and develop programs to solve real-world problems.
+
+=== LECTURE TOPICS ===
+1. Introduction and Computation
+2. Strings, Input/Output, and Branching
+3. Iteration
+4. Decomposition, Abstraction, and Functions
+5. Tuples, Lists, Aliasing, Mutability, and Cloning
+6. Recursion and Dictionaries
+7. Debugging and Testing
+8. Exceptions and Assertions
+9. Object-Oriented Programming: Classes and Inheritance
+10. Object-Oriented Programming: An Extended Example
+11. Understanding Program Efficiency, Part 1
+12. Understanding Program Efficiency, Part 2
+13. Searching and Sorting
+14. Visualization of Data
+15. Stochastic Programs, Probability, and Distributions
+16. Monte Carlo Simulation
+17. Sampling and Standard Error
+18. Random Walks
+19. Learn to Program with Scratch (supplementary)
+20. Python Basics Review
+21. Simple Programs
+22. Functions and Scope
+23. Structured Types: Tuples and Lists
+24. Structured Types: Dictionaries
+25. Algorithmic Complexity
+26. Final Review and Next Steps
+
+=== SKILLS TAUGHT ===
+- Python programming fundamentals
+- Variable assignment and type handling
+- Control flow with conditionals and loops
+- Function definition and decomposition
+- Recursion implementation
+- String manipulation and formatting
+- List and tuple operations
+- Dictionary usage and hashing
+- Object-oriented programming with classes
+- Inheritance and polymorphism
+- Exception handling and assertions
+- Debugging strategies and testing
+- Algorithmic complexity analysis (Big O)
+- Linear and binary search implementation
+- Sorting algorithms (selection sort, merge sort)
+- Monte Carlo simulation
+- Basic probability and distributions
+- Data visualization with matplotlib
+- File I/O operations
+- Computational problem decomposition
+- Abstraction and modular design
+- Iterative development methodology
+- Random walk simulation
+- Statistical sampling and standard error
+- Program efficiency optimization

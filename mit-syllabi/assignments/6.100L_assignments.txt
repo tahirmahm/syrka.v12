@@ -1,0 +1,17 @@
+MIT COURSE: 6.100L — Introduction to CS and Programming Using Python
+SECTION: Assignments | FETCHED: April 28, 2026
+
+=== ASSIGNMENT LIST ===
+PS0: Environment setup | PS1: Data types and functions | PS2: Iteration and strings
+PS3: OOP | PS4: Recursion and data structures | PS5: Algorithms and simulation
+10 Recitation sessions with notes and code
+
+=== SKILLS DEMONSTRATED ===
+- Set up Python dev environment and manage Git repositories
+- Implement search and sort algorithms in Python
+- Work with lists, tuples, dictionaries, sets, strings
+- Implement classes with methods, inheritance, OOP patterns
+- Apply recursion, iteration, Big-O complexity analysis
+- Use standard library for file I/O and numerical operations
+- Write unit tests to verify code correctness
+- Complete assignments from starter code and test harnesses

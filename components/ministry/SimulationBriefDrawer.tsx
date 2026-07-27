@@ -152,13 +152,13 @@ export default function SimulationBriefDrawer({
       type: 'value' as const,
       min: 0,
       max: 100,
-      axisLabel: { formatter: '{value}%', color: '#8B95A8', fontSize: 11 },
+      axisLabel: { formatter: '{value}%', color: '#8B949E', fontSize: 11 },
       splitLine: { lineStyle: { color: '#f1f5f9' } },
     },
     yAxis: {
       type: 'category' as const,
       data: ['Gap closure'],
-      axisLabel: { color: '#0A1628', fontSize: 12 },
+      axisLabel: { color: '#E6EDF3', fontSize: 12 },
     },
     grid: { left: 100, right: 40, top: 20, bottom: 30 },
     series: [
@@ -201,9 +201,9 @@ export default function SimulationBriefDrawer({
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-2xl bg-white overflow-y-auto shadow-2xl">
+      <div className="relative w-full max-w-2xl bg-[#0D1117] overflow-y-auto shadow-2xl">
         {/* Header */}
-        <div className="sticky top-0 bg-white z-10 px-6 py-5 border-b border-slate-100">
+        <div className="sticky top-0 bg-[#0D1117] z-10 px-6 py-5 border-b border-slate-100">
           <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
             <X size={20} />
           </button>

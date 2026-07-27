@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { StateGraph, START, END, Annotation } from '@langchain/langgraph'
 import { createClient } from '@/lib/supabase'
-import { createDeepSeekClient } from '@/lib/deepseek'
+import { createDeepSeekClient, resolveDeepSeekModel } from '@/lib/deepseek'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -285,7 +285,7 @@ Return a JSON array of 5 prescription objects. Each must have:
 - status ("not_simulated")`
 
   const response = await client.chat.completions.create({
-    model: 'deepseek-chat',
+    model: resolveDeepSeekModel().model,
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userMessage },
@@ -348,7 +348,7 @@ async function generateRankingImpact(
   const client = createDeepSeekClient()
 
   const response = await client.chat.completions.create({
-    model: 'deepseek-chat',
+    model: resolveDeepSeekModel().model,
     messages: [
       {
         role: 'system',

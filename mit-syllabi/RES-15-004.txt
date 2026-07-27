@@ -1,0 +1,48 @@
+MIT RES-15-004 — System Dynamics: Systems Thinking and Modeling for a Complex World
+Source: MIT OpenCourseWare
+URL: https://ocw.mit.edu/courses/res-15-004-system-dynamics-systems-thinking-and-modeling-for-a-complex-world-january-iap-2020/
+
+=== COURSE DESCRIPTION ===
+This course introduces students to system dynamics and systems thinking, providing tools for understanding the structure and dynamics of complex systems. Students learn to identify feedback loops, delays, and nonlinearities that drive system behaviour; construct causal loop diagrams and stock-and-flow models; and simulate system behaviour over time. The course uses real-world examples from business, public health, ecology, and technology adoption.
+
+Systems thinking enables students to see interconnections rather than linear cause-and-effect chains, an essential skill for managing complexity in AI deployment, organisational design, and policy analysis.
+
+=== LECTURE TOPICS ===
+1. Introduction to System Dynamics
+2. Mental Models and Policy Resistance
+3. Causal Loop Diagrams: Notation and Construction
+4. Reinforcing and Balancing Feedback Loops
+5. Delays and Their Effects on System Behaviour
+6. Stock and Flow Diagrams
+7. Building a Simple Simulation Model
+8. Population Dynamics and Growth Models
+9. S-Shaped Growth and Resource Limits
+10. Technology Adoption and Diffusion Models
+11. Supply Chain Dynamics (Beer Game)
+12. Bullwhip Effect and Inventory Management
+13. Organizational Growth and Decline
+14. Commodity Cycles and Market Dynamics
+15. Model Validation and Sensitivity Analysis
+16. Course Summary: Systems Thinking in Practice
+
+=== SKILLS TAUGHT ===
+- Systems thinking methodology
+- Causal loop diagram construction
+- Reinforcing feedback loop identification
+- Balancing feedback loop identification
+- Delay recognition and modelling
+- Stock-and-flow diagram creation
+- System dynamics simulation
+- Mental model articulation
+- Policy resistance analysis
+- Population growth modelling
+- S-shaped growth curve analysis
+- Technology diffusion modelling
+- Supply chain dynamics analysis
+- Bullwhip effect identification
+- Sensitivity analysis of models
+- Leverage point identification
+- Nonlinear system behaviour analysis
+- Model validation techniques
+- Scenario planning with simulations
+- Complex system boundary definition

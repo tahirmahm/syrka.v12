@@ -1,0 +1,27 @@
+MIT COURSE: 6.036 — Introduction to Machine Learning
+SECTION: Labs | FETCHED: April 28, 2026
+
+=== ASSIGNMENT LIST ===
+Lab 1: Perceptrons and Linear Classifiers
+Lab 2: Features and Regression
+Lab 3: Neural Networks (from scratch in NumPy only)
+Lab 4: Convolutional Neural Networks (PyTorch)
+Lab 5: Recurrent Neural Networks
+Lab 6: Reinforcement Learning (OpenAI Gym)
+Lab 7: Decision Trees and Random Forests
+Lab 8: Clustering and Unsupervised Learning
+
+=== SKILLS DEMONSTRATED ===
+- Implement perceptron from scratch in NumPy, verify convergence
+- Derive and code gradient descent for logistic regression in NumPy
+- Implement full backpropagation manually through computation graphs
+- Build and train CNNs in PyTorch for image classification
+- Apply transfer learning: fine-tune pre-trained ResNet on new dataset
+- Implement LSTM from scratch with all four gate mechanisms
+- Implement Q-learning with epsilon-greedy exploration policy
+- Implement CART decision tree with information gain splitting
+- Build random forest ensemble from individual trees
+- Implement k-means clustering with random restarts
+- Implement EM algorithm for Gaussian mixture models
+- Evaluate models: accuracy, precision, recall, F1, ROC/AUC
+- Perform cross-validation and systematic hyperparameter search

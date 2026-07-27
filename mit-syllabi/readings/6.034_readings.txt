@@ -1,0 +1,30 @@
+MIT COURSE: 6.034 — Artificial Intelligence
+SECTION: Readings | FETCHED: April 28, 2026
+
+=== TEXTBOOKS ===
+Primary: Course notes by Prof. Patrick Henry Winston.
+Supplementary: Artificial Intelligence — Russell and Norvig, 3rd ed. (AIMA). ISBN: 9780136042594.
+
+=== READING LIST BY LECTURE ===
+Lec 1: Introduction — AI history, scope
+Lec 2–3: Reasoning — goal trees, rule-based systems, STRIPS planning
+Lec 4: Search I — DFS, BFS, hill climbing, beam search
+Lec 5: Search II — branch and bound, A*, admissibility, consistency
+Lec 6: Search III — minimax, alpha-beta pruning, evaluation functions
+Lec 7–8: Constraints — line drawing, CSP formulation
+Lec 9: Constraints II — arc consistency, visual object recognition
+Lec 10–11: Learning I–II — k-NN, ID3 decision trees, information gain
+Lec 12: Learning III — neural networks, backpropagation
+Lec 13: Learning IV — genetic algorithms, crossover, mutation
+Lec 14–15: Learning V — SVMs, max margin, kernel trick, soft margin
+Lec 16: Learning VI — AdaBoost, ensemble error bounds
+Lec 17: Learning VII — one-shot learning, near misses
+Lec 18–19: Representations — semantic networks, classes, trajectories
+Lec 20: Business of AI
+Lec 21–22: Probabilistic Inference — Bayes nets, D-separation, belief propagation
+Lec 23: Summary
+
+=== KEY CONCEPTS ===
+A* search with admissible heuristics, minimax with alpha-beta, CSP arc consistency,
+ID3 information gain, backpropagation, genetic algorithms, SVM kernel trick,
+AdaBoost weak learner combination, Bayesian network belief propagation

@@ -1,0 +1,1758 @@
+%PDF-1.4
+%
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R 30 0 R] /Count 14 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 2972 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(DESIGN-001 - Syrka Visual Identity & Design System Constitution) Tj
+T*
+() Tj
+T*
+(Status: Constitutional Design Specification) Tj
+T*
+(Version: 1.0) Tj
+T*
+(Date: 2026-07-08) Tj
+T*
+(Builds upon: Product Suite; UX-001 - Product Experience Architecture) Tj
+T*
+(Canonical visual reference: attached Syrka logo and brand concept) Tj
+T*
+(Decision owners: Brand, Product Design, Design Systems, Frontend Platform, Marketing Design) Tj
+T*
+() Tj
+T*
+(1. Brand DNA) Tj
+T*
+() Tj
+T*
+(Syrka is the operating system for human capability. Its brand must feel institutional enough for) Tj
+T*
+( universities and governments, intelligent enough for AI-native capability inference, and human ) Tj
+T*
+(enough for students building their futures.) Tj
+T*
+() Tj
+T*
+(The existing mark is not redesigned by this specification. It remains the canonical symbol: an ) Tj
+T*
+(open book, a gateway, convergence, and synthesis. Those meanings expand into the design system ) Tj
+T*
+(as follows:) Tj
+T*
+() Tj
+T*
+(| Logo meaning | Product meaning | Visual design implication |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Open Book | knowledge, learning, evidence | open layouts, generous margins, legible typography |) Tj
+T*
+(| Gateway | opportunity, mobility, access | portal-like cards, pathways, framed destination states |) Tj
+T*
+(| Convergence | evidence, capability, market signals meeting | graph lines, subtle intersections, connected layouts |) Tj
+T*
+(| Synthesis | integration into explainable capability | layered cards, provenance stacks, calm summaries |) Tj
+T*
+() Tj
+T*
+(Mission) Tj
+T*
+() Tj
+T*
+(To transform learning, evidence, and human experience into trusted capability intelligence that ) Tj
+T*
+(helps people move toward meaningful opportunities.) Tj
+T*
+() Tj
+T*
+(Vision) Tj
+T*
+() Tj
+T*
+(A global human capability infrastructure where every learner can prove what they can do, every ) Tj
+T*
+(institution can understand capability formation, every employer can hire based on evidence, and ) Tj
+T*
+(every government can plan workforce mobility with trust.) Tj
+T*
+() Tj
+T*
+(Personality) Tj
+T*
+() Tj
+T*
+(- Intelligent: precise, structured, never vague.) Tj
+T*
+(- Calm: quiet confidence instead of loud persuasion.) Tj
+T*
+(- Institutional: suitable for universities, governments, and official documents.) Tj
+T*
+(- Human: supports ambition without reducing people to scores.) Tj
+T*
+(- Evidence-driven: recommendations are always justified.) Tj
+T*
+(- Premium: restrained, refined, and durable.) Tj
+T*
+() Tj
+T*
+(Voice and emotional tone) Tj
+T*
+() Tj
+T*
+(Syrka speaks like a trusted advisor: concise, factual, explanatory, and respectful. It avoids ) Tj
+T*
+(hype, gamification excess, and manipulative urgency. The emotional tone should be reassuring: ) Tj
+T*
+("Your future is understandable, evidence-backed, and actionable.") Tj
+T*
+() Tj
+T*
+(Brand promise) Tj
+T*
+() Tj
+T*
+(Syrka helps people understand what they can credibly do, why that belief is justified, and where) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 2606 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+( that capability can create value.) Tj
+T*
+() Tj
+T*
+(Core values) Tj
+T*
+() Tj
+T*
+(1. Evidence before assertion.) Tj
+T*
+(2. Capability before credentials.) Tj
+T*
+(3. Explainability before automation.) Tj
+T*
+(4. Trust before growth.) Tj
+T*
+(5. Mobility before gatekeeping.) Tj
+T*
+(6. Human agency before algorithmic authority.) Tj
+T*
+(7. Timeless clarity before trend-driven novelty.) Tj
+T*
+() Tj
+T*
+(Desired perceptions) Tj
+T*
+() Tj
+T*
+(| Audience | Desired perception |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Investors | Syrka is a category-defining infrastructure company, not a feature app. |) Tj
+T*
+(| Universities | Syrka is academically serious, interoperable, and institution-safe. |) Tj
+T*
+(| Students | Syrka helps me see my potential and prove it with evidence. |) Tj
+T*
+(| Employers | Syrka reduces hiring uncertainty with explainable capability evidence. |) Tj
+T*
+(| Governments | Syrka supports workforce planning, mobility, and national strategy responsibly. |) Tj
+T*
+() Tj
+T*
+(2. Visual Philosophy) Tj
+T*
+() Tj
+T*
+(Minimalism) Tj
+T*
+() Tj
+T*
+(Minimalism is required because Syrka handles complex ideas: ontology, evidence, capability ) Tj
+T*
+(graphs, recommendations, passports, and policy analytics. The interface must reduce cognitive ) Tj
+T*
+(load by showing only what matters now, with progressive disclosure for deeper evidence.) Tj
+T*
+() Tj
+T*
+(Evidence-first design) Tj
+T*
+() Tj
+T*
+(Every visual pattern should answer: "What supports this claim?" Capability cards, ) Tj
+T*
+(recommendations, and passport claims must show evidence count, confidence, provenance, and ) Tj
+T*
+(explanation access. Evidence is not hidden in footnotes; it is a first-class UI layer.) Tj
+T*
+() Tj
+T*
+(Enterprise appearance) Tj
+T*
+() Tj
+T*
+(Syrka must be credible in boardrooms, ministries, universities, and employer procurement ) Tj
+T*
+(processes. The visual language should use disciplined typography, restrained color, strong ) Tj
+T*
+(alignment, consistent spacing, and official-document quality.) Tj
+T*
+() Tj
+T*
+(Calm interfaces) Tj
+T*
+() Tj
+T*
+(Capability inference affects identity and opportunity. The product must not feel like a social ) Tj
+T*
+(feed, casino, or consumer growth app. Use quiet transitions, neutral backgrounds, deliberate ) Tj
+T*
+(status colors, and clear review paths.) Tj
+T*
+() Tj
+T*
+(Typography and whitespace) Tj
+T*
+() Tj
+T*
+(Typography carries institutional trust. Whitespace creates room for reasoning. Dashboards should) Tj
+T*
+( not be crowded; they should guide scanning from summary to evidence to action.) Tj
+T*
+() Tj
+T*
+(Trustworthy AI) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 2843 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(AI appears as an analytical layer, never as magic. AI-generated summaries must include evidence ) Tj
+T*
+(references, confidence, uncertainty, model/run metadata where appropriate, and a path to ) Tj
+T*
+(challenge or review.) Tj
+T*
+() Tj
+T*
+(3. Logo System) Tj
+T*
+() Tj
+T*
+(The Syrka logo consists of a geometric monoline symbol and the SYRKA wordmark. The concept image) Tj
+T*
+( establishes a black/white, high-contrast, premium identity with wide letter spacing and ) Tj
+T*
+(applications for app icon, stamp/seal, passport, document, and favicon.) Tj
+T*
+() Tj
+T*
+(Primary logo) Tj
+T*
+() Tj
+T*
+(- Use the full symbol + wordmark lockup for corporate, landing, investor, institutional, and ) Tj
+T*
+(official contexts.) Tj
+T*
+(- Maintain the wordmark's wide tracking and geometric calm.) Tj
+T*
+(- Use on black, near-black, white, or neutral backgrounds only.) Tj
+T*
+() Tj
+T*
+(Secondary logo) Tj
+T*
+() Tj
+T*
+(- Use symbol-only when space is constrained: app icon, favicon, mobile navigation, compact ) Tj
+T*
+(sidebar, seal, social avatar.) Tj
+T*
+(- Use stacked lockup for splash screens, official reports, and presentation covers.) Tj
+T*
+() Tj
+T*
+(Monochrome versions) Tj
+T*
+() Tj
+T*
+(- Primary monochrome: white logo on black/ink background.) Tj
+T*
+(- Secondary monochrome: black/ink logo on white/parchment background.) Tj
+T*
+(- Avoid multicolor logo treatments.) Tj
+T*
+() Tj
+T*
+(Clear space and minimum size) Tj
+T*
+() Tj
+T*
+(| Asset | Minimum size | Clear space |) Tj
+T*
+(|---|---:|---|) Tj
+T*
+(| Full logo | 144px wide digital / 38mm print | symbol height on all sides |) Tj
+T*
+(| Symbol | 24px digital / 8mm print | half symbol width on all sides |) Tj
+T*
+(| Favicon | 16px, 32px, 48px | no additional marks |) Tj
+T*
+(| App icon | 1024px source | centered symbol, 18% inset |) Tj
+T*
+(| Seal | 28mm print / 96px digital | outer ring thickness x 4 |) Tj
+T*
+() Tj
+T*
+(Incorrect usage) Tj
+T*
+() Tj
+T*
+(Do not stretch, rotate, recolor with gradients, add shadows, outline the wordmark, place over ) Tj
+T*
+(busy imagery, compress letter spacing, add decorative ornaments, alter stroke widths, redraw the) Tj
+T*
+( symbol, or combine it with unrelated icons.) Tj
+T*
+() Tj
+T*
+(Application rules) Tj
+T*
+() Tj
+T*
+(| Application | Rule |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Passport branding | symbol centered above passport title; use seal variant for verification. |) Tj
+T*
+(| Official documents | symbol + wordmark at top; seal watermark allowed at 4-8% opacity. |) Tj
+T*
+(| Certificates | use seal/stamp lockup; include verification QR aligned to grid. |) Tj
+T*
+(| Presentations | black or ivory cover, large symbol, restrained title typography. |) Tj
+T*
+(| Social media | symbol-only avatar; wordmark in banner with high whitespace. |) Tj
+T*
+(| Email signatures | small full logo, name/title, institutional contact. |) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 3655 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(| Merchandise | symbol-only preferred; no slogans unless official. |) Tj
+T*
+(| Conference booths | large symbol, minimal copy, capability/evidence/gateway messaging. |) Tj
+T*
+(| University partnerships | co-brand with equal clear space and neutral divider. |) Tj
+T*
+() Tj
+T*
+(4. Color System) Tj
+T*
+() Tj
+T*
+(Syrka's color system is nearly monochrome by default. Color is semantic, not decorative. The ) Tj
+T*
+(core brand uses black, white, graphite, silver, and warm institutional neutrals. Accent colors ) Tj
+T*
+(are muted and reserved for state, evidence, capability, confidence, and role differentiation.) Tj
+T*
+() Tj
+T*
+(Light mode tokens) Tj
+T*
+() Tj
+T*
+(| Token | Hex | Purpose | Accessibility / usage |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| --color-ink-950 | #050505 | primary text, logo, premium surfaces | maximum contrast |) Tj
+T*
+(| --color-ink-900 | #111111 | headings, dark UI blocks | use sparingly |) Tj
+T*
+(| --color-ink-700 | #2E2E2E | body text | AA on light |) Tj
+T*
+(| --color-stone-500 | #71716C | muted text | use for secondary, not critical |) Tj
+T*
+(| --color-stone-300 | #C8C7C0 | borders/dividers | low emphasis |) Tj
+T*
+(| --color-stone-100 | #F4F3EF | page background | warm institutional neutral |) Tj
+T*
+(| --color-white | #FFFFFF | surfaces/cards | clean content fields |) Tj
+T*
+(| --color-silver | #E7E5DE | official document surfaces | certificates/passport |) Tj
+T*
+(| --color-gold-500 | #B89B5E | verified/passport accent | use only for official trust |) Tj
+T*
+(| --color-blue-600 | #2F5F8F | information/links | restrained, accessible |) Tj
+T*
+(| --color-green-600 | #2F6B4F | success/verified | evidence verified |) Tj
+T*
+(| --color-amber-600 | #9A6A20 | warning/review needed | do not overuse |) Tj
+T*
+(| --color-red-600 | #8E2F2F | danger/revocation/error | high severity only |) Tj
+T*
+(| --color-purple-600 | #5D4A7A | AI/reasoning layer | subtle intelligence marker |) Tj
+T*
+() Tj
+T*
+(Dark mode tokens) Tj
+T*
+() Tj
+T*
+(| Token | Hex | Purpose | Accessibility / usage |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| --color-bg-dark | #050505 | primary dark background | mirrors logo concept |) Tj
+T*
+(| --color-surface-dark | #111111 | cards/panels | subtle contrast |) Tj
+T*
+(| --color-surface-raised-dark | #181818 | elevated cards | no heavy shadows |) Tj
+T*
+(| --color-border-dark | #303030 | dividers | hairline borders |) Tj
+T*
+(| --color-text-dark | #F6F5F0 | primary text | strong contrast |) Tj
+T*
+(| --color-muted-dark | #A8A8A0 | secondary text | AA where possible |) Tj
+T*
+(| --color-gold-dark | #D4BE7F | verified/passport accent | restrained official highlight |) Tj
+T*
+(| --color-blue-dark | #78A6D1 | information/links | accessible on dark |) Tj
+T*
+(| --color-green-dark | #78B892 | success | accessible on dark |) Tj
+T*
+(| --color-amber-dark | #D0A04F | warning | accessible on dark |) Tj
+T*
+(| --color-red-dark | #D17B7B | danger | accessible on dark |) Tj
+T*
+(| --color-purple-dark | #A997CA | AI/reasoning | accessible on dark |) Tj
+T*
+() Tj
+T*
+(Semantic color families) Tj
+T*
+() Tj
+T*
+(| Family | Use | Color direction |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Capability | maturity, capability state, skill clusters | neutral + muted blue/green; avoid rainbow graphs |) Tj
+T*
+(| Evidence | evidence status, provenance, review | graphite, green verified, amber review, red revoked |) Tj
+T*
+(| Confidence | confidence bands | monochrome structure + green/amber/red thresholds |) Tj
+T*
+(| Recommendation | next actions and Odyssey | blue for information, purple for AI assistance |) Tj
+T*
+(| Odyssey | pathways and milestones | blue/stone lines with gold completion markers |) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 2741 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(| Passport | verified identity/capability | black/ivory/gold/seal treatment |) Tj
+T*
+(| Government | aggregate dashboards | neutral, blue, amber; avoid individual-level colors |) Tj
+T*
+(| Employer | hiring/match flows | neutral, green for verified, blue for match context |) Tj
+T*
+(| Faculty | review/intervention | neutral, amber for attention, green for verified |) Tj
+T*
+(| Student | growth and journey | neutral, blue and green accents |) Tj
+T*
+() Tj
+T*
+(5. Typography) Tj
+T*
+() Tj
+T*
+(Font system) Tj
+T*
+() Tj
+T*
+(| Role | Recommended font | Fallback |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Primary UI | Inter or Geist Sans | system-ui, -apple-system, Segoe UI, sans-serif |) Tj
+T*
+(| Display / brand headlines | Shne, Inter Display, or Geist | Inter, system-ui |) Tj
+T*
+(| Code / technical data | JetBrains Mono or IBM Plex Mono | ui-monospace, SFMono-Regular, monospace |) Tj
+T*
+(| Numbers/tables | Tabular figures in primary font | font-variant-numeric: tabular-nums |) Tj
+T*
+() Tj
+T*
+(The wordmark remains its own brand asset and should not be recreated with the UI font.) Tj
+T*
+() Tj
+T*
+(Type scale) Tj
+T*
+() Tj
+T*
+(| Token | Size | Line height | Use |) Tj
+T*
+(|---|---:|---:|---|) Tj
+T*
+(| text-xs | 12px | 16px | captions, metadata |) Tj
+T*
+(| text-sm | 14px | 20px | secondary UI text |) Tj
+T*
+(| text-base | 16px | 24px | body and forms |) Tj
+T*
+(| text-lg | 18px | 28px | emphasized body |) Tj
+T*
+(| text-xl | 20px | 30px | card titles |) Tj
+T*
+(| text-2xl | 24px | 32px | page sections |) Tj
+T*
+(| text-3xl | 32px | 40px | page titles |) Tj
+T*
+(| text-4xl | 44px | 52px | landing hero |) Tj
+T*
+(| text-5xl | 56px | 64px | rare display |) Tj
+T*
+() Tj
+T*
+(Typographic rules) Tj
+T*
+() Tj
+T*
+(- Use letter spacing sparingly; reserve wide tracking for brand, labels, and official document ) Tj
+T*
+(headings.) Tj
+T*
+(- Body copy should be readable, not compressed.) Tj
+T*
+(- Tables use tabular numbers and clear row rhythm.) Tj
+T*
+(- Captions explain provenance and confidence; never hide critical uncertainty in low-contrast ) Tj
+T*
+(text.) Tj
+T*
+(- Long-form reports use a comfortable measure: 68-78 characters.) Tj
+T*
+() Tj
+T*
+(6. Iconography) Tj
+T*
+() Tj
+T*
+(Syrka icons derive from the logo's monoline geometry: precise, thin, angled, open, and ) Tj
+T*
+(symmetrical where possible.) Tj
+T*
+() Tj
+T*
+(| Property | Rule |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Stroke width | 1.5px at 24px; 2px only for small dense contexts |) Tj
+T*
+(| Style | outline by default; filled only for selected/critical state |) Tj
+T*
+(| Corners | subtle radius, no cartoon rounding |) Tj
+T*
+(| Perspective | flat orthographic, no skeuomorphism |) Tj
+T*
+(| Motion | icons may draw in with short line animations, never bounce |) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 2321 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(| Grid | 24px base with optical alignment |) Tj
+T*
+() Tj
+T*
+(Semantic icon examples) Tj
+T*
+() Tj
+T*
+(| Concept | Icon direction |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Learning | open book/gateway line derived from mark |) Tj
+T*
+(| Capability | node with evidence-backed check path |) Tj
+T*
+(| Evidence | document/artifact with provenance dot |) Tj
+T*
+(| Passport | booklet/seal/QR motif |) Tj
+T*
+(| Career | pathway/gateway arrow, not corporate ladder clich |) Tj
+T*
+(| Employer | building + verified capability nodes |) Tj
+T*
+(| Government | column/seal/aggregate chart |) Tj
+T*
+(| Research | paper/network citation |) Tj
+T*
+(| Portfolio | curated artifact stack |) Tj
+T*
+(| Recommendations | compass/path with evidence dot |) Tj
+T*
+(| Analytics | structured chart, minimal color |) Tj
+T*
+(| AI | reasoning spark inside bracket, not robot face |) Tj
+T*
+(| Notifications | quiet bell/dot |) Tj
+T*
+(| Settings | geometric sliders |) Tj
+T*
+() Tj
+T*
+(7. Design Tokens) Tj
+T*
+() Tj
+T*
+(Spacing) Tj
+T*
+() Tj
+T*
+(Use a 4px base grid with intentional whitespace.) Tj
+T*
+() Tj
+T*
+(| Token | Value | Use |) Tj
+T*
+(|---|---:|---|) Tj
+T*
+(| space-0 | 0 | flush alignment |) Tj
+T*
+(| space-1 | 4px | tight icon gaps |) Tj
+T*
+(| space-2 | 8px | compact groups |) Tj
+T*
+(| space-3 | 12px | form gaps |) Tj
+T*
+(| space-4 | 16px | card internal spacing |) Tj
+T*
+(| space-5 | 20px | section grouping |) Tj
+T*
+(| space-6 | 24px | dashboard grid gaps |) Tj
+T*
+(| space-8 | 32px | page sections |) Tj
+T*
+(| space-10 | 40px | large content separation |) Tj
+T*
+(| space-12 | 48px | hero/report spacing |) Tj
+T*
+(| space-16 | 64px | major page bands |) Tj
+T*
+(| space-24 | 96px | landing sections |) Tj
+T*
+() Tj
+T*
+(Radius, elevation, opacity, animation) Tj
+T*
+() Tj
+T*
+(| Token | Value | Use |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| radius-sm | 6px | inputs, badges |) Tj
+T*
+(| radius-md | 10px | cards, dialogs |) Tj
+T*
+(| radius-lg | 16px | major panels |) Tj
+T*
+(| radius-xl | 24px | app icon / hero surfaces |) Tj
+T*
+(| shadow-subtle | 0 1px 2px rgba\(0,0,0,.06\) | light card lift |) Tj
+T*
+(| shadow-panel | 0 12px 32px rgba\(0,0,0,.10\) | dialogs/menus |) Tj
+T*
+(| opacity-disabled | 0.45 | disabled controls |) Tj
+T*
+(| duration-fast | 120ms | hover/focus |) Tj
+T*
+(| duration-base | 180ms | small transitions |) Tj
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 2117 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(| duration-slow | 280ms | page/modal transitions |) Tj
+T*
+(| ease-standard | cubic-bezier\(.2,.8,.2,1\) | default |) Tj
+T*
+() Tj
+T*
+(Grid and breakpoints) Tj
+T*
+() Tj
+T*
+(| Token | Value |) Tj
+T*
+(|---|---:|) Tj
+T*
+(| container-sm | 640px |) Tj
+T*
+(| container-md | 768px |) Tj
+T*
+(| container-lg | 1024px |) Tj
+T*
+(| container-xl | 1200px |) Tj
+T*
+(| container-2xl | 1440px |) Tj
+T*
+(| breakpoint-sm | 640px |) Tj
+T*
+(| breakpoint-md | 768px |) Tj
+T*
+(| breakpoint-lg | 1024px |) Tj
+T*
+(| breakpoint-xl | 1280px |) Tj
+T*
+(| breakpoint-2xl | 1536px |) Tj
+T*
+() Tj
+T*
+(8. Layout Philosophy) Tj
+T*
+() Tj
+T*
+(Landing pages) Tj
+T*
+() Tj
+T*
+(Use strong negative space, a clear hero claim, a quiet visual of evidence-to-capability ) Tj
+T*
+(transformation, and focused conversion points. Avoid crowded SaaS collage sections.) Tj
+T*
+() Tj
+T*
+(Dashboards) Tj
+T*
+() Tj
+T*
+(Dashboards answer the user's next question. Use one primary summary region, one action region, ) Tj
+T*
+(one evidence/status region, and a low-noise activity feed. Avoid more than 5-7 major widgets ) Tj
+T*
+(above the fold.) Tj
+T*
+() Tj
+T*
+(Forms) Tj
+T*
+() Tj
+T*
+(Forms are official and calm. Use clear labels, inline validation, minimal fields per step, and ) Tj
+T*
+(explanations for sensitive data.) Tj
+T*
+() Tj
+T*
+(Tables) Tj
+T*
+() Tj
+T*
+(Tables should support enterprise review: sticky headers, clear filters, density options, ) Tj
+T*
+(keyboard navigation, and export where appropriate.) Tj
+T*
+() Tj
+T*
+(Cards) Tj
+T*
+() Tj
+T*
+(Cards are evidence containers. Every important card has title, summary, status, ) Tj
+T*
+(evidence/provenance, primary action, and optional explanation.) Tj
+T*
+() Tj
+T*
+(Graphs and timelines) Tj
+T*
+() Tj
+T*
+(Capability/knowledge graphs use structure first: spacing, edge weight, grouping, labels, and ) Tj
+T*
+(focus states. Color is secondary. Timelines show chronology and provenance with clear ) Tj
+T*
+(event/evidence distinction.) Tj
+T*
+() Tj
+T*
+(Passport and portfolio) Tj
+T*
+() Tj
+T*
+(Passport uses official-document logic: ivory/black/gold, seal, QR, version, expiry, verification) Tj
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 4081 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+( status, and redaction controls. Portfolio is more expressive but still restrained.) Tj
+T*
+() Tj
+T*
+(9. Component Language) Tj
+T*
+() Tj
+T*
+(| Component | Purpose | States | Accessibility | Variants / behavior |) Tj
+T*
+(|---|---|---|---|---|) Tj
+T*
+(| Button | trigger clear action | default, hover, focus, active, loading, disabled | visible focus, semantic button | ) Tj
+T*
+(primary, secondary, ghost, danger, link |) Tj
+T*
+(| Input | collect data | default, focus, error, disabled, success | label required, error text | text, textarea, ) Tj
+T*
+(search, date, select |) Tj
+T*
+(| Dropdown | choose from known set | open, selected, disabled | keyboard, aria-expanded | simple, searchable, multi-) Tj
+T*
+(select |) Tj
+T*
+(| Card | contain related information | default, hover, selected, loading | semantic headings | standard, evidence, ) Tj
+T*
+(capability, passport |) Tj
+T*
+(| Capability Card | summarize capability state | emerging to revoked | confidence announced textually | evidence ) Tj
+T*
+(count, maturity, review action |) Tj
+T*
+(| Evidence Card | show support/provenance | pending, verified, disputed, revoked | source and status text | artifact ) Tj
+T*
+(preview, review trail |) Tj
+T*
+(| Recommendation Card | explain next action | new, accepted, dismissed, expired | reason and confidence text | ) Tj
+T*
+(Odyssey, job, learning, portfolio |) Tj
+T*
+(| Passport Card | official claim summary | active, shared, expired, revoked | verification status | QR, version, ) Tj
+T*
+(redaction |) Tj
+T*
+(| Timeline | sequence events/evidence | selected, filtered | ordered list fallback | learning/evidence/passport ) Tj
+T*
+(timelines |) Tj
+T*
+(| Graph Viewer | capability/knowledge graph | pan, focus, inspect | table/list fallback | force, hierarchy, path view ) Tj
+T*
+(|) Tj
+T*
+(| Chart | visualize metrics | hover, focus, empty | alt summary | line, bar, heatmap, network |) Tj
+T*
+(| Search | discover people/content | typing, results, empty | keyboard-first | global, scoped, command palette |) Tj
+T*
+(| Filter | narrow data | active, clearable | labels | chips, panels, saved filters |) Tj
+T*
+(| Navigation | move across product | active, collapsed | landmark roles | sidebar, topbar, mobile tab |) Tj
+T*
+(| Dialog | focused decision | open, loading | focus trap | confirm, form, evidence inspector |) Tj
+T*
+(| Notification | status update | unread, read, actioned | polite/live region | toast, inbox, banner |) Tj
+T*
+(| Badge | semantic label | default, emphasis | text + color | status, role, confidence, evidence |) Tj
+T*
+(| Progress Bar | show completion | determinate, indeterminate | value text | Odyssey, onboarding, review |) Tj
+T*
+(| Tabs | switch panels | active, disabled | keyboard | underlined, segmented |) Tj
+T*
+(| Accordion | progressive disclosure | open/closed | aria controls | evidence details, policy notes |) Tj
+T*
+(| Sidebar | app structure | expanded/collapsed | landmarks | role-specific navigation |) Tj
+T*
+(| Header | page identity/actions | fixed/static | headings | page, report, dashboard |) Tj
+T*
+(| Footer | legal/context | static | navigable links | marketing, app, document |) Tj
+T*
+() Tj
+T*
+(10. Data Visualization) Tj
+T*
+() Tj
+T*
+(Syrka visualization should make complex relationships understandable without turning capability ) Tj
+T*
+(into entertainment.) Tj
+T*
+() Tj
+T*
+(| Visualization | Design rule |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Capability graph | grouped by ontology domain; edge thickness for evidence strength; confidence visible in ) Tj
+T*
+(labels/tooltips |) Tj
+T*
+(| Knowledge graph | clear hierarchy and filters; selected node opens evidence drawer |) Tj
+T*
+(| Confidence indicator | numeric + band + explanation; never color-only |) Tj
+T*
+(| Evidence timeline | chronological, source-labeled, review status visible |) Tj
+T*
+(| Career pathway | step path with gaps, prerequisites, and next actions |) Tj
+T*
+(| Labour analytics | aggregate only; use subdued charts and clear methodology notes |) Tj
+T*
+(| Institution dashboard | cohort trends, assessment quality, evidence review workload |) Tj
+ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 3145 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(| Government analytics | country/sector aggregates; strong privacy cues |) Tj
+T*
+(| Network visualizations | limited node count by default; progressive expansion |) Tj
+T*
+(| Trend charts | restrained line/bar charts; annotations for policy/market events |) Tj
+T*
+() Tj
+T*
+(11. Motion System) Tj
+T*
+() Tj
+T*
+(Motion communicates continuity and state. It never distracts.) Tj
+T*
+() Tj
+T*
+(| Motion | Rule |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Hover | 120ms subtle border/surface change |) Tj
+T*
+(| Loading | skeletons for data surfaces; spinner only for short actions |) Tj
+T*
+(| Transitions | 180ms standard; preserve spatial continuity |) Tj
+T*
+(| Page navigation | fade/slide 8-12px max |) Tj
+T*
+(| Micro-interactions | use for confirmation, not delight theater |) Tj
+T*
+(| Graph animations | draw edges on load; reduce for large graphs |) Tj
+T*
+(| Timeline animations | reveal new events gently |) Tj
+T*
+(| Modal behavior | fade overlay + scale 98% to 100% |) Tj
+T*
+(| Reduced motion | disable transform animations, keep opacity changes only |) Tj
+T*
+() Tj
+T*
+(12. Imagery) Tj
+T*
+() Tj
+T*
+(| Asset type | Rule |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Photography | real universities, laboratories, people working; natural light; no stock clichs |) Tj
+T*
+(| Illustrations | abstract diagrams only; avoid cartoon startup people |) Tj
+T*
+(| Icons | monoline geometric system |) Tj
+T*
+(| Diagrams | precise, grid-based, explain system flows |) Tj
+T*
+(| 3D usage | minimal; only for premium passport/object renders if needed |) Tj
+T*
+(| Patterns | derive from logo angles/convergence lines at low opacity |) Tj
+T*
+(| Textures | subtle paper/grain for official documents only |) Tj
+T*
+(| Backgrounds | neutral, spacious, never busy behind text |) Tj
+T*
+() Tj
+T*
+(13. Accessibility) Tj
+T*
+() Tj
+T*
+(- Meet WCAG AA minimum; target AAA for primary text where feasible.) Tj
+T*
+(- All interactive controls require visible focus states.) Tj
+T*
+(- Never rely on color alone; pair with labels, icons, and patterns.) Tj
+T*
+(- Support reduced motion, high contrast, screen readers, keyboard navigation, and logical ) Tj
+T*
+(heading structure.) Tj
+T*
+(- Design for localization, RTL, long names, multilingual labels, and low-bandwidth contexts.) Tj
+T*
+(- Graphs require list/table fallbacks and textual summaries.) Tj
+T*
+(- Confidence and AI explanations must be readable by assistive technologies.) Tj
+T*
+() Tj
+T*
+(14. Design Inspiration) Tj
+T*
+() Tj
+T*
+(Syrka may learn from refined platforms but must not copy them.) Tj
+T*
+() Tj
+T*
+(| Reference | Adopted principle | Avoid copying |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Apple | restraint, premium negative space, hardware-like polish | consumer gloss, excessive spectacle |) Tj
+T*
+(| Stripe | clarity, developer trust, documentation quality | bright gradient-heavy marketing language |) Tj
+T*
+(| Linear | speed, alignment, typography, command UX | overly dark startup aesthetic |) Tj
+T*
+(| GitHub | developer familiarity, trust in technical artifacts | dense legacy UI patterns |) Tj
+T*
+(| Palantir | institutional seriousness, analytical dashboards | intimidating surveillance aesthetics |) Tj
+ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 3362 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(| Notion | flexible information architecture | casual blocks that weaken official trust |) Tj
+T*
+(| Arc Browser | elegant product confidence, subtle motion | novelty-first interaction models |) Tj
+T*
+() Tj
+T*
+(15. Platform Applications) Tj
+T*
+() Tj
+T*
+(| Surface | Design adaptation |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Landing website | premium, spacious, logo-led, evidence-to-opportunity story |) Tj
+T*
+(| Student dashboard | calm path, capability summary, evidence, next action |) Tj
+T*
+(| Faculty dashboard | review queues, cohort signals, curriculum mapping |) Tj
+T*
+(| Employer portal | capability search, evidence review, passport verification |) Tj
+T*
+(| Government analytics | aggregate dashboards, policy notes, privacy emphasis |) Tj
+T*
+(| Portfolio website | polished but personal, evidence-backed project presentation |) Tj
+T*
+(| Job Passport | official document language, versioning, seal, QR, verification |) Tj
+T*
+(| Reports | institutional typography, strong tables, restrained charts |) Tj
+T*
+(| Certificates | seal/stamp, verified data, QR, minimal ornament |) Tj
+T*
+(| Official documents | black/ivory, generous margins, formal hierarchy |) Tj
+T*
+(| Emails | concise, white/neutral surfaces, clear actions |) Tj
+T*
+(| Mobile app | focused next actions, passport/evidence access, compact navigation |) Tj
+T*
+(| Desktop app | analytics-heavy workflows and graph exploration |) Tj
+T*
+(| Tablet | review, presentation, and classroom workflows |) Tj
+T*
+() Tj
+T*
+(16. Figma Design System) Tj
+T*
+() Tj
+T*
+(| Page | Frames / organization |) Tj
+T*
+(|---|---|) Tj
+T*
+(| Cover | logo, version, brand promise, canonical reference |) Tj
+T*
+(| Brand | mission, logo meanings, usage, incorrect usage |) Tj
+T*
+(| Colors | light/dark palettes, semantic tokens, accessibility samples |) Tj
+T*
+(| Typography | scale, specimens, tables, report examples |) Tj
+T*
+(| Icons | grid, icon set, semantic examples, do/don't |) Tj
+T*
+(| Spacing | grid, containers, page rhythm, responsive examples |) Tj
+T*
+(| Tokens | variables for color, type, radius, shadow, motion |) Tj
+T*
+(| Components | buttons, forms, cards, navigation, dialogs, charts |) Tj
+T*
+(| Student | dashboard, evidence, capability, Odyssey, passport |) Tj
+T*
+(| Faculty | course, review queue, curriculum mapping, analytics |) Tj
+T*
+(| Employer | search, candidate, passport verification, job pipeline |) Tj
+T*
+(| Government | aggregate analytics, corridors, policy brief |) Tj
+T*
+(| Portfolio | profile, project pages, share states |) Tj
+T*
+(| Passport | document, QR/share, verification states |) Tj
+T*
+(| Landing | homepage, product, investor, university pages |) Tj
+T*
+(| Navigation | sidebar, topbar, mobile, command palette |) Tj
+T*
+(| Responsive | desktop/tablet/mobile rules |) Tj
+T*
+(| Prototype | key flows from UX-001 |) Tj
+T*
+(| Documentation | component rules, accessibility, implementation notes |) Tj
+T*
+() Tj
+T*
+(17. Google Stitch Readiness) Tj
+T*
+() Tj
+T*
+(Use these prompts as production-ready starting points. Each prompt assumes the existing Syrka ) Tj
+T*
+(logo and monoline mark are provided as assets.) Tj
+T*
+() Tj
+T*
+(Landing page prompt) Tj
+T*
+() Tj
+T*
+(Create a premium enterprise SaaS landing page for Syrka, the operating system for human ) Tj
+T*
+(capability. Use a near-monochrome palette inspired by the provided black-and-white geometric ) Tj
+ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 3164 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(Syrka logo. The design should feel like Apple-level restraint, Stripe-level clarity, and ) Tj
+T*
+(institutional trust suitable for universities and governments. Use generous whitespace, precise ) Tj
+T*
+(typography, no trendy gradients, and subtle line motifs derived from the logo's open ) Tj
+T*
+(book/gateway/convergence shape. Sections: hero, evidence-to-capability explanation, platform ) Tj
+T*
+(modules, university/employer/government trust, Job Passport preview, CTA.) Tj
+T*
+() Tj
+T*
+(Student dashboard prompt) Tj
+T*
+() Tj
+T*
+(Design a calm student dashboard for Syrka. Visual style: premium monochrome with muted ) Tj
+T*
+(blue/green semantic accents, spacious cards, precise typography, evidence-first AI. Main cards: ) Tj
+T*
+(capability summary, current Odyssey milestone, evidence awaiting review, Job Passport status, ) Tj
+T*
+(recommendations with confidence and evidence count. Show AI as explainable analysis, not a ) Tj
+T*
+(chatbot mascot. Include sidebar navigation and dark/light mode compatibility.) Tj
+T*
+() Tj
+T*
+(Faculty dashboard prompt) Tj
+T*
+() Tj
+T*
+(Design a faculty dashboard for reviewing student capability evidence. Use restrained enterprise ) Tj
+T*
+(styling, clear tables, review queues, cohort analytics, curriculum mapping, and evidence ) Tj
+T*
+(verification cards. Highlight urgent items with muted amber, verified evidence with muted green,) Tj
+T*
+( and keep the interface calm and uncluttered.) Tj
+T*
+() Tj
+T*
+(Employer dashboard prompt) Tj
+T*
+() Tj
+T*
+(Design an employer portal where recruiters search candidates by verified capability. Include ) Tj
+T*
+(capability-first search filters, candidate match cards, passport verification panel, evidence ) Tj
+T*
+(drawer, hiring pipeline, and consent indicators. Use professional black/ivory/graphite styling ) Tj
+T*
+(with green verified states and gold passport trust accents.) Tj
+T*
+() Tj
+T*
+(Government dashboard prompt) Tj
+T*
+() Tj
+T*
+(Design a government workforce analytics dashboard for aggregate capability gaps, strategic ) Tj
+T*
+(sectors, labour market signals, and mobility corridors. Use privacy-preserving aggregate ) Tj
+T*
+(visuals, muted maps/charts, methodology notes, and official document styling. Avoid consumer ) Tj
+T*
+(dashboard clutter.) Tj
+T*
+() Tj
+T*
+(Capability screen prompt) Tj
+T*
+() Tj
+T*
+(Design a capability detail screen showing what a person can credibly do. Include maturity, ) Tj
+T*
+(confidence, supporting evidence, conflicting evidence, ontology mapping, graph path, reasoning ) Tj
+T*
+(explanation, review history, and next recommended actions. Use structure first, color second.) Tj
+T*
+() Tj
+T*
+(Job Passport prompt) Tj
+T*
+() Tj
+T*
+(Design a digital Job Passport with official document aesthetics: ivory surface, black ) Tj
+T*
+(typography, Syrka symbol, seal, QR verification, version number, expiry, privacy controls, ) Tj
+T*
+(capability claims, evidence links, and share/revoke actions.) Tj
+T*
+() Tj
+T*
+(18. Claude Sonnet Readiness) Tj
+T*
+() Tj
+T*
+(Tailwind tokens) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(export const syrkaTheme = {) Tj
+T*
+(  colors: {) Tj
+T*
+(    ink: { 950: '#050505', 900: '#111111', 700: '#2E2E2E' },) Tj
+ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 1879 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(    stone: { 100: '#F4F3EF', 300: '#C8C7C0', 500: '#71716C' },) Tj
+T*
+(    white: '#FFFFFF',) Tj
+T*
+(    silver: '#E7E5DE',) Tj
+T*
+(    gold: { 500: '#B89B5E' },) Tj
+T*
+(    blue: { 600: '#2F5F8F' },) Tj
+T*
+(    green: { 600: '#2F6B4F' },) Tj
+T*
+(    amber: { 600: '#9A6A20' },) Tj
+T*
+(    red: { 600: '#8E2F2F' },) Tj
+T*
+(    purple: { 600: '#5D4A7A' }) Tj
+T*
+(  },) Tj
+T*
+(  borderRadius: { sm: '6px', md: '10px', lg: '16px', xl: '24px' },) Tj
+T*
+(  spacing: { 1: '4px', 2: '8px', 3: '12px', 4: '16px', 6: '24px', 8: '32px', 12: '48px', 16: '64px' }) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(CSS variables) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(:root {) Tj
+T*
+(  --background: #F4F3EF;) Tj
+T*
+(  --foreground: #050505;) Tj
+T*
+(  --card: #FFFFFF;) Tj
+T*
+(  --card-foreground: #111111;) Tj
+T*
+(  --border: #C8C7C0;) Tj
+T*
+(  --muted: #71716C;) Tj
+T*
+(  --primary: #050505;) Tj
+T*
+(  --primary-foreground: #FFFFFF;) Tj
+T*
+(  --success: #2F6B4F;) Tj
+T*
+(  --warning: #9A6A20;) Tj
+T*
+(  --danger: #8E2F2F;) Tj
+T*
+(  --info: #2F5F8F;) Tj
+T*
+(  --ai: #5D4A7A;) Tj
+T*
+(  --verified: #B89B5E;) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+(.dark {) Tj
+T*
+(  --background: #050505;) Tj
+T*
+(  --foreground: #F6F5F0;) Tj
+T*
+(  --card: #111111;) Tj
+T*
+(  --card-foreground: #F6F5F0;) Tj
+T*
+(  --border: #303030;) Tj
+T*
+(  --muted: #A8A8A0;) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(shadcn/ui customization) Tj
+T*
+() Tj
+T*
+(- Use neutral base theme, then override tokens with Syrka variables.) Tj
+T*
+(- Buttons: black primary, outline secondary, ghost tertiary, red destructive.) Tj
+T*
+(- Cards: thin border, subtle shadow, rounded-md or rounded-lg.) Tj
+T*
+(- Dialogs: restrained overlay, official typography, clear focus trap.) Tj
+T*
+(- Badges: semantic text + subtle background; never color-only.) Tj
+T*
+(- Charts: custom muted palette; no rainbow defaults.) Tj
+T*
+() Tj
+T*
+(Folder organization) Tj
+ET
+endstream
+endobj
+28 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 29 0 R >>
+endobj
+29 0 obj
+<< /Length 1533 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+() Tj
+T*
+() Tj
+T*
+(src/) Tj
+T*
+(  app/) Tj
+T*
+(  components/) Tj
+T*
+(    brand/) Tj
+T*
+(    layout/) Tj
+T*
+(    navigation/) Tj
+T*
+(    capability/) Tj
+T*
+(    evidence/) Tj
+T*
+(    passport/) Tj
+T*
+(    charts/) Tj
+T*
+(    forms/) Tj
+T*
+(  design-system/) Tj
+T*
+(    tokens.ts) Tj
+T*
+(    theme.css) Tj
+T*
+(    component-guidelines.md) Tj
+T*
+(  lib/) Tj
+T*
+(    cn.ts) Tj
+T*
+(    accessibility.ts) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Component naming) Tj
+T*
+() Tj
+T*
+(Use domain-aligned names: CapabilityCard, EvidenceCard, PassportClaimCard, ConfidenceMeter, ) Tj
+T*
+(EvidenceTimeline, OntologyBreadcrumb, RecommendationReason, VerifiedSeal, GatewayPanel.) Tj
+T*
+() Tj
+T*
+(19. Mermaid Diagrams) Tj
+T*
+() Tj
+T*
+(19.1 Design token hierarchy) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TD) Tj
+T*
+(    Brand[Brand DNA] --> Tokens[Design Tokens]) Tj
+T*
+(    Tokens --> Color[Color]) Tj
+T*
+(    Tokens --> Type[Typography]) Tj
+T*
+(    Tokens --> Space[Spacing]) Tj
+T*
+(    Tokens --> Radius[Radius]) Tj
+T*
+(    Tokens --> Motion[Motion]) Tj
+T*
+(    Tokens --> Components[Components]) Tj
+T*
+(    Components --> Screens[Product Screens]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(19.2 Component hierarchy) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TD) Tj
+T*
+(    Tokens --> Primitives[Primitives]) Tj
+T*
+(    Primitives --> Buttons) Tj
+T*
+(    Primitives --> Inputs) Tj
+T*
+(    Primitives --> Cards) Tj
+T*
+(    Cards --> CapabilityCard) Tj
+T*
+(    Cards --> EvidenceCard) Tj
+T*
+(    Cards --> PassportCard) Tj
+T*
+(    Primitives --> Navigation) Tj
+ET
+endstream
+endobj
+30 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 31 0 R >>
+endobj
+31 0 obj
+<< /Length 2198 >>
+stream
+BT
+/F1 8.0 Tf
+11.8 TL
+38 754 Td
+(    Primitives --> Charts) Tj
+T*
+(    Charts --> CapabilityGraph) Tj
+T*
+(    Charts --> EvidenceTimeline) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(19.3 Brand hierarchy) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TD) Tj
+T*
+(    Logo[Existing Syrka Logo] --> Meanings[Open Book / Gateway / Convergence / Synthesis]) Tj
+T*
+(    Meanings --> Philosophy[Knowledge / Opportunity / Connection / Integration]) Tj
+T*
+(    Philosophy --> VisualLanguage[Minimal / Premium / Evidence-First]) Tj
+T*
+(    VisualLanguage --> ProductUI[Apps and Dashboards]) Tj
+T*
+(    VisualLanguage --> Documents[Passports / Certificates / Reports]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(19.4 Navigation hierarchy) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart TD) Tj
+T*
+(    App[Syrka App] --> Dashboard) Tj
+T*
+(    App --> Learning) Tj
+T*
+(    App --> Evidence) Tj
+T*
+(    App --> Capability) Tj
+T*
+(    App --> Odyssey) Tj
+T*
+(    App --> Passport) Tj
+T*
+(    App --> Portfolio) Tj
+T*
+(    App --> Career) Tj
+T*
+(    App --> Settings) Tj
+T*
+(    Dashboard --> RoleViews[Student / Faculty / Employer / Government]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(19.5 Theme relationships) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(flowchart LR) Tj
+T*
+(    Core[Core Monochrome Brand] --> Light[Light Theme]) Tj
+T*
+(    Core --> Dark[Dark Theme]) Tj
+T*
+(    Core --> Official[Official Documents]) Tj
+T*
+(    Light --> Semantic[Semantic Accents]) Tj
+T*
+(    Dark --> Semantic) Tj
+T*
+(    Official --> Passport[Passport / Certificate / Seal]) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(20. Final Deliverable) Tj
+T*
+() Tj
+T*
+(DESIGN-001 defines Syrka's permanent visual identity and design system constitution. It ) Tj
+T*
+(preserves the existing logo and expands its meanings into a complete design language for ) Tj
+T*
+(enterprise SaaS, universities, governments, employers, students, investors, official documents, ) Tj
+T*
+(dashboards, portfolios, and passports.) Tj
+T*
+() Tj
+T*
+(The final visual language is timeless, minimal, premium, trustworthy, evidence-driven, ) Tj
+T*
+(intelligent, institutional, calm, and explainable. Every future Syrka interface should feel like) Tj
+T*
+( it belongs to the same ecosystem: an open gateway from knowledge to verified capability and ) Tj
+T*
+(opportunity.) Tj
+ET
+endstream
+endobj
+xref
+0 32
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000211 00000 n 
+0000000281 00000 n 
+0000000407 00000 n 
+0000003431 00000 n 
+0000003557 00000 n 
+0000006215 00000 n 
+0000006341 00000 n 
+0000009236 00000 n 
+0000009364 00000 n 
+0000013072 00000 n 
+0000013200 00000 n 
+0000015994 00000 n 
+0000016122 00000 n 
+0000018496 00000 n 
+0000018624 00000 n 
+0000020794 00000 n 
+0000020922 00000 n 
+0000025056 00000 n 
+0000025184 00000 n 
+0000028382 00000 n 
+0000028510 00000 n 
+0000031925 00000 n 
+0000032053 00000 n 
+0000035270 00000 n 
+0000035398 00000 n 
+0000037330 00000 n 
+0000037458 00000 n 
+0000039044 00000 n 
+0000039172 00000 n 
+trailer
+<< /Size 32 /Root 1 0 R /Info << /Title (DESIGN-001 - Syrka Visual Identity and Design System Constitution) /Author (Syrka Design) >> >>
+startxref
+41423
+%%EOF
