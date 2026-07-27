@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { ArrowClockwise, PaperPlaneTilt, Sparkle } from '@phosphor-icons/react/dist/ssr'
 import { Badge } from '@/components/ui/Badge'
 import { AIActivityIndicator } from '@/components/motion/AIActivityIndicator'
 import { useTutorConversation, type TutorSuggestedAction } from '@/components/tutor/useTutorConversation'
 import type { OdysseyTutorAction } from '@/lib/services/odyssey/tutor-provider'
+import type { OdysseyGenerationApiResponse } from './odyssey-client-types'
 
 export interface OdysseyMilestoneTutorTabProps {
   milestoneId?: string
@@ -23,6 +25,10 @@ const SUGGESTED_ACTIONS: TutorSuggestedAction<OdysseyTutorAction>[] = [
   { action: 'compare_alternatives', label: 'Compare alternatives', requiresContext: true },
   { action: 'prepare_faculty_questions', label: 'Prepare questions for Faculty' },
   { action: 'passport_effect', label: 'Show my Career Passport implication', requiresContext: true },
+  { action: 'generate_practice_exercise', label: 'Generate a practice exercise', requiresContext: true },
+  { action: 'recommend_next_action', label: 'Recommend my next action' },
+  { action: 'summarize_changes', label: 'Summarise what changed' },
+  { action: 'replan_with_constraint', label: 'Replan with a new constraint' },
 ]
 
 /**
@@ -32,20 +38,62 @@ const SUGGESTED_ACTIONS: TutorSuggestedAction<OdysseyTutorAction>[] = [
  * Capability truth, or issues a Passport claim.
  */
 export function OdysseyMilestoneTutorTab({ milestoneId, milestoneTitle }: OdysseyMilestoneTutorTabProps) {
-  const { messages, pending, error, statusAnnouncement, send, stop, retry, canRetry } = useTutorConversation('/api/odyssey/tutor')
+  const router = useRouter()
+  const { messages, pending, error, statusAnnouncement, send, stop, retry, pushMessage, canRetry } = useTutorConversation('/api/odyssey/tutor')
   const [input, setInput] = useState('')
+  const [mode, setMode] = useState<'chat' | 'replan'>('chat')
+  const [replanPending, setReplanPending] = useState(false)
 
   function trigger(action: OdysseyTutorAction, label: string, customMessage?: string) {
+    if (action === 'replan_with_constraint') {
+      setMode('replan')
+      return
+    }
     send({ action, milestoneId, message: customMessage }, label)
+  }
+
+  async function submitReplanConstraint(constraint: string) {
+    pushMessage({ id: `${Date.now()}-student`, role: 'student', text: `Replan with a new constraint: ${constraint}` })
+    setReplanPending(true)
+    try {
+      const response = await fetch('/api/odyssey/replan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adjustmentInstruction: constraint }),
+      })
+      const result: OdysseyGenerationApiResponse = await response.json()
+      pushMessage({
+        id: `${Date.now()}-tutor`,
+        role: 'tutor',
+        text: result.message,
+        badge: { label: 'Structured replan', tone: 'purple' },
+      })
+      if (result.status === 'success') router.refresh()
+    } catch {
+      pushMessage({
+        id: `${Date.now()}-tutor`,
+        role: 'tutor',
+        text: 'The replan request could not be sent. Check your connection and try again.',
+        badge: { label: 'Structured replan', tone: 'purple' },
+      })
+    } finally {
+      setReplanPending(false)
+      setMode('chat')
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!input.trim()) return
-    trigger('custom', input.trim(), input.trim())
+    if (mode === 'replan') {
+      submitReplanConstraint(input.trim())
+    } else {
+      trigger('custom', input.trim(), input.trim())
+    }
     setInput('')
   }
 
+  const busy = pending || replanPending
   const available = SUGGESTED_ACTIONS.filter((a) => !a.requiresContext || milestoneId)
 
   return (
@@ -66,7 +114,7 @@ export function OdysseyMilestoneTutorTab({ milestoneId, milestoneTitle }: Odysse
           <button
             key={a.action}
             type="button"
-            disabled={pending}
+            disabled={busy}
             onClick={() => trigger(a.action, a.label)}
             className="rounded-full border border-campus-border px-2.5 py-1 font-campus-sans text-[11px] text-campus-text hover:bg-campus-surface-raised disabled:opacity-50"
           >
@@ -83,7 +131,8 @@ export function OdysseyMilestoneTutorTab({ milestoneId, milestoneTitle }: Odysse
         <div className="flex flex-col gap-2 rounded-campus-sm border border-campus-border p-2.5">
           {messages.map((m) => (
             <div key={m.id} className={m.role === 'student' ? 'ml-6 text-right' : ''}>
-              {m.role === 'tutor' && m.generationSource && (
+              {m.role === 'tutor' && m.badge && <Badge tone={m.badge.tone}>{m.badge.label}</Badge>}
+              {m.role === 'tutor' && !m.badge && m.generationSource && (
                 <Badge tone={m.generationSource === 'deepseek' ? 'blue' : 'amber'}>
                   {m.generationSource === 'deepseek' ? (
                     <span className="flex items-center gap-1">
@@ -131,6 +180,21 @@ export function OdysseyMilestoneTutorTab({ milestoneId, milestoneTitle }: Odysse
         </div>
       )}
 
+      {replanPending && (
+        <div className="rounded-campus-sm border border-campus-border p-2.5">
+          <AIActivityIndicator state="shaping" label="Reshaping your Odyssey plan" />
+        </div>
+      )}
+
+      {mode === 'replan' && !replanPending && (
+        <div className="flex items-center justify-between rounded-campus-sm border border-dashed border-campus-border p-2 font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">
+          Describe the constraint below — this calls the structured Replan tool, not a chat reply.
+          <button type="button" onClick={() => setMode('chat')} className="normal-case tracking-normal text-campus-text hover:underline">
+            Cancel
+          </button>
+        </div>
+      )}
+
       {error && (
         <div className="flex items-center justify-between gap-2 rounded-campus-sm border border-campus-red-600 p-2.5 dark:border-campus-red-dark">
           <p className="font-campus-sans text-campus-sm text-campus-red-600 dark:text-campus-red-dark">{error}</p>
@@ -144,19 +208,19 @@ export function OdysseyMilestoneTutorTab({ milestoneId, milestoneTitle }: Odysse
 
       <form onSubmit={handleSubmit} className="flex items-center gap-1.5">
         <label htmlFor="tutor-input" className="sr-only">
-          Ask the AI Tutor
+          {mode === 'replan' ? 'Describe the constraint to replan with' : 'Ask the AI Tutor'}
         </label>
         <input
           id="tutor-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask Syrka about this Odyssey"
+          placeholder={mode === 'replan' ? 'e.g. Reduce the workload this semester.' : 'Ask Syrka about this Odyssey'}
           className="flex-1 rounded-campus-sm border border-campus-border bg-campus-surface px-3 py-2 font-campus-sans text-campus-sm text-campus-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600"
         />
         <button
           type="submit"
-          disabled={pending || !input.trim()}
-          aria-label="Send"
+          disabled={busy || !input.trim()}
+          aria-label={mode === 'replan' ? 'Submit constraint' : 'Send'}
           className="rounded-campus-sm border border-campus-border p-2 text-campus-text hover:bg-campus-surface-raised disabled:opacity-50"
         >
           <PaperPlaneTilt size={16} aria-hidden="true" />

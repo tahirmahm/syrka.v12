@@ -12,6 +12,18 @@ export type OdysseyTutorAction =
   | 'compare_alternatives'
   | 'prepare_faculty_questions'
   | 'passport_effect'
+  | 'generate_practice_exercise'
+  | 'recommend_next_action'
+  | 'summarize_changes'
+  /**
+   * UI-only marker — deliberately absent from the tutor route's accepted
+   * action set. Replanning must go through the structured
+   * /api/odyssey/replan pipeline, never a prose Tutor response treated as
+   * the canonical plan; this entry exists only so the shared suggested-
+   * action list type-checks against the real handler that intercepts it
+   * before any request reaches this provider.
+   */
+  | 'replan_with_constraint'
   | 'custom'
 
 export interface OdysseyTutorCapabilityRef {
@@ -46,11 +58,24 @@ export interface TutorCitation {
   href?: string
 }
 
+export interface OdysseyTutorVersionSummary {
+  version: number
+  title: string
+  reasoningSummary: string
+}
+
+export interface OdysseyTutorVersionComparison {
+  current: OdysseyTutorVersionSummary
+  previous?: OdysseyTutorVersionSummary
+}
+
 export interface OdysseyTutorRequest {
   studentContext: OdysseyContext
   milestone?: OdysseyTutorMilestoneContext
   action: OdysseyTutorAction
   customMessage?: string
+  /** Only populated for 'summarize_changes' — real plan-version records, never the Tutor's own recollection. */
+  versionComparison?: OdysseyTutorVersionComparison
 }
 
 const ACTION_INSTRUCTIONS: Record<OdysseyTutorAction, string> = {
@@ -63,6 +88,13 @@ const ACTION_INSTRUCTIONS: Record<OdysseyTutorAction, string> = {
   compare_alternatives: 'Compare the recommended action for this milestone with its listed alternatives, including real trade-offs for each.',
   prepare_faculty_questions: 'Prepare 3 specific, useful questions the student could ask their Faculty reviewer about this milestone.',
   passport_effect: "Explain what completing this milestone — once reviewed — would mean for the student's Syrka Career Passport. Be explicit that this is a projection, not a guarantee.",
+  generate_practice_exercise:
+    "Generate one practice exercise for this milestone's capability area: a clear prompt or task, and a short description of what a strong answer would include. State plainly that completing it is practice only and does not itself count as submitted Evidence.",
+  recommend_next_action:
+    'Recommend the single most useful next action the student should take on their Odyssey right now, using their current stage and capability snapshot above, and briefly explain why. If a milestone is selected you may reference it, but base the recommendation on the whole plan.',
+  summarize_changes:
+    'Summarise what changed between the previous plan version and the current one, using only the version details provided below. If no previous version is provided, say plainly that this is the first plan version and there is nothing to compare yet.',
+  replan_with_constraint: 'This action does not produce a chat response — it must invoke the structured Odyssey replanning pipeline directly, never a prose Tutor answer treated as the canonical plan.',
   custom: 'Answer the student\'s question below using only the context provided.',
 }
 
@@ -81,7 +113,7 @@ You must never:
 Always phrase capability effects as projections ("would", "could"), never guarantees. If asked to do something outside these bounds, briefly explain why not and point to the correct institutional path (e.g. "submit Evidence through the normal flow", "ask your Faculty reviewer"). Keep responses concise and specific to the supplied context — do not pad with generic advice unrelated to the student's actual plan. Respond in plain text, not JSON.`
 
 function buildUserPrompt(request: OdysseyTutorRequest): string {
-  const { studentContext, milestone, action, customMessage } = request
+  const { studentContext, milestone, action, customMessage, versionComparison } = request
   const lines: string[] = []
 
   lines.push(`Programme: ${studentContext.programmeName}${studentContext.departmentName ? ` (${studentContext.departmentName})` : ''}`)
@@ -106,6 +138,16 @@ function buildUserPrompt(request: OdysseyTutorRequest): string {
   } else {
     lines.push('')
     lines.push('No milestone is currently selected — answer generally about the Odyssey plan above.')
+  }
+
+  if (versionComparison) {
+    lines.push('')
+    lines.push(`Current plan version ${versionComparison.current.version}: "${versionComparison.current.title}" — ${versionComparison.current.reasoningSummary}`)
+    lines.push(
+      versionComparison.previous
+        ? `Previous plan version ${versionComparison.previous.version}: "${versionComparison.previous.title}" — ${versionComparison.previous.reasoningSummary}`
+        : 'There is no previous plan version — this is the first one.'
+    )
   }
 
   lines.push('')

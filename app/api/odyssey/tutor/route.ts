@@ -6,6 +6,7 @@ import {
   buildTutorCitations,
   type OdysseyTutorAction,
   type OdysseyTutorMilestoneContext,
+  type OdysseyTutorRequest,
 } from '@/lib/services/odyssey/tutor-provider'
 import { mockOdysseyRepository, mockCapabilityRepository } from '@/lib/repositories'
 import { resolveMilestones } from '@/lib/utilities/odyssey-detail'
@@ -22,7 +23,13 @@ const VALID_ACTIONS = new Set<OdysseyTutorAction>([
   'compare_alternatives',
   'prepare_faculty_questions',
   'passport_effect',
+  'generate_practice_exercise',
+  'recommend_next_action',
+  'summarize_changes',
   'custom',
+  // 'replan_with_constraint' is deliberately absent — replanning must go
+  // through the structured /api/odyssey/replan pipeline, never a prose
+  // Tutor response treated as the canonical plan.
 ])
 
 /**
@@ -52,6 +59,19 @@ export async function POST(request: Request) {
 
   try {
     const studentContext = await buildOdysseyContext(currentUser)
+
+    let versionComparison: OdysseyTutorRequest['versionComparison']
+    if (action === 'summarize_changes') {
+      const allVersions = await mockOdysseyRepository.listPlanVersions(currentUser.id)
+      const sorted = [...allVersions].sort((a, b) => b.version - a.version)
+      const [latest, prior] = sorted
+      if (latest) {
+        versionComparison = {
+          current: { version: latest.version, title: latest.title, reasoningSummary: latest.reasoningSummary },
+          previous: prior ? { version: prior.version, title: prior.title, reasoningSummary: prior.reasoningSummary } : undefined,
+        }
+      }
+    }
 
     let milestoneContext: OdysseyTutorMilestoneContext | undefined
     if (milestoneId) {
@@ -97,7 +117,7 @@ export async function POST(request: Request) {
           controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`))
         }
         try {
-          for await (const event of streamOdysseyTutor({ studentContext, milestone: milestoneContext, action, customMessage })) {
+          for await (const event of streamOdysseyTutor({ studentContext, milestone: milestoneContext, action, customMessage, versionComparison })) {
             if (event.type === 'delta') {
               write(event)
             } else {

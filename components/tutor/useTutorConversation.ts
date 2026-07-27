@@ -8,6 +8,8 @@ export interface TutorCitation {
   href?: string
 }
 
+export type TutorBadgeTone = 'neutral' | 'gold' | 'blue' | 'green' | 'amber' | 'red' | 'purple'
+
 export interface TutorMessage {
   id: string
   role: 'student' | 'tutor'
@@ -16,6 +18,8 @@ export interface TutorMessage {
   citations?: TutorCitation[]
   /** Stopped mid-stream — the partial response is kept, not discarded, and marked as such. */
   incomplete?: boolean
+  /** For messages that didn't come from the streamed model call (e.g. a structured tool result) — overrides the generationSource badge. */
+  badge?: { label: string; tone: TutorBadgeTone }
 }
 
 /** A suggested action any Tutor surface can offer — the reusable shape Odyssey's action bar (and future Praxis/Maxima Tutor surfaces) build on. */
@@ -136,5 +140,10 @@ export function useTutorConversation(endpoint: string) {
     if (last) send(last.body, last.label)
   }, [send])
 
-  return { messages, pending, error, statusAnnouncement, send, stop, retry, canRetry: Boolean(lastRequestRef.current) }
+  /** Appends a message that didn't come through the streamed endpoint — e.g. the real result of a structured tool call (like Odyssey's replan pipeline). */
+  const pushMessage = useCallback((message: TutorMessage) => {
+    setMessages((prev) => [...prev, message])
+  }, [])
+
+  return { messages, pending, error, statusAnnouncement, send, stop, retry, pushMessage, canRetry: Boolean(lastRequestRef.current) }
 }
