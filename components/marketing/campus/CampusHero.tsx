@@ -11,7 +11,7 @@ import { CampusSystemVisual } from './CampusSystemVisual'
  */
 export function CampusHero() {
   return (
-    <section className="border-b border-campus-border bg-campus-ink-950 px-6 py-20 text-campus-white md:px-10 md:py-28">
+    <section className="-mt-16 border-b border-campus-border bg-campus-ink-950 px-6 pb-20 pt-36 text-campus-white md:px-10 md:pb-28 md:pt-44">
       <div className="mx-auto grid max-w-[1400px] items-center gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8">
         <div>
           <MotionReveal>
