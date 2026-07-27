@@ -103,6 +103,37 @@ function pickTrunkMilestone(group: OdysseyMilestone[]): OdysseyMilestone {
   return [...group].sort((a, b) => TRUNK_STATUS_PRIORITY.indexOf(a.status) - TRUNK_STATUS_PRIORITY.indexOf(b.status))[0]
 }
 
+/**
+ * Groups every branch (non-trunk) milestone under the topmost non-trunk
+ * ancestor in its own prerequisite chain — walking up until hitting a
+ * trunk milestone or running out of prerequisites. Shared by the desktop
+ * graph and the mobile vertical tree so "collapse this branch" means the
+ * same set of milestones in both.
+ */
+export function computeMilestoneBranchGroups(milestones: OdysseyMilestone[], isPrimary: (id: string) => boolean) {
+  const byId = new Map(milestones.map((m) => [m.id, m]))
+  const rootOf = new Map<string, string>()
+
+  function findRoot(id: string): string {
+    if (isPrimary(id)) return id
+    const milestone = byId.get(id)
+    if (!milestone) return id
+    const nonTrunkParentId = milestone.prerequisiteMilestoneIds.find((pid) => !isPrimary(pid) && byId.has(pid))
+    return nonTrunkParentId ? findRoot(nonTrunkParentId) : id
+  }
+
+  milestones.forEach((m) => {
+    if (!isPrimary(m.id)) rootOf.set(m.id, findRoot(m.id))
+  })
+
+  const groups = new Map<string, string[]>()
+  rootOf.forEach((rootId, memberId) => {
+    groups.set(rootId, [...(groups.get(rootId) ?? []), memberId])
+  })
+
+  return { rootOf, groups }
+}
+
 export function buildOdysseyRoadmap(
   milestones: OdysseyMilestone[],
   destination: OdysseyDestination,

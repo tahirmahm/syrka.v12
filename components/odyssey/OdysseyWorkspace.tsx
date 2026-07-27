@@ -11,6 +11,7 @@ import type { ResolvedOdysseyMilestone } from '@/lib/utilities/odyssey-detail'
 import type { OdysseyGenerationApiResponse } from './odyssey-client-types'
 import { OdysseyRoadmapLoader } from './graph/OdysseyRoadmapLoader'
 import { OdysseyTextualRoadmap } from './OdysseyTextualRoadmap'
+import { OdysseyMobileTree } from './OdysseyMobileTree'
 import { OdysseyMilestoneInspector } from './OdysseyMilestoneInspector'
 import { OdysseyGenerateForm } from './OdysseyGenerateForm'
 import { OdysseyReplanInput } from './OdysseyReplanInput'
@@ -55,7 +56,7 @@ export function OdysseyWorkspace({
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [viewMode, setViewMode] = useState<'graph' | 'list'>('graph')
+  const [viewMode, setViewMode] = useState<'graph' | 'list' | 'tree'>('graph')
   const [isMobile, setIsMobile] = useState(false)
   const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | undefined>(searchParams.get('milestone') ?? undefined)
   const [activePanel, setActivePanel] = useState<ActivePanel>('none')
@@ -64,11 +65,14 @@ export function OdysseyWorkspace({
   const [focusActive, setFocusActive] = useState(false)
 
   useEffect(() => {
-    // List is only ever suggested once, on initial load — an in-page resize
-    // (including a transient one, e.g. from a full-page screenshot tool)
-    // must never silently strand the student on List with no way back
-    // shown by the toggle itself.
-    if (window.innerWidth < 640) setViewMode('list')
+    // A purpose-built vertical tree is the mobile default — never the
+    // graph (its pan/zoom canvas doesn't suit a narrow screen) and never
+    // List (that stays an explicit accessibility alternative, not an
+    // automatic fallback). Suggested once, on initial load only, so an
+    // in-page resize (including a transient one, e.g. from a full-page
+    // screenshot tool) never silently strands or un-strands the student
+    // mid-session.
+    if (window.innerWidth < 768) setViewMode('tree')
     function checkViewport() {
       setIsMobile(window.innerWidth < 1024)
     }
@@ -121,6 +125,14 @@ export function OdysseyWorkspace({
             </button>
             <button
               type="button"
+              aria-pressed={viewMode === 'tree'}
+              onClick={() => setViewMode('tree')}
+              className={`px-3 py-1.5 font-campus-sans text-campus-sm ${viewMode === 'tree' ? 'bg-campus-ink-950 text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950' : 'text-campus-text hover:bg-campus-surface-raised'}`}
+            >
+              Tree
+            </button>
+            <button
+              type="button"
               aria-pressed={viewMode === 'list'}
               onClick={() => setViewMode('list')}
               className={`rounded-r-campus-sm px-3 py-1.5 font-campus-sans text-campus-sm ${viewMode === 'list' ? 'bg-campus-ink-950 text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950' : 'text-campus-text hover:bg-campus-surface-raised'}`}
@@ -166,7 +178,7 @@ export function OdysseyWorkspace({
 
       <div className={`grid gap-4 px-0 md:px-4 ${selectedResolved && !isMobile ? 'lg:grid-cols-[minmax(0,1fr)_380px]' : 'lg:grid-cols-1'}`}>
         <div className="min-w-0">
-          {viewMode === 'graph' ? (
+          {viewMode === 'graph' && (
             <OdysseyRoadmapLoader
               nodes={nodes}
               edges={edges}
@@ -177,7 +189,11 @@ export function OdysseyWorkspace({
               onToggleHideCompleted={() => setHideCompleted((v) => !v)}
               onToggleFocusActive={() => setFocusActive((v) => !v)}
             />
-          ) : (
+          )}
+          {viewMode === 'tree' && (
+            <OdysseyMobileTree nodes={nodes} selectedMilestoneId={selectedMilestoneId} onSelectMilestone={selectMilestone} />
+          )}
+          {viewMode === 'list' && (
             <OdysseyTextualRoadmap orderedResolved={orderedResolved} recommendedNextId={recommendedNextId} onSelectMilestone={selectMilestone} />
           )}
         </div>

@@ -11,6 +11,7 @@ import { OdysseyAlternativeNode } from './OdysseyAlternativeNode'
 import { OdysseyCollapsedBranchNode } from './OdysseyCollapsedBranchNode'
 import { OdysseyGraphLegend } from './OdysseyGraphLegend'
 import type { OdysseyNodeData, OdysseyMilestoneNodeData } from '@/lib/utilities/odyssey-projection'
+import { computeMilestoneBranchGroups } from '@/lib/utilities/odyssey-projection'
 
 const nodeTypes = {
   milestone: OdysseyMilestoneNode,
@@ -20,39 +21,6 @@ const nodeTypes = {
 }
 
 const COMPLETED_STATUSES = new Set(['completed', 'verified'])
-
-/**
- * Groups every branch (non-trunk) milestone under the topmost non-trunk
- * ancestor in its own prerequisite chain — walking up until hitting a
- * trunk milestone or running out of prerequisites. All members of a group
- * collapse and expand together, as one route, regardless of which member
- * was clicked.
- */
-function computeBranchGroups(milestoneNodes: Node<OdysseyMilestoneNodeData>[]) {
-  const byId = new Map(milestoneNodes.map((n) => [n.id, n.data]))
-  const rootOf = new Map<string, string>()
-
-  function findRoot(id: string): string {
-    const data = byId.get(id)
-    if (!data || data.isPrimaryPath) return id
-    const nonTrunkParentId = data.milestone.prerequisiteMilestoneIds.find((pid) => {
-      const parent = byId.get(pid)
-      return parent && !parent.isPrimaryPath
-    })
-    return nonTrunkParentId ? findRoot(nonTrunkParentId) : id
-  }
-
-  milestoneNodes.forEach((n) => {
-    if (!n.data.isPrimaryPath) rootOf.set(n.id, findRoot(n.id))
-  })
-
-  const groups = new Map<string, string[]>()
-  rootOf.forEach((rootId, memberId) => {
-    groups.set(rootId, [...(groups.get(rootId) ?? []), memberId])
-  })
-
-  return { rootOf, groups }
-}
 
 export interface OdysseyRoadmapGraphProps {
   nodes: Node<OdysseyNodeData>[]
@@ -86,7 +54,11 @@ export function OdysseyRoadmapGraph({
   const [collapsedRoots, setCollapsedRoots] = useState<Set<string>>(new Set())
 
   const milestoneNodes = useMemo(() => nodes.filter((n): n is Node<OdysseyMilestoneNodeData> => n.data.kind === 'milestone'), [nodes])
-  const { rootOf, groups } = useMemo(() => computeBranchGroups(milestoneNodes), [milestoneNodes])
+  const isPrimaryById = useMemo(() => new Map(milestoneNodes.map((n) => [n.id, n.data.isPrimaryPath])), [milestoneNodes])
+  const { rootOf, groups } = useMemo(
+    () => computeMilestoneBranchGroups(milestoneNodes.map((n) => n.data.milestone), (id) => isPrimaryById.get(id) ?? false),
+    [milestoneNodes, isPrimaryById]
+  )
 
   // Selecting a milestone inside a collapsed branch opens that branch
   // automatically, rather than leaving the selection invisible.
