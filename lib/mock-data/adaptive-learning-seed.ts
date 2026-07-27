@@ -331,6 +331,11 @@ function buildAdaptiveChapterFixture(spec: AdaptiveChapterSpec) {
   }
 
   return {
+    subject,
+    conceptTitle,
+    chapterId,
+    conceptId,
+    capabilityId,
     sessions,
     attempts,
     hints,
@@ -343,6 +348,12 @@ function buildAdaptiveChapterFixture(spec: AdaptiveChapterSpec) {
     capabilityInference,
     disclosurePermission,
     aiUse: { disclosure, modelOutputClaim, verificationAction, detectedError, independentDefence, transferResult, assistanceRecord },
+    /** Real per-session narrative text — never a raw transcript, just what the activity asked and what the student actually did. */
+    sessionNarratives: [
+      { sessionNumber: 1 as const, activity: spec.session1.activity, studentResponse: spec.session1.studentResponse },
+      { sessionNumber: 2 as const, activity: spec.session2.changedApproach, studentResponse: spec.session2.studentResponse },
+      { sessionNumber: 3 as const, activity: spec.session3.transferPrompt, studentResponse: spec.session3.explainBack },
+    ],
   }
 }
 

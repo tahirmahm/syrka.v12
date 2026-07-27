@@ -24,6 +24,17 @@ function rejectOthers(catalog: PedagogicalStrategy[], chosen: PedagogicalStrateg
   return catalog.filter((s) => s !== chosen).map((strategy) => ({ strategy, reasonRejected }))
 }
 
+/** Stage 2's rejection list distinguishes strategies already used earlier in this concept's history from ones never tried — never one blanket reason for both. */
+function rejectOthersForStage2(catalog: PedagogicalStrategy[], chosen: PedagogicalStrategy, alreadyUsed: PedagogicalStrategy[], reasonForUntried: string): RejectedStrategyAlternative[] {
+  return catalog
+    .filter((s) => s !== chosen)
+    .map((strategy) =>
+      alreadyUsed.includes(strategy)
+        ? { strategy, reasonRejected: 'Already used earlier in this concept\'s history — the open question now is transfer and retention, not re-teaching.' }
+        : { strategy, reasonRejected: reasonForUntried }
+    )
+}
+
 /**
  * Deterministic, rule-based next-teaching-action selector (IAU-001 §7).
  * Pure: identical input always produces an identical decision — no
@@ -81,12 +92,14 @@ export const PedagogicalPolicyEngine = {
     const retrievalStrategy: PedagogicalStrategy = 'delayed_retrieval'
     const escalation: PedagogicalStrategy = 'faculty_escalation'
 
+    const earlierStrategies = priorDecisions.map((d) => d.strategy)
+
     if (!conceptState.transferAttempted) {
       return {
         strategy: transferStrategy,
         reason: `Independence has improved since the strategy change — asking for transfer to a materially different context is the only way to distinguish real understanding from a memorised pattern.`,
         supportingObservationIds: conceptState.observedFrom,
-        rejectedAlternatives: rejectOthers(catalog, transferStrategy, 'Transfer has not yet been attempted, so retention and further scaffolding changes are premature.'),
+        rejectedAlternatives: rejectOthersForStage2(catalog, transferStrategy, earlierStrategies, 'Not yet indicated — transfer has not been attempted, so retention and further scaffolding changes are premature.'),
         uncertainty: 'moderate',
         expectedNextSignal: 'Whether the concept transfers to a new context without the scaffolding used earlier.',
       }
@@ -97,7 +110,7 @@ export const PedagogicalPolicyEngine = {
         strategy: retrievalStrategy,
         reason: `Transfer succeeded without the earlier scaffolding — the remaining open question is whether that understanding holds after a delay, not whether it exists right now.`,
         supportingObservationIds: conceptState.observedFrom,
-        rejectedAlternatives: rejectOthers(catalog, retrievalStrategy, 'Transfer is already demonstrated; repeating an earlier strategy would not test what is actually still uncertain.'),
+        rejectedAlternatives: rejectOthersForStage2(catalog, retrievalStrategy, earlierStrategies, 'Transfer is already demonstrated independently — this strategy addresses a question that is no longer open.'),
         uncertainty: 'low',
         expectedNextSignal: 'Whether performance holds on retesting after a genuine delay, independent of immediate scaffolding.',
       }

@@ -6,7 +6,9 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { Badge } from '@/components/ui/Badge'
 import { LearningWorkbenchMobileControls } from '@/components/learning/LearningWorkbenchMobileControls'
 import { NcertChapterTutorPanel } from '@/components/learning/NcertChapterTutorPanel'
+import { AdaptiveLearningSection } from '@/components/learning/AdaptiveLearningSection'
 import { getNcertSubjects, getNcertChapterView } from '@/lib/utilities/ncert-curriculum-projection'
+import { getAdaptiveChapterView } from '@/lib/utilities/adaptive-learning-projection'
 
 export function generateStaticParams() {
   return getNcertSubjects().flatMap((s) => s.chapters.map((c) => ({ spaceId: s.spaceId, chapterId: c.chapterId })))
@@ -38,6 +40,7 @@ export default function NcertChapterPage({ params }: { params: { spaceId: string
   const chapter = getNcertChapterView(params.spaceId, params.chapterId)
   if (!chapter) notFound()
 
+  const adaptiveView = getAdaptiveChapterView(chapter.chapterId)
   const subjects = getNcertSubjects()
   const thisSubject = subjects.find((s) => s.spaceId === chapter.spaceId)
 
@@ -126,6 +129,11 @@ export default function NcertChapterPage({ params }: { params: { spaceId: string
           <div className="rounded-campus-md border border-campus-border bg-campus-surface p-5">
             <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Chapter overview</p>
             <p className="mt-2 font-campus-sans text-campus-base text-campus-text">{chapter.overview}</p>
+            {adaptiveView && (
+              <p className="mt-3 border-t border-campus-border pt-3 font-campus-sans text-campus-xs text-campus-muted">
+                Current session goal: <span className="text-campus-text">{adaptiveView.sessions[adaptiveView.sessions.length - 1].goal}</span> for {adaptiveView.conceptTitle} — this session builds directly on what the last one showed.
+              </p>
+            )}
           </div>
 
           {chapter.concepts.map((concept) => (
@@ -152,6 +160,8 @@ export default function NcertChapterPage({ params }: { params: { spaceId: string
           </div>
 
           <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Transfer question: {chapter.transferQuestion}</p>
+
+          {adaptiveView && <AdaptiveLearningSection view={adaptiveView} />}
 
           <div className="mt-2 flex items-center justify-between border-t border-campus-border pt-4">
             {chapter.prevChapter ? (
