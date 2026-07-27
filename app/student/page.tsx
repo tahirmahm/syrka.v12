@@ -14,6 +14,7 @@ import {
   mockInstitutionRepository,
 } from '@/lib/repositories'
 import { getActiveMilestone } from '@/lib/utilities/odyssey'
+import { buildStudentLearningProjection } from '@/lib/utilities/learning-projection'
 import { currentUser } from '@/lib/mock-data/seed'
 import { PASSPORT_DISPLAY_NAME } from '@/lib/constants/passport'
 
@@ -47,6 +48,7 @@ export default async function StudentDashboardPage() {
   const pendingEvidence = evidence.filter((item) => item.review.status === 'pending')
   const currentMilestone = getActiveMilestone(odysseyMilestones)
   const latestPassportVersion = passport?.versions.find((v) => v.version === passport.currentVersion)
+  const learning = buildStudentLearningProjection()
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8">
@@ -85,6 +87,36 @@ export default async function StudentDashboardPage() {
             </Card>
           )}
         </div>
+      </section>
+
+      {/* Learning */}
+      <section aria-labelledby="learning-heading">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 id="learning-heading" className="font-campus-sans text-campus-lg font-medium text-campus-text">
+            Learning
+          </h2>
+          <Link href="/student/learning" className="flex items-center gap-1 font-campus-sans text-campus-sm text-campus-muted hover:text-campus-text">
+            Open Learning <ArrowRight size={14} aria-hidden="true" />
+          </Link>
+        </div>
+        <Link href="/student/learning">
+          <Card interactive className="flex flex-col gap-2 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="font-campus-sans text-campus-sm font-medium text-campus-text">
+                {learning.chapter.title} · {learning.lesson.title}
+              </p>
+              <Badge tone="blue">Continue Learning</Badge>
+            </div>
+            <p className="font-campus-sans text-campus-xs text-campus-muted">
+              Current concept: {learning.currentConceptTitle} · {learning.independenceSummary}
+            </p>
+            {learning.odysseyConnection && (
+              <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">
+                Supports {learning.odysseyConnection.capabilityName} → {learning.odysseyConnection.milestoneTitle}
+              </p>
+            )}
+          </Card>
+        </Link>
       </section>
 
       {/* Capability profile */}
