@@ -6,6 +6,8 @@ import { MILESTONE_STATUS_LABELS, MILESTONE_STATUS_TONES, MILESTONE_TYPE_LABELS 
 export interface OdysseyTextualRoadmapProps {
   orderedResolved: ResolvedOdysseyMilestone[]
   recommendedNextId?: string
+  /** When provided, each row can open the same contextual inspector (Overview/Resources/AI Tutor) the roadmap view uses. */
+  onSelectMilestone?: (milestoneId: string) => void
 }
 
 /**
@@ -14,7 +16,7 @@ export interface OdysseyTextualRoadmapProps {
  * alone. Never merely a fallback afterthought: every fact the graph shows
  * is also here in ordered, readable form.
  */
-export function OdysseyTextualRoadmap({ orderedResolved, recommendedNextId }: OdysseyTextualRoadmapProps) {
+export function OdysseyTextualRoadmap({ orderedResolved, recommendedNextId, onSelectMilestone }: OdysseyTextualRoadmapProps) {
   return (
     <ol className="flex flex-col gap-3">
       {orderedResolved.map((resolved, index) => {
@@ -87,6 +89,16 @@ export function OdysseyTextualRoadmap({ orderedResolved, recommendedNextId }: Od
               )}
 
               <p className="font-campus-sans text-campus-xs text-campus-muted">If complete: {milestone.completionImpact}</p>
+
+              {onSelectMilestone && (
+                <button
+                  type="button"
+                  onClick={() => onSelectMilestone(milestone.id)}
+                  className="w-fit font-campus-sans text-campus-xs font-medium text-campus-blue-600 hover:underline dark:text-campus-blue-dark"
+                >
+                  Open detail &amp; AI Tutor →
+                </button>
+              )}
             </Panel>
           </li>
         )

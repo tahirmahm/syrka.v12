@@ -1,10 +1,14 @@
 'use client'
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import { X } from '@phosphor-icons/react/dist/ssr'
 import type { Node, Edge } from '@xyflow/react'
 import { Button } from '@/components/ui/Button'
-import type { OdysseyPlanVersion } from '@/lib/campus-types'
+import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
+import { panelTransition } from '@/lib/motion/campus-motion'
+import type { OdysseyPlanVersion, OdysseyInstitutionalResource } from '@/lib/campus-types'
 import type { OdysseyNodeData } from '@/lib/utilities/odyssey-projection'
 import type { ResolvedOdysseyMilestone } from '@/lib/utilities/odyssey-detail'
 import type { OdysseyGenerationApiResponse } from './odyssey-client-types'
@@ -27,13 +31,15 @@ export interface OdysseyWorkspaceProps {
   recommendedNextId?: string
   versions: OdysseyPlanVersion[]
   milestoneTitlesByVersion: Record<string, Record<string, string>>
+  institutionalResources: OdysseyInstitutionalResource[]
 }
 
 /**
  * The primary Odyssey surface: header summary + action controls, the
  * dominant roadmap workspace (graph with an inspector, or the textual
- * alternative), and the generate/replan/compare panels. Owns only view
- * state (selection, active panel, last result banner) — everything else is
+ * alternative), and the generate/replan/compare panels. The selected
+ * milestone is synced to `?milestone=` so the inspector state is linkable
+ * and refresh-safe. Owns only view state — everything else is
  * server-fetched and passed in as props.
  */
 export function OdysseyWorkspace({
@@ -46,15 +52,44 @@ export function OdysseyWorkspace({
   recommendedNextId,
   versions,
   milestoneTitlesByVersion,
+  institutionalResources,
 }: OdysseyWorkspaceProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const reduceMotion = useReducedMotionSafe()
+
   const [viewMode, setViewMode] = useState<'graph' | 'list'>('graph')
-  const [selectedMilestoneId, setSelectedMilestoneId] = useState<string>()
+  const [isMobile, setIsMobile] = useState(false)
+  const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | undefined>(searchParams.get('milestone') ?? undefined)
   const [activePanel, setActivePanel] = useState<ActivePanel>('none')
   const [bannerResult, setBannerResult] = useState<OdysseyGenerationApiResponse>()
+  const [hideCompleted, setHideCompleted] = useState(false)
+  const [focusActive, setFocusActive] = useState(false)
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth < 640) setViewMode('list')
+    function checkViewport() {
+      const mobile = window.innerWidth < 1024
+      setIsMobile(mobile)
+      if (mobile) setViewMode((v) => (v === 'graph' && window.innerWidth < 640 ? 'list' : v))
+    }
+    checkViewport()
+    window.addEventListener('resize', checkViewport)
+    return () => window.removeEventListener('resize', checkViewport)
   }, [])
+
+  const resourceById = useMemo(() => new Map(institutionalResources.map((r) => [r.id, r])), [institutionalResources])
+
+  const selectMilestone = useCallback(
+    (milestoneId: string | undefined) => {
+      setSelectedMilestoneId(milestoneId)
+      const params = new URLSearchParams(searchParams.toString())
+      if (milestoneId) params.set('milestone', milestoneId)
+      else params.delete('milestone')
+      router.replace(`${pathname}${params.toString() ? `?${params.toString()}` : ''}`, { scroll: false })
+    },
+    [pathname, router, searchParams]
+  )
 
   const selectedResolved = orderedResolved.find((r) => r.milestone.id === selectedMilestoneId)
 
@@ -83,7 +118,7 @@ export function OdysseyWorkspace({
               onClick={() => setViewMode('graph')}
               className={`rounded-l-campus-sm px-3 py-1.5 font-campus-sans text-campus-sm ${viewMode === 'graph' ? 'bg-campus-ink-950 text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950' : 'text-campus-text hover:bg-campus-surface-raised'}`}
             >
-              Graph
+              Roadmap
             </button>
             <button
               type="button"
@@ -128,18 +163,42 @@ export function OdysseyWorkspace({
         <OdysseyVersionCompare versions={versions} milestoneTitlesByVersion={milestoneTitlesByVersion} onClose={() => setActivePanel('none')} />
       )}
 
-      {viewMode === 'graph' ? (
-        <div className={`grid gap-4 ${selectedResolved ? 'lg:grid-cols-[minmax(0,1fr)_320px]' : 'lg:grid-cols-1'}`}>
-          <OdysseyRoadmapLoader nodes={nodes} edges={edges} selectedMilestoneId={selectedMilestoneId} onSelectMilestone={setSelectedMilestoneId} />
-          {selectedResolved && (
-            <div className="lg:h-[640px]">
-              <OdysseyMilestoneInspector resolved={selectedResolved} onClose={() => setSelectedMilestoneId(undefined)} />
-            </div>
+      <div className={`grid gap-4 ${selectedResolved && !isMobile ? 'lg:grid-cols-[minmax(0,1fr)_380px]' : 'lg:grid-cols-1'}`}>
+        <div className="min-w-0">
+          {viewMode === 'graph' ? (
+            <OdysseyRoadmapLoader
+              nodes={nodes}
+              edges={edges}
+              selectedMilestoneId={selectedMilestoneId}
+              onSelectMilestone={selectMilestone}
+              hideCompleted={hideCompleted}
+              focusActive={focusActive}
+              onToggleHideCompleted={() => setHideCompleted((v) => !v)}
+              onToggleFocusActive={() => setFocusActive((v) => !v)}
+            />
+          ) : (
+            <OdysseyTextualRoadmap orderedResolved={orderedResolved} recommendedNextId={recommendedNextId} onSelectMilestone={selectMilestone} />
           )}
         </div>
-      ) : (
-        <OdysseyTextualRoadmap orderedResolved={orderedResolved} recommendedNextId={recommendedNextId} />
-      )}
+        {selectedResolved && !isMobile && (
+          <motion.div
+            key={selectedResolved.milestone.id}
+            initial={reduceMotion ? false : { opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 16 }}
+            transition={panelTransition(Boolean(reduceMotion))}
+            className="lg:h-[640px]"
+          >
+            <OdysseyMilestoneInspector resolved={selectedResolved} resourceById={resourceById} onClose={() => selectMilestone(undefined)} />
+          </motion.div>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {selectedResolved && isMobile && (
+          <OdysseyMilestoneInspector resolved={selectedResolved} resourceById={resourceById} onClose={() => selectMilestone(undefined)} isMobile />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
