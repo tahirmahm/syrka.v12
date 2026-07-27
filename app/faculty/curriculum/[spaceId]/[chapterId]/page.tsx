@@ -38,7 +38,7 @@ export default function FacultyChapterIntelligencePage({ params }: { params: { s
         </ul>
         <p className="mt-3 border-t border-campus-border pt-3 font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Source citation</p>
         <p className="mt-1 font-campus-sans text-campus-xs text-campus-text">{chapter.citation.bookTitle}, p.{chapter.citation.page}</p>
-        <p className="font-campus-mono text-[10px] text-campus-muted">No extraction warnings recorded for this chapter's citation page.</p>
+        <p className="font-campus-mono text-[10px] text-campus-muted">No extraction warnings recorded for this chapter&rsquo;s citation page.</p>
       </section>
 
       {!detail ? (

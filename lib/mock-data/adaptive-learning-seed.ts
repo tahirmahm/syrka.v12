@@ -22,7 +22,6 @@ import type {
   AssistanceHistoryEntry,
   RetentionObservation,
   PedagogicalMemoryEntry,
-  LearnerGoalContext,
   AdaptationDecision,
   AdaptiveSessionPlan,
   LearnerModelProjection,
