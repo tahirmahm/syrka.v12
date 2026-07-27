@@ -9,6 +9,7 @@ import {
   workedExamples,
   learningQuestions,
   learningEquations,
+  learningPrerequisites,
   learningSessions,
   learningAttempts,
   tutorHints,
@@ -79,6 +80,8 @@ export interface StudentLearningProjection {
   independenceSummary: string
   unresolvedConcept: string | undefined
   concepts: ConceptReadiness[]
+  /** [conceptId, requiresConceptId] pairs scoped to this lesson's concepts — the UI's only access to LearningPrerequisite, never the raw fixture. */
+  conceptPrerequisites: [string, string][]
   trajectory: TrajectoryPoint[]
   independenceCounts: { independent: number; partiallyGuided: number; guided: number; transferPassed: number; highestHintLevel: number }
   evidencePipeline: EvidencePipelineStage[]
@@ -158,6 +161,10 @@ export function buildStudentLearningProjection(): StudentLearningProjection {
     const concept = learningConcepts.find((c) => c.id === conceptId)
     return conceptReadinessFor(conceptId, concept?.title ?? conceptId, concept?.description ?? '')
   })
+
+  const conceptPrerequisites: [string, string][] = learningPrerequisites
+    .filter((p) => lesson.conceptIds.includes(p.conceptId))
+    .map((p) => [p.conceptId, p.requiresConceptId])
 
   const studentAttempts = learningAttempts.filter((a) => a.studentId === STUDENT_ID).sort((a, b) => a.submittedAt.localeCompare(b.submittedAt))
   const trajectory: TrajectoryPoint[] = studentAttempts.map((a) => {
@@ -243,6 +250,7 @@ export function buildStudentLearningProjection(): StudentLearningProjection {
     independenceSummary: `${independenceCounts.independent} independent, ${independenceCounts.guided} guided completion${independenceCounts.guided === 1 ? '' : 's'} so far`,
     unresolvedConcept,
     concepts,
+    conceptPrerequisites,
     trajectory,
     independenceCounts,
     evidencePipeline,

@@ -1,11 +1,16 @@
 'use client'
 
 import { Handle, Position, type NodeProps, type Node } from '@xyflow/react'
+import { CaretDown } from '@phosphor-icons/react/dist/ssr'
 import type { OdysseyMilestoneNodeData } from '@/lib/utilities/odyssey-projection'
 import { MILESTONE_TYPE_VISUALS, MILESTONE_STATUS_MARKER } from './odyssey-node-config'
 import { MILESTONE_STATUS_LABELS, MILESTONE_TYPE_LABELS } from '@/lib/constants/odyssey'
 
-type SelectableNodeData = OdysseyMilestoneNodeData & { onSelect?: (milestoneId: string) => void }
+type SelectableNodeData = OdysseyMilestoneNodeData & {
+  onSelect?: (milestoneId: string) => void
+  /** Only ever offered on a branch (isPrimaryPath === false) — the trunk is never collapsible. */
+  onToggleCollapse?: (milestoneId: string) => void
+}
 
 /**
  * A roadmap marker, not a dashboard card: a small status-coded dot sits on
@@ -16,7 +21,7 @@ type SelectableNodeData = OdysseyMilestoneNodeData & { onSelect?: (milestoneId: 
  * path" vs. "this is an option."
  */
 export function OdysseyMilestoneNode({ data, selected }: NodeProps<Node<SelectableNodeData>>) {
-  const { milestone, isCurrentPosition, isRecommendedNext, isPrimaryPath, onSelect } = data
+  const { milestone, isCurrentPosition, isRecommendedNext, isPrimaryPath, onSelect, onToggleCollapse } = data
   const visual = MILESTONE_TYPE_VISUALS[milestone.type]
   const Icon = visual.icon
   const statusMarker = MILESTONE_STATUS_MARKER[milestone.status]
@@ -24,6 +29,11 @@ export function OdysseyMilestoneNode({ data, selected }: NodeProps<Node<Selectab
 
   function activate() {
     onSelect?.(milestone.id)
+  }
+
+  function toggleCollapse(e: React.MouseEvent | React.KeyboardEvent) {
+    e.stopPropagation()
+    onToggleCollapse?.(milestone.id)
   }
 
   return (
@@ -76,6 +86,23 @@ export function OdysseyMilestoneNode({ data, selected }: NodeProps<Node<Selectab
           )}
         </div>
       </div>
+
+      {!isPrimaryPath && onToggleCollapse && (
+        <button
+          type="button"
+          onClick={toggleCollapse}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              toggleCollapse(e)
+            }
+          }}
+          aria-label={`Collapse this branch route: ${milestone.title}`}
+          className="ml-1 shrink-0 rounded-campus-sm p-0.5 text-campus-muted opacity-0 hover:bg-campus-surface-raised group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600"
+        >
+          <CaretDown size={11} aria-hidden="true" className="rotate-90" />
+        </button>
+      )}
     </div>
   )
 }

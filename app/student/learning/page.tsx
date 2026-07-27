@@ -10,7 +10,6 @@ import { IndependenceProgression } from '@/components/learning/visualizations/In
 import { EvidencePipelineVisual } from '@/components/learning/visualizations/EvidencePipelineVisual'
 import { LearningOdysseyAlignment } from '@/components/learning/visualizations/LearningOdysseyAlignment'
 import { buildStudentLearningProjection } from '@/lib/utilities/learning-projection'
-import { learningPrerequisites } from '@/lib/mock-data/learning-seed'
 
 export const metadata = { title: 'Learning — Syrka Campus' }
 
@@ -23,9 +22,6 @@ export const metadata = { title: 'Learning — Syrka Campus' }
  */
 export default function StudentLearningPage() {
   const projection = buildStudentLearningProjection()
-  const prerequisitePairs: [string, string][] = learningPrerequisites
-    .filter((p) => projection.concepts.some((c) => c.conceptId === p.conceptId))
-    .map((p) => [p.conceptId, p.requiresConceptId])
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8">
@@ -119,7 +115,7 @@ export default function StudentLearningPage() {
           </div>
           <div className="rounded-campus-md border border-campus-border bg-campus-surface p-4">
             <p className="mb-2 font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Chapter concept map</p>
-            <ChapterConceptMap concepts={projection.concepts} prerequisites={prerequisitePairs} />
+            <ChapterConceptMap concepts={projection.concepts} prerequisites={projection.conceptPrerequisites} />
           </div>
         </div>
       </section>
