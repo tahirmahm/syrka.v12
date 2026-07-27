@@ -168,7 +168,15 @@ export function PassportWalletCard({
         </button>
       </div>
       <p className="max-w-[340px] text-center font-campus-mono text-[10px] text-campus-muted print:hidden">
-        The QR encodes a demonstration verification link: <span className="break-all">{verifyUrl}</span>
+        The QR encodes a demonstration verification link:{' '}
+        <span className="break-all">
+          {verifyUrl.split(/(?<=\/)/).map((segment, i) => (
+            <span key={i}>
+              {segment}
+              <wbr />
+            </span>
+          ))}
+        </span>
       </p>
     </div>
   )

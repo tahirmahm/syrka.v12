@@ -225,7 +225,9 @@ export function buildStudentLearningProjection(): StudentLearningProjection {
       id: 'capability-support',
       label: 'Capability support',
       status: inference ? 'complete' : 'not_reached',
-      detail: inference ? `Supports "${inference.capabilityId}" at confidence ${inference.confidence}.` : 'No Capability inference yet.',
+      detail: inference
+        ? `Supports "${inference.capabilityId}" at ${inference.confidence.band} confidence (${Math.round(inference.confidence.score * 100)}%).`
+        : 'No Capability inference yet.',
     },
     {
       id: 'passport-eligibility',
