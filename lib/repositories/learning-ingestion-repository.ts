@@ -23,7 +23,26 @@ import { createExtractionWarningsForPage, evaluateDocumentPageQuality } from '@/
 import { acceptCorrection as acceptCorrectionRecord, createCorrection, resolveWarningsAffectedByCorrection, revertCorrection as revertCorrectionRecord, type CreateCorrectionInput } from '@/lib/services/learning/correction-repository'
 import { DeterministicStructureProposalProvider, sourceReferenceIdForPage } from '@/lib/services/learning/structure-proposal'
 import { isTransitionAllowed } from '@/lib/services/learning/curriculum-review'
+import { isLearningAuthoringEnabled, isProductionRuntime } from '@/lib/services/learning/authoring-gate'
+import { ProcessingTimeoutError, uploadConcurrencyPerInstitution, withProcessingTimeout } from '@/lib/services/learning/rate-limiter'
+import { assertRepositoryConfigurationSafe } from '@/lib/services/learning/repository-safety'
 
+/**
+ * IN-MEMORY, SINGLE-PROCESS, DEVELOPMENT-ONLY. Records live in a
+ * process-local Map on globalThis — they do not survive a redeploy, are
+ * not shared across Vercel instances, and disappear on restart. This is
+ * deliberately not a production repository; see the Learning Persistence
+ * and Tenancy Architecture Checkpoint for the durable replacement
+ * (Supabase Storage + Postgres + RLS) and its repository-interface
+ * boundary. The invariant below refuses to let this repository serve
+ * production traffic if Learning authoring is ever enabled there.
+ */
+const repositorySafetyErrors = assertRepositoryConfigurationSafe(isProductionRuntime(), isLearningAuthoringEnabled())
+if (repositorySafetyErrors.length > 0) {
+  throw new Error(repositorySafetyErrors.join('\n'))
+}
+
+/** Every store is partitioned by institution — looking a record up under the wrong institutionId simply cannot find it, which is the tenant-isolation mechanism itself, not a check layered on top of it. */
 interface LearningIngestionStore {
   documents: Map<string, LearningDocument>
   documentVersions: Map<string, LearningDocumentVersion>
@@ -60,11 +79,11 @@ function createEmptyStore(): LearningIngestionStore {
   }
 }
 
-function getStore(ownerId: string): LearningIngestionStore {
-  let store = stores.get(ownerId)
+function getStore(institutionId: string): LearningIngestionStore {
+  let store = stores.get(institutionId)
   if (!store) {
     store = createEmptyStore()
-    stores.set(ownerId, store)
+    stores.set(institutionId, store)
   }
   return store
 }
@@ -76,7 +95,8 @@ function nextId(prefix: string): string {
 }
 
 export interface IntakeDocumentInput {
-  ownerId: string
+  institutionId: string
+  actorId: string
   originalFilename: string
   mimeType: string
   sizeBytes: number
@@ -109,36 +129,41 @@ export interface TransitionOutcome {
   space?: LearningSpace
 }
 
+/**
+ * Every method's first parameter is institutionId — the tenant
+ * partition. Callers must pass a LearningActor's institutionId (see
+ * lib/services/learning/actor.ts), never a client-supplied value.
+ */
 export interface LearningIngestionRepository {
   intakeDocument(input: IntakeDocumentInput): Promise<IntakeDocumentOutcome>
-  listDocuments(ownerId: string): Promise<LearningDocument[]>
-  getDocument(ownerId: string, documentId: string): Promise<LearningDocument | undefined>
-  getDocumentVersion(ownerId: string, versionId: string): Promise<LearningDocumentVersion | undefined>
-  listPagesForVersion(ownerId: string, versionId: string): Promise<LearningPage[]>
-  listWarningsForVersion(ownerId: string, versionId: string): Promise<ExtractionWarning[]>
-  listSourceReferencesForVersion(ownerId: string, versionId: string): Promise<SourceReference[]>
-  listCorrectionsForVersion(ownerId: string, versionId: string): Promise<TeacherCorrection[]>
+  listDocuments(institutionId: string): Promise<LearningDocument[]>
+  getDocument(institutionId: string, documentId: string): Promise<LearningDocument | undefined>
+  getDocumentVersion(institutionId: string, versionId: string): Promise<LearningDocumentVersion | undefined>
+  listPagesForVersion(institutionId: string, versionId: string): Promise<LearningPage[]>
+  listWarningsForVersion(institutionId: string, versionId: string): Promise<ExtractionWarning[]>
+  listSourceReferencesForVersion(institutionId: string, versionId: string): Promise<SourceReference[]>
+  listCorrectionsForVersion(institutionId: string, versionId: string): Promise<TeacherCorrection[]>
 
-  createLearningSpace(ownerId: string, title: string, curriculumId: string, documentVersionId: string): Promise<LearningSpace>
-  listLearningSpaces(ownerId: string): Promise<LearningSpace[]>
-  getLearningSpace(ownerId: string, spaceId: string): Promise<LearningSpace | undefined>
-  getLearningSpaceVersion(ownerId: string, versionId: string): Promise<LearningSpaceVersion | undefined>
-  transitionLearningSpace(ownerId: string, spaceId: string, next: CurriculumLifecycleState): Promise<TransitionOutcome>
+  createLearningSpace(institutionId: string, actorId: string, title: string, curriculumId: string, documentVersionId: string): Promise<LearningSpace>
+  listLearningSpaces(institutionId: string): Promise<LearningSpace[]>
+  getLearningSpace(institutionId: string, spaceId: string): Promise<LearningSpace | undefined>
+  getLearningSpaceVersion(institutionId: string, versionId: string): Promise<LearningSpaceVersion | undefined>
+  transitionLearningSpace(institutionId: string, spaceId: string, next: CurriculumLifecycleState): Promise<TransitionOutcome>
 
-  generateStructureProposal(ownerId: string, spaceId: string): Promise<StructureProposalOutcome>
-  getStructureProposal(ownerId: string, proposalId: string): Promise<LearningStructureProposal | undefined>
+  generateStructureProposal(institutionId: string, spaceId: string): Promise<StructureProposalOutcome>
+  getStructureProposal(institutionId: string, proposalId: string): Promise<LearningStructureProposal | undefined>
 
-  addCorrection(ownerId: string, input: CreateCorrectionInput): Promise<TeacherCorrection>
-  acceptCorrection(ownerId: string, correctionId: string): Promise<TeacherCorrection | undefined>
-  revertCorrection(ownerId: string, correctionId: string): Promise<TeacherCorrection | undefined>
+  addCorrection(institutionId: string, input: CreateCorrectionInput): Promise<TeacherCorrection>
+  acceptCorrection(institutionId: string, correctionId: string): Promise<TeacherCorrection | undefined>
+  revertCorrection(institutionId: string, correctionId: string): Promise<TeacherCorrection | undefined>
 
-  approveLearningSpace(ownerId: string, spaceId: string, reviewerId: string, note: string): Promise<{ ok: true; space: LearningSpace; version: LearningSpaceVersion; review: CurriculumReview } | { ok: false; message: string }>
-  withdrawLearningSpace(ownerId: string, spaceId: string, reason: string): Promise<TransitionOutcome>
+  approveLearningSpace(institutionId: string, spaceId: string, reviewerId: string, note: string): Promise<{ ok: true; space: LearningSpace; version: LearningSpaceVersion; review: CurriculumReview } | { ok: false; message: string }>
+  withdrawLearningSpace(institutionId: string, spaceId: string, reason: string): Promise<TransitionOutcome>
 }
 
-export const mockLearningIngestionRepository: LearningIngestionRepository = {
+export const inMemoryLearningIngestionRepository: LearningIngestionRepository = {
   async intakeDocument(input) {
-    const store = getStore(input.ownerId)
+    const store = getStore(input.institutionId)
     const header = input.buffer.slice(0, 5)
     const metadataCheck = validateIntakeMetadata({ mimeType: input.mimeType, sizeBytes: input.sizeBytes, header })
     if (!metadataCheck.ok) return { ok: false, message: metadataCheck.message, reason: metadataCheck.reason }
@@ -149,7 +174,22 @@ export const mockLearningIngestionRepository: LearningIngestionRepository = {
       return { ok: false, message: 'This document has already been uploaded (identical content hash).', reason: 'duplicate_document' }
     }
 
-    const result = await NativePdfProvider.extract(input.buffer)
+    if (!uploadConcurrencyPerInstitution.tryAcquire(input.institutionId)) {
+      return { ok: false, message: 'Too many documents are being processed for your institution right now. Please try again shortly.' }
+    }
+
+    let result
+    try {
+      result = await withProcessingTimeout(NativePdfProvider.extract(input.buffer), INTAKE_LIMITS.processingTimeoutMs)
+    } catch (err) {
+      if (err instanceof ProcessingTimeoutError) {
+        return { ok: false, message: 'Extraction took too long and was cancelled. Try a smaller document.', reason: 'processing_timeout' }
+      }
+      throw err
+    } finally {
+      uploadConcurrencyPerInstitution.release(input.institutionId)
+    }
+
     const pageCountCheck = result.totalPages > 0 ? validatePageCount(result.totalPages, INTAKE_LIMITS) : { ok: true, message: 'n/a' }
     if (!pageCountCheck.ok) return { ok: false, message: pageCountCheck.message, reason: pageCountCheck.reason }
 
@@ -192,7 +232,7 @@ export const mockLearningIngestionRepository: LearningIngestionRepository = {
       id: documentId,
       title: input.originalFilename,
       sourceLabel: input.sourceLabel,
-      ownerId: input.ownerId,
+      ownerId: input.actorId,
       currentVersionId: versionId,
       publicationStatus: 'draft',
       contentHash,
@@ -227,37 +267,37 @@ export const mockLearningIngestionRepository: LearningIngestionRepository = {
     return { ok: true, message: outcome.message, document, documentVersion, pages, warnings }
   },
 
-  async listDocuments(ownerId) {
-    return Array.from(getStore(ownerId).documents.values())
+  async listDocuments(institutionId) {
+    return Array.from(getStore(institutionId).documents.values())
   },
-  async getDocument(ownerId, documentId) {
-    return getStore(ownerId).documents.get(documentId)
+  async getDocument(institutionId, documentId) {
+    return getStore(institutionId).documents.get(documentId)
   },
-  async getDocumentVersion(ownerId, versionId) {
-    return getStore(ownerId).documentVersions.get(versionId)
+  async getDocumentVersion(institutionId, versionId) {
+    return getStore(institutionId).documentVersions.get(versionId)
   },
-  async listPagesForVersion(ownerId, versionId) {
-    return Array.from(getStore(ownerId).pages.values())
+  async listPagesForVersion(institutionId, versionId) {
+    return Array.from(getStore(institutionId).pages.values())
       .filter((p) => p.documentVersionId === versionId)
       .sort((a, b) => a.pageNumber - b.pageNumber)
   },
-  async listWarningsForVersion(ownerId, versionId) {
-    const pageIds = new Set((await this.listPagesForVersion(ownerId, versionId)).map((p) => p.id))
-    return Array.from(getStore(ownerId).extractionWarnings.values()).filter((w) => pageIds.has(w.pageId))
+  async listWarningsForVersion(institutionId, versionId) {
+    const pageIds = new Set((await this.listPagesForVersion(institutionId, versionId)).map((p) => p.id))
+    return Array.from(getStore(institutionId).extractionWarnings.values()).filter((w) => pageIds.has(w.pageId))
   },
-  async listSourceReferencesForVersion(ownerId, versionId) {
-    return Array.from(getStore(ownerId).sourceReferences.values()).filter((r) => r.documentVersionId === versionId)
+  async listSourceReferencesForVersion(institutionId, versionId) {
+    return Array.from(getStore(institutionId).sourceReferences.values()).filter((r) => r.documentVersionId === versionId)
   },
-  async listCorrectionsForVersion(ownerId, versionId) {
-    return Array.from(getStore(ownerId).teacherCorrections.values()).filter((c) => c.documentVersionId === versionId)
+  async listCorrectionsForVersion(institutionId, versionId) {
+    return Array.from(getStore(institutionId).teacherCorrections.values()).filter((c) => c.documentVersionId === versionId)
   },
 
-  async createLearningSpace(ownerId, title, curriculumId, documentVersionId) {
-    const store = getStore(ownerId)
+  async createLearningSpace(institutionId, actorId, title, curriculumId, documentVersionId) {
+    const store = getStore(institutionId)
     const id = nextId('lsp')
     const ownerRecordId = nextId('lsp-owner')
     const space: LearningSpace = { id, title, curriculumId, ownerId: ownerRecordId, currentVersionId: undefined, lifecycleState: 'draft' }
-    const owner: CurriculumOwner = { id: ownerRecordId, learningSpaceId: id, primaryOwnerId: ownerId, contributorIds: [] }
+    const owner: CurriculumOwner = { id: ownerRecordId, learningSpaceId: id, primaryOwnerId: actorId, contributorIds: [] }
     store.learningSpaces.set(id, space)
     store.curriculumOwners.set(ownerRecordId, owner)
     // Stash the source document version on the space's eventual version record once one is created.
@@ -268,17 +308,17 @@ export const mockLearningIngestionRepository: LearningIngestionRepository = {
     store.learningSpaces.set(id, withVersion)
     return withVersion
   },
-  async listLearningSpaces(ownerId) {
-    return Array.from(getStore(ownerId).learningSpaces.values())
+  async listLearningSpaces(institutionId) {
+    return Array.from(getStore(institutionId).learningSpaces.values())
   },
-  async getLearningSpace(ownerId, spaceId) {
-    return getStore(ownerId).learningSpaces.get(spaceId)
+  async getLearningSpace(institutionId, spaceId) {
+    return getStore(institutionId).learningSpaces.get(spaceId)
   },
-  async getLearningSpaceVersion(ownerId, versionId) {
-    return getStore(ownerId).learningSpaceVersions.get(versionId)
+  async getLearningSpaceVersion(institutionId, versionId) {
+    return getStore(institutionId).learningSpaceVersions.get(versionId)
   },
-  async transitionLearningSpace(ownerId, spaceId, next) {
-    const store = getStore(ownerId)
+  async transitionLearningSpace(institutionId, spaceId, next) {
+    const store = getStore(institutionId)
     const space = store.learningSpaces.get(spaceId)
     if (!space) return { ok: false, message: 'Learning Space not found.' }
     if (!isTransitionAllowed(space.lifecycleState, next)) {
@@ -289,22 +329,22 @@ export const mockLearningIngestionRepository: LearningIngestionRepository = {
     return { ok: true, message: `Moved to "${next}".`, space: updated }
   },
 
-  async generateStructureProposal(ownerId, spaceId) {
-    const store = getStore(ownerId)
+  async generateStructureProposal(institutionId, spaceId) {
+    const store = getStore(institutionId)
     const space = store.learningSpaces.get(spaceId)
     if (!space) return { ok: false, message: 'Learning Space not found.' }
     const currentVersion = space.currentVersionId ? store.learningSpaceVersions.get(space.currentVersionId) : undefined
     const sourceVersionId = currentVersion?.sourceDocumentVersionId
     if (!sourceVersionId) return { ok: false, message: 'No source document version is attached to this Learning Space yet.' }
 
-    const pages = await this.listPagesForVersion(ownerId, sourceVersionId)
+    const pages = await this.listPagesForVersion(institutionId, sourceVersionId)
     const parsed: ParsedLearningDocument = {
       documentId: store.documentVersions.get(sourceVersionId)?.documentId ?? '',
       documentVersionId: sourceVersionId,
       pages: pages.map((p) => ({ pageId: p.id, pageNumber: p.pageNumber, text: p.extractedText ?? '', quality: p.qualityState ?? 'reliable' })),
     }
 
-    const extractingResult = await this.transitionLearningSpace(ownerId, spaceId, 'extracting')
+    const extractingResult = await this.transitionLearningSpace(institutionId, spaceId, 'extracting')
     if (!extractingResult.ok) {
       // Already past 'extracting' (e.g. re-generating from extraction_review) — proceed without re-transitioning.
     }
@@ -312,32 +352,32 @@ export const mockLearningIngestionRepository: LearningIngestionRepository = {
     const proposal = await DeterministicStructureProposalProvider.proposeStructure(parsed)
     store.structureProposals.set(proposal.id, proposal)
 
-    const warnings = await this.listWarningsForVersion(ownerId, sourceVersionId)
+    const warnings = await this.listWarningsForVersion(institutionId, sourceVersionId)
     const hasUnresolvedHighSeverity = warnings.some((w) => w.severity === 'high' && !w.resolved)
     const nextState: CurriculumLifecycleState = hasUnresolvedHighSeverity ? 'corrections_required' : 'structure_review'
 
     const fromState = store.learningSpaces.get(spaceId)?.lifecycleState ?? 'draft'
-    const intermediateOk = isTransitionAllowed(fromState, 'extraction_review') ? (await this.transitionLearningSpace(ownerId, spaceId, 'extraction_review')).ok : true
+    const intermediateOk = isTransitionAllowed(fromState, 'extraction_review') ? (await this.transitionLearningSpace(institutionId, spaceId, 'extraction_review')).ok : true
     void intermediateOk
-    const finalTransition = await this.transitionLearningSpace(ownerId, spaceId, nextState)
+    const finalTransition = await this.transitionLearningSpace(institutionId, spaceId, nextState)
 
     const updatedVersion: LearningSpaceVersion = { ...(store.learningSpaceVersions.get(space.currentVersionId as string) as LearningSpaceVersion), structureProposalId: proposal.id }
     store.learningSpaceVersions.set(updatedVersion.id, updatedVersion)
 
     return { ok: true, message: finalTransition.message, space: finalTransition.space ?? store.learningSpaces.get(spaceId), proposal }
   },
-  async getStructureProposal(ownerId, proposalId) {
-    return getStore(ownerId).structureProposals.get(proposalId)
+  async getStructureProposal(institutionId, proposalId) {
+    return getStore(institutionId).structureProposals.get(proposalId)
   },
 
-  async addCorrection(ownerId, input) {
-    const store = getStore(ownerId)
+  async addCorrection(institutionId, input) {
+    const store = getStore(institutionId)
     const correction = createCorrection(input, new Date().toISOString())
     store.teacherCorrections.set(correction.id, correction)
     return correction
   },
-  async acceptCorrection(ownerId, correctionId) {
-    const store = getStore(ownerId)
+  async acceptCorrection(institutionId, correctionId) {
+    const store = getStore(institutionId)
     const correction = store.teacherCorrections.get(correctionId)
     if (!correction) return undefined
     const accepted = acceptCorrectionRecord(correction)
@@ -347,8 +387,8 @@ export const mockLearningIngestionRepository: LearningIngestionRepository = {
     resolved.forEach((w) => store.extractionWarnings.set(w.id, w))
     return accepted
   },
-  async revertCorrection(ownerId, correctionId) {
-    const store = getStore(ownerId)
+  async revertCorrection(institutionId, correctionId) {
+    const store = getStore(institutionId)
     const correction = store.teacherCorrections.get(correctionId)
     if (!correction) return undefined
     const reverted = revertCorrectionRecord(correction)
@@ -356,8 +396,8 @@ export const mockLearningIngestionRepository: LearningIngestionRepository = {
     return reverted
   },
 
-  async approveLearningSpace(ownerId, spaceId, reviewerId, note) {
-    const store = getStore(ownerId)
+  async approveLearningSpace(institutionId, spaceId, reviewerId, note) {
+    const store = getStore(institutionId)
     const space = store.learningSpaces.get(spaceId)
     if (!space) return { ok: false, message: 'Learning Space not found.' }
     if (!isTransitionAllowed(space.lifecycleState, 'approved')) {
@@ -378,8 +418,8 @@ export const mockLearningIngestionRepository: LearningIngestionRepository = {
 
     return { ok: true, space: updatedSpace, version: approvedVersion, review }
   },
-  async withdrawLearningSpace(ownerId, spaceId, reason) {
-    const store = getStore(ownerId)
+  async withdrawLearningSpace(institutionId, spaceId, reason) {
+    const store = getStore(institutionId)
     const space = store.learningSpaces.get(spaceId)
     if (!space) return { ok: false, message: 'Learning Space not found.' }
     if (!isTransitionAllowed(space.lifecycleState, 'withdrawn')) {

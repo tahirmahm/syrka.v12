@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { facultyUser } from '@/lib/mock-data/seed'
-import { mockLearningIngestionRepository } from '@/lib/repositories/learning-ingestion-repository'
+import { inMemoryLearningIngestionRepository } from '@/lib/repositories/learning-ingestion-repository'
+import { guardLearningRequest } from '@/lib/services/learning/route-guard'
+import { INTAKE_LIMITS } from '@/lib/services/learning/document-intake'
+import { uploadThrottlePerActor, uploadThrottlePerInstitution } from '@/lib/services/learning/rate-limiter'
 import type { DocumentSourceType, SourceRightsDeclaration } from '@/lib/campus-types'
 
 const VALID_SOURCE_TYPES: DocumentSourceType[] = ['textbook', 'reading_pack', 'manual', 'training_document', 'other']
@@ -16,6 +18,26 @@ const VALID_RIGHTS: SourceRightsDeclaration[] = [
 
 /** Server-only document intake — no client component may import PDF-parsing code directly; this route is the only entry point. */
 export async function POST(req: NextRequest) {
+  // Feature gate + authentication resolve before the body is ever read.
+  const guard = await guardLearningRequest()
+  if (!guard.ok) return guard.response
+  const { actor } = guard
+
+  // Reject an oversized request before reading the full body where the runtime tells us up front.
+  const contentLength = req.headers.get('content-length')
+  if (contentLength && Number(contentLength) > INTAKE_LIMITS.maxFileSizeBytes) {
+    return NextResponse.json({ ok: false, message: 'Request exceeds the maximum upload size.', reason: 'file_exceeds_limit' }, { status: 413 })
+  }
+
+  const actorThrottle = uploadThrottlePerActor.consume(actor.userId)
+  if (!actorThrottle.allowed) {
+    return NextResponse.json({ ok: false, message: 'Too many uploads. Please slow down and try again shortly.' }, { status: 429 })
+  }
+  const institutionThrottle = uploadThrottlePerInstitution.consume(actor.institutionId)
+  if (!institutionThrottle.allowed) {
+    return NextResponse.json({ ok: false, message: 'Your institution has reached its upload rate limit. Please try again shortly.' }, { status: 429 })
+  }
+
   const formData = await req.formData()
   const file = formData.get('file') as File | null
   const sourceLabel = (formData.get('sourceLabel') as string) || ''
@@ -34,8 +56,9 @@ export async function POST(req: NextRequest) {
 
   const buffer = new Uint8Array(await file.arrayBuffer())
 
-  const outcome = await mockLearningIngestionRepository.intakeDocument({
-    ownerId: facultyUser.id,
+  const outcome = await inMemoryLearningIngestionRepository.intakeDocument({
+    institutionId: actor.institutionId,
+    actorId: actor.userId,
     originalFilename: file.name,
     mimeType: file.type || 'application/octet-stream',
     sizeBytes: file.size,
@@ -49,6 +72,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  const documents = await mockLearningIngestionRepository.listDocuments(facultyUser.id)
+  const guard = await guardLearningRequest()
+  if (!guard.ok) return guard.response
+
+  const documents = await inMemoryLearningIngestionRepository.listDocuments(guard.actor.institutionId)
   return NextResponse.json({ documents })
 }

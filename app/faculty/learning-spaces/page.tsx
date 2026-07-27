@@ -1,19 +1,26 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Button } from '@/components/ui/Button'
-import { facultyUser } from '@/lib/mock-data/seed'
-import { mockLearningIngestionRepository } from '@/lib/repositories/learning-ingestion-repository'
+import { inMemoryLearningIngestionRepository } from '@/lib/repositories/learning-ingestion-repository'
+import { isLearningAuthoringEnabled } from '@/lib/services/learning/authoring-gate'
+import { resolveLearningActor } from '@/lib/services/learning/actor'
 import { LIFECYCLE_STATE_LABELS, LIFECYCLE_STATE_TONES } from '@/lib/constants/learning-ingestion'
 
 export const metadata = { title: 'Learning Spaces — Syrka Campus' }
 export const dynamic = 'force-dynamic'
 
 export default async function LearningSpacesPage() {
-  const spaces = await mockLearningIngestionRepository.listLearningSpaces(facultyUser.id)
+  if (!isLearningAuthoringEnabled()) notFound()
+  const resolution = await resolveLearningActor()
+  if (!resolution.ok) notFound()
+  const { actor } = resolution
+
+  const spaces = await inMemoryLearningIngestionRepository.listLearningSpaces(actor.institutionId)
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">

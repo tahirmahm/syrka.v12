@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { facultyUser } from '@/lib/mock-data/seed'
-import { mockLearningIngestionRepository } from '@/lib/repositories/learning-ingestion-repository'
+import { inMemoryLearningIngestionRepository } from '@/lib/repositories/learning-ingestion-repository'
+import { guardLearningRequest } from '@/lib/services/learning/route-guard'
 
 export async function POST(req: NextRequest, { params }: { params: { spaceId: string } }) {
+  const guard = await guardLearningRequest()
+  if (!guard.ok) return guard.response
+
   const body = await req.json().catch(() => ({}))
   const reason = (body as { reason?: string }).reason ?? ''
-  const outcome = await mockLearningIngestionRepository.withdrawLearningSpace(facultyUser.id, params.spaceId, reason)
+  const outcome = await inMemoryLearningIngestionRepository.withdrawLearningSpace(guard.actor.institutionId, params.spaceId, reason)
   return NextResponse.json(outcome, { status: outcome.ok ? 200 : 422 })
 }

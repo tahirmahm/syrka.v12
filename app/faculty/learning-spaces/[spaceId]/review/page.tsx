@@ -1,26 +1,35 @@
 import { notFound } from 'next/navigation'
-import { facultyUser } from '@/lib/mock-data/seed'
-import { mockLearningIngestionRepository } from '@/lib/repositories/learning-ingestion-repository'
+import { inMemoryLearningIngestionRepository } from '@/lib/repositories/learning-ingestion-repository'
+import { isLearningAuthoringEnabled } from '@/lib/services/learning/authoring-gate'
+import { resolveLearningActor } from '@/lib/services/learning/actor'
 import { LearningSpaceWorkspace } from '@/components/learning/LearningSpaceWorkspace'
 
 export async function generateMetadata({ params }: { params: { spaceId: string } }) {
-  const space = await mockLearningIngestionRepository.getLearningSpace(facultyUser.id, params.spaceId)
+  if (!isLearningAuthoringEnabled()) notFound()
+  const resolution = await resolveLearningActor()
+  if (!resolution.ok) notFound()
+  const space = await inMemoryLearningIngestionRepository.getLearningSpace(resolution.actor.institutionId, params.spaceId)
   return { title: space ? `${space.title} — Syrka Campus` : 'Learning Space — Syrka Campus' }
 }
 
 export default async function LearningSpaceReviewPage({ params }: { params: { spaceId: string } }) {
-  const space = await mockLearningIngestionRepository.getLearningSpace(facultyUser.id, params.spaceId)
+  if (!isLearningAuthoringEnabled()) notFound()
+  const resolution = await resolveLearningActor()
+  if (!resolution.ok) notFound()
+  const { institutionId } = resolution.actor
+
+  const space = await inMemoryLearningIngestionRepository.getLearningSpace(institutionId, params.spaceId)
   if (!space) notFound()
 
-  const spaceVersion = space.currentVersionId ? await mockLearningIngestionRepository.getLearningSpaceVersion(facultyUser.id, space.currentVersionId) : undefined
+  const spaceVersion = space.currentVersionId ? await inMemoryLearningIngestionRepository.getLearningSpaceVersion(institutionId, space.currentVersionId) : undefined
   const sourceVersionId = spaceVersion?.sourceDocumentVersionId
-  const documentVersion = sourceVersionId ? await mockLearningIngestionRepository.getDocumentVersion(facultyUser.id, sourceVersionId) : undefined
-  const document = documentVersion ? await mockLearningIngestionRepository.getDocument(facultyUser.id, documentVersion.documentId) : undefined
-  const pages = sourceVersionId ? await mockLearningIngestionRepository.listPagesForVersion(facultyUser.id, sourceVersionId) : []
-  const warnings = sourceVersionId ? await mockLearningIngestionRepository.listWarningsForVersion(facultyUser.id, sourceVersionId) : []
-  const sourceReferences = sourceVersionId ? await mockLearningIngestionRepository.listSourceReferencesForVersion(facultyUser.id, sourceVersionId) : []
-  const corrections = sourceVersionId ? await mockLearningIngestionRepository.listCorrectionsForVersion(facultyUser.id, sourceVersionId) : []
-  const proposal = spaceVersion?.structureProposalId ? await mockLearningIngestionRepository.getStructureProposal(facultyUser.id, spaceVersion.structureProposalId) : undefined
+  const documentVersion = sourceVersionId ? await inMemoryLearningIngestionRepository.getDocumentVersion(institutionId, sourceVersionId) : undefined
+  const document = documentVersion ? await inMemoryLearningIngestionRepository.getDocument(institutionId, documentVersion.documentId) : undefined
+  const pages = sourceVersionId ? await inMemoryLearningIngestionRepository.listPagesForVersion(institutionId, sourceVersionId) : []
+  const warnings = sourceVersionId ? await inMemoryLearningIngestionRepository.listWarningsForVersion(institutionId, sourceVersionId) : []
+  const sourceReferences = sourceVersionId ? await inMemoryLearningIngestionRepository.listSourceReferencesForVersion(institutionId, sourceVersionId) : []
+  const corrections = sourceVersionId ? await inMemoryLearningIngestionRepository.listCorrectionsForVersion(institutionId, sourceVersionId) : []
+  const proposal = spaceVersion?.structureProposalId ? await inMemoryLearningIngestionRepository.getStructureProposal(institutionId, spaceVersion.structureProposalId) : undefined
 
   return (
     <LearningSpaceWorkspace
