@@ -10,6 +10,7 @@ import { IndependenceProgression } from '@/components/learning/visualizations/In
 import { EvidencePipelineVisual } from '@/components/learning/visualizations/EvidencePipelineVisual'
 import { LearningOdysseyAlignment } from '@/components/learning/visualizations/LearningOdysseyAlignment'
 import { buildStudentLearningProjection } from '@/lib/utilities/learning-projection'
+import { getNcertSubjects, getNcertTotalChapterCount } from '@/lib/utilities/ncert-curriculum-projection'
 
 export const metadata = { title: 'Learning — Syrka Campus' }
 
@@ -22,6 +23,8 @@ export const metadata = { title: 'Learning — Syrka Campus' }
  */
 export default function StudentLearningPage() {
   const projection = buildStudentLearningProjection()
+  const ncertSubjects = getNcertSubjects()
+  const ncertTotalChapters = getNcertTotalChapterCount()
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8">
@@ -79,6 +82,36 @@ export default function StudentLearningPage() {
               Continue Learning <ArrowRight size={14} aria-hidden="true" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Full curriculum navigator */}
+      <section aria-labelledby="curriculum-heading">
+        <div className="mb-3 flex items-baseline justify-between gap-2">
+          <h2 id="curriculum-heading" className="font-campus-sans text-campus-lg font-medium text-campus-text">
+            NCERT Class X curriculum
+          </h2>
+          <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">{ncertTotalChapters} chapters across 4 supplied books</p>
+        </div>
+        <p className="mb-3 font-campus-sans text-campus-xs text-campus-muted">
+          The four books supplied so far — English, Geography, Economics, and Political Science. This is not yet the full NCERT Class X curriculum; Mathematics, Science, History, and other books have not been supplied.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {ncertSubjects.map((subject) => (
+            <div key={subject.spaceId} className="rounded-campus-md border border-campus-border bg-campus-surface p-4">
+              <p className="font-campus-sans text-campus-sm font-medium text-campus-text">{subject.title}</p>
+              <p className="mt-0.5 font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">{subject.chapters.length} chapters</p>
+              <ul className="mt-2 flex flex-col gap-0.5">
+                {subject.chapters.map((c) => (
+                  <li key={c.chapterId}>
+                    <Link href={`/student/learning/${subject.spaceId}/${c.chapterId}`} className="block truncate rounded-campus-sm px-1.5 py-1 font-campus-sans text-campus-xs text-campus-text hover:bg-campus-surface-raised hover:text-campus-blue-600 dark:hover:text-campus-blue-dark">
+                      {c.order}. {c.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </section>
 
