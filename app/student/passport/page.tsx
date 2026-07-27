@@ -16,7 +16,7 @@ import { currentUser } from '@/lib/mock-data/seed'
 import { PASSPORT_DISPLAY_NAME } from '@/lib/constants/passport'
 import { formatDate } from '@/lib/utilities/format-relative-time'
 import { generatePassportQrSvg } from '@/lib/utilities/qr'
-import { headers } from 'next/headers'
+import { getAppBaseUrl } from '@/lib/utilities/app-url'
 
 export const metadata = { title: `${PASSPORT_DISPLAY_NAME} — Syrka Campus` }
 
@@ -62,10 +62,7 @@ export default async function StudentPassportPage() {
     .join('')
     .toUpperCase()
 
-  const requestHeaders = headers()
-  const host = requestHeaders.get('host') ?? 'campus.syrka.app'
-  const protocol = host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https'
-  const verifyUrl = `${protocol}://${host}/student/passport?verify=${passport.id}`
+  const verifyUrl = `${getAppBaseUrl()}/verify/passport/${passport.id}`
   const qrSvgMarkup = await generatePassportQrSvg(verifyUrl)
 
   return (
