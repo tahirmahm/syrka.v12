@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { resolveDeepSeekModel } from '@/lib/deepseek'
 
 const VISION_LABELS: Record<string, string> = {
   saudi: "Saudi Arabia's Vision 2030",
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
     })
 
     const completion = await client.chat.completions.create({
-      model: 'deepseek-chat',
+      model: resolveDeepSeekModel().model,
       messages: [
         {
           role: 'user',

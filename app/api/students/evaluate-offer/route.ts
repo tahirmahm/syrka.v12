@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { resolveDeepSeekModel } from '@/lib/deepseek'
 
 const DIMENSION_WEIGHTS: Record<string, number> = {
   'Skill Match': 25,
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
       .join('\n')
 
     const completion = await client.chat.completions.create({
-      model: 'deepseek-chat',
+      model: resolveDeepSeekModel().model,
       messages: [
         {
           role: 'user',

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { resolveDeepSeekModel } from '@/lib/deepseek'
 
 const BANNED_WORDS = ['passionate', 'dynamic', 'results-driven', 'dedicated professional', 'leveraging', 'cutting-edge', 'synergy']
 
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     for (let attempt = 0; attempt < 2; attempt++) {
       const completion = await client.chat.completions.create({
-        model: 'deepseek-chat',
+        model: resolveDeepSeekModel().model,
         messages: [
           {
             role: 'user',

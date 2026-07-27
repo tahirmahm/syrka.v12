@@ -3,7 +3,7 @@
 const MODEL_CARDS = [
   {
     endpoint: '/api/students/job-recommendations',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     purpose: 'Recommend 6 real job roles based on student skills, sector-agnostic',
     inputs: ['Student skills array', 'Country'],
     outputs: ['Job title', 'Match %', 'Salary range', 'Search URLs'],
@@ -16,7 +16,7 @@ const MODEL_CARDS = [
   },
   {
     endpoint: '/api/students/evaluate-offer',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     purpose: '10-dimension weighted evaluation of a job offer',
     inputs: ['Job title', 'Company', 'Salary offered', 'Student skills', 'Country'],
     outputs: ['Dimension scores', 'Overall weighted score', 'Grade', 'Negotiation points'],
@@ -29,7 +29,7 @@ const MODEL_CARDS = [
   },
   {
     endpoint: '/api/students/generate-cv-brief',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     purpose: 'Generate tailored CV brief with headline, ATS keywords, and cover letter opening',
     inputs: ['Job title', 'Company', 'Description', 'Student skills', 'Country'],
     outputs: ['Headline', 'Skills to highlight/downplay', 'ATS keywords', 'Cover letter opening'],
@@ -42,7 +42,7 @@ const MODEL_CARDS = [
   },
   {
     endpoint: '/api/students/assess-ai-usage',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     purpose: 'Evaluate student submissions for AI collaboration sophistication',
     inputs: ['Submission text (max 3000 chars)', 'Assignment brief', 'Student skills'],
     outputs: ['5 dimension scores', 'Overall AI literacy score', 'Grade', 'Feedback'],
@@ -55,7 +55,7 @@ const MODEL_CARDS = [
   },
   {
     endpoint: '/api/students/adaptive-path',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     purpose: 'Generate personalised 90-day learning path aligned with national vision',
     inputs: ['Skills', 'Completed modules', 'Time available', 'Target role', 'Country'],
     outputs: ['Week ranges with actions', 'Velocity assessment', 'Bottleneck', 'Shortcut'],
@@ -68,7 +68,7 @@ const MODEL_CARDS = [
   },
   {
     endpoint: '/api/students/outcomes',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     purpose: 'Generate learning signal from application outcome data',
     inputs: ['Job title', 'Company', 'Status', 'Rejection details', 'Skills gaps'],
     outputs: ['Priority skill to learn', 'Resource recommendation', 'Trajectory adjustment'],
@@ -81,7 +81,7 @@ const MODEL_CARDS = [
   },
   {
     endpoint: '/api/university/evolve-curriculum',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     purpose: 'Generate updated reading recommendations with provenance data',
     inputs: ['Course name', 'Course code', 'Description'],
     outputs: ['3 recommendations with sources', 'Freshness score', 'ESCO skill codes'],

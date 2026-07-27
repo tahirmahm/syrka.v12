@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import OpenAI from 'openai'
+import { resolveDeepSeekModel } from '@/lib/deepseek'
 
 function getSupabase() {
   return createServiceClient(
@@ -75,7 +76,7 @@ Tone: Sharp, informed, slightly urgent. No fluff.`
   try {
     const deepseek = getDeepSeek()
     const completion = await deepseek.chat.completions.create({
-      model: 'deepseek-chat',
+      model: resolveDeepSeekModel().model,
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 800,
       temperature: 0.7,

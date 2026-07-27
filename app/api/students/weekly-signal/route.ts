@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { resolveDeepSeekModel } from '@/lib/deepseek'
 import { createClient } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
@@ -62,7 +63,7 @@ export async function GET() {
 
       try {
         const completion = await client.chat.completions.create({
-          model: 'deepseek-chat',
+          model: resolveDeepSeekModel().model,
           messages: [{
             role: 'user',
             content: `This student sent ${total} applications this week.
