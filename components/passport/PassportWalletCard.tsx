@@ -81,7 +81,7 @@ export function PassportWalletCard({
 
   return (
     <div className="flex flex-col items-center gap-4 print:block">
-      <div style={{ perspective: 1400 }} className="print:[perspective:none]">
+      <div style={{ perspective: 1400 }} className="max-w-full overflow-hidden print:[perspective:none]">
         <motion.div
           ref={cardRef}
           onMouseMove={handleMouseMove}

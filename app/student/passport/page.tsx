@@ -1,7 +1,7 @@
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { PassportClaimRow } from '@/components/passport/PassportClaimRow'
+import { PassportClaimInspectorSection } from '@/components/passport/PassportClaimInspectorSection'
 import { PassportVersionHistory } from '@/components/passport/PassportVersionHistory'
 import { ReadinessSummary } from '@/components/passport/ReadinessSummary'
 import { PassportDisclosureSection } from '@/components/passport/PassportDisclosureSection'
@@ -66,7 +66,7 @@ export default async function StudentPassportPage() {
   const qrSvgMarkup = await generatePassportQrSvg(verifyUrl)
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-8">
+    <div className="mx-auto flex max-w-4xl flex-col gap-8">
       <PageHeader
         title={PASSPORT_DISPLAY_NAME}
         subtitle="An institutionally reviewed, evidence-backed record of what you can credibly do — current as of its issue date, not a résumé."
@@ -102,11 +102,13 @@ export default async function StudentPassportPage() {
         {currentVersion.claims.length === 0 ? (
           <EmptyState title="No claims yet" description="No capability has yet met the confidence threshold for a shareable claim." />
         ) : (
-          <div className="flex flex-col gap-3">
-            {currentVersion.claims.map((claim) => (
-              <PassportClaimRow key={claim.id} claim={claim} />
-            ))}
-          </div>
+          <PassportClaimInspectorSection
+            claims={currentVersion.claims}
+            evidenceById={new Map(evidence.map((e) => [e.record.id, e.record]))}
+            capabilityById={capabilityById}
+            disclosureSettings={disclosureSettings}
+            issuedAt={currentVersion.issuedAt}
+          />
         )}
       </section>
 
