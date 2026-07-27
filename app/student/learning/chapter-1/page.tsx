@@ -112,7 +112,7 @@ export default function Chapter1LessonPage() {
             </div>
           )}
 
-          <DeterministicTutorPanel />
+          <DeterministicTutorPanel odysseyConnection={projection.odysseyConnection} evidencePipeline={projection.evidencePipeline} />
         </aside>
       </div>
     </div>
