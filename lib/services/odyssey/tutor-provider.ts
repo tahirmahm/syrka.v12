@@ -14,17 +14,36 @@ export type OdysseyTutorAction =
   | 'passport_effect'
   | 'custom'
 
+export interface OdysseyTutorCapabilityRef {
+  id: string
+  name: string
+}
+
+export interface OdysseyTutorEvidenceRef {
+  id: string
+  description: string
+  /** Populated only once real Evidence has been submitted and linked — never fabricated. */
+  evidenceRecordIds: string[]
+}
+
 export interface OdysseyTutorMilestoneContext {
   title: string
   type: string
   status: string
   description: string
   reasoningSummary: string
-  capabilityNames: string[]
+  capabilities: OdysseyTutorCapabilityRef[]
   blockedReason?: string
   estimatedEffort?: string
   alternatives: { title: string; description: string; tradeoff: string }[]
-  requiredEvidence: string[]
+  requiredEvidence: OdysseyTutorEvidenceRef[]
+}
+
+export interface TutorCitation {
+  kind: 'capability' | 'evidence'
+  label: string
+  /** Omitted when there is no canonical record to link to yet — never a fabricated href. */
+  href?: string
 }
 
 export interface OdysseyTutorRequest {
@@ -32,12 +51,6 @@ export interface OdysseyTutorRequest {
   milestone?: OdysseyTutorMilestoneContext
   action: OdysseyTutorAction
   customMessage?: string
-}
-
-export interface OdysseyTutorResult {
-  status: 'success' | 'fallback' | 'error'
-  message: string
-  generationSource: 'deepseek' | 'fallback'
 }
 
 const ACTION_INSTRUCTIONS: Record<OdysseyTutorAction, string> = {
@@ -83,10 +96,10 @@ function buildUserPrompt(request: OdysseyTutorRequest): string {
     lines.push(`Selected milestone: "${milestone.title}" (type: ${milestone.type}, status: ${milestone.status})`)
     lines.push(`Description: ${milestone.description}`)
     lines.push(`Reasoning on record: ${milestone.reasoningSummary}`)
-    if (milestone.capabilityNames.length) lines.push(`Related capabilities: ${milestone.capabilityNames.join(', ')}`)
+    if (milestone.capabilities.length) lines.push(`Related capabilities: ${milestone.capabilities.map((c) => c.name).join(', ')}`)
     if (milestone.blockedReason) lines.push(`Blocked reason: ${milestone.blockedReason}`)
     if (milestone.estimatedEffort) lines.push(`Estimated effort: ${milestone.estimatedEffort}`)
-    if (milestone.requiredEvidence.length) lines.push(`Required Evidence: ${milestone.requiredEvidence.join('; ')}`)
+    if (milestone.requiredEvidence.length) lines.push(`Required Evidence: ${milestone.requiredEvidence.map((r) => r.description).join('; ')}`)
     if (milestone.alternatives.length) {
       lines.push(`Alternatives on record: ${milestone.alternatives.map((a) => `${a.title} (trade-off: ${a.tradeoff})`).join('; ')}`)
     }
@@ -115,10 +128,22 @@ function fallbackMessage(request: OdysseyTutorRequest): string {
   return "DeepSeek isn't available right now, so the Tutor can't respond conversationally. The Overview and Resources tabs still show everything recorded for this Odyssey plan."
 }
 
-/** Server-only. Reuses lib/deepseek.ts the same way the generation/replan providers do, but calls for freeform advisory text rather than a structured plan. */
-export async function callOdysseyTutor(request: OdysseyTutorRequest): Promise<OdysseyTutorResult> {
+export type OdysseyTutorStreamEvent =
+  | { type: 'delta'; text: string }
+  | { type: 'done'; generationSource: 'deepseek' }
+  | { type: 'fallback'; text: string; generationSource: 'fallback' }
+
+/**
+ * Server-only. Streams freeform advisory text token-by-token when DeepSeek
+ * is reachable, reusing lib/deepseek.ts the same way the generation/replan
+ * providers do. Falls back to one complete message — never a partial,
+ * misleading stream — if the API key is absent, the call errors, or the
+ * model returns nothing.
+ */
+export async function* streamOdysseyTutor(request: OdysseyTutorRequest): AsyncGenerator<OdysseyTutorStreamEvent> {
   if (!process.env.DEEPSEEK_API_KEY) {
-    return { status: 'fallback', message: fallbackMessage(request), generationSource: 'fallback' }
+    yield { type: 'fallback', text: fallbackMessage(request), generationSource: 'fallback' }
+    return
   }
 
   const client = createDeepSeekClient()
@@ -126,11 +151,12 @@ export async function callOdysseyTutor(request: OdysseyTutorRequest): Promise<Od
   const timeoutHandle = setTimeout(() => controller.abort(), ODYSSEY_PROVIDER_CONFIG.timeoutMs)
 
   try {
-    const completion = await client.chat.completions.create(
+    const stream = await client.chat.completions.create(
       {
         model: ODYSSEY_PROVIDER_CONFIG.model,
         temperature: 0.4,
         max_tokens: 700,
+        stream: true,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: buildUserPrompt(request) },
@@ -138,12 +164,40 @@ export async function callOdysseyTutor(request: OdysseyTutorRequest): Promise<Od
       },
       { signal: controller.signal }
     )
-    const content = completion.choices[0]?.message?.content?.trim()
-    if (!content) return { status: 'fallback', message: fallbackMessage(request), generationSource: 'fallback' }
-    return { status: 'success', message: content, generationSource: 'deepseek' }
+
+    let received = false
+    for await (const chunk of stream) {
+      const delta = chunk.choices[0]?.delta?.content
+      if (delta) {
+        received = true
+        yield { type: 'delta', text: delta }
+      }
+    }
+
+    if (!received) {
+      yield { type: 'fallback', text: fallbackMessage(request), generationSource: 'fallback' }
+    } else {
+      yield { type: 'done', generationSource: 'deepseek' }
+    }
   } catch {
-    return { status: 'fallback', message: fallbackMessage(request), generationSource: 'fallback' }
+    yield { type: 'fallback', text: fallbackMessage(request), generationSource: 'fallback' }
   } finally {
     clearTimeout(timeoutHandle)
   }
+}
+
+/**
+ * Citations are computed here, from the canonical milestone record — never
+ * from the model's freeform output — so they can never point at a
+ * fabricated capability or Evidence record. An Evidence requirement only
+ * gets a link once real Evidence has actually been submitted against it.
+ */
+export function buildTutorCitations(milestone: OdysseyTutorMilestoneContext): TutorCitation[] {
+  const citations: TutorCitation[] = []
+  milestone.capabilities.forEach((c) => citations.push({ kind: 'capability', label: c.name, href: `/student/capabilities/${c.id}` }))
+  milestone.requiredEvidence.forEach((e) => {
+    const linkedEvidenceId = e.evidenceRecordIds[0]
+    citations.push({ kind: 'evidence', label: e.description, href: linkedEvidenceId ? `/student/evidence/${linkedEvidenceId}` : undefined })
+  })
+  return citations
 }

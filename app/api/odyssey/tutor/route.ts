@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server'
 import { currentUser } from '@/lib/mock-data/seed'
 import { buildOdysseyContext } from '@/lib/services/odyssey/context-builder'
-import { callOdysseyTutor, type OdysseyTutorAction, type OdysseyTutorMilestoneContext } from '@/lib/services/odyssey/tutor-provider'
+import {
+  streamOdysseyTutor,
+  buildTutorCitations,
+  type OdysseyTutorAction,
+  type OdysseyTutorMilestoneContext,
+} from '@/lib/services/odyssey/tutor-provider'
 import { mockOdysseyRepository, mockCapabilityRepository } from '@/lib/repositories'
 import { resolveMilestones } from '@/lib/utilities/odyssey-detail'
 
@@ -21,10 +26,14 @@ const VALID_ACTIONS = new Set<OdysseyTutorAction>([
 ])
 
 /**
- * Server-only Odyssey AI Tutor route. Advisory only — never verifies
- * Evidence, assigns Capability truth, marks a milestone institutionally
- * complete, or issues a Passport claim; see the system prompt in
- * lib/services/odyssey/tutor-provider.ts for the enforced boundaries.
+ * Server-only Odyssey AI Tutor route. Streams NDJSON events (`delta` while
+ * tokens arrive, then one `done`/`fallback` carrying generation-source
+ * provenance and canonical citations) so the client can render text as it
+ * arrives instead of waiting for the full response. Advisory only — never
+ * verifies Evidence, assigns Capability truth, marks a milestone
+ * institutionally complete, or issues a Passport claim; see the system
+ * prompt in lib/services/odyssey/tutor-provider.ts for the enforced
+ * boundaries.
  */
 export async function POST(request: Request) {
   let body: Record<string, unknown>
@@ -71,19 +80,40 @@ export async function POST(request: Request) {
             status: target.status,
             description: target.description,
             reasoningSummary: target.reasoningSummary,
-            capabilityNames: resolved.capabilityNames,
+            capabilities: target.capabilityIds.map((id) => ({ id, name: capabilityById.get(id)?.name ?? id })),
             blockedReason: target.blockedReason,
             estimatedEffort: target.estimatedEffort,
             alternatives: resolved.alternatives.map((a) => ({ title: a.title, description: a.description, tradeoff: a.tradeoff })),
-            requiredEvidence: resolved.evidenceRequirements.map((r) => r.description),
+            requiredEvidence: resolved.evidenceRequirements.map((r) => ({ id: r.id, description: r.description, evidenceRecordIds: r.satisfiedByEvidenceIds })),
           }
         }
       }
     }
 
-    const result = await callOdysseyTutor({ studentContext, milestone: milestoneContext, action, customMessage })
-    return NextResponse.json(result)
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        function write(event: object) {
+          controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`))
+        }
+        try {
+          for await (const event of streamOdysseyTutor({ studentContext, milestone: milestoneContext, action, customMessage })) {
+            if (event.type === 'delta') {
+              write(event)
+            } else {
+              write({ ...event, citations: milestoneContext ? buildTutorCitations(milestoneContext) : [] })
+            }
+          }
+        } catch {
+          write({ type: 'error', text: 'The Tutor could not be reached right now.' })
+        } finally {
+          controller.close()
+        }
+      },
+    })
+
+    return new Response(stream, { headers: { 'Content-Type': 'application/x-ndjson; charset=utf-8', 'Cache-Control': 'no-store' } })
   } catch {
-    return NextResponse.json({ status: 'error', message: 'The Tutor could not be reached right now.', generationSource: 'fallback' }, { status: 500 })
+    return NextResponse.json({ status: 'error', message: 'The Tutor could not be reached right now.' }, { status: 500 })
   }
 }
