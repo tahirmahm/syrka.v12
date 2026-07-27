@@ -64,10 +64,13 @@ export function OdysseyWorkspace({
   const [focusActive, setFocusActive] = useState(false)
 
   useEffect(() => {
+    // List is only ever suggested once, on initial load — an in-page resize
+    // (including a transient one, e.g. from a full-page screenshot tool)
+    // must never silently strand the student on List with no way back
+    // shown by the toggle itself.
+    if (window.innerWidth < 640) setViewMode('list')
     function checkViewport() {
-      const mobile = window.innerWidth < 1024
-      setIsMobile(mobile)
-      if (mobile) setViewMode((v) => (v === 'graph' && window.innerWidth < 640 ? 'list' : v))
+      setIsMobile(window.innerWidth < 1024)
     }
     checkViewport()
     window.addEventListener('resize', checkViewport)
