@@ -141,6 +141,10 @@ export function CampusShell({ user, institutionName, children }: CampusShellProp
           <span className="md:hidden">
             <BrandMark />
           </span>
+          <div className="hidden items-baseline gap-1.5 md:flex">
+            <span className="font-campus-mono text-[10px] uppercase tracking-widest text-campus-muted">{sectionLabel}</span>
+            {institutionName && <span className="font-campus-sans text-campus-xs text-campus-text">· {institutionName}</span>}
+          </div>
           <div className="ml-auto flex items-center gap-3">
             <FloatingCommandSurface items={commandItems} />
           </div>
