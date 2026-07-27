@@ -2,12 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
 import { X } from '@phosphor-icons/react/dist/ssr'
 import type { Node, Edge } from '@xyflow/react'
 import { Button } from '@/components/ui/Button'
-import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
-import { panelTransition } from '@/lib/motion/campus-motion'
 import type { OdysseyPlanVersion, OdysseyInstitutionalResource } from '@/lib/campus-types'
 import type { OdysseyNodeData } from '@/lib/utilities/odyssey-projection'
 import type { ResolvedOdysseyMilestone } from '@/lib/utilities/odyssey-detail'
@@ -57,7 +54,6 @@ export function OdysseyWorkspace({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const reduceMotion = useReducedMotionSafe()
 
   const [viewMode, setViewMode] = useState<'graph' | 'list'>('graph')
   const [isMobile, setIsMobile] = useState(false)
@@ -181,24 +177,15 @@ export function OdysseyWorkspace({
           )}
         </div>
         {selectedResolved && !isMobile && (
-          <motion.div
-            key={selectedResolved.milestone.id}
-            initial={reduceMotion ? false : { opacity: 0, x: 16 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 16 }}
-            transition={panelTransition(Boolean(reduceMotion))}
-            className="lg:h-[640px]"
-          >
+          <div className="lg:h-[640px]">
             <OdysseyMilestoneInspector resolved={selectedResolved} resourceById={resourceById} onClose={() => selectMilestone(undefined)} />
-          </motion.div>
+          </div>
         )}
       </div>
 
-      <AnimatePresence>
-        {selectedResolved && isMobile && (
-          <OdysseyMilestoneInspector resolved={selectedResolved} resourceById={resourceById} onClose={() => selectMilestone(undefined)} isMobile />
-        )}
-      </AnimatePresence>
+      {selectedResolved && isMobile && (
+        <OdysseyMilestoneInspector resolved={selectedResolved} resourceById={resourceById} onClose={() => selectMilestone(undefined)} isMobile />
+      )}
     </div>
   )
 }

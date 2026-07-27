@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { ArrowRight } from '@phosphor-icons/react/dist/ssr'
-import { PageHeader } from '@/components/ui/PageHeader'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
+import { ContextualHeader } from '@/components/campus/ContextualHeader'
 import { Panel } from '@/components/ui/Panel'
 import { Badge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -42,7 +42,10 @@ export default async function StudentOdysseyPage() {
   if (!destination || !currentPlanVersion) {
     return (
       <div className="mx-auto flex max-w-3xl flex-col gap-6">
-        <PageHeader title="Odyssey" breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Odyssey' }]} />} />
+        <ContextualHeader
+          title="Odyssey"
+          breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Odyssey' }]} />}
+        />
         <EmptyState title="No Odyssey plan yet" description="Generate an Odyssey plan to get an evidence-backed roadmap toward a destination you choose." />
       </div>
     )
@@ -97,7 +100,11 @@ export default async function StudentOdysseyPage() {
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8">
-      <PageHeader title="Odyssey" breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Odyssey' }]} />} />
+      <ContextualHeader
+        title="Odyssey"
+        statement={`Roadmap toward ${destination.title}, grounded in verified Evidence and your Capability record.`}
+        breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Odyssey' }]} />}
+      />
 
       <OdysseyWorkspace
         headerSummary={headerSummary}
