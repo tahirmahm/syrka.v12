@@ -27,7 +27,7 @@ export interface ConfirmationSurfaceProps {
 /**
  * Brief, non-blocking feedback for a local mutation succeeding, warning, or
  * failing — a save, a decision, a submission. Not for AI/agent activity
- * (use AIActivityIndicator) and not for ordinary loading states.
+ * (use SyrkaIntelligenceState) and not for ordinary loading states.
  */
 export function ConfirmationSurface({ open, tone, message, onDismiss, autoDismissMs }: ConfirmationSurfaceProps) {
   const reduceMotion = useReducedMotionSafe()

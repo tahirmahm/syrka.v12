@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowClockwise, PaperPlaneTilt, Sparkle } from '@phosphor-icons/react/dist/ssr'
 import { Badge } from '@/components/ui/Badge'
-import { AIActivityIndicator } from '@/components/motion/AIActivityIndicator'
+import { SyrkaIntelligenceState } from '@/components/intelligence/SyrkaIntelligenceState'
 import { useTutorConversation, type TutorSuggestedAction } from '@/components/tutor/useTutorConversation'
 import type { OdysseyTutorAction } from '@/lib/services/odyssey/tutor-provider'
 import type { OdysseyGenerationApiResponse } from './odyssey-client-types'
@@ -175,7 +175,7 @@ export function OdysseyMilestoneTutorTab({ milestoneId, milestoneTitle }: Odysse
 
       {pending && (
         <div className="flex items-center justify-between rounded-campus-sm border border-campus-border p-2.5">
-          <AIActivityIndicator state="composing" />
+          <SyrkaIntelligenceState state="composing" />
           <button type="button" onClick={stop} className="font-campus-sans text-campus-xs text-campus-muted hover:text-campus-text">
             Stop
           </button>
@@ -184,7 +184,7 @@ export function OdysseyMilestoneTutorTab({ milestoneId, milestoneTitle }: Odysse
 
       {replanPending && (
         <div className="rounded-campus-sm border border-campus-border p-2.5">
-          <AIActivityIndicator state="shaping" label="Reshaping your Odyssey plan" />
+          <SyrkaIntelligenceState state="shaping" label="Reshaping your Odyssey plan" />
         </div>
       )}
 
