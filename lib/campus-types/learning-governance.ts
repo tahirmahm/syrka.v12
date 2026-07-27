@@ -11,7 +11,25 @@
  * later work without implementing it now.
  */
 
-export type CurriculumLifecycleState = 'draft' | 'in_review' | 'approved' | 'published' | 'withdrawn' | 'superseded'
+/**
+ * Stage B adds the ingestion/authoring states between draft and approved.
+ * 'published' remains reserved for Stage A's own already-approved fixture
+ * and later publication work — Stage B may reach 'approved' but must not
+ * create a student-facing published lesson route.
+ */
+export type CurriculumLifecycleState =
+  | 'draft'
+  | 'extracting'
+  | 'extraction_review'
+  | 'structure_review'
+  | 'corrections_required'
+  | 'ready_for_approval'
+  | 'approved'
+  | 'in_review'
+  | 'published'
+  | 'withdrawn'
+  | 'superseded'
+  | 'failed'
 
 export interface CurriculumOwner {
   id: string
@@ -28,6 +46,8 @@ export interface LearningSpace {
   ownerId: string
   currentVersionId?: string
   lifecycleState: CurriculumLifecycleState
+  /** Stage B — present only once a Learning Space has actually been withdrawn. */
+  withdrawalReason?: string
 }
 
 export interface LearningSpaceVersion {
@@ -36,6 +56,11 @@ export interface LearningSpaceVersion {
   version: number
   createdAt: string
   supersedesVersionId?: string
+  /** Stage B — the source document version this Learning Space draft was authored from. */
+  sourceDocumentVersionId?: string
+  /** Stage B — the structure proposal this version's content was accepted from, if any. */
+  structureProposalId?: string
+  approvedAt?: string
 }
 
 export interface CurriculumReview {
