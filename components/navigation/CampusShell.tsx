@@ -128,7 +128,7 @@ export function CampusShell({ user, institutionName, children }: CampusShellProp
       </Drawer>
 
       {/* Main column — offset always matches the rail's collapsed width, regardless of expansion state. */}
-      <div className="flex flex-1 flex-col md:ml-[70px] print:ml-0">
+      <div className="flex min-w-0 flex-1 flex-col md:ml-[70px] print:ml-0">
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-campus-border bg-campus-surface px-4 md:px-8 print:hidden">
           <button
             type="button"
