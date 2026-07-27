@@ -17,7 +17,7 @@ export const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { href: '/student/evidence', label: 'Evidence' },
     { href: '/student/capabilities', label: 'Capabilities' },
     { href: '/student/odyssey', label: 'Odyssey' },
-    { href: '/student/passport', label: 'Academic Passport' },
+    { href: '/student/passport', label: 'Career Passport' },
   ],
   faculty: [
     { href: '/faculty', label: 'Dashboard' },

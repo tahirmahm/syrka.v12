@@ -19,12 +19,13 @@ export const metadata = { title: 'Odyssey — Syrka Campus' }
 export const dynamic = 'force-dynamic'
 
 export default async function StudentOdysseyPage() {
-  const [destination, currentPlanVersion, definitions, passport, allVersions] = await Promise.all([
+  const [destination, currentPlanVersion, definitions, passport, allVersions, institutionalResources] = await Promise.all([
     mockOdysseyRepository.getDestination(currentUser.id),
     mockOdysseyRepository.getCurrentPlanVersion(currentUser.id),
     mockCapabilityRepository.listDefinitions(),
     mockPassportRepository.getForStudent(currentUser.id),
     mockOdysseyRepository.listPlanVersions(currentUser.id),
+    mockOdysseyRepository.listInstitutionalResources(currentUser.id),
   ])
 
   const capabilityById = new Map(definitions.map((d) => [d.id, d]))
@@ -108,13 +109,14 @@ export default async function StudentOdysseyPage() {
         recommendedNextId={recommendedNext?.id}
         versions={allVersions}
         milestoneTitlesByVersion={milestoneTitlesByVersion}
+        institutionalResources={institutionalResources}
       />
 
       <OdysseyReasoningPanel planSummary={currentPlanVersion.reasoningSummary} factors={recommendationFactors} alternatives={alternativesWithTitles} />
 
       <section aria-labelledby="passport-connection-heading">
         <h2 id="passport-connection-heading" className="mb-3 font-campus-sans text-campus-lg font-medium text-campus-text">
-          Effect on your Academic Passport
+          Effect on your Syrka Career Passport
         </h2>
         <Panel className="flex items-center justify-between gap-4">
           <p className="font-campus-sans text-campus-sm text-campus-text">
