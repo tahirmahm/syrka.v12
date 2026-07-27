@@ -37,6 +37,7 @@ import {
   departmentInterventions,
 } from '@/lib/mock-data/department-seed'
 import { governancePolicies, governanceProposals, institutionalInterventions } from '@/lib/mock-data/university-seed'
+import { ncertCapabilityDefinitions } from '@/lib/mock-data/ncert-class-10-seed'
 
 export {
   odysseyDestination,
@@ -105,6 +106,8 @@ export const capabilityDefinitions: CapabilityDefinition[] = [
   { id: 'cap-4', name: 'Machine Learning Foundations', domain: 'Data Analysis', description: 'Core concepts underlying supervised and unsupervised learning methods.' },
   { id: 'cap-5', name: 'Spreadsheet-Based Modeling', domain: 'Data Analysis', description: 'Building analytical models using spreadsheet tools.' },
   { id: 'cap-6', name: 'Introductory Programming', domain: 'Computer Science', description: 'Writing and reasoning about basic procedural programs.' },
+  // cap-7..cap-10 — introduced by the NCERT Class X curriculum-population release (lib/mock-data/ncert-class-10-seed.ts), one per supplied book.
+  ...ncertCapabilityDefinitions,
 ]
 
 export const capabilityClaims: CapabilityClaim[] = [
