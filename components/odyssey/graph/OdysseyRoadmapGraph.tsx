@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ReactFlow, ReactFlowProvider, useReactFlow, type Node, type Edge } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { MagnifyingGlassPlus, MagnifyingGlassMinus, CornersOut, EyeSlash, Target } from '@phosphor-icons/react/dist/ssr'
@@ -8,17 +8,51 @@ import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 import { OdysseyMilestoneNode } from './OdysseyMilestoneNode'
 import { OdysseyDestinationNode } from './OdysseyDestinationNode'
 import { OdysseyAlternativeNode } from './OdysseyAlternativeNode'
+import { OdysseyCollapsedBranchNode } from './OdysseyCollapsedBranchNode'
 import { OdysseyGraphLegend } from './OdysseyGraphLegend'
-import type { OdysseyNodeData } from '@/lib/utilities/odyssey-projection'
+import type { OdysseyNodeData, OdysseyMilestoneNodeData } from '@/lib/utilities/odyssey-projection'
 
 const nodeTypes = {
   milestone: OdysseyMilestoneNode,
   destination: OdysseyDestinationNode,
   alternative: OdysseyAlternativeNode,
+  'collapsed-branch': OdysseyCollapsedBranchNode,
 }
 
 const COMPLETED_STATUSES = new Set(['completed', 'verified'])
-const INACTIVE_STATUSES = new Set(['superseded', 'no_longer_relevant'])
+
+/**
+ * Groups every branch (non-trunk) milestone under the topmost non-trunk
+ * ancestor in its own prerequisite chain — walking up until hitting a
+ * trunk milestone or running out of prerequisites. All members of a group
+ * collapse and expand together, as one route, regardless of which member
+ * was clicked.
+ */
+function computeBranchGroups(milestoneNodes: Node<OdysseyMilestoneNodeData>[]) {
+  const byId = new Map(milestoneNodes.map((n) => [n.id, n.data]))
+  const rootOf = new Map<string, string>()
+
+  function findRoot(id: string): string {
+    const data = byId.get(id)
+    if (!data || data.isPrimaryPath) return id
+    const nonTrunkParentId = data.milestone.prerequisiteMilestoneIds.find((pid) => {
+      const parent = byId.get(pid)
+      return parent && !parent.isPrimaryPath
+    })
+    return nonTrunkParentId ? findRoot(nonTrunkParentId) : id
+  }
+
+  milestoneNodes.forEach((n) => {
+    if (!n.data.isPrimaryPath) rootOf.set(n.id, findRoot(n.id))
+  })
+
+  const groups = new Map<string, string[]>()
+  rootOf.forEach((rootId, memberId) => {
+    groups.set(rootId, [...(groups.get(rootId) ?? []), memberId])
+  })
+
+  return { rootOf, groups }
+}
 
 export interface OdysseyRoadmapGraphProps {
   nodes: Node<OdysseyNodeData>[]
@@ -49,6 +83,37 @@ export function OdysseyRoadmapGraph({
   onToggleFocusActive,
 }: OdysseyRoadmapGraphProps) {
   const reduceMotion = useReducedMotionSafe()
+  const [collapsedRoots, setCollapsedRoots] = useState<Set<string>>(new Set())
+
+  const milestoneNodes = useMemo(() => nodes.filter((n): n is Node<OdysseyMilestoneNodeData> => n.data.kind === 'milestone'), [nodes])
+  const { rootOf, groups } = useMemo(() => computeBranchGroups(milestoneNodes), [milestoneNodes])
+
+  // Selecting a milestone inside a collapsed branch opens that branch
+  // automatically, rather than leaving the selection invisible.
+  useEffect(() => {
+    if (!selectedMilestoneId) return
+    const rootId = rootOf.get(selectedMilestoneId)
+    if (rootId && collapsedRoots.has(rootId)) {
+      setCollapsedRoots((prev) => {
+        const next = new Set(prev)
+        next.delete(rootId)
+        return next
+      })
+    }
+    // Only re-run when the selection changes — expanding a branch the user
+    // just collapsed themselves (without changing selection) must stick.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMilestoneId, rootOf])
+
+  function toggleBranchCollapse(milestoneId: string) {
+    const rootId = rootOf.get(milestoneId) ?? milestoneId
+    setCollapsedRoots((prev) => {
+      const next = new Set(prev)
+      if (next.has(rootId)) next.delete(rootId)
+      else next.add(rootId)
+      return next
+    })
+  }
 
   const contentHeight = useMemo(() => {
     const ys = nodes.map((n) => n.position.y)
@@ -57,27 +122,89 @@ export function OdysseyRoadmapGraph({
     return Math.max(460, maxY - minY + 260)
   }, [nodes])
 
-  const hiddenIds = useMemo(() => {
-    if (!hideCompleted) return new Set<string>()
-    return new Set(
-      nodes.filter((n) => n.data.kind === 'milestone' && COMPLETED_STATUSES.has(n.data.milestone.status)).map((n) => n.id)
-    )
-  }, [nodes, hideCompleted])
+  // Real route isolation, not opacity: when focused on a selected milestone,
+  // only the trunk, that milestone's own prerequisite ancestors, and the
+  // milestone itself stay visible — everything else (unrelated branches,
+  // superseded/no-longer-relevant milestones) is hidden outright.
+  const focusRelevantIds = useMemo(() => {
+    if (!focusActive) return null
+    const byId = new Map(milestoneNodes.map((n) => [n.id, n.data]))
+    const relevant = new Set<string>()
+    milestoneNodes.forEach((n) => {
+      if (n.data.isPrimaryPath) relevant.add(n.id)
+    })
+    if (selectedMilestoneId && byId.has(selectedMilestoneId)) {
+      const stack = [selectedMilestoneId]
+      while (stack.length > 0) {
+        const id = stack.pop()!
+        if (relevant.has(id)) continue
+        relevant.add(id)
+        byId.get(id)?.milestone.prerequisiteMilestoneIds.forEach((pid) => stack.push(pid))
+      }
+    }
+    return relevant
+  }, [milestoneNodes, focusActive, selectedMilestoneId])
 
-  const interactiveNodes = useMemo(
-    () =>
-      nodes.map((node) => {
-        const isInactive = focusActive && node.data.kind === 'milestone' && INACTIVE_STATUSES.has(node.data.milestone.status)
-        return {
-          ...node,
-          hidden: hiddenIds.has(node.id),
-          selected: node.id === selectedMilestoneId,
-          style: isInactive ? { ...node.style, opacity: 0.35 } : node.style,
-          data: node.data.kind === 'milestone' ? { ...node.data, onSelect: onSelectMilestone } : node.data,
-        }
-      }),
-    [nodes, selectedMilestoneId, onSelectMilestone, hiddenIds, focusActive]
-  )
+  const collapsedMemberIds = useMemo(() => {
+    const hidden = new Set<string>()
+    collapsedRoots.forEach((rootId) => groups.get(rootId)?.forEach((id) => hidden.add(id)))
+    return hidden
+  }, [collapsedRoots, groups])
+
+  const hiddenIds = useMemo(() => {
+    const hidden = new Set<string>()
+    if (hideCompleted) {
+      milestoneNodes.forEach((n) => {
+        if (COMPLETED_STATUSES.has(n.data.milestone.status)) hidden.add(n.id)
+      })
+    }
+    collapsedMemberIds.forEach((id) => hidden.add(id))
+    if (focusRelevantIds) {
+      nodes.forEach((n) => {
+        if (n.data.kind === 'milestone' && !focusRelevantIds.has(n.id)) hidden.add(n.id)
+        if (n.data.kind === 'alternative') hidden.add(n.id)
+      })
+    }
+    // Alternative-action nodes hang off a specific milestone — hide them
+    // whenever that milestone itself is hidden, for any reason above.
+    edges.forEach((edge) => {
+      const targetIsAlternative = nodes.find((n) => n.id === edge.target)?.data.kind === 'alternative'
+      if (targetIsAlternative && hidden.has(edge.source)) hidden.add(edge.target)
+    })
+    return hidden
+  }, [nodes, edges, milestoneNodes, hideCompleted, collapsedMemberIds, focusRelevantIds])
+
+  const collapsedBranchNodes = useMemo(() => {
+    const result: Node<{ kind: 'collapsed-branch'; count: number; onExpand: () => void }>[] = []
+    collapsedRoots.forEach((rootId) => {
+      const rootNode = milestoneNodes.find((n) => n.id === rootId)
+      const members = groups.get(rootId)
+      if (!rootNode || !members) return
+      result.push({
+        id: `collapsed-${rootId}`,
+        type: 'collapsed-branch',
+        position: rootNode.position,
+        data: { kind: 'collapsed-branch', count: members.length, onExpand: () => toggleBranchCollapse(rootId) },
+        draggable: false,
+      })
+    })
+    return result
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collapsedRoots, groups, milestoneNodes])
+
+  const interactiveNodes = useMemo(() => {
+    const base = nodes.map((node) => ({
+      ...node,
+      hidden: hiddenIds.has(node.id),
+      selected: node.id === selectedMilestoneId,
+      data:
+        node.data.kind === 'milestone'
+          ? { ...node.data, onSelect: onSelectMilestone, onToggleCollapse: groups.has(node.id) ? toggleBranchCollapse : undefined }
+          : node.data,
+    }))
+    return [...base, ...collapsedBranchNodes]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes, selectedMilestoneId, onSelectMilestone, hiddenIds, groups, collapsedBranchNodes])
 
   const interactiveEdges = useMemo(
     () => edges.map((edge) => ({ ...edge, hidden: hiddenIds.has(edge.source) || hiddenIds.has(edge.target) })),
@@ -86,6 +213,15 @@ export function OdysseyRoadmapGraph({
 
   return (
     <div className="flex flex-col gap-3">
+      {focusActive && selectedMilestoneId && (
+        <button
+          type="button"
+          onClick={onToggleFocusActive}
+          className="self-start rounded-campus-sm border border-campus-border px-3 py-1.5 font-campus-sans text-campus-xs text-campus-muted hover:bg-campus-surface-raised"
+        >
+          Focused on this route — Show all routes
+        </button>
+      )}
       <div className="relative w-full bg-campus-bg" style={{ height: contentHeight }}>
         <ReactFlowProvider>
           <ReactFlow
