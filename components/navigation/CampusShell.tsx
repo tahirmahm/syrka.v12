@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/Badge'
 import { BrandMark } from '@/components/ui/BrandMark'
 import { Drawer } from '@/components/campus/Drawer'
 import { FloatingCommandSurface, type CommandItem } from '@/components/campus/FloatingCommandSurface'
+import { PageTransition } from '@/components/campus/PageTransition'
 
 export interface CampusShellProps {
   user: CampusUser
@@ -145,7 +146,9 @@ export function CampusShell({ user, institutionName, children }: CampusShellProp
           </div>
         </header>
 
-        <main className="flex-1 px-4 py-8 md:px-8">{children}</main>
+        <main className="flex-1 px-4 py-8 md:px-8">
+          <PageTransition>{children}</PageTransition>
+        </main>
       </div>
     </div>
   )
