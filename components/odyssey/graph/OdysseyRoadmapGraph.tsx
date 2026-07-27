@@ -1,9 +1,9 @@
 'use client'
 
 import { useMemo } from 'react'
-import { ReactFlow, ReactFlowProvider, Background, useReactFlow, type Node, type Edge } from '@xyflow/react'
+import { ReactFlow, ReactFlowProvider, useReactFlow, type Node, type Edge } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { MagnifyingGlassPlus, MagnifyingGlassMinus, CornersOut, ArrowsOut, EyeSlash, Target } from '@phosphor-icons/react/dist/ssr'
+import { MagnifyingGlassPlus, MagnifyingGlassMinus, CornersOut, EyeSlash, Target } from '@phosphor-icons/react/dist/ssr'
 import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 import { OdysseyMilestoneNode } from './OdysseyMilestoneNode'
 import { OdysseyDestinationNode } from './OdysseyDestinationNode'
@@ -31,6 +31,13 @@ export interface OdysseyRoadmapGraphProps {
   onToggleFocusActive?: () => void
 }
 
+/**
+ * The roadmap plane: a full-bleed, borderless canvas sized to its actual
+ * content (not a fixed dashboard box), no grid-paper background, and the
+ * page itself scrolls once the plan is taller than the viewport — the
+ * canvas only pans/zooms on deliberate drag or the control cluster, never
+ * hijacking the page's own scroll.
+ */
 export function OdysseyRoadmapGraph({
   nodes,
   edges,
@@ -42,6 +49,13 @@ export function OdysseyRoadmapGraph({
   onToggleFocusActive,
 }: OdysseyRoadmapGraphProps) {
   const reduceMotion = useReducedMotionSafe()
+
+  const contentHeight = useMemo(() => {
+    const ys = nodes.map((n) => n.position.y)
+    const maxY = ys.length > 0 ? Math.max(...ys) : 0
+    const minY = ys.length > 0 ? Math.min(...ys) : 0
+    return Math.max(460, maxY - minY + 260)
+  }, [nodes])
 
   const hiddenIds = useMemo(() => {
     if (!hideCompleted) return new Set<string>()
@@ -71,23 +85,25 @@ export function OdysseyRoadmapGraph({
   )
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="relative h-[560px] w-full rounded-campus-md border border-campus-border bg-campus-surface lg:h-[640px]">
+    <div className="flex flex-col gap-3">
+      <div className="relative w-full bg-campus-bg" style={{ height: contentHeight }}>
         <ReactFlowProvider>
           <ReactFlow
             nodes={interactiveNodes}
             edges={interactiveEdges}
             nodeTypes={nodeTypes}
             fitView
-            fitViewOptions={{ padding: 0.2, duration: reduceMotion ? 0 : 300 }}
+            fitViewOptions={{ padding: 0.15, duration: reduceMotion ? 0 : 300 }}
             nodesDraggable={false}
             nodesConnectable={false}
-            panOnScroll
-            minZoom={0.35}
-            maxZoom={1.5}
+            panOnScroll={false}
+            zoomOnScroll={false}
+            zoomOnPinch
+            panOnDrag
+            minZoom={0.5}
+            maxZoom={1.75}
             proOptions={{ hideAttribution: true }}
           >
-            <Background gap={24} size={1} className="opacity-40" />
             <GraphControls
               reduceMotion={Boolean(reduceMotion)}
               hideCompleted={hideCompleted}
@@ -124,7 +140,7 @@ function GraphControls({
   const duration = reduceMotion ? 0 : 300
 
   return (
-    <div className="absolute bottom-3 left-3 z-10 flex flex-wrap gap-1 rounded-campus-sm border border-campus-border bg-campus-surface p-1 shadow-campus-subtle">
+    <div className="absolute bottom-3 left-3 z-10 flex flex-wrap gap-1 rounded-campus-sm border border-campus-border bg-campus-surface/95 p-1 shadow-campus-subtle backdrop-blur-sm">
       <button
         type="button"
         onClick={() => zoomIn({ duration })}
@@ -143,16 +159,8 @@ function GraphControls({
       </button>
       <button
         type="button"
-        onClick={() => fitView({ duration, padding: 0.2 })}
+        onClick={() => fitView({ duration, padding: 0.15 })}
         aria-label="Fit to view"
-        className="rounded-campus-sm p-2 text-campus-text hover:bg-campus-surface-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600"
-      >
-        <ArrowsOut size={16} aria-hidden="true" />
-      </button>
-      <button
-        type="button"
-        onClick={() => fitView({ duration: 0, padding: 0.2 })}
-        aria-label="Reset view"
         className="rounded-campus-sm p-2 text-campus-text hover:bg-campus-surface-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600"
       >
         <CornersOut size={16} aria-hidden="true" />

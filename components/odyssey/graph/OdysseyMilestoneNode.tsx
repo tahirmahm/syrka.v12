@@ -1,21 +1,22 @@
 'use client'
 
 import { Handle, Position, type NodeProps, type Node } from '@xyflow/react'
-import { MapPin } from '@phosphor-icons/react/dist/ssr'
 import type { OdysseyMilestoneNodeData } from '@/lib/utilities/odyssey-projection'
-import { MILESTONE_TYPE_VISUALS, MILESTONE_STATUS_BORDER, MILESTONE_STATUS_MARKER } from './odyssey-node-config'
+import { MILESTONE_TYPE_VISUALS, MILESTONE_STATUS_MARKER } from './odyssey-node-config'
 import { MILESTONE_STATUS_LABELS, MILESTONE_TYPE_LABELS } from '@/lib/constants/odyssey'
 
 type SelectableNodeData = OdysseyMilestoneNodeData & { onSelect?: (milestoneId: string) => void }
 
 /**
- * Compact roadmap-scale node. Type is communicated by icon + label; status
- * by a small always-present corner marker (icon + short label), never by
- * colour alone. Current-position/recommended-next get an additional pill
- * since those two conditions are genuinely rare and worth calling out.
+ * A roadmap marker, not a dashboard card: a small status-coded dot sits on
+ * the trunk/branch line, with the title set beside it as plain text — no
+ * border box, no shadow, no fixed card chrome. The trunk gets a filled
+ * marker and full-weight type; a branch gets a hollow marker and muted
+ * type, so line weight + marker fill (not colour alone) carry "this is the
+ * path" vs. "this is an option."
  */
 export function OdysseyMilestoneNode({ data, selected }: NodeProps<Node<SelectableNodeData>>) {
-  const { milestone, isCurrentPosition, isRecommendedNext, onSelect } = data
+  const { milestone, isCurrentPosition, isRecommendedNext, isPrimaryPath, onSelect } = data
   const visual = MILESTONE_TYPE_VISUALS[milestone.type]
   const Icon = visual.icon
   const statusMarker = MILESTONE_STATUS_MARKER[milestone.status]
@@ -39,40 +40,41 @@ export function OdysseyMilestoneNode({ data, selected }: NodeProps<Node<Selectab
           activate()
         }
       }}
-      className={`group relative w-44 cursor-pointer rounded-campus-sm border-2 bg-campus-surface px-2.5 py-2 shadow-campus-subtle transition-shadow duration-campus-fast hover:shadow-campus-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600 ${
-        MILESTONE_STATUS_BORDER[milestone.status]
-      } ${selected ? 'ring-2 ring-campus-blue-600 dark:ring-campus-blue-dark' : ''}`}
+      className={`group relative flex w-[152px] cursor-pointer items-start gap-2 rounded-campus-sm px-1.5 py-1 transition-colors duration-campus-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600 ${
+        selected ? 'bg-campus-surface-raised' : 'hover:bg-campus-surface-raised/60'
+      }`}
     >
-      <Handle type="target" position={Position.Top} className="!bg-campus-border" />
-      <Handle type="source" position={Position.Bottom} className="!bg-campus-border" />
+      <Handle type="target" position={Position.Top} className="!h-1 !w-1 !border-0 !bg-campus-border" />
+      <Handle type="source" position={Position.Bottom} className="!h-1 !w-1 !border-0 !bg-campus-border" />
 
-      {(isCurrentPosition || isRecommendedNext) && (
-        <span
-          className={`absolute -top-2.5 left-2 flex items-center gap-1 rounded-full border border-campus-border bg-campus-surface px-1.5 py-0.5 font-campus-mono text-[9px] uppercase tracking-wide ${
-            isCurrentPosition ? 'text-campus-blue-600 dark:text-campus-blue-dark' : 'text-campus-amber-600 dark:text-campus-amber-dark'
-          }`}
-        >
-          {isCurrentPosition ? (
-            <>
-              <MapPin size={9} weight="fill" aria-hidden="true" /> Here
-            </>
-          ) : (
-            'Next'
-          )}
-        </span>
-      )}
+      {/* The marker itself — filled on the trunk, hollow on a branch; the corner status icon is the only place status repeats. */}
+      <span
+        className={`relative mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border-2 ${statusMarker.markerBorderClass} ${
+          isPrimaryPath ? statusMarker.markerFillClass : 'bg-campus-surface'
+        }`}
+        aria-hidden="true"
+      >
+        {(isCurrentPosition || isRecommendedNext) && (
+          <span
+            className={`absolute -inset-1.5 rounded-full border ${isCurrentPosition ? 'border-campus-blue-600 dark:border-campus-blue-dark' : 'border-campus-amber-600 dark:border-campus-amber-dark'} animate-pulse`}
+          />
+        )}
+      </span>
 
-      <div className="flex items-start gap-1.5">
-        <Icon size={15} className={`mt-0.5 shrink-0 ${visual.accentClass}`} aria-hidden="true" />
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-campus-sans text-[12px] font-medium leading-tight text-campus-text">{milestone.title}</p>
-          <p className="mt-0.5 font-campus-mono text-[9px] uppercase tracking-wide text-campus-muted">{MILESTONE_TYPE_LABELS[milestone.type]}</p>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1">
+          <Icon size={11} className={`shrink-0 ${visual.accentClass}`} aria-hidden="true" />
+          <p className={`truncate font-campus-sans text-[12px] leading-tight text-campus-text ${isPrimaryPath ? 'font-medium' : ''}`}>{milestone.title}</p>
         </div>
-      </div>
-
-      <div className={`mt-1.5 flex items-center gap-1 border-t border-campus-border pt-1 font-campus-mono text-[9px] uppercase tracking-wide ${statusMarker.accentClass}`}>
-        <StatusIcon size={11} weight="fill" aria-hidden="true" />
-        {statusMarker.shortLabel}
+        <div className="mt-0.5 flex items-center gap-1 font-campus-mono text-[9px] uppercase tracking-wide">
+          <StatusIcon size={9} weight="fill" aria-hidden="true" className={statusMarker.accentClass} />
+          <span className={statusMarker.accentClass}>{statusMarker.shortLabel}</span>
+          {(isCurrentPosition || isRecommendedNext) && (
+            <span className={isCurrentPosition ? 'text-campus-blue-600 dark:text-campus-blue-dark' : 'text-campus-amber-600 dark:text-campus-amber-dark'}>
+              · {isCurrentPosition ? 'Here' : 'Next'}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   )

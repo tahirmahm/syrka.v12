@@ -94,7 +94,7 @@ export function OdysseyWorkspace({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-start justify-between gap-3">
         {headerSummary}
         <div className="flex flex-wrap items-center gap-2">
           <Button size="sm" onClick={() => setActivePanel(activePanel === 'generate' ? 'none' : 'generate')}>
@@ -134,7 +134,7 @@ export function OdysseyWorkspace({
       {bannerResult && (
         <div
           role="status"
-          className={`flex items-start justify-between gap-3 rounded-campus-md border p-3 font-campus-sans text-campus-sm ${
+          className={`mx-auto flex w-full max-w-6xl items-start justify-between gap-3 rounded-campus-md border p-3 font-campus-sans text-campus-sm ${
             bannerResult.status === 'success'
               ? 'border-campus-green-600 text-campus-green-600 dark:border-campus-green-dark dark:text-campus-green-dark'
               : bannerResult.status === 'fallback'
@@ -154,15 +154,17 @@ export function OdysseyWorkspace({
         </div>
       )}
 
-      {activePanel === 'generate' && (
-        <OdysseyGenerateForm defaultDestinationTitle={destinationTitle} onResult={setBannerResult} onClose={() => setActivePanel('none')} />
-      )}
-      {activePanel === 'replan' && <OdysseyReplanInput onResult={setBannerResult} onClose={() => setActivePanel('none')} />}
-      {activePanel === 'compare' && (
-        <OdysseyVersionCompare versions={versions} milestoneTitlesByVersion={milestoneTitlesByVersion} onClose={() => setActivePanel('none')} />
-      )}
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
+        {activePanel === 'generate' && (
+          <OdysseyGenerateForm defaultDestinationTitle={destinationTitle} onResult={setBannerResult} onClose={() => setActivePanel('none')} />
+        )}
+        {activePanel === 'replan' && <OdysseyReplanInput onResult={setBannerResult} onClose={() => setActivePanel('none')} />}
+        {activePanel === 'compare' && (
+          <OdysseyVersionCompare versions={versions} milestoneTitlesByVersion={milestoneTitlesByVersion} onClose={() => setActivePanel('none')} />
+        )}
+      </div>
 
-      <div className={`grid gap-4 ${selectedResolved && !isMobile ? 'lg:grid-cols-[minmax(0,1fr)_380px]' : 'lg:grid-cols-1'}`}>
+      <div className={`grid gap-4 px-0 md:px-4 ${selectedResolved && !isMobile ? 'lg:grid-cols-[minmax(0,1fr)_380px]' : 'lg:grid-cols-1'}`}>
         <div className="min-w-0">
           {viewMode === 'graph' ? (
             <OdysseyRoadmapLoader

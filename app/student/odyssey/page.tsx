@@ -99,13 +99,17 @@ export default async function StudentOdysseyPage() {
   )
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-8">
-      <ContextualHeader
-        title="Odyssey"
-        statement={`Roadmap toward ${destination.title}, grounded in verified Evidence and your Capability record.`}
-        breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Odyssey' }]} />}
-      />
+    <div className="flex flex-col gap-8">
+      <div className="mx-auto w-full max-w-6xl">
+        <ContextualHeader
+          title="Odyssey"
+          statement={`Roadmap toward ${destination.title}, grounded in verified Evidence and your Capability record.`}
+          breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Odyssey' }]} />}
+        />
+      </div>
 
+      {/* The roadmap itself occupies the full content width — the page's
+          primary surface, not a widget boxed inside a reading column. */}
       <OdysseyWorkspace
         headerSummary={headerSummary}
         hasCurrentPlan
@@ -119,23 +123,25 @@ export default async function StudentOdysseyPage() {
         institutionalResources={institutionalResources}
       />
 
-      <OdysseyReasoningPanel planSummary={currentPlanVersion.reasoningSummary} factors={recommendationFactors} alternatives={alternativesWithTitles} />
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
+        <OdysseyReasoningPanel planSummary={currentPlanVersion.reasoningSummary} factors={recommendationFactors} alternatives={alternativesWithTitles} />
 
-      <section aria-labelledby="passport-connection-heading">
-        <h2 id="passport-connection-heading" className="mb-3 font-campus-sans text-campus-lg font-medium text-campus-text">
-          Effect on your Syrka Career Passport
-        </h2>
-        <Panel className="flex items-center justify-between gap-4">
-          <p className="font-campus-sans text-campus-sm text-campus-text">
-            {latestPassportVersion
-              ? `${latestPassportVersion.claims.length} capability ${latestPassportVersion.claims.length === 1 ? 'claim is' : 'claims are'} currently shareable. Completing the milestones above would add or strengthen claims as capabilities cross the confidence threshold, once reviewed.`
-              : 'No Passport has been issued yet.'}
-          </p>
-          <Link href="/student/passport" className="flex shrink-0 items-center gap-1 font-campus-sans text-campus-sm text-campus-blue-600 hover:underline dark:text-campus-blue-dark">
-            View Passport <ArrowRight size={14} aria-hidden="true" />
-          </Link>
-        </Panel>
-      </section>
+        <section aria-labelledby="passport-connection-heading">
+          <h2 id="passport-connection-heading" className="mb-3 font-campus-sans text-campus-lg font-medium text-campus-text">
+            Effect on your Syrka Career Passport
+          </h2>
+          <Panel className="flex items-center justify-between gap-4">
+            <p className="font-campus-sans text-campus-sm text-campus-text">
+              {latestPassportVersion
+                ? `${latestPassportVersion.claims.length} capability ${latestPassportVersion.claims.length === 1 ? 'claim is' : 'claims are'} currently shareable. Completing the milestones above would add or strengthen claims as capabilities cross the confidence threshold, once reviewed.`
+                : 'No Passport has been issued yet.'}
+            </p>
+            <Link href="/student/passport" className="flex shrink-0 items-center gap-1 font-campus-sans text-campus-sm text-campus-blue-600 hover:underline dark:text-campus-blue-dark">
+              View Passport <ArrowRight size={14} aria-hidden="true" />
+            </Link>
+          </Panel>
+        </section>
+      </div>
     </div>
   )
 }
