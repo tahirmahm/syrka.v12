@@ -72,7 +72,7 @@ export default function SyrkaCorporateHomePage() {
           <ProductDetailList
             dark={false}
             title="Currently operational"
-            items={['Evidence timeline and capability claims', 'Odyssey progression roadmap', 'Academic Passport issuance', 'Faculty review workflows']}
+            items={['Evidence timeline and capability claims', 'Odyssey progression roadmap', 'Syrka Career Passport issuance', 'Faculty review workflows']}
           />
         </ProductChapter>
 
@@ -101,12 +101,12 @@ export default function SyrkaCorporateHomePage() {
           eyebrow="Individuals, institutions, and employers"
           tagline="Capability proven and carried."
           name="Syrka Career Passport"
-          descriptor="Inside Syrka Campus, this is expressed today as the Academic Passport — the academia-facing instance of the same architecture, not a separate domain model."
+          descriptor="Inside Syrka Campus, this is expressed today as the Syrka Career Passport — the academia-facing instance of the same architecture, not a separate domain model."
           description="A living, evidence-backed record of what a person can do, why it can be trusted, and how that capability develops over time."
           audience="Individuals, institutions, and employers"
           dark={false}
           technicalPhrase="Direction becomes proof."
-          cta={{ label: 'See the Academic Passport', href: '/campus' }}
+          cta={{ label: 'See the Syrka Career Passport', href: '/campus' }}
         >
           <ProductDetailList
             dark={false}

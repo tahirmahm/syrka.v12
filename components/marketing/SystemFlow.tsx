@@ -23,7 +23,7 @@ const STEPS = [
   },
   {
     icon: SealCheck,
-    label: 'Academic Passport',
+    label: 'Syrka Career Passport',
     description: 'Verified capability claims are issued as a versioned, institution-backed record a student can share.',
     tone: 'text-campus-gold-500 dark:text-campus-gold-dark',
   },

@@ -6,7 +6,7 @@ const ROLES = [
   {
     icon: GraduationCap,
     label: 'Student',
-    description: 'See what you can credibly do, why it is justified, and what to do next — with a verified Academic Passport as the record.',
+    description: 'See what you can credibly do, why it is justified, and what to do next — with a verified Syrka Career Passport as the record.',
   },
   {
     icon: ChalkboardTeacher,

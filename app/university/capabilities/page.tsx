@@ -46,7 +46,7 @@ export default async function UniversityCapabilitiesPage() {
           Institutional Capability architecture
         </h2>
         <p className="mb-3 font-campus-sans text-campus-sm text-campus-muted">
-          How Capability development connects from institutional strategy through to the Academic Passport — a layered table, since a graph would add visual complexity without adding
+          How Capability development connects from institutional strategy through to the Syrka Career Passport — a layered table, since a graph would add visual complexity without adding
           understanding here.
         </p>
         <div className="overflow-x-auto rounded-campus-md border border-campus-border">

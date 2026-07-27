@@ -276,7 +276,7 @@ export const mockUniversityRepository: UniversityRepository = {
       { id: 'evidence', title: 'Reviewed Evidence', description: 'Evidence is submitted, then reviewed by Faculty before it can support a Capability claim.', exampleCount: evidenceReviewedCount },
       { id: 'claims', title: 'Capability claims', description: 'Reviewed Evidence accumulates into a Capability claim with a maturity level and calibrated confidence.', exampleCount: claimCount },
       { id: 'odyssey', title: 'Odyssey progression', description: 'Capability state, declared intent, and institutional opportunity shape a directed sequence of milestones.', exampleCount: claimCount },
-      { id: 'passport', title: 'Academic Passport', description: 'Sufficiently confident, reviewed claims become a portable, disclosure-controlled Passport claim.', exampleCount: passport.versions[passport.currentVersion - 1]?.claims.length ?? 0 },
+      { id: 'passport', title: 'Syrka Career Passport', description: 'Sufficiently confident, reviewed claims become a portable, disclosure-controlled Passport claim.', exampleCount: passport.versions[passport.currentVersion - 1]?.claims.length ?? 0 },
     ]
   },
 

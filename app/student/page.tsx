@@ -15,6 +15,7 @@ import {
 } from '@/lib/repositories'
 import { getActiveMilestone } from '@/lib/utilities/odyssey'
 import { currentUser } from '@/lib/mock-data/seed'
+import { PASSPORT_DISPLAY_NAME } from '@/lib/constants/passport'
 
 export const metadata = { title: 'Dashboard — Syrka Campus' }
 // Reflects the in-memory Odyssey plan-version store, which generate/replan mutate.
@@ -137,11 +138,11 @@ export default async function StudentDashboardPage() {
           </div>
         </section>
 
-        {/* Academic Passport readiness */}
+        {/* Syrka Career Passport readiness */}
         <section aria-labelledby="passport-heading">
           <div className="mb-3 flex items-center justify-between">
             <h2 id="passport-heading" className="font-campus-sans text-campus-lg font-medium text-campus-text">
-              Academic Passport
+              {PASSPORT_DISPLAY_NAME}
             </h2>
             <Link href="/student/passport" className="flex items-center gap-1 font-campus-sans text-campus-sm text-campus-muted hover:text-campus-text">
               View <ArrowRight size={14} aria-hidden="true" />
@@ -174,7 +175,7 @@ export default async function StudentDashboardPage() {
           <Card className="flex items-start gap-3 p-4">
             <Bell size={18} className="mt-0.5 text-campus-muted" aria-hidden="true" />
             <p className="font-campus-sans text-campus-sm text-campus-text">
-              Your Academic Passport was reissued on {new Date(latestPassportVersion.issuedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}.
+              Your {PASSPORT_DISPLAY_NAME} was reissued on {new Date(latestPassportVersion.issuedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}.
             </p>
           </Card>
         </section>

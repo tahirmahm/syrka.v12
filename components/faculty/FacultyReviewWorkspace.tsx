@@ -265,7 +265,7 @@ function ImpactPreviewPanel({ preview }: { preview: ReviewImpactPreview }) {
       )}
       {preview.newlyEligibleForPassportCapabilityNames.length > 0 && (
         <p className="mt-2 font-campus-sans text-campus-xs text-campus-muted">
-          May become eligible for Academic Passport inclusion: {preview.newlyEligibleForPassportCapabilityNames.join(', ')}.
+          May become eligible for Syrka Career Passport inclusion: {preview.newlyEligibleForPassportCapabilityNames.join(', ')}.
         </p>
       )}
       {preview.odysseyMilestonesLikelyUnblocked.length > 0 && (
