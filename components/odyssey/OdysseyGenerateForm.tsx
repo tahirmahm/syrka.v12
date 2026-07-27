@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Panel } from '@/components/ui/Panel'
-import { AIActivityIndicator } from '@/components/motion/AIActivityIndicator'
+import { SyrkaIntelligenceState } from '@/components/intelligence/SyrkaIntelligenceState'
 import type { OdysseyGenerationApiResponse } from './odyssey-client-types'
 
 const WORKLOAD_OPTIONS = [
@@ -157,7 +157,7 @@ export function OdysseyGenerateForm({ defaultDestinationTitle, onResult, onClose
           <Button type="button" variant="secondary" onClick={onClose} disabled={pending}>
             Cancel
           </Button>
-          {pending && <AIActivityIndicator state="shaping" label="Generating your Odyssey" />}
+          {pending && <SyrkaIntelligenceState state="shaping" label="Generating your Odyssey" />}
         </div>
       </form>
     </Panel>

@@ -3,6 +3,7 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { FilterBar } from '@/components/ui/FilterBar'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { FacultyReviewQueueRow } from '@/components/faculty/FacultyReviewQueueRow'
+import { FunnelVisual } from '@/components/visualizations/FunnelVisual'
 import { mockFacultyRepository } from '@/lib/repositories'
 import { facultyUser, courses } from '@/lib/mock-data/seed'
 import type { EvidenceStatus, EvidenceSourceType } from '@/lib/campus-types'
@@ -53,6 +54,22 @@ export default async function FacultyEvidenceQueuePage({
         subtitle={`${allEntries.length} Evidence ${allEntries.length === 1 ? 'submission' : 'submissions'} across your courses.`}
         breadcrumbs={<Breadcrumbs items={[{ label: 'Overview', href: '/faculty' }, { label: 'Evidence Review' }]} />}
       />
+
+      {allEntries.length > 0 && (
+        <section aria-labelledby="review-funnel-heading" className="rounded-campus-md border border-campus-border bg-campus-surface p-5">
+          <h2 id="review-funnel-heading" className="mb-3 font-campus-sans text-campus-sm font-medium text-campus-text">
+            Review funnel
+          </h2>
+          <FunnelVisual
+            stages={[
+              { id: 'submitted', label: 'Submitted', count: allEntries.length },
+              { id: 'pending', label: 'Awaiting review', count: allEntries.filter((e) => e.status === 'pending').length },
+              { id: 'verified', label: 'Verified', count: allEntries.filter((e) => e.status === 'verified').length },
+            ]}
+            dataCaption={`Live counts across your assigned courses · ${allEntries.filter((e) => e.status === 'disputed').length} revision-requested and ${allEntries.filter((e) => e.status === 'revoked').length} revoked excluded from this funnel`}
+          />
+        </section>
+      )}
 
       <div className="flex flex-col gap-3">
         <FilterBar

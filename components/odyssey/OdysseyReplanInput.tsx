@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Panel } from '@/components/ui/Panel'
-import { AIActivityIndicator } from '@/components/motion/AIActivityIndicator'
+import { SyrkaIntelligenceState } from '@/components/intelligence/SyrkaIntelligenceState'
 import type { OdysseyGenerationApiResponse } from './odyssey-client-types'
 
 const EXAMPLE_PROMPTS = [
@@ -90,7 +90,7 @@ export function OdysseyReplanInput({ onResult, onClose }: OdysseyReplanInputProp
           <Button type="button" variant="secondary" onClick={onClose} disabled={pending}>
             Cancel
           </Button>
-          {pending && <AIActivityIndicator state="shaping" label="Reshaping your Odyssey plan" />}
+          {pending && <SyrkaIntelligenceState state="shaping" label="Reshaping your Odyssey plan" />}
         </div>
       </form>
     </Panel>

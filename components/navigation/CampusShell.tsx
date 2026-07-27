@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/Badge'
 import { BrandMark } from '@/components/ui/BrandMark'
 import { Drawer } from '@/components/campus/Drawer'
 import { FloatingCommandSurface, type CommandItem } from '@/components/campus/FloatingCommandSurface'
+import { PageTransition } from '@/components/campus/PageTransition'
 
 export interface CampusShellProps {
   user: CampusUser
@@ -127,7 +128,7 @@ export function CampusShell({ user, institutionName, children }: CampusShellProp
       </Drawer>
 
       {/* Main column — offset always matches the rail's collapsed width, regardless of expansion state. */}
-      <div className="flex flex-1 flex-col md:ml-[70px] print:ml-0">
+      <div className="flex min-w-0 flex-1 flex-col md:ml-[70px] print:ml-0">
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-campus-border bg-campus-surface px-4 md:px-8 print:hidden">
           <button
             type="button"
@@ -140,12 +141,18 @@ export function CampusShell({ user, institutionName, children }: CampusShellProp
           <span className="md:hidden">
             <BrandMark />
           </span>
+          <div className="hidden items-baseline gap-1.5 md:flex">
+            <span className="font-campus-mono text-[10px] uppercase tracking-widest text-campus-muted">{sectionLabel}</span>
+            {institutionName && <span className="font-campus-sans text-campus-xs text-campus-text">· {institutionName}</span>}
+          </div>
           <div className="ml-auto flex items-center gap-3">
             <FloatingCommandSurface items={commandItems} />
           </div>
         </header>
 
-        <main className="flex-1 px-4 py-8 md:px-8">{children}</main>
+        <main className="flex-1 px-4 py-8 md:px-8">
+          <PageTransition>{children}</PageTransition>
+        </main>
       </div>
     </div>
   )

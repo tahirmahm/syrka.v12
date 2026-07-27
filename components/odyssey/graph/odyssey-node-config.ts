@@ -71,6 +71,10 @@ export interface MilestoneStatusMarker {
   /** Compact label for the always-visible corner marker — short enough to fit at roadmap scale. */
   shortLabel: string
   accentClass: string
+  /** The roadmap marker dot's border colour — present at every scale, even when the dot isn't filled. */
+  markerBorderClass: string
+  /** The marker dot's fill when it sits on the trunk (a branch marker stays hollow/bg-surface regardless). */
+  markerFillClass: string
 }
 
 /**
@@ -78,16 +82,16 @@ export interface MilestoneStatusMarker {
  * through icon + short label + colour together, never colour alone.
  */
 export const MILESTONE_STATUS_MARKER: Record<OdysseyMilestoneStatus, MilestoneStatusMarker> = {
-  recommended: { icon: Star, shortLabel: 'Next', accentClass: 'text-campus-blue-600 dark:text-campus-blue-dark' },
-  accepted: { icon: CircleDashed, shortLabel: 'Accepted', accentClass: 'text-campus-blue-600 dark:text-campus-blue-dark' },
-  planned: { icon: Circle, shortLabel: 'Planned', accentClass: 'text-campus-muted' },
-  in_progress: { icon: PlayCircle, shortLabel: 'In progress', accentClass: 'text-campus-blue-600 dark:text-campus-blue-dark' },
-  evidence_pending: { icon: Hourglass, shortLabel: 'Evidence pending', accentClass: 'text-campus-amber-600 dark:text-campus-amber-dark' },
-  under_review: { icon: Eye, shortLabel: 'Under review', accentClass: 'text-campus-amber-600 dark:text-campus-amber-dark' },
-  completed: { icon: CheckCircle, shortLabel: 'Complete', accentClass: 'text-campus-green-600 dark:text-campus-green-dark' },
-  verified: { icon: SealCheck, shortLabel: 'Verified', accentClass: 'text-campus-green-600 dark:text-campus-green-dark' },
-  deferred: { icon: PauseCircle, shortLabel: 'Deferred', accentClass: 'text-campus-muted' },
-  blocked: { icon: XCircle, shortLabel: 'Blocked', accentClass: 'text-campus-red-600 dark:text-campus-red-dark' },
-  superseded: { icon: Archive, shortLabel: 'Superseded', accentClass: 'text-campus-muted' },
-  no_longer_relevant: { icon: ProhibitInset, shortLabel: 'Not relevant', accentClass: 'text-campus-muted' },
+  recommended: { icon: Star, shortLabel: 'Next', accentClass: 'text-campus-blue-600 dark:text-campus-blue-dark', markerBorderClass: 'border-campus-blue-600 dark:border-campus-blue-dark', markerFillClass: 'bg-campus-blue-600 dark:bg-campus-blue-dark' },
+  accepted: { icon: CircleDashed, shortLabel: 'Accepted', accentClass: 'text-campus-blue-600 dark:text-campus-blue-dark', markerBorderClass: 'border-campus-blue-600 dark:border-campus-blue-dark', markerFillClass: 'bg-campus-blue-600 dark:bg-campus-blue-dark' },
+  planned: { icon: Circle, shortLabel: 'Planned', accentClass: 'text-campus-muted', markerBorderClass: 'border-campus-border', markerFillClass: 'bg-campus-stone-300 dark:bg-campus-stone-500' },
+  in_progress: { icon: PlayCircle, shortLabel: 'In progress', accentClass: 'text-campus-blue-600 dark:text-campus-blue-dark', markerBorderClass: 'border-campus-blue-600 dark:border-campus-blue-dark', markerFillClass: 'bg-campus-blue-600 dark:bg-campus-blue-dark' },
+  evidence_pending: { icon: Hourglass, shortLabel: 'Evidence pending', accentClass: 'text-campus-amber-600 dark:text-campus-amber-dark', markerBorderClass: 'border-campus-amber-600 dark:border-campus-amber-dark border-dashed', markerFillClass: 'bg-campus-amber-600 dark:bg-campus-amber-dark' },
+  under_review: { icon: Eye, shortLabel: 'Under review', accentClass: 'text-campus-amber-600 dark:text-campus-amber-dark', markerBorderClass: 'border-campus-amber-600 dark:border-campus-amber-dark border-dashed', markerFillClass: 'bg-campus-amber-600 dark:bg-campus-amber-dark' },
+  completed: { icon: CheckCircle, shortLabel: 'Complete', accentClass: 'text-campus-green-600 dark:text-campus-green-dark', markerBorderClass: 'border-campus-green-600 dark:border-campus-green-dark', markerFillClass: 'bg-campus-green-600 dark:bg-campus-green-dark' },
+  verified: { icon: SealCheck, shortLabel: 'Verified', accentClass: 'text-campus-green-600 dark:text-campus-green-dark', markerBorderClass: 'border-campus-green-600 dark:border-campus-green-dark', markerFillClass: 'bg-campus-green-600 dark:bg-campus-green-dark' },
+  deferred: { icon: PauseCircle, shortLabel: 'Deferred', accentClass: 'text-campus-muted', markerBorderClass: 'border-campus-border border-dashed', markerFillClass: 'bg-campus-stone-300 dark:bg-campus-stone-500' },
+  blocked: { icon: XCircle, shortLabel: 'Blocked', accentClass: 'text-campus-red-600 dark:text-campus-red-dark', markerBorderClass: 'border-campus-red-600 dark:border-campus-red-dark border-dashed', markerFillClass: 'bg-campus-red-600 dark:bg-campus-red-dark' },
+  superseded: { icon: Archive, shortLabel: 'Superseded', accentClass: 'text-campus-muted', markerBorderClass: 'border-campus-border', markerFillClass: 'bg-campus-stone-300 dark:bg-campus-stone-500' },
+  no_longer_relevant: { icon: ProhibitInset, shortLabel: 'Not relevant', accentClass: 'text-campus-muted', markerBorderClass: 'border-campus-border', markerFillClass: 'bg-campus-stone-300 dark:bg-campus-stone-500' },
 }

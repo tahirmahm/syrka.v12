@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowClockwise, PaperPlaneTilt, Sparkle } from '@phosphor-icons/react/dist/ssr'
 import { Badge } from '@/components/ui/Badge'
-import { AIActivityIndicator } from '@/components/motion/AIActivityIndicator'
+import { SyrkaIntelligenceState } from '@/components/intelligence/SyrkaIntelligenceState'
 import { useTutorConversation, type TutorSuggestedAction } from '@/components/tutor/useTutorConversation'
 import type { OdysseyTutorAction } from '@/lib/services/odyssey/tutor-provider'
 import type { OdysseyGenerationApiResponse } from './odyssey-client-types'
@@ -15,18 +15,20 @@ export interface OdysseyMilestoneTutorTabProps {
   milestoneTitle?: string
 }
 
+/** The four primary contextual entry points, always listed first — everything after is a secondary action. */
 const SUGGESTED_ACTIONS: TutorSuggestedAction<OdysseyTutorAction>[] = [
-  { action: 'explain_milestone', label: 'Explain this milestone', requiresContext: true },
+  { action: 'explain_milestone', label: 'Help me understand this step', requiresContext: true },
+  { action: 'explain_why_on_path', label: 'Explain why this is on my path', requiresContext: true },
+  { action: 'recommend_next_action', label: 'What should I do next?' },
+  { action: 'quiz_me', label: 'Test my readiness', requiresContext: true },
   { action: 'teach_concept', label: 'Teach me the underlying concept', requiresContext: true },
   { action: 'study_plan', label: 'Create a study plan' },
-  { action: 'quiz_me', label: 'Quiz me', requiresContext: true },
   { action: 'suggest_project', label: 'Suggest an Evidence-producing project' },
   { action: 'why_blocked', label: 'Explain why this is blocked', requiresContext: true },
   { action: 'compare_alternatives', label: 'Compare alternatives', requiresContext: true },
   { action: 'prepare_faculty_questions', label: 'Prepare questions for Faculty' },
   { action: 'passport_effect', label: 'Show my Career Passport implication', requiresContext: true },
   { action: 'generate_practice_exercise', label: 'Generate a practice exercise', requiresContext: true },
-  { action: 'recommend_next_action', label: 'Recommend my next action' },
   { action: 'summarize_changes', label: 'Summarise what changed' },
   { action: 'replan_with_constraint', label: 'Replan with a new constraint' },
 ]
@@ -173,7 +175,7 @@ export function OdysseyMilestoneTutorTab({ milestoneId, milestoneTitle }: Odysse
 
       {pending && (
         <div className="flex items-center justify-between rounded-campus-sm border border-campus-border p-2.5">
-          <AIActivityIndicator state="composing" />
+          <SyrkaIntelligenceState state="composing" />
           <button type="button" onClick={stop} className="font-campus-sans text-campus-xs text-campus-muted hover:text-campus-text">
             Stop
           </button>
@@ -182,7 +184,7 @@ export function OdysseyMilestoneTutorTab({ milestoneId, milestoneTitle }: Odysse
 
       {replanPending && (
         <div className="rounded-campus-sm border border-campus-border p-2.5">
-          <AIActivityIndicator state="shaping" label="Reshaping your Odyssey plan" />
+          <SyrkaIntelligenceState state="shaping" label="Reshaping your Odyssey plan" />
         </div>
       )}
 

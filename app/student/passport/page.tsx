@@ -1,13 +1,11 @@
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
-import { Panel } from '@/components/ui/Panel'
-import { Badge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { PassportClaimRow } from '@/components/passport/PassportClaimRow'
+import { PassportClaimInspectorSection } from '@/components/passport/PassportClaimInspectorSection'
 import { PassportVersionHistory } from '@/components/passport/PassportVersionHistory'
 import { ReadinessSummary } from '@/components/passport/ReadinessSummary'
 import { PassportDisclosureSection } from '@/components/passport/PassportDisclosureSection'
-import { PrintButton } from '@/components/passport/PrintButton'
+import { PassportWalletCard } from '@/components/passport/PassportWalletCard'
 import {
   mockPassportRepository,
   mockInstitutionRepository,
@@ -17,6 +15,8 @@ import {
 import { currentUser } from '@/lib/mock-data/seed'
 import { PASSPORT_DISPLAY_NAME } from '@/lib/constants/passport'
 import { formatDate } from '@/lib/utilities/format-relative-time'
+import { generatePassportQrSvg } from '@/lib/utilities/qr'
+import { getAppBaseUrl } from '@/lib/utilities/app-url'
 
 export const metadata = { title: `${PASSPORT_DISPLAY_NAME} — Syrka Campus` }
 
@@ -55,35 +55,42 @@ export default async function StudentPassportPage() {
     )
   }
 
+  const initials = currentUser.name
+    .split(' ')
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+
+  const verifyUrl = `${getAppBaseUrl()}/verify/passport/${passport.id}`
+  const qrSvgMarkup = await generatePassportQrSvg(verifyUrl)
+
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-8">
+    <div className="mx-auto flex max-w-4xl flex-col gap-8">
       <PageHeader
         title={PASSPORT_DISPLAY_NAME}
         subtitle="An institutionally reviewed, evidence-backed record of what you can credibly do — current as of its issue date, not a résumé."
         breadcrumbs={breadcrumbs}
-        actions={<PrintButton />}
       />
 
-      {/* Identity + institution + status */}
-      <Panel className="flex flex-col gap-2 print:break-inside-avoid">
-        <div className="flex items-center justify-between border-b border-campus-border pb-4">
-          <div>
-            <p className="font-campus-sans text-campus-lg font-medium text-campus-text">{currentUser.name}</p>
-            <p className="font-campus-sans text-campus-sm text-campus-muted">
-              {programme?.name} · {institution.name}
-            </p>
-          </div>
-          <div className="text-right">
-            <Badge tone="gold">Institutionally reviewed</Badge>
-            <p className="mt-1 font-campus-mono text-campus-xs text-campus-muted">
-              Version {passport.currentVersion} · Current as of {formatDate(currentVersion.issuedAt)}
-            </p>
-          </div>
-        </div>
-        <p className="pt-2 font-campus-sans text-campus-xs text-campus-muted">
-          Issued by {passport.verificationSeal.issuer}. Evidence-backed and versioned — subject to disclosure controls below.
-        </p>
-      </Panel>
+      {/* The credential itself — a real card, read first, not a data panel among others. */}
+      <div className="print:break-inside-avoid">
+        <PassportWalletCard
+          holderName={currentUser.name}
+          initials={initials}
+          passportId={passport.id}
+          institutionName={institution.name}
+          programmeName={programme?.name}
+          issueDate={formatDate(currentVersion.issuedAt)}
+          version={passport.currentVersion}
+          verificationLabel="Institutionally reviewed"
+          qrSvgMarkup={qrSvgMarkup}
+          verifyUrl={verifyUrl}
+        />
+      </div>
+      <p className="text-center font-campus-sans text-campus-xs text-campus-muted print:hidden">
+        Issued by {passport.verificationSeal.issuer}. Evidence-backed and versioned — subject to disclosure controls below.
+      </p>
 
       <ReadinessSummary version={currentVersion} pendingEvidenceCount={pendingEvidenceCount} />
 
@@ -95,11 +102,13 @@ export default async function StudentPassportPage() {
         {currentVersion.claims.length === 0 ? (
           <EmptyState title="No claims yet" description="No capability has yet met the confidence threshold for a shareable claim." />
         ) : (
-          <div className="flex flex-col gap-3">
-            {currentVersion.claims.map((claim) => (
-              <PassportClaimRow key={claim.id} claim={claim} />
-            ))}
-          </div>
+          <PassportClaimInspectorSection
+            claims={currentVersion.claims}
+            evidenceById={new Map(evidence.map((e) => [e.record.id, e.record]))}
+            capabilityById={capabilityById}
+            disclosureSettings={disclosureSettings}
+            issuedAt={currentVersion.issuedAt}
+          />
         )}
       </section>
 
