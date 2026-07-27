@@ -68,14 +68,6 @@ export const ncertDocumentVersions: LearningDocumentVersion[] = []
 export const ncertPages: LearningPage[] = []
 export const ncertSourceReferences: SourceReference[] = []
 
-/** capabilityId every chapter's concepts feed into, keyed by book title. */
-const CAPABILITY_BY_BOOK: Record<string, string> = {
-  'English — First Flight': 'cap-7',
-  'Geography — Contemporary India II': 'cap-8',
-  'Economics — Understanding Economic Development': 'cap-9',
-  'Political Science — Democratic Politics II': 'cap-10',
-}
-
 
 // ---------------------------------------------------------------------------
 // English — First Flight
