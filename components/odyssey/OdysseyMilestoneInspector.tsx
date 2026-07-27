@@ -1,28 +1,37 @@
 'use client'
 
-import type { ReactNode } from 'react'
-import { X, Sparkle } from '@phosphor-icons/react/dist/ssr'
-import { Badge } from '@/components/ui/Badge'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { X } from '@phosphor-icons/react/dist/ssr'
+import { Tabs } from '@/components/ui/Tabs'
+import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
+import { panelTransition } from '@/lib/motion/campus-motion'
 import type { ResolvedOdysseyMilestone } from '@/lib/utilities/odyssey-detail'
-import { MILESTONE_STATUS_LABELS, MILESTONE_STATUS_TONES, MILESTONE_TYPE_LABELS } from '@/lib/constants/odyssey'
+import type { OdysseyInstitutionalResource } from '@/lib/campus-types'
+import { MILESTONE_TYPE_LABELS } from '@/lib/constants/odyssey'
+import { OdysseyMilestoneOverviewTab } from './OdysseyMilestoneOverviewTab'
+import { OdysseyMilestoneResourcesTab } from './OdysseyMilestoneResourcesTab'
+import { OdysseyMilestoneTutorTab } from './OdysseyMilestoneTutorTab'
 
 export interface OdysseyMilestoneInspectorProps {
   resolved: ResolvedOdysseyMilestone
+  resourceById: Map<string, OdysseyInstitutionalResource>
   onClose: () => void
+  /** True on narrow viewports — renders as a bottom sheet instead of a side panel. */
+  isMobile?: boolean
 }
 
-function passportImplication(resolved: ResolvedOdysseyMilestone): string {
-  if (resolved.expectedImpacts.length === 0) return 'No direct effect on your Academic Passport is projected for this milestone.'
-  const names = resolved.expectedImpacts.map((i) => i.capabilityName).join(', ')
-  return `Completing this — once reviewed — could add or strengthen a Passport claim for: ${names}. This is a projection, not a guarantee.`
-}
-
-/** The node-detail experience: everything the compact roadmap node can't show at-a-glance. */
-export function OdysseyMilestoneInspector({ resolved, onClose }: OdysseyMilestoneInspectorProps) {
+/**
+ * The contextual inspector: header (type, title, close) + Overview /
+ * Resources / AI Tutor tabs. Desktop renders as a fixed-width side panel;
+ * mobile renders the same component as a bottom sheet (see isMobile).
+ */
+export function OdysseyMilestoneInspector({ resolved, resourceById, onClose, isMobile }: OdysseyMilestoneInspectorProps) {
   const { milestone } = resolved
-  const requiresReview = resolved.actions.some((a) => a.requiresReview)
+  const [tab, setTab] = useState<'overview' | 'resources' | 'tutor'>('overview')
+  const reduceMotion = useReducedMotionSafe()
 
-  return (
+  const content = (
     <div className="flex h-full flex-col overflow-y-auto rounded-campus-md border border-campus-border bg-campus-surface p-4" aria-label={`Detail for ${milestone.title}`}>
       <div className="flex items-start justify-between gap-2">
         <div>
@@ -39,145 +48,37 @@ export function OdysseyMilestoneInspector({ resolved, onClose }: OdysseyMileston
         </button>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        <Badge tone={MILESTONE_STATUS_TONES[milestone.status]}>{MILESTONE_STATUS_LABELS[milestone.status]}</Badge>
-        <Badge tone="neutral">Recommendation confidence: {milestone.recommendationConfidence}</Badge>
+      <div className="mt-3">
+        <Tabs
+          ariaLabel={`${milestone.title} detail`}
+          activeId={tab}
+          onChange={(id) => setTab(id as typeof tab)}
+          items={[
+            { id: 'overview', label: 'Overview', content: <OdysseyMilestoneOverviewTab resolved={resolved} /> },
+            { id: 'resources', label: 'Resources', content: <OdysseyMilestoneResourcesTab resolved={resolved} resourceById={resourceById} /> },
+            { id: 'tutor', label: 'AI Tutor', content: <OdysseyMilestoneTutorTab milestoneId={milestone.id} milestoneTitle={milestone.title} /> },
+          ]}
+        />
       </div>
-
-      <p className="mt-3 font-campus-sans text-campus-sm text-campus-text">{milestone.description}</p>
-
-      <Section title="Why this was recommended">
-        <p className="font-campus-sans text-campus-sm text-campus-text">{milestone.reasoningSummary}</p>
-      </Section>
-
-      {resolved.capabilityNames.length > 0 && (
-        <Section title="Capability addressed">
-          <div className="flex flex-wrap gap-1.5">
-            {resolved.capabilityNames.map((name) => (
-              <Badge key={name} tone="neutral">
-                {name}
-              </Badge>
-            ))}
-          </div>
-          {(milestone.currentMaturity || milestone.targetMaturity) && (
-            <p className="mt-2 font-campus-sans text-campus-xs text-campus-muted">
-              {milestone.currentMaturity ?? 'Unassessed'} → {milestone.targetMaturity ?? '—'} maturity ·{' '}
-              {milestone.currentConfidence ?? 'Unassessed'} → {milestone.targetConfidence ?? '—'} confidence
-            </p>
-          )}
-        </Section>
-      )}
-
-      {resolved.prerequisites.length > 0 && (
-        <Section title="Prerequisites">
-          <ul className="flex flex-col gap-1 font-campus-sans text-campus-sm text-campus-text">
-            {resolved.prerequisites.map((p) => (
-              <li key={p.id}>{p.title}</li>
-            ))}
-          </ul>
-        </Section>
-      )}
-
-      {resolved.actions.length > 0 && (
-        <Section title="Recommended action">
-          {resolved.actions.map((action) => (
-            <div key={action.id} className="mb-2 last:mb-0">
-              <p className="font-campus-sans text-campus-sm font-medium text-campus-text">{action.title}</p>
-              <p className="font-campus-sans text-campus-xs text-campus-muted">{action.description}</p>
-              <div className="mt-1 flex flex-wrap gap-1.5">
-                <Badge tone={action.isAiProposed ? 'amber' : 'neutral'}>
-                  {action.isAiProposed ? (
-                    <span className="flex items-center gap-1">
-                      <Sparkle size={11} weight="fill" aria-hidden="true" /> AI-proposed — institutional availability unconfirmed
-                    </span>
-                  ) : (
-                    'Canonical institutional resource'
-                  )}
-                </Badge>
-                {action.requiresReview && <Badge tone="blue">Requires Faculty review</Badge>}
-              </div>
-            </div>
-          ))}
-        </Section>
-      )}
-
-      {milestone.estimatedEffort && (
-        <Section title="Estimated effort">
-          <p className="font-campus-sans text-campus-sm text-campus-text">{milestone.estimatedEffort}</p>
-        </Section>
-      )}
-
-      {resolved.evidenceRequirements.length > 0 && (
-        <Section title="Required Evidence">
-          <ul className="flex flex-col gap-1 font-campus-sans text-campus-sm text-campus-text">
-            {resolved.evidenceRequirements.map((req) => (
-              <li key={req.id}>{req.description}</li>
-            ))}
-          </ul>
-        </Section>
-      )}
-
-      {resolved.expectedImpacts.length > 0 && (
-        <Section title="Expected capability impact (projection)">
-          <ul className="flex flex-col gap-1 font-campus-sans text-campus-sm text-campus-text">
-            {resolved.expectedImpacts.map((impact) => (
-              <li key={impact.id}>
-                {impact.capabilityName} → {impact.projectedMaturity} maturity, {impact.projectedConfidence} confidence
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
-
-      {milestone.blockedReason && (
-        <Section title="Blocker">
-          <p className="font-campus-sans text-campus-sm text-campus-red-600 dark:text-campus-red-dark">{milestone.blockedReason}</p>
-        </Section>
-      )}
-
-      {resolved.alternatives.length > 0 && (
-        <Section title="Alternatives">
-          <ul className="flex flex-col gap-2">
-            {resolved.alternatives.map((alt) => (
-              <li key={alt.id} className="font-campus-sans text-campus-sm text-campus-text">
-                <span className="font-medium">{alt.title}</span> — {alt.description}
-                <p className="font-campus-sans text-campus-xs text-campus-muted">Trade-off: {alt.tradeoff}</p>
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
-
-      {resolved.unlocks.length > 0 && (
-        <Section title="What completion unlocks">
-          <ul className="flex flex-col gap-1 font-campus-sans text-campus-sm text-campus-text">
-            {resolved.unlocks.map((u) => (
-              <li key={u.id}>{u.title}</li>
-            ))}
-          </ul>
-        </Section>
-      )}
-
-      <Section title="Academic Passport implication">
-        <p className="font-campus-sans text-campus-sm text-campus-text">{passportImplication(resolved)}</p>
-      </Section>
-
-      {requiresReview && (
-        <Section title="Human review">
-          <p className="font-campus-sans text-campus-sm text-campus-text">
-            Faculty review is required before Evidence from this milestone can strengthen your capability profile.
-          </p>
-        </Section>
-      )}
     </div>
   )
-}
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+  if (!isMobile) return content
+
   return (
-    <div className="mt-4 border-t border-campus-border pt-3">
-      <p className="mb-1.5 font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">{title}</p>
-      {children}
-    </div>
+    <AnimatePresence>
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={panelTransition(Boolean(reduceMotion))}
+        className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] rounded-t-campus-lg border-t border-campus-border bg-campus-surface shadow-campus-md"
+      >
+        <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-campus-border" aria-hidden="true" />
+        <div className="max-h-[calc(85vh-1rem)] overflow-y-auto p-2">{content}</div>
+      </motion.div>
+    </AnimatePresence>
   )
 }
