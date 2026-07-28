@@ -11,7 +11,9 @@ import { ConceptTutorPanel } from './ConceptTutorPanel'
 import { MermaidDiagram } from './visuals/MermaidDiagram'
 import { DesmosLearningGraph } from './visuals/DesmosLearningGraph'
 import { EconomicsCreditSimulator } from './visuals/EconomicsCreditSimulator'
+import { Terrain3DVisual } from './visuals/Terrain3DVisual'
 import { getEconomicsRepaymentDesmosConfig } from '@/lib/services/learning/economics-desmos-config'
+import type { Learning3DVisualSpec } from '@/lib/campus-types/learning-3d-visual-spec'
 
 /** The one bespoke subject interactive this pass ships — see ADR §12 for why the other three subjects are not yet covered. */
 const HAS_BESPOKE_INTERACTIVE = new Set(['ncert-concept-eco-3-2'])
@@ -23,10 +25,12 @@ const GENERATION_SOURCE_LABEL: Record<string, string> = {
 }
 
 interface VisualiseResult {
-  renderer: 'mermaid' | 'desmos'
+  renderer: 'mermaid' | 'desmos' | 'three_scene'
   generationSource: string
   spec?: { title: string; altText: string; structuredTextEquivalent: string }
   mermaidDefinition?: string
+  decision?: { reason: string; alternativesConsidered: { renderer: string; rejectedBecause: string }[] }
+  threeSpec?: Learning3DVisualSpec
 }
 
 export interface ConceptWorkbenchProps {
@@ -200,6 +204,11 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
                   <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Visualise this</p>
                   <Badge tone="neutral">{GENERATION_SOURCE_LABEL[visualResult.generationSource] ?? visualResult.generationSource}</Badge>
                 </div>
+                {visualResult.decision && (
+                  <p className="font-campus-sans text-campus-xs text-campus-muted">
+                    Why this representation: {visualResult.decision.reason}
+                  </p>
+                )}
                 {visualResult.renderer === 'mermaid' && visualResult.mermaidDefinition && visualResult.spec ? (
                   <MermaidDiagram
                     definition={visualResult.mermaidDefinition}
@@ -207,6 +216,8 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
                     altText={visualResult.spec.altText}
                     structuredTextEquivalent={visualResult.spec.structuredTextEquivalent}
                   />
+                ) : visualResult.renderer === 'three_scene' && visualResult.threeSpec ? (
+                  <Terrain3DVisual spec={visualResult.threeSpec} />
                 ) : (
                   <DesmosLearningGraph {...getEconomicsRepaymentDesmosConfig()} />
                 )}

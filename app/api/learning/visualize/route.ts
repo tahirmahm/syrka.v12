@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getNcertConceptView } from '@/lib/utilities/ncert-curriculum-projection'
 import { learningProviders } from '@/lib/services/learning/providers'
 import { buildMermaidFlowchartDefinition } from '@/lib/services/learning/mermaid-definition-builder'
+import { getGeographyTerrainResourceSpec } from '@/lib/services/learning/geography-terrain-3d-config'
 import type { LearningVisualIntent } from '@/lib/campus-types/learning-visual-spec'
 import type { ConceptTutorSessionState } from '@/lib/services/learning/concept-tutor-engine'
 
@@ -54,6 +55,15 @@ export async function POST(request: Request) {
 
   if (representation.decision.renderer === 'desmos') {
     return NextResponse.json({ renderer: 'desmos', decision: representation.decision, generationSource: representation.generationSource })
+  }
+
+  if (representation.decision.renderer === 'three_scene') {
+    return NextResponse.json({
+      renderer: 'three_scene',
+      decision: representation.decision,
+      generationSource: representation.generationSource,
+      threeSpec: getGeographyTerrainResourceSpec(),
+    })
   }
 
   const proposal = await learningProviders.visualPlanning.proposeVisualSpec({

@@ -142,6 +142,10 @@ function at all.
 - **Structured text / static accessible fallback** — always available as the last resort
   renderer, and the only renderer used when `prefers-reduced-motion` plus a scaffold-level check
   indicate a visual would not currently be appropriate.
+- **`three_scene`** (bounded true-3D, added by addendum) — one demonstration only: Geography
+  "Resources and Development" §"Sustainable development" (land degradation/conservation), routed
+  by a dedicated `representation-router.ts` branch that explains why 3D was chosen over Mermaid/
+  Desmos/a 2D interactive (see §13).
 
 ## 8. Desmos demonstration content
 
@@ -163,12 +167,19 @@ existing CLASSX-001 guarantee is loosened by adding visuals.
 
 ## 10. Motion discipline
 
-Framer Motion (already installed, already governed by `lib/motion/campus-motion.ts`) is used
-throughout for interface-level transitions (Mermaid reveal, Desmos panel open, simplify/expand
-toggles). **GSAP, Lenis, React Bits, and Vanta are not installed or integrated in this pass** —
-see §12. This keeps exactly one motion system driving Learning surfaces, avoiding the
-"GSAP and Motion competing on the same node" failure mode the brief explicitly warns against, by
-construction rather than by discipline.
+Framer Motion (already installed, already governed by `lib/motion/campus-motion.ts`) remains the
+sole system for ordinary interface-level transitions (Mermaid reveal, Desmos panel open,
+simplify/expand toggles, drawers, tabs). Following the visual-direction correction, GSAP is now
+installed and used for exactly one purpose: staged pedagogical sequences with a real timeline
+(`SessionTimelineSequence`, §"Development timeline" on the adaptive-learning chapter view) — never
+for ordinary UI chrome. Anime.js (already installed for `CampusCapabilityConstellation`'s bounded
+SVG use, unchanged) is additionally used, via its official `animejs/adapters/three` adapter, as
+the sole animator of Object3D transforms inside `TerrainResourceScene` (§13). **One animation
+owner per property, enforced by construction**: Framer Motion never touches a GSAP-timeline node
+or an Object3D; GSAP never touches a Three.js object; Vanta (installed, not yet wired into a
+lesson surface) does not run behind any 3D instructional scene. Lenis, React Bits, Kokonut UI,
+Bklit UI, and a lesson-entrance Vanta field remain **not yet integrated** — tracked as open work,
+not silently dropped (see §12).
 
 ## 11. Evidence and assessment boundary
 
@@ -182,37 +193,86 @@ to the existing Evidence gate, and it tightens the bar rather than loosening it.
 
 ## 12. Scope actually delivered in this pass — stated honestly, upfront
 
-Given the size of this brief (27 sections) against a single implementation pass, the following
-were built with real depth:
+Given the size of this brief (27 sections, plus a visual-direction correction and a true-3D
+addendum) against a single implementation pass, the following were built with real depth:
 
 - DeepSeek provider architecture (§3) with deterministic fallbacks proven working.
-- `LearningVisualSpec` schema + validator (§5).
-- `LearningRepresentationRouter` (§6).
+- `LearningVisualSpec` schema + validator (§5), and the bounded `Learning3DVisualSpec` (§13).
+- `LearningRepresentationRouter` (§6), including its `three_scene` branch (§13).
 - Mermaid renderer, fully governed per §7.
 - Desmos adapter for one Economics demonstration (§8).
 - One bespoke subject interactive (Economics credit-flow simulator).
+- One bounded 3D scene (Geography land-degradation terrain, §13).
+- A GSAP-driven staged pedagogical sequence (`SessionTimelineSequence`, §10) on the adaptive
+  chapter view's development timeline, with Play/Pause/Replay and a fully static reduced-motion
+  equivalent.
 - The multi-horizon personalised plan page (`/student/learning/plan`).
 - Tutor tool-contract extension for visuals (§9), Evidence-boundary tightening (§11).
 
 The following are **explicitly not built** in this pass, are documented here rather than
 silently dropped, and should be scoped as follow-up work:
 
-- English/Geography/Political Science bespoke interactives (§13) — these subjects currently
+- English/Political Science bespoke interactives (§13 of the brief) — these subjects currently
   route to Mermaid or structured text via the representation router, which is a legitimate
-  router outcome, not a placeholder, but is not the dedicated claim-builder/resource-board/
-  stakeholder-map the brief describes.
+  router outcome, not a placeholder, but is not the dedicated claim-builder/stakeholder-map the
+  brief describes. (Geography now has the terrain 3D scene in place of its own bespoke 2D
+  interactive — a deliberate substitution, not an additional gap.)
 - Excalidraw canvas integration (§12 of the brief).
-- GSAP + Lenis governed motion layer (§14 of the brief) — Framer Motion covers this pass's
-  needs; GSAP's staged-sequence/MorphSVG/Flip capabilities are not exercised.
-- React Bits pattern adoption (§15 of the brief).
-- Vanta `AmbientLearningField` (§17 of the brief).
+- Lenis immersive Visual Lesson mode (§14 of the brief) — GSAP is integrated (§10) but not yet
+  paired with a Lenis-driven scroll narrative.
+- React Bits, Kokonut UI, Bklit UI pattern adoption (§15/§16/§18 of the brief).
+- A lesson-entrance or Visual Learning Lab Vanta `AmbientLearningField` (§17 of the brief) — Vanta
+  is installed but not wired into any lesson surface yet.
+- A second 3D scene — deliberately not added; the addendum is explicit that a second scene is
+  only warranted when it teaches something 2D genuinely cannot, and no such concept was
+  identified in this pass.
 - Faculty Visual Learning Studio (§19 of the brief) — `/faculty/curriculum/[spaceId]/
   [chapterId]/visuals` is not built; VisualSpec inspection/approval remains a manual,
   code-level activity in this pass.
 - Capability graph cross-subject-relationships and pathway-impact modes, and a true mobile
   textual tree for Capability (both were already-disclosed CLASSX-001 gaps; still not closed
-  here since this pass's time went to the DeepSeek/VisualSpec/Mermaid/Desmos foundation
+  here since this pass's time went to the DeepSeek/VisualSpec/Mermaid/Desmos/3D foundation
   instead).
 
 None of these were silently substituted with something that merely looks similar — each is a
 named gap the founder can decide to prioritize next.
+
+## 13. True-3D learning boundary (addendum)
+
+A bounded `Learning3DVisualSpec` (`lib/campus-types/learning-3d-visual-spec.ts`) extends the same
+governance model as `LearningVisualSpec`: an `objects` array restricted to an allowlisted
+`kind` (`terrain_region` | `label_marker`) arranged on a fixed grid, `animationStages` expressed
+as target `soilQuality` values per object (never raw transform matrices or shader code), and no
+field capable of carrying arbitrary Three.js source, a shader, or a remote model URL. One scene
+ships this pass — `getGeographyTerrainResourceSpec()` — a hand-authored, deterministic (never
+DeepSeek-generated) terrain of four parcels for Geography's land-degradation/conservation concept,
+rendered by `TerrainResourceScene.tsx` (dynamically imported, never in the ordinary concept
+bundle) inside `Terrain3DVisual.tsx` (the accessible control shell). Rendering stack: React Three
+Fiber + drei render and compose the scene; Anime.js's official three adapter animates each
+region's `mesh.scale`/`mesh.position`/`material.color` directly (Vector3/Color targets its
+detection covers natively — no flattened-property guessing); `frameloop="demand"` plus a manual
+`invalidate()` on every Anime.js tick keeps the GPU idle between real changes. Labels use drei's
+`Html` (a positioned DOM node), not drei's `Text` (troika-three-text), because `Text` depends on a
+remote CDN font-fallback fetch that fails under any network-restricted deployment — a real bug
+caught and fixed during this pass's own verification.
+
+Interaction contract: select a region (also exposed as an ordinary keyboard-navigable button list,
+since WebGL canvas contents are not independently focusable); change one variable (apply
+conservation at Year 5, yes/no — the only manipulable variable, matching the spec's four
+authored stages exactly rather than inventing interpolated values); predict before playing;
+play/pause/step/reset; compare the current stage against Year 0. Accessibility: `role="img"` with
+full `altText` on the canvas container, a `structuredFallback` paragraph always rendered
+regardless of WebGL availability, a `isWebGL2Available()` check that substitutes the fallback
+text entirely (never a broken canvas) when WebGL2 is absent, and `reduceMotion` (from
+`useReducedMotionSafe`) applied inside `TerrainResourceScene` itself — heights/colours are set
+directly with no animation rather than merely skipping a wrapper transition. Both the predict
+prompt and the transfer prompt are explicitly disclosed as not connected to Evidence, exactly
+like `EconomicsCreditSimulator` (§7) — the real Evidence-bearing attempt is the concept's own Test
+step, which this component is never rendered inside (verified by construction, same as §11).
+Disposal: React Three Fiber's default reconciler disposes geometries/materials on unmount and
+tears down the WebGL context when `<Canvas>` unmounts — no manual disposal code was needed or
+added.
+
+Ownership: see §10 — Anime.js is the only thing that ever writes to this scene's Object3D
+properties; GSAP and Vanta never do.
+
