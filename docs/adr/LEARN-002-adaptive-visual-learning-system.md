@@ -276,3 +276,34 @@ added.
 Ownership: see §10 — Anime.js is the only thing that ever writes to this scene's Object3D
 properties; GSAP and Vanta never do.
 
+
+## 14. Mermaid removal correction (supersedes §7, §12's Mermaid references)
+
+Founder decision, final: Mermaid and generic node-edge educational charts are
+not part of Syrka. §7's description of Mermaid as a shipped renderer, and
+§12's disclosure that English/Political Science/other unhandled concepts
+"fall back to Mermaid or structured text," both describe a system that no
+longer exists and must not be treated as current.
+
+What actually happened: the founder's Preview review found Mermaid-style
+keyword graphs still reaching students for Economics "Functions of money"
+and Geography "Types of farming" (a single node fanned out to isolated
+keywords — "distinction" → "primitive"/"subsistence"/"intensive"/
+"commercial" — joined by generic "relates to" edges), and, separately, found
+that a live DeepSeek call could override the deterministic router's
+authored Geography 3D scene because `selectRepresentation()`'s own
+renderer-choice prompt still offered Mermaid/custom_react as options
+alongside `three_scene`.
+
+Both defects were removed together (see
+`docs/visual-qa/adaptive-visual-learning-v1-no-mermaid/README.md` for the
+full account): the `mermaid` npm package, `MermaidDiagram.tsx`,
+`mermaid-definition-builder.ts`, `visual-spec-validator.ts`, and the
+`LearningVisualSpec` node/edge type are all deleted — not retained
+internally, not retained for Faculty/debug use, not retained anywhere.
+`LearningRenderer` (`lib/campus-types/learning-renderer.ts`) is now the
+exhaustive, Mermaid-free renderer set, and every `selectRepresentationDeterministic()`
+decision is `mandatory: true` — DeepSeek is never consulted for the renderer
+field again. "Types of farming" now has its own real comparison/
+classification interactive (`FarmingClassificationInteractive.tsx`),
+matching the treatment §7 originally reserved for Economics alone.
