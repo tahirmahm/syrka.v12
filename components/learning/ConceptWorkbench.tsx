@@ -27,6 +27,13 @@ const GENERATION_SOURCE_LABEL: Record<string, string> = {
   deterministic_fallback: 'Deterministic (no live AI called)',
 }
 
+const SEMANTIC_RESULT_LABEL: Record<string, string> = {
+  deepseek_live: 'Generated with DeepSeek V4-Pro',
+  deepseek_cached: 'Generated with DeepSeek V4-Pro · cached',
+  deterministic_unavailable: 'DeepSeek unavailable · Syrka fallback',
+  deterministic_not_configured: 'AI provider not configured · Syrka fallback',
+}
+
 interface VisualiseResult {
   renderer: 'syrka_visual' | 'mermaid' | 'desmos' | 'three_scene'
   generationSource: string
@@ -36,6 +43,7 @@ interface VisualiseResult {
   threeSpec?: Learning3DVisualSpec
   narrative?: VisualNarrative
   trace?: { requestId: string; attemptedLiveCall: boolean; fallbackReason?: string }
+  semanticTrace?: { requestId: string; keyConfigured: boolean; liveRequestAttempted: boolean; authenticationSucceeded: boolean | null; requestedModel: string; resultCategory: string }
 }
 
 export interface ConceptWorkbenchProps {
@@ -213,14 +221,25 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
               <div className="mt-4 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Visualise this</p>
-                  <Badge tone="neutral">{GENERATION_SOURCE_LABEL[visualResult.generationSource] ?? visualResult.generationSource}</Badge>
+                  <Badge tone="neutral">
+                    {visualResult.semanticTrace
+                      ? SEMANTIC_RESULT_LABEL[visualResult.semanticTrace.resultCategory] ?? visualResult.semanticTrace.resultCategory
+                      : GENERATION_SOURCE_LABEL[visualResult.generationSource] ?? visualResult.generationSource}
+                  </Badge>
                 </div>
                 {visualResult.decision && (
                   <p className="font-campus-sans text-campus-xs text-campus-muted">
                     Why this representation: {visualResult.decision.reason}
                   </p>
                 )}
-                {visualResult.trace && (
+                {visualResult.semanticTrace && (
+                  <p className="font-campus-mono text-[9px] text-campus-faint">
+                    Model: {visualResult.semanticTrace.requestedModel} · Key configured: {visualResult.semanticTrace.keyConfigured ? 'yes' : 'no'} · Live request attempted: {visualResult.semanticTrace.liveRequestAttempted ? 'yes' : 'no'}
+                    {visualResult.semanticTrace.authenticationSucceeded !== null && <> · Auth succeeded: {visualResult.semanticTrace.authenticationSucceeded ? 'yes' : 'no'}</>}
+                    {' '}· Trace: {visualResult.semanticTrace.requestId}
+                  </p>
+                )}
+                {!visualResult.semanticTrace && visualResult.trace && (
                   <p className="font-campus-mono text-[9px] text-campus-faint">
                     {visualResult.trace.attemptedLiveCall
                       ? visualResult.generationSource === 'deterministic_fallback'

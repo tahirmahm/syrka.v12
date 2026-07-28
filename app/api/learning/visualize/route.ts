@@ -3,7 +3,7 @@ import { getNcertConceptView } from '@/lib/utilities/ncert-curriculum-projection
 import { learningProviders } from '@/lib/services/learning/providers'
 import { buildMermaidFlowchartDefinition } from '@/lib/services/learning/mermaid-definition-builder'
 import { getGeographyTerrainResourceSpec } from '@/lib/services/learning/geography-terrain-3d-config'
-import { buildVisualNarrative } from '@/lib/services/learning/semantic-model-builder'
+import { proposeSemanticVisual } from '@/lib/services/learning/providers/semantic-visual-provider'
 import type { LearningVisualIntent } from '@/lib/campus-types/learning-visual-spec'
 import type { ConceptTutorSessionState } from '@/lib/services/learning/concept-tutor-engine'
 
@@ -68,11 +68,13 @@ export async function POST(request: Request) {
   }
 
   if (representation.decision.renderer === 'syrka_visual') {
+    const semanticResult = await proposeSemanticVisual(view)
     return NextResponse.json({
       renderer: 'syrka_visual',
       decision: representation.decision,
-      generationSource: 'deterministic_fallback',
-      narrative: buildVisualNarrative(view),
+      generationSource: semanticResult.generationSource,
+      narrative: semanticResult.narrative,
+      semanticTrace: semanticResult.trace,
     })
   }
 
