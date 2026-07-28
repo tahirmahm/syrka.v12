@@ -11,14 +11,112 @@ import { mockEvidenceRepository, mockCapabilityRepository, mockInstitutionReposi
 import { currentUser, facultyUser } from '@/lib/mock-data/seed'
 import { SOURCE_TYPE_LABELS } from '@/lib/constants/evidence'
 import { formatDate, formatRelativeTime } from '@/lib/utilities/format-relative-time'
+import { getStudentIdentity } from '@/lib/utilities/student-identity-projection'
+import { getClassXEvidenceChain } from '@/lib/utilities/class10-evidence-projection'
 
 export async function generateMetadata({ params }: { params: { evidenceId: string } }) {
+  const identity = getStudentIdentity(currentUser.id)
+  if (identity.stage === 'secondary_class_10') {
+    const chain = getClassXEvidenceChain(params.evidenceId)
+    if (!chain) notFound()
+    return { title: `${chain.conceptTitle} — Syrka Campus` }
+  }
   const item = await mockEvidenceRepository.get(params.evidenceId)
   if (!item || item.record.studentId !== currentUser.id) notFound()
   return { title: `${item.record.title} — Syrka Campus` }
 }
 
 export default async function EvidenceDetailPage({ params }: { params: { evidenceId: string } }) {
+  const identity = getStudentIdentity(currentUser.id)
+  if (identity.stage === 'secondary_class_10') {
+    const chain = getClassXEvidenceChain(params.evidenceId)
+    if (!chain) notFound()
+
+    return (
+      <div className="mx-auto flex max-w-2xl flex-col gap-6">
+        <PageHeader
+          title={chain.conceptTitle}
+          subtitle={`${chain.subject} — ${chain.chapterTitle}`}
+          breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Evidence', href: '/student/evidence' }, { label: chain.conceptTitle }]} />}
+          actions={<Badge tone="green">{chain.lifecycleLabel}</Badge>}
+        />
+
+        <Panel className="flex flex-col gap-3">
+          <p className="font-campus-sans text-campus-sm text-campus-text">{chain.candidateRationale}</p>
+          <dl className="grid grid-cols-2 gap-4 text-campus-sm">
+            <div>
+              <dt className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Candidate submitted</dt>
+              <dd className="mt-0.5 text-campus-text">{formatDate(chain.candidateSubmittedAt)} ({formatRelativeTime(chain.candidateSubmittedAt)})</dd>
+            </div>
+            {chain.reviewedAt && (
+              <div>
+                <dt className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Reviewed</dt>
+                <dd className="mt-0.5 text-campus-text">{formatDate(chain.reviewedAt)} ({formatRelativeTime(chain.reviewedAt)})</dd>
+              </div>
+            )}
+            {chain.reviewerId && (
+              <div>
+                <dt className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Reviewer</dt>
+                <dd className="mt-0.5 text-campus-text">{chain.reviewerId}</dd>
+              </div>
+            )}
+            <div>
+              <dt className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Decision</dt>
+              <dd className="mt-0.5 text-campus-text capitalize">{chain.reviewDecision?.replace(/_/g, ' ')}</dd>
+            </div>
+          </dl>
+        </Panel>
+
+        <section aria-labelledby="observations-heading">
+          <h2 id="observations-heading" className="mb-3 font-campus-sans text-campus-lg font-medium text-campus-text">
+            Learning Observations
+          </h2>
+          <div className="flex flex-col gap-2">
+            {chain.observations.map((o) => (
+              <Panel key={o.id} className="flex items-center justify-between gap-3 p-4">
+                <div>
+                  <p className="font-campus-sans text-campus-sm text-campus-text">{o.description}</p>
+                  <p className="mt-0.5 font-campus-mono text-campus-xs text-campus-muted">{formatDate(o.recordedAt)}</p>
+                </div>
+                <Badge tone="neutral">{o.independenceLevel.replace(/_/g, ' ')}</Badge>
+              </Panel>
+            ))}
+          </div>
+        </section>
+
+        <Panel className="flex flex-col gap-2">
+          <p className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Capability relationship</p>
+          <Link href={`/student/capabilities/${chain.capabilityId}`} className="font-campus-sans text-campus-sm font-medium text-campus-text hover:underline">
+            {chain.capabilityName}
+          </Link>
+          <p className="font-campus-sans text-campus-xs text-campus-muted">This accepted Evidence is one of this capability&rsquo;s supporting concepts.</p>
+        </Panel>
+
+        <Panel className="flex flex-col gap-2">
+          <p className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Odyssey and Career Passport</p>
+          <p className="font-campus-sans text-campus-sm text-campus-text">
+            This reviewed Evidence supports the {chain.capabilityName} Odyssey preparedness signal and Career Passport claim — see{' '}
+            <Link href="/student/odyssey" className="underline">
+              Odyssey
+            </Link>{' '}
+            and{' '}
+            <Link href="/student/passport" className="underline">
+              Career Passport
+            </Link>{' '}
+            for the full trace.
+          </p>
+        </Panel>
+
+        <Panel className="flex items-center justify-between gap-3">
+          <p className="font-campus-sans text-campus-sm text-campus-text">Source concept</p>
+          <Link href={chain.sourceHref} className="font-campus-sans text-campus-sm font-medium text-campus-blue-600 hover:underline dark:text-campus-blue-dark">
+            Open {chain.conceptTitle} →
+          </Link>
+        </Panel>
+      </div>
+    )
+  }
+
   const item = await mockEvidenceRepository.get(params.evidenceId)
   if (!item || item.record.studentId !== currentUser.id) notFound()
 
