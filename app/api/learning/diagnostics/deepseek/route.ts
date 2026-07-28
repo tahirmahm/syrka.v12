@@ -21,6 +21,7 @@ export async function GET() {
   const requestedModel = LEARNING_PROVIDER_CONFIG.pro.model
 
   if (!keyConfigured) {
+    console.info('[learning:diagnostics:deepseek]', JSON.stringify({ keyConfigured, resultCategory: 'deterministic_not_configured', traceId: requestId }))
     return NextResponse.json({
       keyConfigured,
       liveRequestAttempted: false,
@@ -37,6 +38,7 @@ export async function GET() {
       'Respond only with strict JSON: {"ok": true}.',
       'Diagnostic ping — respond with the exact JSON shape requested.'
     )
+    console.info('[learning:diagnostics:deepseek]', JSON.stringify({ keyConfigured, resultCategory: 'deepseek_live', traceId: requestId }))
     return NextResponse.json({
       keyConfigured,
       liveRequestAttempted: true,
@@ -45,7 +47,8 @@ export async function GET() {
       resultCategory: 'deepseek_live',
       traceId: requestId,
     })
-  } catch {
+  } catch (err) {
+    console.info('[learning:diagnostics:deepseek]', JSON.stringify({ keyConfigured, resultCategory: 'deterministic_unavailable', traceId: requestId, errorName: err instanceof Error ? err.name : 'unknown' }))
     return NextResponse.json({
       keyConfigured,
       liveRequestAttempted: true,

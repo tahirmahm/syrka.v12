@@ -69,6 +69,9 @@ export async function POST(request: Request) {
 
   if (representation.decision.renderer === 'syrka_visual') {
     const semanticResult = await proposeSemanticVisual(view)
+    // Safe operational visibility only — resultCategory/auth-boolean/trace id,
+    // never the key, prompt content, or provider response body.
+    console.info('[learning:visualize] syrka_visual', JSON.stringify(semanticResult.trace))
     return NextResponse.json({
       renderer: 'syrka_visual',
       decision: representation.decision,
