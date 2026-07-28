@@ -91,14 +91,20 @@ export function selectRepresentationDeterministic(input: RepresentationInput): R
 
   // Only "Formal vs. informal credit" is actually graphable (repayment burden vs. rate/term/principal).
   // "Functions of money" (eco-3-1) is a conceptual explanation, not a quantitative relationship — routing
-  // it to Desmos was itself a defect, distinct from (but related to) the earlier keyword-fragment defect.
+  // it to a graph was itself a defect, distinct from (but related to) the earlier keyword-fragment defect.
+  // Mafs (a real learner-manipulable graph — draggable inspector point, live parameter controls) is the
+  // primary teaching interaction here; a static Desmos embed with no prediction/transfer sequence around
+  // it was found insufficient on its own and is no longer the primary renderer for this concept.
   if (subject === 'economics' && view.conceptId === 'ncert-concept-eco-3-2') {
-    alternativesConsidered.push({ renderer: 'syrka_visual', rejectedBecause: 'A composed infographic cannot show how repayment burden scales continuously with rate and term — this needs a real graph.' })
+    alternativesConsidered.push(
+      { renderer: 'syrka_visual', rejectedBecause: 'A composed infographic cannot show how repayment burden scales continuously with rate and term — this needs a real graph.' },
+      { renderer: 'desmos', rejectedBecause: 'A bare graphing calculator has no built-in predict/manipulate/explain/transfer sequence and no learner-facing prediction point on the curve — the concept needs the full interaction, not just an equation view.' }
+    )
     return {
-      renderer: 'desmos',
-      reason: 'Formal vs. informal credit involves a genuinely graphable relationship (repayment burden vs. rate/term/principal).',
+      renderer: 'mafs_graph',
+      reason: 'Formal vs. informal credit involves a genuinely graphable, learner-manipulable relationship (repayment burden vs. rate/term/principal) — principal, both rates and the repayment period are all directly controllable, with a draggable inspector point on the curve.',
       alternativesConsidered,
-      expectedLearnerSignal: 'Correctly predicts how burden changes as one variable is adjusted.',
+      expectedLearnerSignal: 'Correctly predicts which credit source costs more, explains why the gap widens over time, then estimates a new formal/informal comparison without the graph.',
       mandatory: true,
     }
   }

@@ -74,6 +74,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ renderer: 'custom_interactive', decision: representation.decision, generationSource: representation.generationSource })
   }
 
+  if (representation.decision.renderer === 'mafs_graph') {
+    // Same pattern as custom_interactive: the client resolves which specific
+    // Mafs interactive to render from conceptId. This branch was previously
+    // missing entirely, which silently fell through to the syrka_visual
+    // semantic pipeline below regardless of the router's actual decision —
+    // the concept always rendered the generic comparison template instead
+    // of the graph.
+    return NextResponse.json({ renderer: 'mafs_graph', decision: representation.decision, generationSource: representation.generationSource })
+  }
+
   // syrka_visual, structured_text, excalidraw (not yet integrated), or any
   // unrecognised value all resolve to the real semantic-visual pipeline —
   // never a generic graph.
