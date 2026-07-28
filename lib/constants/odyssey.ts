@@ -45,6 +45,10 @@ export const MILESTONE_TYPE_LABELS: Record<OdysseyMilestoneType, string> = {
   credential: 'Credential',
   career_milestone: 'Career milestone',
   human_review: 'Human review',
+  chapter_progress: 'Chapter progress',
+  revision: 'Revision',
+  transfer_task: 'Transfer task',
+  evidence_mission: 'Evidence mission',
 }
 
 export const REASONING_FACTOR_LABELS: Record<OdysseyRecommendationFactorType, string> = {

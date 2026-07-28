@@ -26,6 +26,13 @@ export type OdysseyMilestoneType =
   | 'credential'
   | 'career_milestone'
   | 'human_review'
+  // Added for the NCERT Class X curriculum-progression pathway (Odyssey
+  // product correction) — a chapter/concept-level unit of progress is not
+  // well described by 'course'/'module', which are university-scoped.
+  | 'chapter_progress'
+  | 'revision'
+  | 'transfer_task'
+  | 'evidence_mission'
 
 export type OdysseyMilestoneStatus =
   | 'recommended'
@@ -80,6 +87,18 @@ export interface OdysseyMilestone {
   blockedReason?: string
   /** What completing this milestone would change. */
   completionImpact: string
+
+  /**
+   * Curriculum-progression-pathway fields (Odyssey product correction) —
+   * present only on milestones grounded in a real canonical NCERT chapter,
+   * never invented for career-pathway milestones. `subjectLane` groups
+   * milestones into the four collapsible subject lanes in the roadmap
+   * view; `learningRoute` links directly to the canonical chapter page
+   * (/student/learning/[spaceId]/[chapterId]) rather than duplicating its
+   * content here.
+   */
+  subjectLane?: string
+  learningRoute?: { spaceId: string; chapterId: string }
 }
 
 export type OdysseyActionType =
@@ -190,6 +209,7 @@ export type OdysseyResourceType =
   | 'mentor'
   | 'faculty_support'
   | 'institutional_service'
+  | 'chapter'
 
 /** A canonical, institution-provided resource DeepSeek may select from — never invented. */
 export interface OdysseyInstitutionalResource {
@@ -202,10 +222,34 @@ export interface OdysseyInstitutionalResource {
   deliveryMode?: string
 }
 
+/**
+ * What kind of pathway Odyssey is planning toward — the Odyssey product
+ * correction's central distinction. A secondary/Class-X learner's default
+ * pathway is 'curriculum_progression'; 'career_pathway' (the original
+ * university-oriented behaviour, preserved unchanged) only activates when
+ * the learner's stage supports it and a destination is explicitly chosen.
+ */
+export type OdysseyPathwayType = 'curriculum_progression' | 'capability_development' | 'academic_exploration' | 'career_pathway'
+
+export type OdysseyEducationStage = 'secondary_class_10' | 'university'
+
 export interface OdysseyDestination {
   id: string
   title: string
   description: string
+  pathwayType: OdysseyPathwayType
+}
+
+/**
+ * The stage-aware framing Odyssey plans within — never inferred from a
+ * job title. Drives which fixture set the deterministic planner draws
+ * from and what the destination-planning form offers.
+ */
+export interface OdysseyLearnerStageContext {
+  stage: OdysseyEducationStage
+  curriculumLabel: string
+  institutionLabel: string
+  defaultPathwayType: OdysseyPathwayType
 }
 
 export type OdysseyPlanVersionTrigger =
