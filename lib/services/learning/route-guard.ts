@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server'
 import { isLearningAuthoringEnabled } from './authoring-gate'
 import { resolveLearningActor, type LearningActor } from './actor'
-// Side-effect import: runs the security validators unconditionally wherever this guard is loaded — see validate-learning-security.ts.
-import '@/lib/validation/validate-learning-security'
+// Repository/security validators run as standalone scripts (npm run validate:*), never imported
+// here — a filesystem-scanning module in the request graph crashes on Vercel's serverless runtime,
+// which does not bundle the full repo source tree. See scripts/validate-learning-security.mjs and
+// scripts/validate-no-mermaid.mjs.
 
 export type LearningGuardResult = { ok: true; actor: LearningActor } | { ok: false; response: NextResponse }
 

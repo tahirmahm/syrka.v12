@@ -184,7 +184,7 @@ export default function NcertChapterPage({ params }: { params: { spaceId: string
 
           <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Transfer question: {chapter.transferQuestion}</p>
 
-          {adaptiveView && <AdaptiveLearningSection view={adaptiveView} />}
+          {adaptiveView && <AdaptiveLearningSection view={adaptiveView} chapterTitle={chapter.title} />}
 
           <div className="mt-2 flex items-center justify-between border-t border-campus-border pt-4">
             {chapter.prevChapter ? (

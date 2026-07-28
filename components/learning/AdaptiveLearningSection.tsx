@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { CheckCircle, Circle, ClockCounterClockwise, Sparkle } from '@phosphor-icons/react/dist/ssr'
 import { Badge } from '@/components/ui/Badge'
 import { EvidencePipelineVisual } from '@/components/learning/visualizations/EvidencePipelineVisual'
+import { SessionTimelineSequence } from '@/components/learning/visuals/SessionTimelineSequence'
 import { formatDate } from '@/lib/utilities/format-relative-time'
 import type { AdaptiveChapterView } from '@/lib/utilities/adaptive-learning-projection'
 
@@ -26,7 +27,7 @@ const MEMORY_KIND_LABEL: Record<string, string> = {
  * structured memory (never raw transcript), and the existing Learning
  * Intelligence pipeline extended with an AI-use disclosure.
  */
-export function AdaptiveLearningSection({ view }: { view: AdaptiveChapterView }) {
+export function AdaptiveLearningSection({ view, chapterTitle }: { view: AdaptiveChapterView; chapterTitle: string }) {
   const [expandedSession, setExpandedSession] = useState<number>(view.sessions.length)
   const latestSession = view.sessions[view.sessions.length - 1]
 
@@ -39,6 +40,21 @@ export function AdaptiveLearningSection({ view }: { view: AdaptiveChapterView })
             Development timeline — {view.conceptTitle}
           </h3>
         </div>
+        <div className="mb-5">
+          <SessionTimelineSequence
+            chapterTitle={chapterTitle}
+            conceptTitle={view.conceptTitle}
+            stages={view.sessions.map((session) => ({
+              id: `session-${session.sessionNumber}`,
+              label: session.goal,
+              date: formatDate(session.startedAt),
+              independenceLevel: session.strategyLabel,
+              activity: session.activity,
+              response: session.studentResponse,
+            }))}
+          />
+        </div>
+        <p className="mb-3 font-campus-sans text-campus-xs text-campus-muted">Full session-by-session detail — expand any entry below.</p>
         <ol className="flex flex-col gap-0">
           {view.sessions.map((session, i) => {
             const isExpanded = expandedSession === session.sessionNumber

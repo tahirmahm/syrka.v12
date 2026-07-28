@@ -2,12 +2,66 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 import { SyrkaIntelligenceState } from '@/components/intelligence/SyrkaIntelligenceState'
 import { Badge } from '@/components/ui/Badge'
+import { Skeleton } from '@/components/ui/Skeleton'
 import type { NcertConceptWorkbenchView } from '@/lib/utilities/ncert-curriculum-projection'
 import { evaluateConceptResponse, type ConceptTutorSessionState } from '@/lib/services/learning/concept-tutor-engine'
 import { ConceptTutorPanel } from './ConceptTutorPanel'
+import { EconomicsCreditSimulator } from './visuals/EconomicsCreditSimulator'
+import { FarmingClassificationInteractive } from './visuals/FarmingClassificationInteractive'
+import { HorizontalVerticalPowerSharingVisual } from './visuals/HorizontalVerticalPowerSharingVisual'
+import { Terrain3DVisual } from './visuals/Terrain3DVisual'
+import { VisualGenerationState } from './visuals/VisualGenerationState'
+import { SyrkaVisualComposer } from './visuals/syrka/SyrkaVisualComposer'
+import type { Learning3DVisualSpec } from '@/lib/campus-types/learning-3d-visual-spec'
+import type { VisualNarrative } from '@/lib/campus-types/semantic-concept-model'
+
+/**
+ * Mafs (the interactive-graph library) must never ship in the shared
+ * bundle for all 52 concept routes — only the specific concept that uses
+ * it should pay that weight. Dynamically imported, same pattern as
+ * Terrain3DVisual's own lazy R3F scene.
+ */
+const CreditRepaymentGraph = dynamic(() => import('./visuals/graph/CreditRepaymentGraph').then((m) => m.CreditRepaymentGraph), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[420px] w-full" />,
+})
+
+/** A secondary bespoke interactive shown alongside the primary visual — see ADR §12 for why the other three subjects are not yet covered. */
+const HAS_BESPOKE_INTERACTIVE = new Set(['ncert-concept-eco-3-2'])
+
+/** Bespoke interactives that ARE the primary visual (representation-router.ts selects renderer 'custom_interactive' for these conceptIds). */
+const CUSTOM_INTERACTIVE_COMPONENT: Record<string, () => JSX.Element> = {
+  'ncert-concept-geo-4-2': FarmingClassificationInteractive,
+  'ncert-concept-pol-1-1': HorizontalVerticalPowerSharingVisual,
+}
+
+/**
+ * Restrained Student-facing labels only — never a trace id, a fallback
+ * reason, or "attempted and failed" wording in the ordinary lesson (see
+ * docs/adr/LEARN-002-adaptive-visual-learning-system.md). The full
+ * diagnostic detail (resultCategory, keyConfigured, requestId) stays in
+ * server logs and the Preview-only /api/learning/diagnostics/deepseek
+ * route, never rendered here.
+ */
+const STUDENT_RESULT_LABEL: Record<string, string> = {
+  deepseek_live: 'Generated with DeepSeek V4-Pro',
+  deepseek_cached: 'Generated with DeepSeek V4-Pro · cached',
+  deterministic_unavailable: 'Syrka fallback used',
+  deterministic_not_configured: 'Syrka fallback used',
+}
+
+interface VisualiseResult {
+  renderer: 'syrka_visual' | 'desmos' | 'mafs_graph' | 'three_scene' | 'custom_interactive'
+  generationSource: string
+  decision?: { reason: string; alternativesConsidered: { renderer: string; rejectedBecause: string }[] }
+  threeSpec?: Learning3DVisualSpec
+  narrative?: VisualNarrative
+  semanticTrace?: { requestId: string; keyConfigured: boolean; liveRequestAttempted: boolean; authenticationSucceeded: boolean | null; requestedModel: string; resultCategory: string }
+}
 
 export interface ConceptWorkbenchProps {
   view: NcertConceptWorkbenchView
@@ -34,7 +88,36 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
   const [tryEvaluation, setTryEvaluation] = useState<ReturnType<typeof evaluateConceptResponse>>()
   const [testEvaluation, setTestEvaluation] = useState<ReturnType<typeof evaluateConceptResponse>>()
   const [diagnosing, setDiagnosing] = useState(false)
+  const [visualPhase, setVisualPhase] = useState<'idle' | 'requesting' | 'awaiting' | 'composing'>('idle')
+  const [visualResult, setVisualResult] = useState<VisualiseResult>()
+  const [visualError, setVisualError] = useState(false)
   const reduceMotion = useReducedMotionSafe()
+
+  async function handleVisualiseThis() {
+    setVisualPhase('requesting')
+    setVisualError(false)
+    try {
+      const device = typeof window !== 'undefined' && window.innerWidth < 768 ? 'mobile' : 'desktop'
+      // 'requesting' is real for the moment the request is constructed; once
+      // the fetch is actually in flight we honestly relabel to 'awaiting' — no
+      // fixed fake timer, just the true before/after of the one network call.
+      const requestPromise = fetch('/api/learning/visualize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ spaceId: view.spaceId, chapterId: view.chapterId, conceptId: view.conceptId, intent: 'concept_map', device }),
+      })
+      setVisualPhase('awaiting')
+      const res = await requestPromise
+      if (!res.ok) throw new Error('request failed')
+      setVisualPhase('composing')
+      const data = (await res.json()) as VisualiseResult
+      setVisualResult(data)
+    } catch {
+      setVisualError(true)
+    } finally {
+      setVisualPhase('idle')
+    }
+  }
 
   function submitTry() {
     setDiagnosing(true)
@@ -132,9 +215,58 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
               </div>
             )}
             <p className="mt-3 font-campus-mono text-[10px] text-campus-muted">Source: {view.citation.bookTitle}, p.{view.citation.page}</p>
-            <button type="button" onClick={() => setStep('try')} className="mt-4 rounded-campus-sm bg-campus-ink-950 px-4 py-2 font-campus-sans text-campus-sm font-medium text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950">
-              Start activity
-            </button>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <button type="button" onClick={() => setStep('try')} className="rounded-campus-sm bg-campus-ink-950 px-4 py-2 font-campus-sans text-campus-sm font-medium text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950">
+                Start activity
+              </button>
+              {!visualResult && visualPhase === 'idle' && (
+                <button type="button" onClick={handleVisualiseThis} className="rounded-campus-sm border border-campus-border px-3 py-2 font-campus-sans text-campus-sm text-campus-text hover:bg-campus-surface-raised">
+                  Visualise this
+                </button>
+              )}
+            </div>
+
+            {visualPhase !== 'idle' && (
+              <div className="mt-4">
+                <VisualGenerationState phase={visualPhase} />
+              </div>
+            )}
+            {visualError && (
+              <p className="mt-4 font-campus-sans text-campus-xs text-campus-amber-600 dark:text-campus-amber-dark">Could not build a visual right now — the explanation above still covers this concept fully.</p>
+            )}
+            {visualResult && (
+              <div className="mt-4 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Visualise this</p>
+                  {visualResult.semanticTrace && (
+                    <Badge tone="neutral">{STUDENT_RESULT_LABEL[visualResult.semanticTrace.resultCategory] ?? 'Syrka fallback used'}</Badge>
+                  )}
+                </div>
+                {visualResult.decision && (
+                  <p className="font-campus-sans text-campus-xs text-campus-muted">
+                    Why this representation: {visualResult.decision.reason}
+                  </p>
+                )}
+                {visualResult.renderer === 'syrka_visual' && visualResult.narrative ? (
+                  <SyrkaVisualComposer narrative={visualResult.narrative} />
+                ) : visualResult.renderer === 'three_scene' && visualResult.threeSpec ? (
+                  <Terrain3DVisual spec={visualResult.threeSpec} />
+                ) : visualResult.renderer === 'mafs_graph' && view.conceptId === 'ncert-concept-eco-3-2' ? (
+                  <CreditRepaymentGraph />
+                ) : visualResult.renderer === 'custom_interactive' && CUSTOM_INTERACTIVE_COMPONENT[view.conceptId] ? (
+                  (() => {
+                    const Component = CUSTOM_INTERACTIVE_COMPONENT[view.conceptId]
+                    return <Component />
+                  })()
+                ) : null}
+              </div>
+            )}
+
+            {HAS_BESPOKE_INTERACTIVE.has(view.conceptId) && (
+              <div className="mt-4">
+                <EconomicsCreditSimulator />
+              </div>
+            )}
           </div>
         )}
 
