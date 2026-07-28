@@ -94,7 +94,7 @@ export function CampusOdysseyPreview() {
           <div className="h-6 w-px bg-campus-border" aria-hidden="true" />
           <div className="flex items-center gap-2 px-2">
             <FlagCheckered size={16} className="text-campus-blue-600 dark:text-campus-blue-dark" aria-hidden="true" />
-            <span className="font-campus-sans text-campus-sm font-semibold text-campus-text">Data Scientist</span>
+            <span className="font-campus-sans text-campus-sm font-semibold text-campus-text">Curriculum foundations</span>
           </div>
         </div>
       </div>
