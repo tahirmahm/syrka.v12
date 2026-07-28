@@ -16,8 +16,19 @@ import { OdysseyMilestoneInspector } from './OdysseyMilestoneInspector'
 import { OdysseyGenerateForm } from './OdysseyGenerateForm'
 import { OdysseyReplanInput } from './OdysseyReplanInput'
 import { OdysseyVersionCompare } from './OdysseyVersionCompare'
+import { OdysseyCapabilityView } from './OdysseyCapabilityView'
+import { OdysseyFutureDirectionsView, type OdysseyFutureDirectionEntry } from './OdysseyFutureDirectionsView'
+import { Drawer } from '@/components/campus/Drawer'
 
 type ActivePanel = 'none' | 'generate' | 'replan' | 'compare'
+/**
+ * Odyssey product correction §6 — "Curriculum" replaces "Roadmap" as the
+ * primary/default view label (same graph component underneath; mobile
+ * still auto-switches to the vertical tree exactly as before). "Capability"
+ * and "Future directions" are new. "List" remains the accessible
+ * alternative, now with subject-lane grouping when the plan has it.
+ */
+type ViewMode = 'curriculum' | 'capability' | 'future' | 'list'
 
 export interface OdysseyWorkspaceProps {
   headerSummary: ReactNode
@@ -30,6 +41,8 @@ export interface OdysseyWorkspaceProps {
   versions: OdysseyPlanVersion[]
   milestoneTitlesByVersion: Record<string, Record<string, string>>
   institutionalResources: OdysseyInstitutionalResource[]
+  futureDirections: OdysseyFutureDirectionEntry[]
+  missingSubjects: string[]
 }
 
 /**
@@ -51,12 +64,14 @@ export function OdysseyWorkspace({
   versions,
   milestoneTitlesByVersion,
   institutionalResources,
+  futureDirections,
+  missingSubjects,
 }: OdysseyWorkspaceProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [viewMode, setViewMode] = useState<'graph' | 'list' | 'tree'>('graph')
+  const [viewMode, setViewMode] = useState<ViewMode>('curriculum')
   const [isMobile, setIsMobile] = useState(false)
   const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | undefined>(searchParams.get('milestone') ?? undefined)
   const [activePanel, setActivePanel] = useState<ActivePanel>('none')
@@ -64,16 +79,15 @@ export function OdysseyWorkspace({
   const [hideCompleted, setHideCompleted] = useState(false)
   const [focusActive, setFocusActive] = useState(false)
 
+  const [narrowScreen, setNarrowScreen] = useState(false)
+
   useEffect(() => {
-    // A purpose-built vertical tree is the mobile default — never the
-    // graph (its pan/zoom canvas doesn't suit a narrow screen) and never
-    // List (that stays an explicit accessibility alternative, not an
-    // automatic fallback). Suggested once, on initial load only, so an
-    // in-page resize (including a transient one, e.g. from a full-page
-    // screenshot tool) never silently strands or un-strands the student
-    // mid-session.
-    if (window.innerWidth < 768) setViewMode('tree')
+    // Curriculum stays the selected view on mobile — only its rendering
+    // switches from the pan/zoom graph to the purpose-built vertical tree
+    // (narrowScreen below), never List (that stays an explicit
+    // accessibility alternative, not an automatic fallback).
     function checkViewport() {
+      setNarrowScreen(window.innerWidth < 768)
       setIsMobile(window.innerWidth < 1024)
     }
     checkViewport()
@@ -102,7 +116,7 @@ export function OdysseyWorkspace({
         {headerSummary}
         <div className="flex flex-wrap items-center gap-2">
           <Button size="sm" onClick={() => setActivePanel(activePanel === 'generate' ? 'none' : 'generate')}>
-            {hasCurrentPlan ? 'Change destination' : 'Generate Odyssey'}
+            {hasCurrentPlan ? 'Adjust plan' : 'Rebuild academic path'}
           </Button>
           {hasCurrentPlan && (
             <Button size="sm" variant="secondary" onClick={() => setActivePanel(activePanel === 'replan' ? 'none' : 'replan')}>
@@ -114,22 +128,30 @@ export function OdysseyWorkspace({
               Compare versions
             </Button>
           )}
-          <div className="inline-flex rounded-campus-sm border border-campus-border" role="group" aria-label="Roadmap view">
+          <div className="inline-flex rounded-campus-sm border border-campus-border" role="group" aria-label="Odyssey view">
             <button
               type="button"
-              aria-pressed={viewMode === 'graph'}
-              onClick={() => setViewMode('graph')}
-              className={`rounded-l-campus-sm px-3 py-1.5 font-campus-sans text-campus-sm ${viewMode === 'graph' ? 'bg-campus-ink-950 text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950' : 'text-campus-text hover:bg-campus-surface-raised'}`}
+              aria-pressed={viewMode === 'curriculum'}
+              onClick={() => setViewMode('curriculum')}
+              className={`rounded-l-campus-sm px-3 py-1.5 font-campus-sans text-campus-sm ${viewMode === 'curriculum' ? 'bg-campus-ink-950 text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950' : 'text-campus-text hover:bg-campus-surface-raised'}`}
             >
-              Roadmap
+              Curriculum
             </button>
             <button
               type="button"
-              aria-pressed={viewMode === 'tree'}
-              onClick={() => setViewMode('tree')}
-              className={`px-3 py-1.5 font-campus-sans text-campus-sm ${viewMode === 'tree' ? 'bg-campus-ink-950 text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950' : 'text-campus-text hover:bg-campus-surface-raised'}`}
+              aria-pressed={viewMode === 'capability'}
+              onClick={() => setViewMode('capability')}
+              className={`px-3 py-1.5 font-campus-sans text-campus-sm ${viewMode === 'capability' ? 'bg-campus-ink-950 text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950' : 'text-campus-text hover:bg-campus-surface-raised'}`}
             >
-              Tree
+              Capability
+            </button>
+            <button
+              type="button"
+              aria-pressed={viewMode === 'future'}
+              onClick={() => setViewMode('future')}
+              className={`px-3 py-1.5 font-campus-sans text-campus-sm ${viewMode === 'future' ? 'bg-campus-ink-950 text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950' : 'text-campus-text hover:bg-campus-surface-raised'}`}
+            >
+              Future directions
             </button>
             <button
               type="button"
@@ -147,16 +169,17 @@ export function OdysseyWorkspace({
         <div
           role="status"
           className={`mx-auto flex w-full max-w-6xl items-start justify-between gap-3 rounded-campus-md border p-3 font-campus-sans text-campus-sm ${
-            bannerResult.status === 'success'
-              ? 'border-campus-green-600 text-campus-green-600 dark:border-campus-green-dark dark:text-campus-green-dark'
-              : bannerResult.status === 'fallback'
-                ? 'border-campus-amber-600 text-campus-amber-600 dark:border-campus-amber-dark dark:text-campus-amber-dark'
-                : 'border-campus-red-600 text-campus-red-600 dark:border-campus-red-dark dark:text-campus-red-dark'
+            bannerResult.status === 'success' || bannerResult.status === 'fallback'
+              ? 'border-campus-border text-campus-text'
+              : 'border-campus-red-600 text-campus-red-600 dark:border-campus-red-dark dark:text-campus-red-dark'
           }`}
         >
           <span>
             {bannerResult.status === 'success' && bannerResult.meta?.generationSource === 'deepseek' && (
               <span className="mr-1.5 font-campus-mono text-[10px] uppercase tracking-wide">AI-generated Odyssey ·</span>
+            )}
+            {bannerResult.status === 'fallback' && (
+              <span className="mr-1.5 font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Deterministic demonstration plan ·</span>
             )}
             {bannerResult.message}
           </span>
@@ -166,11 +189,14 @@ export function OdysseyWorkspace({
         </div>
       )}
 
+      <Drawer open={activePanel === 'generate'} onClose={() => setActivePanel('none')} ariaLabel={hasCurrentPlan ? 'Adjust plan' : 'Rebuild academic path'} side="right">
+        <OdysseyGenerateForm defaultDestinationTitle={destinationTitle} onResult={setBannerResult} onClose={() => setActivePanel('none')} />
+      </Drawer>
+      <Drawer open={activePanel === 'replan'} onClose={() => setActivePanel('none')} ariaLabel="Replan" side="right">
+        <OdysseyReplanInput onResult={setBannerResult} onClose={() => setActivePanel('none')} />
+      </Drawer>
+
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
-        {activePanel === 'generate' && (
-          <OdysseyGenerateForm defaultDestinationTitle={destinationTitle} onResult={setBannerResult} onClose={() => setActivePanel('none')} />
-        )}
-        {activePanel === 'replan' && <OdysseyReplanInput onResult={setBannerResult} onClose={() => setActivePanel('none')} />}
         {activePanel === 'compare' && (
           <OdysseyVersionCompare versions={versions} milestoneTitlesByVersion={milestoneTitlesByVersion} onClose={() => setActivePanel('none')} />
         )}
@@ -178,7 +204,7 @@ export function OdysseyWorkspace({
 
       <div className={`grid gap-4 px-0 md:px-4 ${selectedResolved && !isMobile ? 'lg:grid-cols-[minmax(0,1fr)_380px]' : 'lg:grid-cols-1'}`}>
         <div className="min-w-0">
-          {viewMode === 'graph' && (
+          {viewMode === 'curriculum' && !narrowScreen && (
             <OdysseyRoadmapLoader
               nodes={nodes}
               edges={edges}
@@ -190,9 +216,11 @@ export function OdysseyWorkspace({
               onToggleFocusActive={() => setFocusActive((v) => !v)}
             />
           )}
-          {viewMode === 'tree' && (
+          {viewMode === 'curriculum' && narrowScreen && (
             <OdysseyMobileTree nodes={nodes} selectedMilestoneId={selectedMilestoneId} onSelectMilestone={selectMilestone} />
           )}
+          {viewMode === 'capability' && <OdysseyCapabilityView orderedResolved={orderedResolved} />}
+          {viewMode === 'future' && <OdysseyFutureDirectionsView directions={futureDirections} missingSubjects={missingSubjects} />}
           {viewMode === 'list' && (
             <OdysseyTextualRoadmap orderedResolved={orderedResolved} recommendedNextId={recommendedNextId} onSelectMilestone={selectMilestone} />
           )}

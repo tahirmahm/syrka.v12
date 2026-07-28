@@ -21,10 +21,19 @@ import type {
  * 'fallback_typed' throughout, never disguised as AI-generated.
  */
 
+/**
+ * The original university-stage career-pathway fixture — preserved
+ * unchanged (Odyssey product correction §2 explicitly requires this
+ * architecture not be deleted), but no longer wired as the default for
+ * the Class X demonstration student. See lib/mock-data/odyssey-class10-
+ * seed.ts for the new default, and lib/repositories/odyssey-repository.ts
+ * for how a studentId now selects between the two.
+ */
 export const odysseyDestination: OdysseyDestination = {
   id: 'dest-1',
   title: 'Data Scientist',
   description: 'A role combining statistical reasoning, data modeling, and applied machine learning to draw actionable conclusions from data.',
+  pathwayType: 'career_pathway',
 }
 
 export const odysseyInstitutionalResources: OdysseyInstitutionalResource[] = [

@@ -12,6 +12,23 @@ import { currentUser } from '@/lib/mock-data/seed'
 import { getActiveMilestone } from '@/lib/utilities/odyssey'
 import { orderMilestonesForDisplay, resolveMilestones } from '@/lib/utilities/odyssey-detail'
 import { buildOdysseyRoadmap } from '@/lib/utilities/odyssey-projection'
+import { getNcertSubjects, getNcertChapterView } from '@/lib/utilities/ncert-curriculum-projection'
+import type { OdysseyFutureDirectionEntry } from '@/components/odyssey/OdysseyFutureDirectionsView'
+
+const NOT_YET_SUPPLIED_SUBJECTS = ['Mathematics', 'Science', 'History']
+
+/** Built once from the four supplied subjects' first chapter's Capability advisory text — never a career prediction, always paired with the missing-subjects disclosure. */
+function buildFutureDirections(): OdysseyFutureDirectionEntry[] {
+  return getNcertSubjects()
+    .map((subject) => {
+      const firstChapter = subject.chapters[0]
+      if (!firstChapter) return undefined
+      const view = getNcertChapterView(subject.spaceId, firstChapter.chapterId)
+      if (!view) return undefined
+      return { subject: subject.subject, capabilityName: view.capability.name, advisory: view.capability.pathwayAdvisory }
+    })
+    .filter((d): d is OdysseyFutureDirectionEntry => Boolean(d))
+}
 
 export const metadata = { title: 'Odyssey — Syrka Campus' }
 // This page reads from the in-memory Odyssey plan-version store, which
@@ -85,14 +102,14 @@ export default async function StudentOdysseyPage() {
 
   const headerSummary = (
     <div className="max-w-2xl">
-      <p className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Destination</p>
+      <p className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Academic path</p>
       <h2 className="font-campus-sans text-campus-xl font-semibold text-campus-text">{destination.title}</h2>
       <p className="mt-1 font-campus-sans text-campus-sm text-campus-text">{currentPlanVersion.title} — {currentPlanVersion.reasoningSummary}</p>
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
         <Badge tone="neutral">Version {currentPlanVersion.version}</Badge>
         <Badge tone="blue">Recommendation confidence: {currentPlanVersion.recommendationConfidence}</Badge>
         {currentPlanVersion.providerStatus === 'ai_generated' && <Badge tone="green">AI-generated Odyssey</Badge>}
-        {currentPlanVersion.providerStatus === 'fallback_typed' && <Badge tone="amber">Demonstration fallback plan</Badge>}
+        {currentPlanVersion.providerStatus === 'fallback_typed' && <Badge tone="neutral">Deterministic demonstration plan</Badge>}
         {currentPlanVersion.providerStatus === 'previous_preserved' && <Badge tone="neutral">Previous plan retained</Badge>}
       </div>
     </div>
@@ -121,6 +138,8 @@ export default async function StudentOdysseyPage() {
         versions={allVersions}
         milestoneTitlesByVersion={milestoneTitlesByVersion}
         institutionalResources={institutionalResources}
+        futureDirections={buildFutureDirections()}
+        missingSubjects={NOT_YET_SUPPLIED_SUBJECTS}
       />
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">

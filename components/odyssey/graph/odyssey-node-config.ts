@@ -26,6 +26,10 @@ import {
   XCircle,
   Archive,
   ProhibitInset,
+  BookOpenText,
+  ArrowCounterClockwise,
+  ArrowsLeftRight,
+  FileText,
 } from '@phosphor-icons/react/dist/ssr'
 import type { OdysseyMilestoneType, OdysseyMilestoneStatus } from '@/lib/campus-types'
 
@@ -49,6 +53,10 @@ export const MILESTONE_TYPE_VISUALS: Record<OdysseyMilestoneType, MilestoneTypeV
   credential: { icon: Certificate, accentClass: 'text-campus-text' },
   career_milestone: { icon: FlagCheckered, accentClass: 'text-campus-green-600 dark:text-campus-green-dark' },
   human_review: { icon: UserCheck, accentClass: 'text-campus-amber-600 dark:text-campus-amber-dark' },
+  chapter_progress: { icon: BookOpenText, accentClass: 'text-campus-text' },
+  revision: { icon: ArrowCounterClockwise, accentClass: 'text-campus-amber-600 dark:text-campus-amber-dark' },
+  transfer_task: { icon: ArrowsLeftRight, accentClass: 'text-campus-text' },
+  evidence_mission: { icon: FileText, accentClass: 'text-campus-text' },
 }
 
 export const MILESTONE_STATUS_BORDER: Record<OdysseyMilestoneStatus, string> = {
