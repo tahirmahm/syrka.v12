@@ -22,6 +22,7 @@
     "@tailwindcss/forms": "^0.5.11",
     "@xyflow/react": "^12.11.2",
     "animejs": "^4.5.0",
+    "dompurify": "^3.4.12",
     "echarts": "^6.0.0",
     "echarts-for-react": "^3.0.6",
     "framer-motion": "^12.38.0",
@@ -29,6 +30,7 @@
     "jspdf": "^4.2.1",
     "lucide-react": "^1.7.0",
     "mammoth": "^1.12.0",
+    "mermaid": "^11.16.0",
     "next": "14.2.35",
     "openai": "^6.33.0",
     "pdf-parse": "^2.4.5",
@@ -38,6 +40,7 @@
     "thinking-orbs": "^0.1.1"
   },
   "devDependencies": {
+    "@types/dompurify": "^3.0.5",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^18",
