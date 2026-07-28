@@ -125,10 +125,10 @@ export function FarmingClassificationInteractive() {
       <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Interactive — comparison and classification</p>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[720px] border-collapse text-left">
+        <table className="w-full border-collapse text-left">
           <thead>
             <tr>
-              <th className="w-40 border-b border-campus-border pb-2 font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Criterion</th>
+              <th className="w-28 border-b border-campus-border pb-2 font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Criterion</th>
               {(Object.keys(FARMING_TYPE_LABEL) as FarmingType[]).map((type) => (
                 <th key={type} className="border-b border-campus-border pb-2 pl-4 font-campus-sans text-campus-sm font-medium text-campus-text">
                   {FARMING_TYPE_LABEL[type]}
