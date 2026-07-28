@@ -27,6 +27,19 @@ export function selectRepresentationDeterministic(input: RepresentationInput): R
 
   const subject = view.subject.toLowerCase()
 
+  if (view.chapterId === 'ncert-chapter-geo-1' && view.conceptId === 'ncert-concept-geo-1-2') {
+    alternativesConsidered.push(
+      { renderer: 'mermaid', rejectedBecause: 'A flat concept map cannot show how extraction pressure in one parcel compounds runoff into a neighbouring one over time — this is a spatial, layered relationship.' },
+      { renderer: 'custom_react', rejectedBecause: 'A 2D diagram can show classification but not the terrain-level spatial relationship between soil, extraction and long-term degradation that this concept is actually about.' }
+    )
+    return {
+      renderer: 'three_scene',
+      reason: 'Land degradation here is a spatial, layered process across neighbouring parcels — a rotatable terrain model that responds to a chosen extraction level demonstrates the runoff relationship more directly than a flat diagram.',
+      alternativesConsidered,
+      expectedLearnerSignal: 'Predicts and explains how extraction intensity and conservation choice change long-term soil productivity across regions, without the animated guidance present.',
+    }
+  }
+
   if (subject === 'economics' && view.chapterId === 'ncert-chapter-eco-3') {
     alternativesConsidered.push({ renderer: 'mermaid', rejectedBecause: 'A concept map cannot show how repayment burden scales continuously with rate and term — this needs a real graph.' })
     return {
