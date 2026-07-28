@@ -106,7 +106,7 @@ export function EconomicsCreditSimulator() {
           )}
 
           <button type="button" onClick={() => setShowDesmos((v) => !v)} className="mt-1 self-start font-campus-sans text-campus-xs font-medium text-campus-blue-600 hover:underline dark:text-campus-blue-dark">
-            {showDesmos ? 'Hide' : 'Show'} the repayment-burden graph
+            {showDesmos ? 'Hide' : 'Open'} calculator view (optional — the interactive graph above already covers this comparison)
           </button>
           {showDesmos && <DesmosLearningGraph {...getEconomicsRepaymentDesmosConfig()} />}
         </div>

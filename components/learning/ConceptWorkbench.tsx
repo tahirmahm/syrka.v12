@@ -2,22 +2,33 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { useReducedMotionSafe } from '@/components/motion/useReducedMotionSafe'
 import { SyrkaIntelligenceState } from '@/components/intelligence/SyrkaIntelligenceState'
 import { Badge } from '@/components/ui/Badge'
+import { Skeleton } from '@/components/ui/Skeleton'
 import type { NcertConceptWorkbenchView } from '@/lib/utilities/ncert-curriculum-projection'
 import { evaluateConceptResponse, type ConceptTutorSessionState } from '@/lib/services/learning/concept-tutor-engine'
 import { ConceptTutorPanel } from './ConceptTutorPanel'
-import { DesmosLearningGraph } from './visuals/DesmosLearningGraph'
 import { EconomicsCreditSimulator } from './visuals/EconomicsCreditSimulator'
 import { FarmingClassificationInteractive } from './visuals/FarmingClassificationInteractive'
 import { HorizontalVerticalPowerSharingVisual } from './visuals/HorizontalVerticalPowerSharingVisual'
 import { Terrain3DVisual } from './visuals/Terrain3DVisual'
 import { VisualGenerationState } from './visuals/VisualGenerationState'
 import { SyrkaVisualComposer } from './visuals/syrka/SyrkaVisualComposer'
-import { getEconomicsRepaymentDesmosConfig } from '@/lib/services/learning/economics-desmos-config'
 import type { Learning3DVisualSpec } from '@/lib/campus-types/learning-3d-visual-spec'
 import type { VisualNarrative } from '@/lib/campus-types/semantic-concept-model'
+
+/**
+ * Mafs (the interactive-graph library) must never ship in the shared
+ * bundle for all 52 concept routes — only the specific concept that uses
+ * it should pay that weight. Dynamically imported, same pattern as
+ * Terrain3DVisual's own lazy R3F scene.
+ */
+const CreditRepaymentGraph = dynamic(() => import('./visuals/graph/CreditRepaymentGraph').then((m) => m.CreditRepaymentGraph), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[420px] w-full" />,
+})
 
 /** A secondary bespoke interactive shown alongside the primary visual — see ADR §12 for why the other three subjects are not yet covered. */
 const HAS_BESPOKE_INTERACTIVE = new Set(['ncert-concept-eco-3-2'])
@@ -44,7 +55,7 @@ const STUDENT_RESULT_LABEL: Record<string, string> = {
 }
 
 interface VisualiseResult {
-  renderer: 'syrka_visual' | 'desmos' | 'three_scene' | 'custom_interactive'
+  renderer: 'syrka_visual' | 'desmos' | 'mafs_graph' | 'three_scene' | 'custom_interactive'
   generationSource: string
   decision?: { reason: string; alternativesConsidered: { renderer: string; rejectedBecause: string }[] }
   threeSpec?: Learning3DVisualSpec
@@ -240,8 +251,8 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
                   <SyrkaVisualComposer narrative={visualResult.narrative} />
                 ) : visualResult.renderer === 'three_scene' && visualResult.threeSpec ? (
                   <Terrain3DVisual spec={visualResult.threeSpec} />
-                ) : visualResult.renderer === 'desmos' ? (
-                  <DesmosLearningGraph {...getEconomicsRepaymentDesmosConfig()} />
+                ) : visualResult.renderer === 'mafs_graph' && view.conceptId === 'ncert-concept-eco-3-2' ? (
+                  <CreditRepaymentGraph />
                 ) : visualResult.renderer === 'custom_interactive' && CUSTOM_INTERACTIVE_COMPONENT[view.conceptId] ? (
                   (() => {
                     const Component = CUSTOM_INTERACTIVE_COMPONENT[view.conceptId]

@@ -100,14 +100,14 @@ export function DesmosLearningGraph({ title, description, expressions, viewport,
     <div className="flex flex-col gap-3 rounded-campus-md border border-campus-border bg-campus-surface p-4">
       <div className="flex items-center justify-between gap-2">
         <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">{title}</p>
-        {state === 'unavailable' && <Badge tone="neutral">Desmos not configured</Badge>}
-        {state === 'error' && <Badge tone="amber">Desmos unavailable</Badge>}
+        {state === 'unavailable' && <Badge tone="neutral">Calculator not configured</Badge>}
+        {state === 'error' && <Badge tone="amber">Calculator unavailable</Badge>}
       </div>
       <p className="font-campus-sans text-campus-sm text-campus-text">{description}</p>
 
       {state === 'unavailable' || state === 'error' ? (
         <p className="font-campus-sans text-campus-xs text-campus-muted">
-          The interactive graph {state === 'unavailable' ? 'is not configured in this environment' : 'could not be loaded right now'} — see the table below instead.
+          The calculator view {state === 'unavailable' ? 'is not configured in this environment' : 'could not be loaded right now'} — see the table below instead.
         </p>
       ) : (
         <>
