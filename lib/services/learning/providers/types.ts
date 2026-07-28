@@ -9,6 +9,14 @@ import type { LearningVisualSpec, LearningVisualIntent, LearningVisualRenderer }
  */
 export type LearningGenerationSource = 'deepseek_v4_pro' | 'deepseek_v4_flash' | 'deterministic_fallback'
 
+/**
+ * The 4 honest states a Student-facing badge may ever show for a
+ * DeepSeek-backed surface — never a plain "no live AI called" string
+ * when a key is genuinely configured (see semantic-visual-provider.ts
+ * for the same scheme applied to visual generation).
+ */
+export type LearningResultCategory = 'deepseek_live' | 'deepseek_cached' | 'deterministic_unavailable' | 'deterministic_not_configured'
+
 export type LearningProviderErrorKind = 'unavailable' | 'timeout' | 'rate_limited' | 'malformed_response' | 'unknown'
 
 export class LearningProviderError extends Error {
@@ -33,6 +41,7 @@ export interface DiagnoseResult {
   diagnosis: string
   likelyMisconception?: string
   recommendedNextMove: 'reteach' | 'smaller_hint' | 'change_representation' | 'proceed_to_test' | 'proceed_to_transfer'
+  trace: ProviderTrace
 }
 
 export type NextMoveInput = ConceptContext
@@ -79,6 +88,7 @@ export interface PlanStep {
 export interface PlanResult {
   generationSource: LearningGenerationSource
   steps: PlanStep[]
+  trace: ProviderTrace
 }
 export interface LearningPlanProvider {
   generatePlan(input: { horizon: 'interaction' | 'session' | 'week' | 'chapter' | 'term'; candidates: PlanStepInput[] }): Promise<PlanResult>
@@ -123,6 +133,9 @@ export interface ProviderTrace {
   requestId: string
   attemptedLiveCall: boolean
   fallbackReason?: LearningProviderErrorKind
+  /** Additive — the 4-state honest category, where the call site populates it. */
+  keyConfigured?: boolean
+  resultCategory?: LearningResultCategory
 }
 
 export interface VisualSpecProposalResult {

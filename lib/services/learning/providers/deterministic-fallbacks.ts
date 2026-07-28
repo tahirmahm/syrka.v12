@@ -28,6 +28,7 @@ export const deterministicTutorReasoningProvider: TutorReasoningProvider = {
         : input.sessionState.hintsUsedCount > 0
           ? 'change_representation'
           : 'smaller_hint',
+      trace: { requestId: `tr-${crypto.randomUUID()}`, attemptedLiveCall: false },
     }
   },
   async decideNextMove(input: NextMoveInput): Promise<NextMoveResult> {
@@ -135,6 +136,6 @@ export const deterministicLearningPlanProvider: LearningPlanProvider = {
       evidenceImplication: c.evidenceImplication,
       odysseyImplication: c.odysseyImplication,
     }))
-    return { generationSource: 'deterministic_fallback', steps }
+    return { generationSource: 'deterministic_fallback', steps, trace: { requestId: `lp-${crypto.randomUUID()}`, attemptedLiveCall: false } }
   },
 }

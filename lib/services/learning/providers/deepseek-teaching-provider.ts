@@ -22,8 +22,18 @@ import type {
  * validateVisualSpec()/basic shape checks. No method can return a result
  * claiming a model call succeeded when it actually fell back.
  */
+
+/** Per-warm-instance cache only (see semanticVisualCache in semantic-visual-provider.ts for the same disclosure). */
+const planCache = new Map<string, PlanStep[]>()
+
 export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPlanProvider & AssessmentPlanningProvider & VisualPlanningProvider & RepresentationSelectionProvider = {
   async diagnoseResponse(input: DiagnoseInput): Promise<DiagnoseResult> {
+    const requestId = `tr-${crypto.randomUUID()}`
+    const keyConfigured = Boolean(process.env.DEEPSEEK_API_KEY)
+    if (!keyConfigured) {
+      const fallback = await deterministicTutorReasoningProvider.diagnoseResponse(input)
+      return { ...fallback, trace: { requestId, attemptedLiveCall: false, keyConfigured, resultCategory: 'deterministic_not_configured' } }
+    }
     try {
       const system = 'You are Syrka\'s deterministic-first pedagogical diagnostician for an NCERT Class X student. Respond only with strict JSON: {"diagnosis": string, "likelyMisconception": string | null, "recommendedNextMove": "reteach" | "smaller_hint" | "change_representation" | "proceed_to_test" | "proceed_to_transfer"}. Never invent curriculum facts beyond what is given.'
       const user = JSON.stringify({
@@ -36,9 +46,18 @@ export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPla
       const raw = await callLearningDeepSeek(LEARNING_PROVIDER_CONFIG.pro, system, user)
       const r = raw as Partial<DiagnoseResult>
       if (!r.diagnosis || !r.recommendedNextMove) throw new Error('malformed')
-      return { generationSource: 'deepseek_v4_pro', diagnosis: r.diagnosis, likelyMisconception: r.likelyMisconception ?? undefined, recommendedNextMove: r.recommendedNextMove }
+      console.info('[learning:tutor] diagnoseResponse', JSON.stringify({ keyConfigured, resultCategory: 'deepseek_live', requestId }))
+      return {
+        generationSource: 'deepseek_v4_pro',
+        diagnosis: r.diagnosis,
+        likelyMisconception: r.likelyMisconception ?? undefined,
+        recommendedNextMove: r.recommendedNextMove,
+        trace: { requestId, attemptedLiveCall: true, keyConfigured, resultCategory: 'deepseek_live' },
+      }
     } catch {
-      return deterministicTutorReasoningProvider.diagnoseResponse(input)
+      console.info('[learning:tutor] diagnoseResponse', JSON.stringify({ keyConfigured, resultCategory: 'deterministic_unavailable', requestId }))
+      const fallback = await deterministicTutorReasoningProvider.diagnoseResponse(input)
+      return { ...fallback, trace: { requestId, attemptedLiveCall: true, keyConfigured, resultCategory: 'deterministic_unavailable' } }
     }
   },
 
@@ -56,6 +75,20 @@ export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPla
   },
 
   async generatePlan(input): Promise<PlanResult> {
+    const requestId = `lp-${crypto.randomUUID()}`
+    const keyConfigured = Boolean(process.env.DEEPSEEK_API_KEY)
+    const cacheKey = `${input.horizon}:${input.candidates.map((c) => c.conceptHref).join(',')}`
+
+    if (!keyConfigured) {
+      const fallback = await deterministicLearningPlanProvider.generatePlan(input)
+      return { ...fallback, trace: { requestId, attemptedLiveCall: false, keyConfigured, resultCategory: 'deterministic_not_configured' } }
+    }
+
+    const cached = planCache.get(cacheKey)
+    if (cached) {
+      return { generationSource: 'deepseek_v4_pro', steps: cached, trace: { requestId, attemptedLiveCall: false, keyConfigured, resultCategory: 'deepseek_cached' } }
+    }
+
     try {
       // Only the narrative/pedagogical fields are asked of DeepSeek — routing
       // facts (conceptHref, previousObservation, evidenceImplication,
@@ -86,9 +119,13 @@ export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPla
           odysseyImplication: c.odysseyImplication,
         }
       })
-      return { generationSource: 'deepseek_v4_pro', steps }
+      planCache.set(cacheKey, steps)
+      console.info('[learning:plan] generatePlan', JSON.stringify({ keyConfigured, resultCategory: 'deepseek_live', requestId }))
+      return { generationSource: 'deepseek_v4_pro', steps, trace: { requestId, attemptedLiveCall: true, keyConfigured, resultCategory: 'deepseek_live' } }
     } catch {
-      return deterministicLearningPlanProvider.generatePlan(input)
+      console.info('[learning:plan] generatePlan', JSON.stringify({ keyConfigured, resultCategory: 'deterministic_unavailable', requestId }))
+      const fallback = await deterministicLearningPlanProvider.generatePlan(input)
+      return { ...fallback, trace: { requestId, attemptedLiveCall: true, keyConfigured, resultCategory: 'deterministic_unavailable' } }
     }
   },
 

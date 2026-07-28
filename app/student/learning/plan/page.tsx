@@ -17,10 +17,11 @@ const HORIZONS: { value: PlanHorizon; label: string }[] = [
   { value: 'term', label: 'This term' },
 ]
 
-const GENERATION_SOURCE_LABEL: Record<string, string> = {
-  deepseek_v4_pro: 'DeepSeek V4-Pro',
-  deepseek_v4_flash: 'DeepSeek V4-Flash',
-  deterministic_fallback: 'Deterministic (no live AI called)',
+const RESULT_CATEGORY_LABEL: Record<string, string> = {
+  deepseek_live: 'Generated with DeepSeek V4-Pro',
+  deepseek_cached: 'Generated with DeepSeek V4-Pro · cached',
+  deterministic_unavailable: 'DeepSeek unavailable · Syrka fallback',
+  deterministic_not_configured: 'AI provider not configured · Syrka fallback',
 }
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -43,7 +44,7 @@ export default async function StudentLearningPlanPage({ searchParams }: { search
         title="Learning Plan"
         subtitle={getPlanHorizonSummary(horizon)}
         breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Learning', href: '/student/learning' }, { label: 'Plan' }]} />}
-        actions={<Badge tone="neutral">{GENERATION_SOURCE_LABEL[plan.generationSource]}</Badge>}
+        actions={<Badge tone="neutral">{RESULT_CATEGORY_LABEL[plan.trace.resultCategory ?? 'deterministic_not_configured']}</Badge>}
       />
 
       <FilterBar
