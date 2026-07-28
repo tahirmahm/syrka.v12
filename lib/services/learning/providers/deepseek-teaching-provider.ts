@@ -8,7 +8,7 @@ import {
 } from './deterministic-fallbacks'
 import type {
   TutorReasoningProvider, LearningPlanProvider, AssessmentPlanningProvider, VisualPlanningProvider, RepresentationSelectionProvider,
-  DiagnoseInput, DiagnoseResult, NextMoveInput, NextMoveResult, PlanResult, AssessmentDesignInput, AssessmentDesignResult,
+  DiagnoseInput, DiagnoseResult, NextMoveInput, NextMoveResult, PlanResult, PlanStep, AssessmentDesignInput, AssessmentDesignResult,
   EvaluateInput, EvaluateResult, VisualSpecInput, VisualSpecProposalResult, RepresentationInput, RepresentationResult,
 } from './types'
 
@@ -56,12 +56,36 @@ export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPla
 
   async generatePlan(input): Promise<PlanResult> {
     try {
-      const system = 'You are Syrka\'s personalised-plan generator for an NCERT Class X student. Respond only with strict JSON: {"steps": [{"subject": string, "chapterTitle": string, "conceptTitle": string, "action": string, "reason": string, "expectedDurationMinutes": number, "plannedRepresentation": "mermaid"|"desmos"|"custom_react"|"structured_text", "assessmentPurpose": string, "permittedSupport": string, "expectedSignal": string, "replanningTrigger": string}]}. Ground every step in the candidate given — never invent a concept not listed.'
-      const user = JSON.stringify(input.candidates)
+      // Only the narrative/pedagogical fields are asked of DeepSeek — routing
+      // facts (conceptHref, previousObservation, evidenceImplication,
+      // odysseyImplication) come from our own data below, never from the model.
+      const system = 'You are Syrka\'s personalised-plan generator for an NCERT Class X student. Respond only with strict JSON: {"steps": [{"action": string, "reason": string, "expectedDurationMinutes": number, "plannedRepresentation": "mermaid"|"desmos"|"custom_react"|"structured_text", "assessmentPurpose": string, "permittedSupport": string, "expectedSignal": string, "replanningTrigger": string}]}. Return exactly one step per candidate, in the same order given. Ground every step in the candidate given — never invent a concept not listed.'
+      const user = JSON.stringify(input.candidates.map((c) => ({ subject: c.subject, chapterTitle: c.chapterTitle, conceptTitle: c.conceptTitle, reasonSignal: c.reasonSignal })))
       const raw = await callLearningDeepSeek(LEARNING_PROVIDER_CONFIG.pro, system, user)
-      const r = raw as Partial<PlanResult>
-      if (!Array.isArray(r.steps) || r.steps.length === 0) throw new Error('malformed')
-      return { generationSource: 'deepseek_v4_pro', steps: r.steps }
+      const r = raw as { steps?: Partial<PlanStep>[] }
+      if (!Array.isArray(r.steps) || r.steps.length !== input.candidates.length) throw new Error('malformed')
+      const steps: PlanStep[] = r.steps.map((s, i) => {
+        const c = input.candidates[i]
+        if (!s.action || !s.reason || !s.assessmentPurpose) throw new Error('malformed step')
+        return {
+          subject: c.subject,
+          chapterTitle: c.chapterTitle,
+          conceptTitle: c.conceptTitle,
+          conceptHref: c.conceptHref,
+          action: s.action,
+          reason: s.reason,
+          previousObservation: c.previousObservation,
+          expectedDurationMinutes: s.expectedDurationMinutes ?? 12,
+          plannedRepresentation: s.plannedRepresentation ?? 'mermaid',
+          assessmentPurpose: s.assessmentPurpose,
+          permittedSupport: s.permittedSupport ?? 'Smallest useful hint, on request only.',
+          expectedSignal: s.expectedSignal ?? 'Independent transfer without hints.',
+          replanningTrigger: s.replanningTrigger ?? 'A second hint is needed, or the transfer attempt fails.',
+          evidenceImplication: c.evidenceImplication,
+          odysseyImplication: c.odysseyImplication,
+        }
+      })
+      return { generationSource: 'deepseek_v4_pro', steps }
     } catch {
       return deterministicLearningPlanProvider.generatePlan(input)
     }

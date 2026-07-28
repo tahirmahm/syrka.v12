@@ -35,7 +35,7 @@ export interface DiagnoseResult {
   recommendedNextMove: 'reteach' | 'smaller_hint' | 'change_representation' | 'proceed_to_test' | 'proceed_to_transfer'
 }
 
-export interface NextMoveInput extends ConceptContext {}
+export type NextMoveInput = ConceptContext
 export interface NextMoveResult {
   generationSource: LearningGenerationSource
   nextMove: string
@@ -53,20 +53,28 @@ export interface PlanStepInput {
   subject: string
   chapterTitle: string
   conceptTitle: string
+  conceptHref: string
   reasonSignal: string
+  previousObservation: string
+  evidenceImplication: string
+  odysseyImplication: string
 }
 export interface PlanStep {
   subject: string
   chapterTitle: string
   conceptTitle: string
+  conceptHref: string
   action: string
   reason: string
+  previousObservation: string
   expectedDurationMinutes: number
   plannedRepresentation: LearningVisualRenderer
   assessmentPurpose: string
   permittedSupport: string
   expectedSignal: string
   replanningTrigger: string
+  evidenceImplication: string
+  odysseyImplication: string
 }
 export interface PlanResult {
   generationSource: LearningGenerationSource

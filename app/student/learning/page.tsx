@@ -32,6 +32,11 @@ export default function StudentLearningPage() {
         title="Learning"
         subtitle="A Learning Intelligence view of your active coursework — demonstration content, deterministic and reviewable, not live student data."
         breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Learning' }]} />}
+        actions={
+          <Link href="/student/learning/plan" className="flex items-center gap-1 rounded-campus-sm border border-campus-border px-3 py-1.5 font-campus-sans text-campus-sm text-campus-text hover:bg-campus-surface-raised">
+            View my plan <ArrowRight size={14} aria-hidden="true" />
+          </Link>
+        }
       />
 
       {/* Active Learning Space */}

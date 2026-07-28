@@ -122,14 +122,18 @@ export const deterministicLearningPlanProvider: LearningPlanProvider = {
       subject: c.subject,
       chapterTitle: c.chapterTitle,
       conceptTitle: c.conceptTitle,
+      conceptHref: c.conceptHref,
       action: `Continue "${c.conceptTitle}"`,
       reason: c.reasonSignal,
+      previousObservation: c.previousObservation,
       expectedDurationMinutes: 12,
       plannedRepresentation: 'mermaid',
       assessmentPurpose: 'Check whether the concept transfers to a new, unpractised scenario.',
       permittedSupport: 'Smallest useful hint, on request only.',
       expectedSignal: 'Independent transfer without hints.',
       replanningTrigger: 'A second hint is needed, or the transfer attempt fails.',
+      evidenceImplication: c.evidenceImplication,
+      odysseyImplication: c.odysseyImplication,
     }))
     return { generationSource: 'deterministic_fallback', steps }
   },
