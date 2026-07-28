@@ -10,6 +10,8 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { mockCapabilityRepository, mockEvidenceRepository, mockOdysseyRepository } from '@/lib/repositories'
 import { currentUser } from '@/lib/mock-data/seed'
 import { formatDate, formatRelativeTime } from '@/lib/utilities/format-relative-time'
+import { getStudentIdentity } from '@/lib/utilities/student-identity-projection'
+import { getClassXCapability, CLASS_X_CAPABILITY_IDS } from '@/lib/utilities/class10-capability-projection'
 
 export async function generateMetadata({ params }: { params: { capabilityId: string } }) {
   const definition = await mockCapabilityRepository.getDefinition(params.capabilityId)
@@ -18,6 +20,69 @@ export async function generateMetadata({ params }: { params: { capabilityId: str
 }
 
 export default async function CapabilityDetailPage({ params }: { params: { capabilityId: string } }) {
+  const identity = getStudentIdentity(currentUser.id)
+  if (identity.stage === 'secondary_class_10') {
+    if (!CLASS_X_CAPABILITY_IDS.includes(params.capabilityId)) notFound()
+    const capability = getClassXCapability(params.capabilityId)
+    if (!capability) notFound()
+
+    return (
+      <div className="mx-auto flex max-w-2xl flex-col gap-6">
+        <PageHeader
+          title={capability.name}
+          subtitle={capability.domain}
+          breadcrumbs={<Breadcrumbs items={[{ label: 'Dashboard', href: '/student' }, { label: 'Capabilities', href: '/student/capabilities' }, { label: capability.name }]} />}
+          actions={<Badge tone={capability.state === 'not_yet_observed' ? 'neutral' : 'green'}>{capability.stateLabel}</Badge>}
+        />
+
+        <Panel className="flex flex-col gap-3">
+          <p className="font-campus-sans text-campus-sm text-campus-text">{capability.description}</p>
+          {capability.lastDemonstratedAt && (
+            <p className="font-campus-mono text-campus-xs text-campus-muted">
+              Last demonstrated {formatDate(capability.lastDemonstratedAt)} ({formatRelativeTime(capability.lastDemonstratedAt)})
+            </p>
+          )}
+          <p className="font-campus-sans text-campus-xs text-campus-amber-600 dark:text-campus-amber-dark">{capability.limitations}</p>
+        </Panel>
+
+        <section aria-labelledby="supporting-heading">
+          <h2 id="supporting-heading" className="mb-3 font-campus-sans text-campus-lg font-medium text-campus-text">
+            Supporting concepts
+          </h2>
+          {capability.supportingConcepts.length === 0 ? (
+            <EmptyState title="Not yet observed" description="No Learning Observation has produced Evidence for this capability yet — start a concept in this subject to begin." />
+          ) : (
+            <div className="flex flex-col gap-2">
+              {capability.supportingConcepts.map((c) => (
+                <Link key={`${c.chapterId}-${c.conceptTitle}`} href={`/student/learning/${c.spaceId}/${c.chapterId}`}>
+                  <Panel className="flex items-center justify-between gap-3 p-4">
+                    <div>
+                      <p className="font-campus-sans text-campus-sm font-medium text-campus-text">{c.conceptTitle}</p>
+                      <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">{c.subject} — {c.chapterTitle}</p>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      {c.transferDemonstrated && <Badge tone="green">Transfer demonstrated</Badge>}
+                      {c.facultyReviewed && <Badge tone="blue">Faculty reviewed</Badge>}
+                    </div>
+                  </Panel>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <Panel>
+          <p className="font-campus-mono text-campus-xs uppercase tracking-wide text-campus-muted">Odyssey and Career Passport</p>
+          <p className="mt-1 font-campus-sans text-campus-sm text-campus-text">
+            {capability.state === 'not_yet_observed'
+              ? 'No Odyssey preparedness signal or Passport claim exists yet for this capability.'
+              : 'This reviewed Evidence is what moved your Odyssey preparedness signal and supports a Career Passport claim — see Odyssey and Career Passport for the full trace.'}
+          </p>
+        </Panel>
+      </div>
+    )
+  }
+
   const definition = await mockCapabilityRepository.getDefinition(params.capabilityId)
   if (!definition) notFound()
 
