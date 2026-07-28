@@ -256,7 +256,10 @@ export function buildStudentLearningProjection(): StudentLearningProjection {
     trajectory,
     independenceCounts,
     evidencePipeline,
-    odysseyConnection: { milestoneId: 'ms-2', milestoneTitle: 'Advance Data Modeling to Proficient', capabilityName: 'Data Modeling' },
+    // No real Odyssey milestone in this demonstration is keyed to Science/
+    // Chemical reactions and equations — leaving this undefined rather than
+    // reusing the old university "Data Modeling" milestone connection.
+    odysseyConnection: undefined,
   }
 }
 
