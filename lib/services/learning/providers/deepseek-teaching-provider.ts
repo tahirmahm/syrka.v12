@@ -1,32 +1,30 @@
-import { LEARNING_VISUAL_SPEC_SCHEMA_VERSION, type LearningVisualSpec } from '@/lib/campus-types/learning-visual-spec'
-import { validateVisualSpec } from '@/lib/services/learning/visual-spec-validator'
+import { isLearningRenderer } from '@/lib/campus-types/learning-renderer'
 import { selectRepresentationDeterministic } from '@/lib/services/learning/representation-router'
 import { callLearningDeepSeek, LEARNING_PROVIDER_CONFIG } from './deepseek-call'
 import {
-  deterministicTutorReasoningProvider, deterministicAssessmentPlanningProvider,
-  deterministicVisualPlanningProvider, deterministicLearningPlanProvider,
+  deterministicTutorReasoningProvider, deterministicAssessmentPlanningProvider, deterministicLearningPlanProvider,
 } from './deterministic-fallbacks'
-import { LearningProviderError } from './types'
 import type {
-  TutorReasoningProvider, LearningPlanProvider, AssessmentPlanningProvider, VisualPlanningProvider, RepresentationSelectionProvider,
+  TutorReasoningProvider, LearningPlanProvider, AssessmentPlanningProvider, RepresentationSelectionProvider,
   DiagnoseInput, DiagnoseResult, NextMoveInput, NextMoveResult, PlanResult, PlanStep, AssessmentDesignInput, AssessmentDesignResult,
-  EvaluateInput, EvaluateResult, VisualSpecInput, VisualSpecProposalResult, RepresentationInput, RepresentationResult,
+  EvaluateInput, EvaluateResult, RepresentationInput, RepresentationResult,
 } from './types'
 
 /**
  * LEARN-002 §4 — deepseek-v4-pro, thinking-mode-appropriate operations:
- * diagnosis, planning, assessment design/evaluation, VisualSpec proposal,
- * representation comparison. Every method wraps its DeepSeek call in a
- * try/catch that falls back to the proven deterministic implementation on
- * any error — timeout, rate limit, or a response that fails
- * validateVisualSpec()/basic shape checks. No method can return a result
- * claiming a model call succeeded when it actually fell back.
+ * diagnosis, planning, assessment design/evaluation, representation
+ * comparison. Every method wraps its DeepSeek call in a try/catch that
+ * falls back to the proven deterministic implementation on any error —
+ * timeout, rate limit, or a malformed response. No method can return a
+ * result claiming a model call succeeded when it actually fell back.
+ * DeepSeek is never offered a generic node-edge graph renderer as a
+ * choice — see lib/campus-types/learning-renderer.ts.
  */
 
 /** Per-warm-instance cache only (see semanticVisualCache in semantic-visual-provider.ts for the same disclosure). */
 const planCache = new Map<string, PlanStep[]>()
 
-export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPlanProvider & AssessmentPlanningProvider & VisualPlanningProvider & RepresentationSelectionProvider = {
+export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPlanProvider & AssessmentPlanningProvider & RepresentationSelectionProvider = {
   async diagnoseResponse(input: DiagnoseInput): Promise<DiagnoseResult> {
     const requestId = `tr-${crypto.randomUUID()}`
     const keyConfigured = Boolean(process.env.DEEPSEEK_API_KEY)
@@ -93,7 +91,9 @@ export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPla
       // Only the narrative/pedagogical fields are asked of DeepSeek — routing
       // facts (conceptHref, previousObservation, evidenceImplication,
       // odysseyImplication) come from our own data below, never from the model.
-      const system = 'You are Syrka\'s personalised-plan generator for an NCERT Class X student. Respond only with strict JSON: {"steps": [{"action": string, "reason": string, "expectedDurationMinutes": number, "plannedRepresentation": "mermaid"|"desmos"|"custom_react"|"structured_text", "assessmentPurpose": string, "permittedSupport": string, "expectedSignal": string, "replanningTrigger": string}]}. Return exactly one step per candidate, in the same order given. Ground every step in the candidate given — never invent a concept not listed.'
+      // plannedRepresentation is restricted to Syrka's own real renderer set —
+      // never a generic node-edge graph engine.
+      const system = 'You are Syrka\'s personalised-plan generator for an NCERT Class X student. Respond only with strict JSON: {"steps": [{"action": string, "reason": string, "expectedDurationMinutes": number, "plannedRepresentation": "syrka_visual"|"custom_interactive"|"desmos"|"three_scene"|"excalidraw"|"structured_text", "assessmentPurpose": string, "permittedSupport": string, "expectedSignal": string, "replanningTrigger": string}]}. Return exactly one step per candidate, in the same order given. Ground every step in the candidate given — never invent a concept not listed.'
       const user = JSON.stringify(input.candidates.map((c) => ({ subject: c.subject, chapterTitle: c.chapterTitle, conceptTitle: c.conceptTitle, reasonSignal: c.reasonSignal })))
       const raw = await callLearningDeepSeek(LEARNING_PROVIDER_CONFIG.pro, system, user)
       const r = raw as { steps?: Partial<PlanStep>[] }
@@ -110,7 +110,7 @@ export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPla
           reason: s.reason,
           previousObservation: c.previousObservation,
           expectedDurationMinutes: s.expectedDurationMinutes ?? 12,
-          plannedRepresentation: s.plannedRepresentation ?? 'mermaid',
+          plannedRepresentation: isLearningRenderer(s.plannedRepresentation) ? s.plannedRepresentation : 'syrka_visual',
           assessmentPurpose: s.assessmentPurpose,
           permittedSupport: s.permittedSupport ?? 'Smallest useful hint, on request only.',
           expectedSignal: s.expectedSignal ?? 'Independent transfer without hints.',
@@ -155,79 +155,18 @@ export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPla
     }
   },
 
-  async proposeVisualSpec(input: VisualSpecInput): Promise<VisualSpecProposalResult> {
-    const requestId = `lvp-${crypto.randomUUID()}`
-    const keyConfigured = Boolean(process.env.DEEPSEEK_API_KEY)
-    try {
-      const system = `You propose a LearningVisualSpec (schemaVersion "${LEARNING_VISUAL_SPEC_SCHEMA_VERSION}") for an NCERT Class X concept map. Respond only with strict JSON matching this shape exactly: {"nodes": [{"id": string, "label": string}], "edges": [{"id": string, "fromNodeId": string, "toNodeId": string, "label": string}], "explanation": string, "altText": string, "structuredTextEquivalent": string}. Maximum 8 nodes, 10 edges. Ground every label in the given concept material only — never invent facts.`
-      const user = JSON.stringify({ concept: input.view.title, description: input.view.description, keyTerms: input.view.keyTerms, citation: input.view.citation })
-      const raw = await callLearningDeepSeek(LEARNING_PROVIDER_CONFIG.pro, system, user)
-      const proposed = raw as { nodes?: LearningVisualSpec['nodes']; edges?: LearningVisualSpec['edges']; explanation?: string; altText?: string; structuredTextEquivalent?: string }
-      const citationText = `${input.view.citation.bookTitle}, p.${input.view.citation.page}`
-      const spec: LearningVisualSpec = {
-        id: `visualspec-${input.view.conceptId}-${Date.now().toString(36)}`,
-        schemaVersion: LEARNING_VISUAL_SPEC_SCHEMA_VERSION,
-        tenantId: input.tenantId,
-        studentId: undefined,
-        curriculumSource: citationText,
-        spaceId: input.view.spaceId,
-        chapterId: input.view.chapterId,
-        conceptId: input.view.conceptId,
-        title: input.view.title,
-        learningObjective: input.view.description,
-        pedagogicalPurpose: 'explain',
-        visualIntent: input.intent,
-        renderer: 'mermaid' as const,
-        orientation: 'horizontal' as const,
-        nodes: proposed.nodes ?? [],
-        edges: proposed.edges ?? [],
-        groups: [],
-        stages: [],
-        annotations: [],
-        controls: { allowPause: true, allowReplay: true, allowStepThrough: false, allowManipulation: false },
-        interactionRules: [],
-        assessmentHooks: [],
-        misconceptionTargets: [],
-        scaffoldLevel: 'full_support' as const,
-        explanation: proposed.explanation ?? input.view.explanation.slice(0, 1000),
-        altText: proposed.altText ?? `A concept map for "${input.view.title}".`,
-        structuredTextEquivalent: proposed.structuredTextEquivalent ?? input.view.title,
-        sourceReferences: [{ citation: citationText }],
-        generatedBy: 'deepseek_v4_pro' as const,
-        validatedBy: 'schema_validator' as const,
-        provenance: { generatedAt: new Date().toISOString(), generationSource: 'deepseek_v4_pro' as const },
-      }
-      const validation = validateVisualSpec(spec)
-      if (!validation.valid) throw new Error(`invalid spec: ${validation.issues.join('; ')}`)
-      return { generationSource: 'deepseek_v4_pro', spec, trace: { requestId, attemptedLiveCall: true } }
-    } catch (error) {
-      const fallbackReason = error instanceof LearningProviderError ? error.kind : keyConfigured ? 'unknown' : undefined
-      const fallback = await deterministicVisualPlanningProvider.proposeVisualSpec(input)
-      return { ...fallback, trace: { requestId, attemptedLiveCall: keyConfigured, fallbackReason } }
-    }
-  },
-
   async selectRepresentation(input: RepresentationInput): Promise<RepresentationResult> {
-    try {
-      const system = 'You choose the best renderer for teaching an NCERT Class X concept from this fixed set: mermaid, desmos, custom_react, structured_text. Respond only with strict JSON: {"renderer": string, "reason": string, "expectedLearnerSignal": string}.'
-      const user = JSON.stringify({ subject: input.view.subject, concept: input.view.title, scaffoldLevel: input.scaffoldLevel, device: input.device, hintsUsed: input.sessionState.hintsUsedCount })
-      const raw = await callLearningDeepSeek(LEARNING_PROVIDER_CONFIG.pro, system, user)
-      const r = raw as { renderer?: string; reason?: string; expectedLearnerSignal?: string }
-      const validRenderers = new Set(['mermaid', 'desmos', 'custom_react', 'custom_canvas', 'excalidraw', 'structured_text', 'static_accessible_fallback'])
-      if (!r.renderer || !validRenderers.has(r.renderer) || !r.reason) throw new Error('malformed')
-      const deterministic = selectRepresentationDeterministic(input)
-      return {
-        generationSource: 'deepseek_v4_pro',
-        decision: {
-          renderer: r.renderer as RepresentationResult['decision']['renderer'],
-          reason: r.reason,
-          alternativesConsidered: deterministic.alternativesConsidered,
-          expectedLearnerSignal: r.expectedLearnerSignal ?? deterministic.expectedLearnerSignal,
-        },
-      }
-    } catch {
-      return { generationSource: 'deterministic_fallback', decision: selectRepresentationDeterministic(input) }
-    }
+    // Renderer eligibility is decided in code, never by a model call. An
+    // authored 3D scene, a graphable relationship, a required
+    // independent-assessment text-only path, and a specific concept's
+    // composed infographic are all mandatory decisions from
+    // selectRepresentationDeterministic() — no live or deterministic
+    // provider may override them. A live model was previously found able
+    // to replace the authored Geography 3D terrain scene (and, before
+    // that, this router's generic-graph-avoidance choices) simply because
+    // its prompt still offered a renderer list to choose from; DeepSeek
+    // is no longer consulted for this field at all.
+    return { generationSource: 'deterministic_fallback', decision: selectRepresentationDeterministic(input) }
   },
 }
 

@@ -16,6 +16,9 @@ const MIN_STAGES = 2
 const MAX_STAGES = 7
 const MIN_PROPOSITION_WORDS = 4
 const MAX_PROPOSITION_LENGTH = 220
+/** Generic connector phrases that describe no actual meaning — the exact defect a rejected Mermaid graph used for every edge. */
+const GENERIC_RELATIONSHIP_LABEL = /^\s*(relates to|related to|connects to|associated with|linked to)\s*$/i
+const MIN_HUB_AND_SPOKE_RELATIONSHIPS = 3
 
 export interface SemanticModelValidationResult {
   valid: boolean
@@ -57,7 +60,28 @@ export function validateSemanticModel(input: unknown): SemanticModelValidationRe
   }
 
   if (model.actors !== undefined && !Array.isArray(model.actors)) issues.push('actors must be an array')
-  if (model.relationships !== undefined && !Array.isArray(model.relationships)) issues.push('relationships must be an array')
+
+  if (model.relationships !== undefined) {
+    if (!Array.isArray(model.relationships)) {
+      issues.push('relationships must be an array')
+    } else {
+      model.relationships.forEach((rel, i) => {
+        if (!rel || typeof rel !== 'object') { issues.push(`relationship ${i} is not an object`); return }
+        if (typeof rel.label !== 'string' || rel.label.trim().length === 0) {
+          issues.push(`relationship ${i} missing label`)
+        } else if (GENERIC_RELATIONSHIP_LABEL.test(rel.label)) {
+          issues.push(`relationship ${i} uses a generic label ("${rel.label}") — every relationship must state its actual meaning, never a placeholder connector`)
+        }
+      })
+      // A hub-and-spoke shape (every relationship starting from the same actor) is exactly the
+      // rejected Mermaid pattern ("distinction" fanning out to four keyword rectangles) — reject
+      // it regardless of which renderer or library would have drawn it.
+      if (model.relationships.length >= MIN_HUB_AND_SPOKE_RELATIONSHIPS) {
+        const fromIds = new Set(model.relationships.map((r) => r?.fromActorId))
+        if (fromIds.size === 1) issues.push('all relationships share the same origin actor — this is a hub-and-spoke shape, not a real relationship narrative')
+      }
+    }
+  }
 
   return { valid: issues.length === 0, issues }
 }

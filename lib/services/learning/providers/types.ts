@@ -1,6 +1,6 @@
 import type { NcertConceptWorkbenchView } from '@/lib/utilities/ncert-curriculum-projection'
 import type { ConceptTutorSessionState } from '@/lib/services/learning/concept-tutor-engine'
-import type { LearningVisualSpec, LearningVisualIntent, LearningVisualRenderer } from '@/lib/campus-types/learning-visual-spec'
+import type { LearningRenderer } from '@/lib/campus-types/learning-renderer'
 
 /**
  * LEARN-002 §3/§4 — every user-visible result carries the model that
@@ -10,10 +10,10 @@ import type { LearningVisualSpec, LearningVisualIntent, LearningVisualRenderer }
 export type LearningGenerationSource = 'deepseek_v4_pro' | 'deepseek_v4_flash' | 'deterministic_fallback'
 
 /**
- * The 4 honest states a Student-facing badge may ever show for a
- * DeepSeek-backed surface — never a plain "no live AI called" string
- * when a key is genuinely configured (see semantic-visual-provider.ts
- * for the same scheme applied to visual generation).
+ * The 4 diagnostic states tracked internally (server logs, Preview-only
+ * diagnostics, Faculty/admin surfaces) for every DeepSeek-backed result.
+ * The ordinary Student lesson never shows this level of detail — see the
+ * restrained 3-label scheme each component derives from this category.
  */
 export type LearningResultCategory = 'deepseek_live' | 'deepseek_cached' | 'deterministic_unavailable' | 'deterministic_not_configured'
 
@@ -29,6 +29,20 @@ export class LearningProviderError extends Error {
 export interface ConceptContext {
   view: NcertConceptWorkbenchView
   sessionState: ConceptTutorSessionState
+}
+
+/**
+ * A safe-to-display trace of what actually happened on this call — never
+ * the API key, never the raw provider error text, only a request id and a
+ * typed error kind — so "a live call was attempted and failed" is
+ * distinguishable from "no key configured" without exposing secrets.
+ */
+export interface ProviderTrace {
+  requestId: string
+  attemptedLiveCall: boolean
+  fallbackReason?: LearningProviderErrorKind
+  keyConfigured?: boolean
+  resultCategory?: LearningResultCategory
 }
 
 // --- TutorReasoningProvider -------------------------------------------------
@@ -77,7 +91,7 @@ export interface PlanStep {
   reason: string
   previousObservation: string
   expectedDurationMinutes: number
-  plannedRepresentation: LearningVisualRenderer
+  plannedRepresentation: LearningRenderer
   assessmentPurpose: string
   permittedSupport: string
   expectedSignal: string
@@ -116,37 +130,6 @@ export interface AssessmentPlanningProvider {
   evaluateResponse(input: EvaluateInput): Promise<EvaluateResult>
 }
 
-// --- VisualPlanningProvider ---------------------------------------------------
-
-export interface VisualSpecInput extends ConceptContext {
-  intent: LearningVisualIntent
-  tenantId: string
-}
-
-/**
- * A safe-to-display trace of what actually happened on this call — never
- * the API key, never the raw provider error text, only a request id and a
- * typed error kind — so "a live call was attempted and failed" is
- * distinguishable from "no key configured" without exposing secrets.
- */
-export interface ProviderTrace {
-  requestId: string
-  attemptedLiveCall: boolean
-  fallbackReason?: LearningProviderErrorKind
-  /** Additive — the 4-state honest category, where the call site populates it. */
-  keyConfigured?: boolean
-  resultCategory?: LearningResultCategory
-}
-
-export interface VisualSpecProposalResult {
-  generationSource: LearningGenerationSource
-  spec: LearningVisualSpec
-  trace: ProviderTrace
-}
-export interface VisualPlanningProvider {
-  proposeVisualSpec(input: VisualSpecInput): Promise<VisualSpecProposalResult>
-}
-
 // --- RepresentationSelectionProvider ------------------------------------------
 
 export interface RepresentationInput extends ConceptContext {
@@ -154,10 +137,19 @@ export interface RepresentationInput extends ConceptContext {
   scaffoldLevel: 'full_support' | 'partial_support' | 'independent'
 }
 export interface RepresentationDecision {
-  renderer: LearningVisualRenderer
+  renderer: LearningRenderer
   reason: string
-  alternativesConsidered: { renderer: LearningVisualRenderer; rejectedBecause: string }[]
+  alternativesConsidered: { renderer: LearningRenderer; rejectedBecause: string }[]
   expectedLearnerSignal: string
+  /**
+   * true means this renderer is a hard, code-owned constraint (an authored
+   * 3D scene, a graphable relationship, a required independent-assessment
+   * text-only path, a specific concept's composed infographic) that no
+   * provider — live or deterministic — may override. A live DeepSeek call
+   * is never even consulted for the renderer field when this is true; see
+   * selectRepresentation() in deepseek-teaching-provider.ts.
+   */
+  mandatory: boolean
 }
 export interface RepresentationResult {
   generationSource: LearningGenerationSource

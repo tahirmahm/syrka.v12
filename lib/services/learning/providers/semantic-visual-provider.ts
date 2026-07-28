@@ -36,6 +36,8 @@ const CANDIDATE_LABEL: Record<string, string> = {
   problem_solution_outcome: 'Problem, intervention, outcome',
   causal_chain: 'Causal sequence',
   actor_exchange: 'Actor exchange',
+  comparison_columns: 'Side-by-side comparison',
+  classification_board: 'Classification board',
 }
 
 function buildNarrativeFromModel(model: SemanticConceptModel, recommendedTemplates: string[], view: NcertConceptWorkbenchView): VisualNarrative {
@@ -93,26 +95,32 @@ export async function proposeSemanticVisual(view: NcertConceptWorkbenchView): Pr
   let authenticationSucceeded: boolean | null = null
   try {
     const system =
-      'You interpret an NCERT Class X concept into a SemanticConceptModel. Respond only with strict JSON: ' +
+      'You interpret an NCERT Class X concept into a SemanticConceptModel that describes educational meaning only — ' +
+      'you never choose a renderer, never emit nodes/edges/graph syntax, never emit visual coordinates, and never emit ' +
+      'executable code. Syrka decides how to render your answer. Respond only with strict JSON: ' +
       '{"centralIdea": string, "stages": [{"id": string, "order": number, "role": "context"|"problem"|"cause"|"mechanism"|"intervention"|"outcome", "proposition": string, "illustrationId": string | null}], ' +
-      '"recommendedTemplates": string[]}. Every "proposition" MUST be a full grounded sentence (at least 5 words) — never a single word or keyword fragment. ' +
+      '"actors": [{"id": string, "label": string, "illustrationId": string | null}], ' +
+      '"relationships": [{"id": string, "fromActorId": string, "toActorId": string, "kind": "gives_to"|"receives_from"|"enables"|"blocks"|"causes"|"compares_to", "label": string}], ' +
+      '"recommendedTemplates": string[]}. actors and relationships are optional — omit them entirely for a concept with no distinct actors (e.g. a pure comparison). ' +
+      'Every "proposition" and every relationship "label" MUST be a full, specific statement of what actually happens or is compared (at least 5 words) — ' +
+      'never a single word, never a generic connector like "relates to" or "connects to". ' +
       'Valid illustrationId values: farmer, shopkeeper, buyer, coins, barter_exchange, document, institution, resource, exchange_arrows, environment, government, evidence, claim, outcome_check (or null). ' +
-      'Valid recommendedTemplates values, most suitable first (up to 3): before_after, problem_solution_outcome, causal_chain, actor_exchange, comparison_columns, cycle, hierarchy, timeline. ' +
-      '3 to 6 stages. Ground every proposition in the given concept material only — never invent facts, never emit HTML, SVG, or code.'
+      'Valid recommendedTemplates values, most suitable first (up to 3): before_after, problem_solution_outcome, causal_chain, actor_exchange, comparison_columns, classification_board, cycle, hierarchy, timeline. ' +
+      '3 to 6 stages. Ground every proposition and relationship in the given concept material only — never invent facts.'
     const user = JSON.stringify({ concept: view.title, description: view.description, explanation: view.explanation.slice(0, 800), keyTerms: view.keyTerms, citation: view.citation })
 
     const raw = await callLearningDeepSeek(LEARNING_PROVIDER_CONFIG.pro, system, user)
     authenticationSucceeded = true
 
-    const parsed = raw as { centralIdea?: string; stages?: unknown; recommendedTemplates?: unknown }
+    const parsed = raw as { centralIdea?: string; stages?: unknown; actors?: unknown; relationships?: unknown; recommendedTemplates?: unknown }
     const model: SemanticConceptModel = {
       schemaVersion: SEMANTIC_CONCEPT_MODEL_SCHEMA_VERSION,
       conceptId: view.conceptId,
       centralIdea: parsed.centralIdea ?? view.title,
       learningObjective: view.description,
       stages: Array.isArray(parsed.stages) ? (parsed.stages as SemanticConceptModel['stages']) : [],
-      actors: [],
-      relationships: [],
+      actors: Array.isArray(parsed.actors) ? (parsed.actors as SemanticConceptModel['actors']) : [],
+      relationships: Array.isArray(parsed.relationships) ? (parsed.relationships as SemanticConceptModel['relationships']) : [],
       generatedBy: 'deepseek_v4_pro',
     }
 

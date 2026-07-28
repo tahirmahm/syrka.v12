@@ -3,6 +3,8 @@ import { isLearningAuthoringEnabled } from './authoring-gate'
 import { resolveLearningActor, type LearningActor } from './actor'
 // Side-effect import: runs the security validators unconditionally wherever this guard is loaded — see validate-learning-security.ts.
 import '@/lib/validation/validate-learning-security'
+// Side-effect import: proves Mermaid and generic node-edge graphs are absent from the runtime — see validate-no-mermaid.ts.
+import '@/lib/validation/validate-no-mermaid'
 
 export type LearningGuardResult = { ok: true; actor: LearningActor } | { ok: false; response: NextResponse }
 

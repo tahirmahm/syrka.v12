@@ -17,11 +17,12 @@ const HORIZONS: { value: PlanHorizon; label: string }[] = [
   { value: 'term', label: 'This term' },
 ]
 
+/** Restrained Student-facing labels — no trace ids or fallback-reason wording in the ordinary lesson. */
 const RESULT_CATEGORY_LABEL: Record<string, string> = {
   deepseek_live: 'Generated with DeepSeek V4-Pro',
   deepseek_cached: 'Generated with DeepSeek V4-Pro · cached',
-  deterministic_unavailable: 'DeepSeek unavailable · Syrka fallback',
-  deterministic_not_configured: 'AI provider not configured · Syrka fallback',
+  deterministic_unavailable: 'Syrka fallback used',
+  deterministic_not_configured: 'Syrka fallback used',
 }
 
 function Row({ label, value }: { label: string; value: string }) {

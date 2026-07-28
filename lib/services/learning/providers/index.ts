@@ -13,7 +13,6 @@ export const learningProviders = {
   tutorReasoning: DeepSeekV4ProTeachingProvider,
   learningPlan: DeepSeekV4ProTeachingProvider,
   assessmentPlanning: DeepSeekV4ProTeachingProvider,
-  visualPlanning: DeepSeekV4ProTeachingProvider,
   representationSelection: DeepSeekV4ProTeachingProvider,
   flashTransformation: DeepSeekV4FlashTransformationProvider,
 }

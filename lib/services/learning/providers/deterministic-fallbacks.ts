@@ -1,10 +1,9 @@
 import { evaluateConceptResponse } from '@/lib/services/learning/concept-tutor-engine'
-import { LEARNING_VISUAL_SPEC_SCHEMA_VERSION, type LearningVisualSpec } from '@/lib/campus-types/learning-visual-spec'
 import { selectRepresentationDeterministic } from '@/lib/services/learning/representation-router'
 import type {
-  TutorReasoningProvider, LearningPlanProvider, AssessmentPlanningProvider, VisualPlanningProvider, RepresentationSelectionProvider,
+  TutorReasoningProvider, LearningPlanProvider, AssessmentPlanningProvider, RepresentationSelectionProvider,
   DiagnoseInput, DiagnoseResult, NextMoveInput, NextMoveResult, PlanStep, PlanResult, AssessmentDesignInput, AssessmentDesignResult,
-  EvaluateInput, EvaluateResult, VisualSpecInput, VisualSpecProposalResult, RepresentationInput, RepresentationResult,
+  EvaluateInput, EvaluateResult, RepresentationInput, RepresentationResult,
 } from './types'
 
 /**
@@ -62,54 +61,6 @@ export const deterministicAssessmentPlanningProvider: AssessmentPlanningProvider
   },
 }
 
-export const deterministicVisualPlanningProvider: VisualPlanningProvider = {
-  async proposeVisualSpec(input: VisualSpecInput): Promise<VisualSpecProposalResult> {
-    const { view, intent, tenantId } = input
-    const nodeCount = Math.min(view.keyTerms.length || 3, 6)
-    const nodes = (view.keyTerms.length ? view.keyTerms : [view.title]).slice(0, nodeCount).map((term, i) => ({
-      id: `n${i}`,
-      label: term,
-    }))
-    const edges = nodes.slice(1).map((n, i) => ({ id: `e${i}`, fromNodeId: nodes[0].id, toNodeId: n.id, label: 'relates to' }))
-    const citationText = `${view.citation.bookTitle}, p.${view.citation.page}`
-
-    const spec: LearningVisualSpec = {
-      id: `visualspec-${view.conceptId}-${Date.now().toString(36)}`,
-      schemaVersion: LEARNING_VISUAL_SPEC_SCHEMA_VERSION,
-      tenantId,
-      studentId: undefined,
-      curriculumSource: citationText,
-      spaceId: view.spaceId,
-      chapterId: view.chapterId,
-      conceptId: view.conceptId,
-      title: view.title,
-      learningObjective: view.description,
-      pedagogicalPurpose: 'explain',
-      visualIntent: intent,
-      renderer: 'mermaid',
-      orientation: 'horizontal',
-      nodes,
-      edges,
-      groups: [],
-      stages: [{ id: 's0', order: 0, label: 'Overview', visibleNodeIds: nodes.map((n) => n.id), visibleEdgeIds: edges.map((e) => e.id), narration: view.explanation.slice(0, 300) }],
-      annotations: [],
-      controls: { allowPause: true, allowReplay: true, allowStepThrough: false, allowManipulation: false },
-      interactionRules: [],
-      assessmentHooks: [],
-      misconceptionTargets: [],
-      scaffoldLevel: 'full_support',
-      explanation: view.explanation.slice(0, 1000),
-      altText: `A concept map for "${view.title}" showing the relationship between ${nodes.map((n) => n.label).join(', ')}.`,
-      structuredTextEquivalent: `${view.title}: ${nodes.map((n) => n.label).join(' → ')}.`,
-      sourceReferences: [{ citation: citationText }],
-      generatedBy: 'deterministic',
-      validatedBy: 'schema_validator',
-      provenance: { generatedAt: new Date().toISOString(), generationSource: 'deterministic' },
-    }
-    return { generationSource: 'deterministic_fallback', spec, trace: { requestId: `lvp-${crypto.randomUUID()}`, attemptedLiveCall: false } }
-  },
-}
-
 export const deterministicRepresentationSelectionProvider: RepresentationSelectionProvider = {
   async selectRepresentation(input: RepresentationInput): Promise<RepresentationResult> {
     const decision = selectRepresentationDeterministic(input)
@@ -128,7 +79,7 @@ export const deterministicLearningPlanProvider: LearningPlanProvider = {
       reason: c.reasonSignal,
       previousObservation: c.previousObservation,
       expectedDurationMinutes: 12,
-      plannedRepresentation: 'mermaid',
+      plannedRepresentation: 'syrka_visual',
       assessmentPurpose: 'Check whether the concept transfers to a new, unpractised scenario.',
       permittedSupport: 'Smallest useful hint, on request only.',
       expectedSignal: 'Independent transfer without hints.',

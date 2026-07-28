@@ -8,9 +8,9 @@ import { Badge } from '@/components/ui/Badge'
 import type { NcertConceptWorkbenchView } from '@/lib/utilities/ncert-curriculum-projection'
 import { evaluateConceptResponse, type ConceptTutorSessionState } from '@/lib/services/learning/concept-tutor-engine'
 import { ConceptTutorPanel } from './ConceptTutorPanel'
-import { MermaidDiagram } from './visuals/MermaidDiagram'
 import { DesmosLearningGraph } from './visuals/DesmosLearningGraph'
 import { EconomicsCreditSimulator } from './visuals/EconomicsCreditSimulator'
+import { FarmingClassificationInteractive } from './visuals/FarmingClassificationInteractive'
 import { Terrain3DVisual } from './visuals/Terrain3DVisual'
 import { VisualGenerationState } from './visuals/VisualGenerationState'
 import { SyrkaVisualComposer } from './visuals/syrka/SyrkaVisualComposer'
@@ -18,31 +18,35 @@ import { getEconomicsRepaymentDesmosConfig } from '@/lib/services/learning/econo
 import type { Learning3DVisualSpec } from '@/lib/campus-types/learning-3d-visual-spec'
 import type { VisualNarrative } from '@/lib/campus-types/semantic-concept-model'
 
-/** The one bespoke subject interactive this pass ships — see ADR §12 for why the other three subjects are not yet covered. */
+/** A secondary bespoke interactive shown alongside the primary visual — see ADR §12 for why the other three subjects are not yet covered. */
 const HAS_BESPOKE_INTERACTIVE = new Set(['ncert-concept-eco-3-2'])
 
-const GENERATION_SOURCE_LABEL: Record<string, string> = {
-  deepseek_v4_pro: 'DeepSeek V4-Pro',
-  deepseek_v4_flash: 'DeepSeek V4-Flash',
-  deterministic_fallback: 'Deterministic (no live AI called)',
+/** Bespoke interactives that ARE the primary visual (representation-router.ts selects renderer 'custom_interactive' for these conceptIds). */
+const CUSTOM_INTERACTIVE_COMPONENT: Record<string, () => JSX.Element> = {
+  'ncert-concept-geo-4-2': FarmingClassificationInteractive,
 }
 
-const SEMANTIC_RESULT_LABEL: Record<string, string> = {
+/**
+ * Restrained Student-facing labels only — never a trace id, a fallback
+ * reason, or "attempted and failed" wording in the ordinary lesson (see
+ * docs/adr/LEARN-002-adaptive-visual-learning-system.md). The full
+ * diagnostic detail (resultCategory, keyConfigured, requestId) stays in
+ * server logs and the Preview-only /api/learning/diagnostics/deepseek
+ * route, never rendered here.
+ */
+const STUDENT_RESULT_LABEL: Record<string, string> = {
   deepseek_live: 'Generated with DeepSeek V4-Pro',
   deepseek_cached: 'Generated with DeepSeek V4-Pro · cached',
-  deterministic_unavailable: 'DeepSeek unavailable · Syrka fallback',
-  deterministic_not_configured: 'AI provider not configured · Syrka fallback',
+  deterministic_unavailable: 'Syrka fallback used',
+  deterministic_not_configured: 'Syrka fallback used',
 }
 
 interface VisualiseResult {
-  renderer: 'syrka_visual' | 'mermaid' | 'desmos' | 'three_scene'
+  renderer: 'syrka_visual' | 'desmos' | 'three_scene' | 'custom_interactive'
   generationSource: string
-  spec?: { title: string; altText: string; structuredTextEquivalent: string }
-  mermaidDefinition?: string
   decision?: { reason: string; alternativesConsidered: { renderer: string; rejectedBecause: string }[] }
   threeSpec?: Learning3DVisualSpec
   narrative?: VisualNarrative
-  trace?: { requestId: string; attemptedLiveCall: boolean; fallbackReason?: string }
   semanticTrace?: { requestId: string; keyConfigured: boolean; liveRequestAttempted: boolean; authenticationSucceeded: boolean | null; requestedModel: string; resultCategory: string }
 }
 
@@ -221,47 +225,26 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
               <div className="mt-4 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Visualise this</p>
-                  <Badge tone="neutral">
-                    {visualResult.semanticTrace
-                      ? SEMANTIC_RESULT_LABEL[visualResult.semanticTrace.resultCategory] ?? visualResult.semanticTrace.resultCategory
-                      : GENERATION_SOURCE_LABEL[visualResult.generationSource] ?? visualResult.generationSource}
-                  </Badge>
+                  {visualResult.semanticTrace && (
+                    <Badge tone="neutral">{STUDENT_RESULT_LABEL[visualResult.semanticTrace.resultCategory] ?? 'Syrka fallback used'}</Badge>
+                  )}
                 </div>
                 {visualResult.decision && (
                   <p className="font-campus-sans text-campus-xs text-campus-muted">
                     Why this representation: {visualResult.decision.reason}
                   </p>
                 )}
-                {visualResult.semanticTrace && (
-                  <p className="font-campus-mono text-[9px] text-campus-faint">
-                    Model: {visualResult.semanticTrace.requestedModel} · Key configured: {visualResult.semanticTrace.keyConfigured ? 'yes' : 'no'} · Live request attempted: {visualResult.semanticTrace.liveRequestAttempted ? 'yes' : 'no'}
-                    {visualResult.semanticTrace.authenticationSucceeded !== null && <> · Auth succeeded: {visualResult.semanticTrace.authenticationSucceeded ? 'yes' : 'no'}</>}
-                    {' '}· Trace: {visualResult.semanticTrace.requestId}
-                  </p>
-                )}
-                {!visualResult.semanticTrace && visualResult.trace && (
-                  <p className="font-campus-mono text-[9px] text-campus-faint">
-                    {visualResult.trace.attemptedLiveCall
-                      ? visualResult.generationSource === 'deterministic_fallback'
-                        ? `Live DeepSeek call attempted and failed (${visualResult.trace.fallbackReason ?? 'unknown'}) — deterministic result shown instead.`
-                        : 'Live DeepSeek call succeeded.'
-                      : 'No DeepSeek key configured on this server — deterministic result shown.'}
-                    {' '}Trace: {visualResult.trace.requestId}
-                  </p>
-                )}
                 {visualResult.renderer === 'syrka_visual' && visualResult.narrative ? (
                   <SyrkaVisualComposer narrative={visualResult.narrative} />
-                ) : visualResult.renderer === 'mermaid' && visualResult.mermaidDefinition && visualResult.spec ? (
-                  <MermaidDiagram
-                    definition={visualResult.mermaidDefinition}
-                    title={visualResult.spec.title}
-                    altText={visualResult.spec.altText}
-                    structuredTextEquivalent={visualResult.spec.structuredTextEquivalent}
-                  />
                 ) : visualResult.renderer === 'three_scene' && visualResult.threeSpec ? (
                   <Terrain3DVisual spec={visualResult.threeSpec} />
                 ) : visualResult.renderer === 'desmos' ? (
                   <DesmosLearningGraph {...getEconomicsRepaymentDesmosConfig()} />
+                ) : visualResult.renderer === 'custom_interactive' && CUSTOM_INTERACTIVE_COMPONENT[view.conceptId] ? (
+                  (() => {
+                    const Component = CUSTOM_INTERACTIVE_COMPONENT[view.conceptId]
+                    return <Component />
+                  })()
                 ) : null}
               </div>
             )}
