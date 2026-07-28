@@ -1,20 +1,32 @@
 import { SEMANTIC_CONCEPT_MODEL_SCHEMA_VERSION, type SemanticConceptModel, type VisualNarrative, type VisualCompositionCandidate } from '@/lib/campus-types/semantic-concept-model'
 import type { NcertConceptWorkbenchView } from '@/lib/utilities/ncert-curriculum-projection'
+import { classifyConceptVisualGrammar, type VisualGrammarClassification } from './concept-visual-grammar-classifier'
+import { evaluateVisualInstructionalValue } from './visual-quality-gate'
 
 /**
  * LEARN-002 visual-quality correction — replaces the rejected
- * keyword-fragment Mermaid path. `getHandAuthoredSemanticModel` covers
- * one concept with real depth (the specific rejected example, Economics
- * "Functions of money"); every other concept falls back to
- * `buildGenericSemanticModel`, which splits the curriculum's own
- * explanation into real sentences (never isolated keywords) and tags
- * them with a best-effort stage role. This fallback is honestly lower
- * quality than the hand-authored case — it produces a real sentence
- * sequence, not a deeply reasoned causal model — and is disclosed as
- * such in the ADR.
+ * keyword-fragment Mermaid path, and then the follow-on defect it left
+ * behind: every non-hand-authored concept fell through to the same
+ * `causal_chain` sequence regardless of its actual shape, which reduced
+ * "Horizontal and vertical power-sharing" to one Context card, one Outcome
+ * card and an arrow. `classifyConceptVisualGrammar` now runs first and
+ * decides which real structure the concept needs — a genuine two-sided
+ * comparison gets built as one (`buildComparisonSemanticModel`), never
+ * forced through the plain sequence template. `getHandAuthoredSemanticModel`
+ * still covers "Functions of money" with real depth; every other
+ * non-comparison concept falls back to `buildGenericSemanticModel`, now
+ * pulling from more of the curriculum's own grounded text (including its
+ * guided-analysis steps) when the description alone would leave fewer than
+ * three real propositions — the exact thinness that produced the rejected
+ * two-card composition.
  */
 export function buildSemanticModel(view: NcertConceptWorkbenchView): SemanticConceptModel {
   if (view.conceptId === 'ncert-concept-eco-3-1') return getFunctionsOfMoneySemanticModel()
+
+  const classifications = classifyConceptVisualGrammar(view)
+  const comparison = classifications.find((c) => c.grammar === 'comparison' && c.comparisonSides)
+  if (comparison?.comparisonSides) return buildComparisonSemanticModel(view, comparison.comparisonSides)
+
   return buildGenericSemanticModel(view)
 }
 
@@ -45,19 +57,81 @@ function getFunctionsOfMoneySemanticModel(): SemanticConceptModel {
   }
 }
 
+/** Real sentences (never single words) pulled from every grounded field this concept has — description, full explanation, and its guided-analysis steps if any. */
+function groundedSentencePool(view: NcertConceptWorkbenchView): string[] {
+  const raw = [view.description, view.explanation, ...(view.example?.steps ?? [])].join(' ')
+  return raw
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 8)
+}
+
+/**
+ * A genuine two-sided comparison — used when classifyConceptVisualGrammar
+ * finds the concept's own title states a contrast (e.g. "Horizontal and
+ * vertical power-sharing", "Federal vs. unitary systems"). Sentences from
+ * the concept's own text are assigned to whichever side they actually
+ * discuss (matched against the real words in that side's own label, never
+ * an arbitrary keyword), so the comparison_columns template renders real
+ * grounded content on both sides rather than a single generic pair of
+ * cards.
+ */
+function buildComparisonSemanticModel(view: NcertConceptWorkbenchView, sides: [{ label: string }, { label: string }]): SemanticConceptModel {
+  const sentences = groundedSentencePool(view)
+  const sideAWords = sides[0].label.toLowerCase().split(/\s+/).filter((w) => w.length > 3)
+  const sideBWords = sides[1].label.toLowerCase().split(/\s+/).filter((w) => w.length > 3)
+
+  const stages: SemanticConceptModel['stages'] = []
+  let sideAAssigned = 0
+  let sideBAssigned = 0
+  sentences.forEach((proposition, i) => {
+    const lower = proposition.toLowerCase()
+    const matchesA = sideAWords.some((w) => lower.includes(w))
+    const matchesB = sideBWords.some((w) => lower.includes(w))
+    let side: 'a' | 'b' | undefined
+    if (matchesA && !matchesB) side = 'a'
+    else if (matchesB && !matchesA) side = 'b'
+    else if (!matchesA && !matchesB) side = sideAAssigned <= sideBAssigned ? 'a' : 'b'
+    if (!side) return
+    if (side === 'a') sideAAssigned++
+    else sideBAssigned++
+    stages.push({ id: `cs${i}`, order: stages.length, role: side === 'a' ? 'context' : 'outcome', proposition, comparisonSide: side })
+  })
+
+  if (sideAAssigned === 0) stages.unshift({ id: 'cs-a0', order: 0, role: 'context', proposition: `${sides[0].label}: ${view.description}`, comparisonSide: 'a' })
+  if (sideBAssigned === 0) stages.push({ id: 'cs-b0', order: stages.length, role: 'outcome', proposition: `${sides[1].label}: ${view.description}`, comparisonSide: 'b' })
+
+  return {
+    schemaVersion: SEMANTIC_CONCEPT_MODEL_SCHEMA_VERSION,
+    conceptId: view.conceptId,
+    centralIdea: view.title,
+    learningObjective: view.description,
+    stages,
+    actors: [],
+    relationships: [],
+    generatedBy: 'deterministic',
+    comparisonLabels: { a: sides[0].label, b: sides[1].label },
+  }
+}
+
 /**
  * Splits the curriculum's own explanation into real sentences and tags
  * them with a coarse stage role by position — never a single-keyword
  * node, but also never claiming the causal reasoning depth of a
- * hand-authored model. Used for the 51 concepts this pass did not
- * hand-author.
+ * hand-authored model. When the description alone yields fewer than three
+ * real propositions (the exact condition that produced the rejected
+ * two-card visual), the guided-analysis steps are pulled in too, so the
+ * composition still has real structure rather than degenerating to a bare
+ * before/after pair.
  */
 function buildGenericSemanticModel(view: NcertConceptWorkbenchView): SemanticConceptModel {
-  const sentences = `${view.description} ${view.explanation}`
+  let sentences = `${view.description} ${view.explanation}`
     .split(/(?<=[.!?])\s+/)
     .map((s) => s.trim())
     .filter((s) => s.length > 8)
     .slice(0, 5)
+
+  if (sentences.length < 3) sentences = groundedSentencePool(view).slice(0, 6)
 
   const roleForIndex = (i: number, total: number): SemanticStage['role'] => {
     if (i === 0) return 'context'
@@ -87,16 +161,55 @@ function buildGenericSemanticModel(view: NcertConceptWorkbenchView): SemanticCon
 
 type SemanticStage = SemanticConceptModel['stages'][number]
 
-export function buildVisualNarrative(view: NcertConceptWorkbenchView): VisualNarrative {
-  const model = buildSemanticModel(view)
-  const isHandAuthored = view.conceptId === 'ncert-concept-eco-3-1'
+function candidatesForClassification(view: NcertConceptWorkbenchView, model: SemanticConceptModel, classifications: VisualGrammarClassification[]): VisualCompositionCandidate[] {
+  const hasComparisonStructure = Boolean(model.comparisonLabels)
+  if (hasComparisonStructure) {
+    return [
+      {
+        templateId: 'comparison_columns',
+        label: 'Side-by-side comparison',
+        reason: `"${view.title}" is a two-sided contrast (${model.comparisonLabels!.a} vs. ${model.comparisonLabels!.b}) — a real comparison layout shows both sides at once.`,
+        recommended: true,
+      },
+      { templateId: 'causal_chain', label: 'Sequential explanation', reason: 'An alternative reading as a plain sequence of the same grounded propositions.', recommended: false },
+    ]
+  }
 
-  const candidates: VisualCompositionCandidate[] = isHandAuthored
+  const primaryGrammar = classifications[0]
+  return [
+    {
+      templateId: 'causal_chain',
+      label: 'Causal sequence',
+      reason: primaryGrammar
+        ? `"${view.title}" (${primaryGrammar.reason})`
+        : `"${view.title}" is best shown as a real sequence of ideas from the chapter's own explanation.`,
+      recommended: true,
+    },
+  ]
+}
+
+export function buildVisualNarrative(view: NcertConceptWorkbenchView): VisualNarrative {
+  const isHandAuthored = view.conceptId === 'ncert-concept-eco-3-1'
+  const model = buildSemanticModel(view)
+  const classifications = isHandAuthored ? [] : classifyConceptVisualGrammar(view)
+
+  let candidates: VisualCompositionCandidate[] = isHandAuthored
     ? [
         { templateId: 'before_after', label: 'Before and after', reason: 'Shows barter failing on the left and money succeeding on the right — the clearest contrast for this concept.', recommended: true },
         { templateId: 'problem_solution_outcome', label: 'Problem, intervention, outcome', reason: 'Shows the double coincidence of wants as a named problem that money directly resolves.', recommended: false },
+        { templateId: 'actor_exchange', label: 'Actor exchange', reason: 'Shows the farmer, cloth seller and buyer as real actors connected by the actual exchanges the chapter describes.', recommended: false },
       ]
-    : [{ templateId: 'causal_chain', label: 'Causal sequence', reason: `"${view.title}" is best shown as a real sequence of ideas from the chapter's own explanation.`, recommended: true }]
+    : candidatesForClassification(view, model, classifications)
+
+  // Defensive check, not a silent override: a candidate that still fails the
+  // instructional-value gate falls back to the plain sequence template with
+  // its enriched (>=3 proposition) stage set, rather than shipping the bare
+  // two-card composition the founder rejected.
+  const primary = candidates[0]
+  const gate = evaluateVisualInstructionalValue(model, primary.templateId)
+  if (!gate.passes && primary.templateId !== 'causal_chain') {
+    candidates = [{ templateId: 'causal_chain', label: 'Sequential explanation', reason: `${gate.reasons.join(' ')} Shown instead as the concept's own grounded sequence.`, recommended: true }]
+  }
 
   const structuredTextEquivalent = model.stages.map((s, i) => `${i + 1}. ${s.proposition}`).join(' ')
 

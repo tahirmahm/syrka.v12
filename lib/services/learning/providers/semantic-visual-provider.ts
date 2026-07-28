@@ -1,8 +1,9 @@
 import { callLearningDeepSeek, LEARNING_PROVIDER_CONFIG } from './deepseek-call'
 import { buildVisualNarrative } from '@/lib/services/learning/semantic-model-builder'
 import { validateSemanticModel, validateRecommendedTemplates, SEMANTIC_CONCEPT_MODEL_SCHEMA_VERSION } from '@/lib/services/learning/semantic-model-validator'
+import { evaluateVisualInstructionalValue } from '@/lib/services/learning/visual-quality-gate'
 import type { NcertConceptWorkbenchView } from '@/lib/utilities/ncert-curriculum-projection'
-import type { SemanticConceptModel, VisualNarrative, VisualCompositionCandidate } from '@/lib/campus-types/semantic-concept-model'
+import type { SemanticConceptModel, VisualNarrative, VisualCompositionCandidate, VisualTemplateId } from '@/lib/campus-types/semantic-concept-model'
 import type { LearningGenerationSource } from './types'
 
 export type SemanticVisualResultCategory = 'deepseek_live' | 'deepseek_cached' | 'deterministic_unavailable' | 'deterministic_not_configured'
@@ -40,8 +41,22 @@ const CANDIDATE_LABEL: Record<string, string> = {
   classification_board: 'Classification board',
 }
 
+/**
+ * comparison_columns can only render correctly when stages carry a real
+ * comparisonSide tag — DeepSeek's JSON schema never emits that field (it
+ * emits only role/proposition/illustrationId), so honouring a DeepSeek
+ * "comparison_columns" recommendation without that structure would silently
+ * render empty columns. Any such recommendation is downgraded to
+ * causal_chain here rather than trusted at face value.
+ */
+function sanitiseRecommendedTemplates(templates: string[], model: SemanticConceptModel): string[] {
+  const hasComparisonStructure = model.stages.some((s) => Boolean(s.comparisonSide))
+  const sanitised = templates.filter((t) => t !== 'comparison_columns' || hasComparisonStructure)
+  return sanitised.length ? sanitised : ['causal_chain']
+}
+
 function buildNarrativeFromModel(model: SemanticConceptModel, recommendedTemplates: string[], view: NcertConceptWorkbenchView): VisualNarrative {
-  const templates = recommendedTemplates.length ? recommendedTemplates : ['causal_chain']
+  const templates = sanitiseRecommendedTemplates(recommendedTemplates, model)
   const candidates: VisualCompositionCandidate[] = templates.map((templateId, i) => ({
     templateId: templateId as VisualCompositionCandidate['templateId'],
     label: CANDIDATE_LABEL[templateId] ?? templateId,
@@ -127,8 +142,13 @@ export async function proposeSemanticVisual(view: NcertConceptWorkbenchView): Pr
     const validation = validateSemanticModel(model)
     if (!validation.valid) throw new Error(`invalid semantic model: ${validation.issues.join('; ')}`)
 
-    semanticVisualCache.set(cacheKey, model)
     const recommendedTemplates = validateRecommendedTemplates(parsed.recommendedTemplates)
+    const sanitisedTemplates = sanitiseRecommendedTemplates(recommendedTemplates, model)
+    const primaryTemplate = (sanitisedTemplates[0] ?? 'causal_chain') as VisualTemplateId
+    const gate = evaluateVisualInstructionalValue(model, primaryTemplate)
+    if (!gate.passes) throw new Error(`semantic model failed instructional-value gate: ${gate.reasons.join('; ')}`)
+
+    semanticVisualCache.set(cacheKey, model)
 
     return {
       generationSource: 'deepseek_v4_pro',
