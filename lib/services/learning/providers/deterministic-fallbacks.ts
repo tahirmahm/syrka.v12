@@ -105,7 +105,7 @@ export const deterministicVisualPlanningProvider: VisualPlanningProvider = {
       validatedBy: 'schema_validator',
       provenance: { generatedAt: new Date().toISOString(), generationSource: 'deterministic' },
     }
-    return { generationSource: 'deterministic_fallback', spec }
+    return { generationSource: 'deterministic_fallback', spec, trace: { requestId: `lvp-${crypto.randomUUID()}`, attemptedLiveCall: false } }
   },
 }
 

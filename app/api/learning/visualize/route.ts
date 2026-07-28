@@ -81,5 +81,6 @@ export async function POST(request: Request) {
     generationSource: proposal.generationSource,
     spec: proposal.spec,
     mermaidDefinition: definition,
+    trace: proposal.trace,
   })
 }

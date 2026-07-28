@@ -31,6 +31,7 @@ interface VisualiseResult {
   mermaidDefinition?: string
   decision?: { reason: string; alternativesConsidered: { renderer: string; rejectedBecause: string }[] }
   threeSpec?: Learning3DVisualSpec
+  trace?: { requestId: string; attemptedLiveCall: boolean; fallbackReason?: string }
 }
 
 export interface ConceptWorkbenchProps {
@@ -207,6 +208,16 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
                 {visualResult.decision && (
                   <p className="font-campus-sans text-campus-xs text-campus-muted">
                     Why this representation: {visualResult.decision.reason}
+                  </p>
+                )}
+                {visualResult.trace && (
+                  <p className="font-campus-mono text-[9px] text-campus-faint">
+                    {visualResult.trace.attemptedLiveCall
+                      ? visualResult.generationSource === 'deterministic_fallback'
+                        ? `Live DeepSeek call attempted and failed (${visualResult.trace.fallbackReason ?? 'unknown'}) — deterministic result shown instead.`
+                        : 'Live DeepSeek call succeeded.'
+                      : 'No DeepSeek key configured on this server — deterministic result shown.'}
+                    {' '}Trace: {visualResult.trace.requestId}
                   </p>
                 )}
                 {visualResult.renderer === 'mermaid' && visualResult.mermaidDefinition && visualResult.spec ? (

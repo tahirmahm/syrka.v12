@@ -6,6 +6,7 @@ import {
   deterministicTutorReasoningProvider, deterministicAssessmentPlanningProvider,
   deterministicVisualPlanningProvider, deterministicLearningPlanProvider,
 } from './deterministic-fallbacks'
+import { LearningProviderError } from './types'
 import type {
   TutorReasoningProvider, LearningPlanProvider, AssessmentPlanningProvider, VisualPlanningProvider, RepresentationSelectionProvider,
   DiagnoseInput, DiagnoseResult, NextMoveInput, NextMoveResult, PlanResult, PlanStep, AssessmentDesignInput, AssessmentDesignResult,
@@ -118,6 +119,8 @@ export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPla
   },
 
   async proposeVisualSpec(input: VisualSpecInput): Promise<VisualSpecProposalResult> {
+    const requestId = `lvp-${crypto.randomUUID()}`
+    const keyConfigured = Boolean(process.env.DEEPSEEK_API_KEY)
     try {
       const system = `You propose a LearningVisualSpec (schemaVersion "${LEARNING_VISUAL_SPEC_SCHEMA_VERSION}") for an NCERT Class X concept map. Respond only with strict JSON matching this shape exactly: {"nodes": [{"id": string, "label": string}], "edges": [{"id": string, "fromNodeId": string, "toNodeId": string, "label": string}], "explanation": string, "altText": string, "structuredTextEquivalent": string}. Maximum 8 nodes, 10 edges. Ground every label in the given concept material only — never invent facts.`
       const user = JSON.stringify({ concept: input.view.title, description: input.view.description, keyTerms: input.view.keyTerms, citation: input.view.citation })
@@ -159,9 +162,11 @@ export const DeepSeekV4ProTeachingProvider: TutorReasoningProvider & LearningPla
       }
       const validation = validateVisualSpec(spec)
       if (!validation.valid) throw new Error(`invalid spec: ${validation.issues.join('; ')}`)
-      return { generationSource: 'deepseek_v4_pro', spec }
-    } catch {
-      return deterministicVisualPlanningProvider.proposeVisualSpec(input)
+      return { generationSource: 'deepseek_v4_pro', spec, trace: { requestId, attemptedLiveCall: true } }
+    } catch (error) {
+      const fallbackReason = error instanceof LearningProviderError ? error.kind : keyConfigured ? 'unknown' : undefined
+      const fallback = await deterministicVisualPlanningProvider.proposeVisualSpec(input)
+      return { ...fallback, trace: { requestId, attemptedLiveCall: keyConfigured, fallbackReason } }
     }
   },
 

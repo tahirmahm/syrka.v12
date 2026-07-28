@@ -112,9 +112,23 @@ export interface VisualSpecInput extends ConceptContext {
   intent: LearningVisualIntent
   tenantId: string
 }
+
+/**
+ * A safe-to-display trace of what actually happened on this call — never
+ * the API key, never the raw provider error text, only a request id and a
+ * typed error kind — so "a live call was attempted and failed" is
+ * distinguishable from "no key configured" without exposing secrets.
+ */
+export interface ProviderTrace {
+  requestId: string
+  attemptedLiveCall: boolean
+  fallbackReason?: LearningProviderErrorKind
+}
+
 export interface VisualSpecProposalResult {
   generationSource: LearningGenerationSource
   spec: LearningVisualSpec
+  trace: ProviderTrace
 }
 export interface VisualPlanningProvider {
   proposeVisualSpec(input: VisualSpecInput): Promise<VisualSpecProposalResult>
