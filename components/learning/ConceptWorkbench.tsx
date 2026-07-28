@@ -12,8 +12,11 @@ import { MermaidDiagram } from './visuals/MermaidDiagram'
 import { DesmosLearningGraph } from './visuals/DesmosLearningGraph'
 import { EconomicsCreditSimulator } from './visuals/EconomicsCreditSimulator'
 import { Terrain3DVisual } from './visuals/Terrain3DVisual'
+import { VisualGenerationState } from './visuals/VisualGenerationState'
+import { SyrkaVisualComposer } from './visuals/syrka/SyrkaVisualComposer'
 import { getEconomicsRepaymentDesmosConfig } from '@/lib/services/learning/economics-desmos-config'
 import type { Learning3DVisualSpec } from '@/lib/campus-types/learning-3d-visual-spec'
+import type { VisualNarrative } from '@/lib/campus-types/semantic-concept-model'
 
 /** The one bespoke subject interactive this pass ships — see ADR §12 for why the other three subjects are not yet covered. */
 const HAS_BESPOKE_INTERACTIVE = new Set(['ncert-concept-eco-3-2'])
@@ -25,12 +28,13 @@ const GENERATION_SOURCE_LABEL: Record<string, string> = {
 }
 
 interface VisualiseResult {
-  renderer: 'mermaid' | 'desmos' | 'three_scene'
+  renderer: 'syrka_visual' | 'mermaid' | 'desmos' | 'three_scene'
   generationSource: string
   spec?: { title: string; altText: string; structuredTextEquivalent: string }
   mermaidDefinition?: string
   decision?: { reason: string; alternativesConsidered: { renderer: string; rejectedBecause: string }[] }
   threeSpec?: Learning3DVisualSpec
+  narrative?: VisualNarrative
   trace?: { requestId: string; attemptedLiveCall: boolean; fallbackReason?: string }
 }
 
@@ -59,28 +63,34 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
   const [tryEvaluation, setTryEvaluation] = useState<ReturnType<typeof evaluateConceptResponse>>()
   const [testEvaluation, setTestEvaluation] = useState<ReturnType<typeof evaluateConceptResponse>>()
   const [diagnosing, setDiagnosing] = useState(false)
-  const [visualising, setVisualising] = useState(false)
+  const [visualPhase, setVisualPhase] = useState<'idle' | 'requesting' | 'awaiting' | 'composing'>('idle')
   const [visualResult, setVisualResult] = useState<VisualiseResult>()
   const [visualError, setVisualError] = useState(false)
   const reduceMotion = useReducedMotionSafe()
 
   async function handleVisualiseThis() {
-    setVisualising(true)
+    setVisualPhase('requesting')
     setVisualError(false)
     try {
       const device = typeof window !== 'undefined' && window.innerWidth < 768 ? 'mobile' : 'desktop'
-      const res = await fetch('/api/learning/visualize', {
+      // 'requesting' is real for the moment the request is constructed; once
+      // the fetch is actually in flight we honestly relabel to 'awaiting' — no
+      // fixed fake timer, just the true before/after of the one network call.
+      const requestPromise = fetch('/api/learning/visualize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ spaceId: view.spaceId, chapterId: view.chapterId, conceptId: view.conceptId, intent: 'concept_map', device }),
       })
+      setVisualPhase('awaiting')
+      const res = await requestPromise
       if (!res.ok) throw new Error('request failed')
+      setVisualPhase('composing')
       const data = (await res.json()) as VisualiseResult
       setVisualResult(data)
     } catch {
       setVisualError(true)
     } finally {
-      setVisualising(false)
+      setVisualPhase('idle')
     }
   }
 
@@ -184,16 +194,16 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
               <button type="button" onClick={() => setStep('try')} className="rounded-campus-sm bg-campus-ink-950 px-4 py-2 font-campus-sans text-campus-sm font-medium text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950">
                 Start activity
               </button>
-              {!visualResult && !visualising && (
+              {!visualResult && visualPhase === 'idle' && (
                 <button type="button" onClick={handleVisualiseThis} className="rounded-campus-sm border border-campus-border px-3 py-2 font-campus-sans text-campus-sm text-campus-text hover:bg-campus-surface-raised">
                   Visualise this
                 </button>
               )}
             </div>
 
-            {visualising && (
+            {visualPhase !== 'idle' && (
               <div className="mt-4">
-                <SyrkaIntelligenceState state="shaping" label="Selecting a representation and building the visual" />
+                <VisualGenerationState phase={visualPhase} />
               </div>
             )}
             {visualError && (
@@ -220,7 +230,9 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
                     {' '}Trace: {visualResult.trace.requestId}
                   </p>
                 )}
-                {visualResult.renderer === 'mermaid' && visualResult.mermaidDefinition && visualResult.spec ? (
+                {visualResult.renderer === 'syrka_visual' && visualResult.narrative ? (
+                  <SyrkaVisualComposer narrative={visualResult.narrative} />
+                ) : visualResult.renderer === 'mermaid' && visualResult.mermaidDefinition && visualResult.spec ? (
                   <MermaidDiagram
                     definition={visualResult.mermaidDefinition}
                     title={visualResult.spec.title}
@@ -229,9 +241,9 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
                   />
                 ) : visualResult.renderer === 'three_scene' && visualResult.threeSpec ? (
                   <Terrain3DVisual spec={visualResult.threeSpec} />
-                ) : (
+                ) : visualResult.renderer === 'desmos' ? (
                   <DesmosLearningGraph {...getEconomicsRepaymentDesmosConfig()} />
-                )}
+                ) : null}
               </div>
             )}
 

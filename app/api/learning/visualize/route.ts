@@ -3,6 +3,7 @@ import { getNcertConceptView } from '@/lib/utilities/ncert-curriculum-projection
 import { learningProviders } from '@/lib/services/learning/providers'
 import { buildMermaidFlowchartDefinition } from '@/lib/services/learning/mermaid-definition-builder'
 import { getGeographyTerrainResourceSpec } from '@/lib/services/learning/geography-terrain-3d-config'
+import { buildVisualNarrative } from '@/lib/services/learning/semantic-model-builder'
 import type { LearningVisualIntent } from '@/lib/campus-types/learning-visual-spec'
 import type { ConceptTutorSessionState } from '@/lib/services/learning/concept-tutor-engine'
 
@@ -66,6 +67,17 @@ export async function POST(request: Request) {
     })
   }
 
+  if (representation.decision.renderer === 'syrka_visual') {
+    return NextResponse.json({
+      renderer: 'syrka_visual',
+      decision: representation.decision,
+      generationSource: 'deterministic_fallback',
+      narrative: buildVisualNarrative(view),
+    })
+  }
+
+  // Mermaid is retained only as an internal/technical alternative — never reached by the deterministic
+  // router as an ordinary Student default (see representation-router.ts), kept for Faculty/debug use.
   const proposal = await learningProviders.visualPlanning.proposeVisualSpec({
     view,
     sessionState: DEFAULT_SESSION_STATE,
