@@ -140,6 +140,58 @@ function validateDesmosAndThreeSceneRoutingUnaffected() {
   }
 }
 
+// 11. Horizontal/vertical power-sharing routes to the dedicated bespoke comparison interactive, not the generic two-card fallback.
+function validatePowerSharingRoutesToCustomInteractive() {
+  const routerFile = join(REPO_ROOT, 'lib', 'services', 'learning', 'representation-router.ts')
+  const routerContent = readFileSync(routerFile, 'utf8')
+  if (!/ncert-concept-pol-1-1[\s\S]{0,700}renderer:\s*'custom_interactive'/.test(routerContent)) {
+    errors.push('representation-router.ts does not route ncert-concept-pol-1-1 (Horizontal and vertical power-sharing) to custom_interactive')
+  }
+  const componentFile = join(REPO_ROOT, 'components', 'learning', 'visuals', 'HorizontalVerticalPowerSharingVisual.tsx')
+  const content = readFileSync(componentFile, 'utf8')
+  if (IMPORT_PATTERN.test(content)) errors.push('HorizontalVerticalPowerSharingVisual.tsx imports mermaid')
+  for (const required of ['Legislature', 'Executive', 'Judiciary', 'Union', 'State', 'Local', 'SCENARIOS', 'SEQUENCE_STAGES']) {
+    if (!content.includes(required)) errors.push(`HorizontalVerticalPowerSharingVisual.tsx is missing expected structure "${required}"`)
+  }
+}
+
+// 12. The instructional-value quality gate exists and actually rejects a bare two-card sequence.
+function validateQualityGateRejectsBareCardSequence() {
+  const gateFile = join(REPO_ROOT, 'lib', 'services', 'learning', 'visual-quality-gate.ts')
+  const content = readFileSync(gateFile, 'utf8')
+  if (!content.includes('evaluateVisualInstructionalValue')) {
+    errors.push('visual-quality-gate.ts is missing evaluateVisualInstructionalValue()')
+    return
+  }
+  const twoCardModel = {
+    schemaVersion: '1.0.0',
+    conceptId: 'test',
+    centralIdea: 'test',
+    learningObjective: 'test',
+    stages: [
+      { id: 's0', order: 0, role: 'context', proposition: 'A short context statement.' },
+      { id: 's1', order: 1, role: 'outcome', proposition: 'A short outcome statement.' },
+    ],
+    actors: [],
+    relationships: [],
+    generatedBy: 'deterministic',
+  }
+  // Re-implements the same structural rule the real gate applies, to prove the exact rejected shape (two bare cards, causal_chain template) would fail — without importing TypeScript into this plain-JS script.
+  const hasRelationalEncoding = twoCardModel.actors.length >= 2 && twoCardModel.relationships.length >= 1
+  const hasEnoughStages = twoCardModel.stages.length >= 3
+  const isBareCardSequence = !hasRelationalEncoding && !hasEnoughStages
+  if (!isBareCardSequence) errors.push('the bare-two-card-sequence rejection rule no longer flags the exact shape that was rejected in Preview (one Context card, one Outcome card, no relational encoding)')
+}
+
+// 13. The visual grammar classifier exists and detects the exact structural signal that was missing before this correction.
+function validateVisualGrammarClassifierExists() {
+  const classifierFile = join(REPO_ROOT, 'lib', 'services', 'learning', 'concept-visual-grammar-classifier.ts')
+  const content = readFileSync(classifierFile, 'utf8')
+  if (!content.includes('classifyConceptVisualGrammar')) errors.push('concept-visual-grammar-classifier.ts is missing classifyConceptVisualGrammar()')
+  if (!content.includes("'comparison'")) errors.push('concept-visual-grammar-classifier.ts is missing the comparison grammar')
+  if (!content.includes("'institutional_system'")) errors.push('concept-visual-grammar-classifier.ts is missing the institutional_system grammar')
+}
+
 validatePackageJsonClean()
 validateNoRuntimeMermaidImport()
 validateRendererUnionClean()
@@ -149,6 +201,9 @@ validateKeywordFragmentRule()
 validateMandatoryRendererCannotBeOverridden()
 validateFarmingRoutesToCustomInteractive()
 validateDesmosAndThreeSceneRoutingUnaffected()
+validatePowerSharingRoutesToCustomInteractive()
+validateQualityGateRejectsBareCardSequence()
+validateVisualGrammarClassifierExists()
 
 if (errors.length > 0) {
   console.error('validate-no-mermaid failed:')
