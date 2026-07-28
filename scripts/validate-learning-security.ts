@@ -1,25 +1,23 @@
 /**
  * Deterministic security validators for the Learning production-safety
- * hotfix. The synchronous checks (gate defaults, actor resolution,
- * repository-safety invariant, route-guard coverage, mock-identity
- * absence) run unconditionally at import time and throw on any error,
- * mirroring the existing validate-*.ts pattern. The cross-institution
- * isolation check is async (it exercises the real in-memory repository)
- * and is exported separately — verified via a temporary route hit during
- * development rather than wired into module-load-time execution, so a
- * repository call can never turn a plain `import` into an unhandled
- * promise rejection that takes down the whole server. No external
- * network calls; no test framework added.
+ * hotfix. Run as a standalone script (npm run validate:learning-security),
+ * never imported by application runtime code — a filesystem-scanning
+ * validator inside the request graph crashed every Vercel serverless
+ * request with `ENOENT: no such file or directory, scandir '/var/task/app'`,
+ * because the deployed function bundle does not contain the full repo
+ * source tree the way a local checkout or CI runner does.
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs'
-import { join } from 'node:path'
-import { resolveAuthoringGate } from '@/lib/services/learning/authoring-gate'
-import { deriveActorResolution } from '@/lib/services/learning/actor'
-import { assertRepositoryConfigurationSafe } from '@/lib/services/learning/repository-safety'
-import { inMemoryLearningIngestionRepository } from '@/lib/repositories/learning-ingestion-repository'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { resolveAuthoringGate } from '../lib/services/learning/authoring-gate'
+import { deriveActorResolution } from '../lib/services/learning/actor'
+import { assertRepositoryConfigurationSafe } from '../lib/services/learning/repository-safety'
+import { inMemoryLearningIngestionRepository } from '../lib/repositories/learning-ingestion-repository'
 
-const LEARNING_API_ROOT = join(process.cwd(), 'app', 'api', 'learning')
-const LEARNING_PAGES_ROOT = join(process.cwd(), 'app', 'faculty', 'learning-spaces')
+const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
+const LEARNING_API_ROOT = join(REPO_ROOT, 'app', 'api', 'learning')
+const LEARNING_PAGES_ROOT = join(REPO_ROOT, 'app', 'faculty', 'learning-spaces')
 
 /** 1. Production defaults to disabled; only the exact string "true" enables it; malformed values fail closed. */
 function validateAuthoringGateDefaults(): string[] {
@@ -103,6 +101,15 @@ function listRouteFiles(root: string): string[] {
   return files
 }
 
+// Student-facing content routes with no authoring/Faculty gate by design — never take a
+// client-supplied identity, never expose Answer Key or authoring data, only serve curriculum
+// content and provider-backed results that are already public within the demonstration corpus.
+const PUBLIC_LEARNING_ROUTES = new Set([
+  join(LEARNING_API_ROOT, 'visualize', 'route.ts'),
+  join(LEARNING_API_ROOT, 'tutor', 'diagnose', 'route.ts'),
+  join(LEARNING_API_ROOT, 'diagnostics', 'deepseek', 'route.ts'),
+])
+
 function validateRouteGuardCoverageAndMockAbsence(): string[] {
   const errors: string[] = []
   const routeFiles = listRouteFiles(LEARNING_API_ROOT)
@@ -112,8 +119,8 @@ function validateRouteGuardCoverageAndMockAbsence(): string[] {
 
   for (const file of routeFiles) {
     const source = readFileSync(file, 'utf8')
-    if (!source.includes('guardLearningRequest')) {
-      errors.push(`${file} does not call guardLearningRequest() — every /api/learning/** route must use the common guard`)
+    if (!source.includes('guardLearningRequest') && !PUBLIC_LEARNING_ROUTES.has(file)) {
+      errors.push(`${file} does not call guardLearningRequest() — every authoring/Faculty /api/learning/** route must use the common guard (public Student content routes are allow-listed above)`)
     }
     if (source.includes('facultyUser')) {
       errors.push(`${file} references facultyUser — no Learning route may use mock/seed identity for authorization`)
@@ -136,28 +143,12 @@ function validateRouteGuardCoverageAndMockAbsence(): string[] {
   return errors
 }
 
-export function validateLearningSecuritySync(): string[] {
-  const errors = [...validateAuthoringGateDefaults(), ...validateActorResolutionScenarios(), ...validateRepositorySafetyInvariant()]
-
-  // The route-guard/mock-absence check walks the source tree via fs — safe and valuable in
-  // development and at build time (where app/api/learning/**/*.ts always exists on disk), but
-  // never run in a deployed production runtime, where the source layout is not guaranteed and a
-  // filesystem difference must never be able to crash a live request.
-  if (process.env.NODE_ENV !== 'production') {
-    errors.push(...validateRouteGuardCoverageAndMockAbsence())
-  }
-
-  return errors
-}
-
 /**
- * Cross-institution isolation — a record created for one institution
- * must not resolve, list, or mutate under another. Exercises the real
- * inMemoryLearningIngestionRepository (not a mock). Async because the
- * repository interface is async; verify via a temporary route during
- * development rather than auto-running at import time (see file header).
+ * Cross-institution isolation — a record created for one institution must
+ * not resolve, list, or mutate under another. Exercises the real
+ * inMemoryLearningIngestionRepository (not a mock).
  */
-export async function validateLearningSecurityAsync(): Promise<string[]> {
+async function validateCrossInstitutionIsolation(): Promise<string[]> {
   const errors: string[] = []
   const institutionA = `sec-test-inst-a-${Date.now()}`
   const institutionB = `sec-test-inst-b-${Date.now()}`
@@ -194,7 +185,22 @@ export async function validateLearningSecurityAsync(): Promise<string[]> {
   return errors
 }
 
-const syncErrors = validateLearningSecuritySync()
-if (syncErrors.length > 0) {
-  throw new Error(`Learning security validation failed:\n${syncErrors.join('\n')}`)
+async function main() {
+  const errors = [
+    ...validateAuthoringGateDefaults(),
+    ...validateActorResolutionScenarios(),
+    ...validateRepositorySafetyInvariant(),
+    ...validateRouteGuardCoverageAndMockAbsence(),
+    ...(await validateCrossInstitutionIsolation()),
+  ]
+
+  if (errors.length > 0) {
+    console.error('validate-learning-security failed:')
+    for (const e of errors) console.error(`  - ${e}`)
+    process.exit(1)
+  }
+
+  console.log('validate-learning-security: all checks passed')
 }
+
+main()

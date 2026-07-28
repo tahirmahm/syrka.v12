@@ -13,9 +13,6 @@ import {
   ncertPages,
 } from '@/lib/mock-data/ncert-class-10-seed'
 import { capabilityDefinitions } from '@/lib/mock-data/seed'
-// Side-effect import: proves Mermaid and generic node-edge graphs are absent from the runtime —
-// runs wherever any Learning concept is looked up (every "Visualise this" call, Tutor action, and concept page).
-import '@/lib/validation/validate-no-mermaid'
 import type { LearningActivityKind } from '@/lib/campus-types'
 
 /**
