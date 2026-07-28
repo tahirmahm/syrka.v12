@@ -11,6 +11,7 @@ import { ConceptTutorPanel } from './ConceptTutorPanel'
 import { DesmosLearningGraph } from './visuals/DesmosLearningGraph'
 import { EconomicsCreditSimulator } from './visuals/EconomicsCreditSimulator'
 import { FarmingClassificationInteractive } from './visuals/FarmingClassificationInteractive'
+import { HorizontalVerticalPowerSharingVisual } from './visuals/HorizontalVerticalPowerSharingVisual'
 import { Terrain3DVisual } from './visuals/Terrain3DVisual'
 import { VisualGenerationState } from './visuals/VisualGenerationState'
 import { SyrkaVisualComposer } from './visuals/syrka/SyrkaVisualComposer'
@@ -24,6 +25,7 @@ const HAS_BESPOKE_INTERACTIVE = new Set(['ncert-concept-eco-3-2'])
 /** Bespoke interactives that ARE the primary visual (representation-router.ts selects renderer 'custom_interactive' for these conceptIds). */
 const CUSTOM_INTERACTIVE_COMPONENT: Record<string, () => JSX.Element> = {
   'ncert-concept-geo-4-2': FarmingClassificationInteractive,
+  'ncert-concept-pol-1-1': HorizontalVerticalPowerSharingVisual,
 }
 
 /**

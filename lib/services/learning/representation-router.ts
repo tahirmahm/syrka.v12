@@ -50,6 +50,26 @@ export function selectRepresentationDeterministic(input: RepresentationInput): R
     }
   }
 
+  // "Horizontal and vertical power-sharing" is a genuine institutional
+  // comparison, not a narrative sequence — the generic fallback previously
+  // reduced it to one Context card, one Outcome card and a downward arrow
+  // (a "reformat the prose in boxes" composition the founder rejected on
+  // sight). A dedicated bespoke interactive is required, exactly like
+  // Types of farming below.
+  if (subject === 'political science' && view.conceptId === 'ncert-concept-pol-1-1') {
+    alternativesConsidered.push(
+      { renderer: 'syrka_visual', rejectedBecause: 'A generated composition here degenerates into two large text cards with no institutional or spatial structure — this concept needs a real side-by-side institution/level comparison, not a narrative sequence.' },
+      { renderer: 'structured_text', rejectedBecause: 'Comparing three institutions at one level against three levels of government in prose alone loses the side-by-side and same-level-vs-different-level structure entirely.' }
+    )
+    return {
+      renderer: 'custom_interactive',
+      reason: 'Horizontal and vertical power-sharing is a genuine institutional comparison — a dedicated side-by-side composition (legislature/executive/judiciary at one level; Union/State/Local across levels) plus a scenario-classification exercise teaches the distinction directly, which no generated diagram does.',
+      alternativesConsidered,
+      expectedLearnerSignal: 'Correctly classifies a new governance example as horizontal, vertical, both or neither, and explains which structural feature (same level vs. different level) determined the answer.',
+      mandatory: true,
+    }
+  }
+
   // "Types of farming" is a real classification/comparison task, not a flat
   // concept map — a single "distinction" node fanned out to isolated
   // keywords ("primitive"/"subsistence"/"intensive"/"commercial") was the
