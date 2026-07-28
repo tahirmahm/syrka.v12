@@ -42,7 +42,7 @@ export function AdaptiveLearningSection({ view, chapterTitle }: { view: Adaptive
         </div>
         <div className="mb-5">
           <SessionTimelineSequence
-            chapterTitle={view.conceptTitle}
+            chapterTitle={chapterTitle}
             conceptTitle={view.conceptTitle}
             stages={view.sessions.map((session) => ({
               id: `session-${session.sessionNumber}`,
