@@ -1,11 +1,11 @@
 import { CampusShell } from '@/components/navigation/CampusShell'
-import { mockInstitutionRepository } from '@/lib/repositories'
 import { currentUser } from '@/lib/mock-data/seed'
+import { getStudentIdentity } from '@/lib/utilities/student-identity-projection'
 
 export default async function StudentLayout({ children }: { children: React.ReactNode }) {
-  const institution = await mockInstitutionRepository.getInstitution(currentUser.institutionId)
+  const identity = getStudentIdentity(currentUser.id)
   return (
-    <CampusShell user={currentUser} institutionName={institution?.name}>
+    <CampusShell user={currentUser} institutionName={identity.headerLabel}>
       {children}
     </CampusShell>
   )
