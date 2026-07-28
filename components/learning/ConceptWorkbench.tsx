@@ -8,6 +8,26 @@ import { Badge } from '@/components/ui/Badge'
 import type { NcertConceptWorkbenchView } from '@/lib/utilities/ncert-curriculum-projection'
 import { evaluateConceptResponse, type ConceptTutorSessionState } from '@/lib/services/learning/concept-tutor-engine'
 import { ConceptTutorPanel } from './ConceptTutorPanel'
+import { MermaidDiagram } from './visuals/MermaidDiagram'
+import { DesmosLearningGraph } from './visuals/DesmosLearningGraph'
+import { EconomicsCreditSimulator } from './visuals/EconomicsCreditSimulator'
+import { getEconomicsRepaymentDesmosConfig } from '@/lib/services/learning/economics-desmos-config'
+
+/** The one bespoke subject interactive this pass ships — see ADR §12 for why the other three subjects are not yet covered. */
+const HAS_BESPOKE_INTERACTIVE = new Set(['ncert-concept-eco-3-2'])
+
+const GENERATION_SOURCE_LABEL: Record<string, string> = {
+  deepseek_v4_pro: 'DeepSeek V4-Pro',
+  deepseek_v4_flash: 'DeepSeek V4-Flash',
+  deterministic_fallback: 'Deterministic (no live AI called)',
+}
+
+interface VisualiseResult {
+  renderer: 'mermaid' | 'desmos'
+  generationSource: string
+  spec?: { title: string; altText: string; structuredTextEquivalent: string }
+  mermaidDefinition?: string
+}
 
 export interface ConceptWorkbenchProps {
   view: NcertConceptWorkbenchView
@@ -34,7 +54,30 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
   const [tryEvaluation, setTryEvaluation] = useState<ReturnType<typeof evaluateConceptResponse>>()
   const [testEvaluation, setTestEvaluation] = useState<ReturnType<typeof evaluateConceptResponse>>()
   const [diagnosing, setDiagnosing] = useState(false)
+  const [visualising, setVisualising] = useState(false)
+  const [visualResult, setVisualResult] = useState<VisualiseResult>()
+  const [visualError, setVisualError] = useState(false)
   const reduceMotion = useReducedMotionSafe()
+
+  async function handleVisualiseThis() {
+    setVisualising(true)
+    setVisualError(false)
+    try {
+      const device = typeof window !== 'undefined' && window.innerWidth < 768 ? 'mobile' : 'desktop'
+      const res = await fetch('/api/learning/visualize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ spaceId: view.spaceId, chapterId: view.chapterId, conceptId: view.conceptId, intent: 'concept_map', device }),
+      })
+      if (!res.ok) throw new Error('request failed')
+      const data = (await res.json()) as VisualiseResult
+      setVisualResult(data)
+    } catch {
+      setVisualError(true)
+    } finally {
+      setVisualising(false)
+    }
+  }
 
   function submitTry() {
     setDiagnosing(true)
@@ -132,9 +175,49 @@ export function ConceptWorkbench({ view }: ConceptWorkbenchProps) {
               </div>
             )}
             <p className="mt-3 font-campus-mono text-[10px] text-campus-muted">Source: {view.citation.bookTitle}, p.{view.citation.page}</p>
-            <button type="button" onClick={() => setStep('try')} className="mt-4 rounded-campus-sm bg-campus-ink-950 px-4 py-2 font-campus-sans text-campus-sm font-medium text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950">
-              Start activity
-            </button>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <button type="button" onClick={() => setStep('try')} className="rounded-campus-sm bg-campus-ink-950 px-4 py-2 font-campus-sans text-campus-sm font-medium text-campus-white dark:bg-campus-stone-100 dark:text-campus-ink-950">
+                Start activity
+              </button>
+              {!visualResult && !visualising && (
+                <button type="button" onClick={handleVisualiseThis} className="rounded-campus-sm border border-campus-border px-3 py-2 font-campus-sans text-campus-sm text-campus-text hover:bg-campus-surface-raised">
+                  Visualise this
+                </button>
+              )}
+            </div>
+
+            {visualising && (
+              <div className="mt-4">
+                <SyrkaIntelligenceState state="shaping" label="Selecting a representation and building the visual" />
+              </div>
+            )}
+            {visualError && (
+              <p className="mt-4 font-campus-sans text-campus-xs text-campus-amber-600 dark:text-campus-amber-dark">Could not build a visual right now — the explanation above still covers this concept fully.</p>
+            )}
+            {visualResult && (
+              <div className="mt-4 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Visualise this</p>
+                  <Badge tone="neutral">{GENERATION_SOURCE_LABEL[visualResult.generationSource] ?? visualResult.generationSource}</Badge>
+                </div>
+                {visualResult.renderer === 'mermaid' && visualResult.mermaidDefinition && visualResult.spec ? (
+                  <MermaidDiagram
+                    definition={visualResult.mermaidDefinition}
+                    title={visualResult.spec.title}
+                    altText={visualResult.spec.altText}
+                    structuredTextEquivalent={visualResult.spec.structuredTextEquivalent}
+                  />
+                ) : (
+                  <DesmosLearningGraph {...getEconomicsRepaymentDesmosConfig()} />
+                )}
+              </div>
+            )}
+
+            {HAS_BESPOKE_INTERACTIVE.has(view.conceptId) && (
+              <div className="mt-4">
+                <EconomicsCreditSimulator />
+              </div>
+            )}
           </div>
         )}
 
