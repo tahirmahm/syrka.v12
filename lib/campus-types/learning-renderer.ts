@@ -11,9 +11,9 @@
  * outside this set (or absent) must fall back to `syrka_visual`, never
  * to a graph.
  */
-export type LearningRenderer = 'syrka_visual' | 'custom_interactive' | 'desmos' | 'three_scene' | 'excalidraw' | 'structured_text'
+export type LearningRenderer = 'syrka_visual' | 'custom_interactive' | 'desmos' | 'mafs_graph' | 'three_scene' | 'excalidraw' | 'structured_text'
 
-export const VALID_LEARNING_RENDERERS: readonly LearningRenderer[] = ['syrka_visual', 'custom_interactive', 'desmos', 'three_scene', 'excalidraw', 'structured_text']
+export const VALID_LEARNING_RENDERERS: readonly LearningRenderer[] = ['syrka_visual', 'custom_interactive', 'desmos', 'mafs_graph', 'three_scene', 'excalidraw', 'structured_text']
 
 export function isLearningRenderer(value: unknown): value is LearningRenderer {
   return typeof value === 'string' && (VALID_LEARNING_RENDERERS as readonly string[]).includes(value)
