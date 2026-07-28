@@ -17,6 +17,7 @@ import { PASSPORT_DISPLAY_NAME } from '@/lib/constants/passport'
 import { formatDate } from '@/lib/utilities/format-relative-time'
 import { generatePassportQrSvg } from '@/lib/utilities/qr'
 import { getAppBaseUrl } from '@/lib/utilities/app-url'
+import { getStudentIdentity } from '@/lib/utilities/student-identity-projection'
 
 export const metadata = { title: `${PASSPORT_DISPLAY_NAME} — Syrka Campus` }
 
@@ -40,8 +41,10 @@ export default async function StudentPassportPage() {
     )
   }
 
-  const programme = currentUser.programmeId ? await mockInstitutionRepository.getProgramme(currentUser.programmeId) : undefined
-  const courses = currentUser.programmeId ? await mockInstitutionRepository.listCourses(currentUser.programmeId) : []
+  const identity = getStudentIdentity(currentUser.id)
+  const isClassX = identity.stage === 'secondary_class_10'
+  const programme = !isClassX && currentUser.programmeId ? await mockInstitutionRepository.getProgramme(currentUser.programmeId) : undefined
+  const courses = !isClassX && currentUser.programmeId ? await mockInstitutionRepository.listCourses(currentUser.programmeId) : []
   const currentVersion = passport.versions.find((v) => v.version === passport.currentVersion)
   const capabilityById = new Map(definitions.map((d) => [d.id, d]))
   const pendingEvidenceCount = evidence.filter((e) => e.review.status === 'pending').length
@@ -79,8 +82,8 @@ export default async function StudentPassportPage() {
           holderName={currentUser.name}
           initials={initials}
           passportId={passport.id}
-          institutionName={institution.name}
-          programmeName={programme?.name}
+          institutionName={isClassX ? identity.headerLabel : institution.name}
+          programmeName={isClassX ? identity.classOrProgramme : programme?.name}
           issueDate={formatDate(currentVersion.issuedAt)}
           version={passport.currentVersion}
           verificationLabel="Institutionally reviewed"
@@ -89,7 +92,7 @@ export default async function StudentPassportPage() {
         />
       </div>
       <p className="text-center font-campus-sans text-campus-xs text-campus-muted print:hidden">
-        Issued by {passport.verificationSeal.issuer}. Evidence-backed and versioned — subject to disclosure controls below.
+        Issued by {isClassX ? identity.headerLabel : passport.verificationSeal.issuer}. Evidence-backed and versioned — subject to disclosure controls below.
       </p>
 
       <ReadinessSummary version={currentVersion} pendingEvidenceCount={pendingEvidenceCount} />
