@@ -24,7 +24,7 @@ export type LearningVisualIntent =
   | 'simulation'
   | 'animated_transformation'
 
-export type LearningVisualRenderer = 'mermaid' | 'desmos' | 'custom_react' | 'custom_canvas' | 'excalidraw' | 'three_scene' | 'structured_text' | 'static_accessible_fallback'
+export type LearningVisualRenderer = 'syrka_visual' | 'mermaid' | 'desmos' | 'custom_react' | 'custom_canvas' | 'excalidraw' | 'three_scene' | 'structured_text' | 'static_accessible_fallback'
 
 export type LearningVisualGeneratedBy = 'deepseek_v4_pro' | 'deepseek_v4_flash' | 'deterministic' | 'faculty_authored'
 
