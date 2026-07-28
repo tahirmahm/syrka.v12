@@ -144,13 +144,28 @@ export default function NcertChapterPage({ params }: { params: { spaceId: string
             )}
           </div>
 
-          {chapter.concepts.map((concept) => (
-            <div key={concept.id} className="rounded-campus-md border border-campus-border bg-campus-surface p-5">
-              <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Concept</p>
-              <p className="mt-1 font-campus-sans text-campus-base font-medium text-campus-text">{concept.title}</p>
-              <p className="mt-1 font-campus-sans text-campus-sm text-campus-text">{concept.description}</p>
-            </div>
-          ))}
+          <div className="rounded-campus-md border border-campus-border bg-campus-surface p-5">
+            <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">Concept sequence</p>
+            <ol className="mt-2 flex flex-col gap-2">
+              {chapter.concepts.map((concept, i) => (
+                <li key={concept.id}>
+                  <Link
+                    href={`/student/learning/${chapter.spaceId}/${chapter.chapterId}/${concept.id}`}
+                    className="flex items-start gap-3 rounded-campus-sm border border-campus-border p-3 hover:bg-campus-surface-raised"
+                  >
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-campus-border font-campus-mono text-[10px] text-campus-muted">{i + 1}</span>
+                    <span>
+                      <span className="block font-campus-sans text-campus-sm font-medium text-campus-text">{concept.title}</span>
+                      <span className="block font-campus-sans text-campus-xs text-campus-muted">{concept.description}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">
+            Recommended: start with &ldquo;{chapter.concepts[0]?.title}&rdquo; — each concept opens its own Learn/Try/Test workbench.
+          </p>
 
           <div className="rounded-campus-md border border-campus-border bg-campus-surface p-5">
             <p className="font-campus-mono text-[10px] uppercase tracking-wide text-campus-muted">{chapter.example.prompt}</p>
