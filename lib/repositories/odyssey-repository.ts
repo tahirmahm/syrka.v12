@@ -30,6 +30,30 @@ import {
   odysseyBlockers,
   odysseyAlternativeActions,
 } from '@/lib/mock-data/odyssey-seed'
+import {
+  class10Destination,
+  class10InstitutionalResources,
+  class10Plan,
+  class10PlanVersions,
+  class10Milestones,
+  class10Actions,
+  class10EvidenceRequirements,
+  class10ExpectedImpacts,
+  class10RecommendationFactors,
+  class10Constraints,
+  class10Blockers,
+  class10AlternativeActions,
+} from '@/lib/mock-data/odyssey-class10-seed'
+
+/**
+ * Odyssey product correction — a studentId now selects which fixture set
+ * a fresh store seeds from. Every real demonstration student defaults to
+ * the NCERT Class X curriculum-progression plan; only this one explicit
+ * id still seeds the original university/career-pathway fixture, proving
+ * that architecture is preserved (not deleted) without exposing it as a
+ * second live route in an app that has no user-switcher.
+ */
+export const UNIVERSITY_STAGE_REGRESSION_STUDENT_ID = 'university-stage-regression-demo'
 
 /**
  * In-memory, per-student session store. Seeded from the typed fallback plan
@@ -57,28 +81,41 @@ const globalStore = globalThis as unknown as { __odysseyStores?: Map<string, Ody
 const stores = globalStore.__odysseyStores ?? new Map<string, OdysseyStore>()
 globalStore.__odysseyStores = stores
 
-function createSeededStore(): OdysseyStore {
+function createSeededStore(studentId: string): OdysseyStore {
+  const isUniversityStageRegression = studentId === UNIVERSITY_STAGE_REGRESSION_STUDENT_ID
+  const destination = isUniversityStageRegression ? odysseyDestination : class10Destination
+  const planVersions = isUniversityStageRegression ? odysseyPlanVersions : class10PlanVersions
+  const allMilestones = isUniversityStageRegression ? odysseyMilestones : class10Milestones
+  const allActions = isUniversityStageRegression ? odysseyActions : class10Actions
+  const allEvidenceRequirements = isUniversityStageRegression ? odysseyEvidenceRequirements : class10EvidenceRequirements
+  const allExpectedImpacts = isUniversityStageRegression ? odysseyExpectedImpacts : class10ExpectedImpacts
+  const allRecommendationFactors = isUniversityStageRegression ? odysseyRecommendationFactors : class10RecommendationFactors
+  const allConstraints = isUniversityStageRegression ? odysseyConstraints : class10Constraints
+  const allBlockers = isUniversityStageRegression ? odysseyBlockers : class10Blockers
+  const allAlternativeActions = isUniversityStageRegression ? odysseyAlternativeActions : class10AlternativeActions
+  const basePlan = isUniversityStageRegression ? odysseyPlan : class10Plan
+
   return {
-    plan: { ...odysseyPlan },
-    destination: { ...odysseyDestination },
-    planVersions: new Map(odysseyPlanVersions.map((v) => [v.id, v])),
+    plan: { ...basePlan, studentId },
+    destination: { ...destination },
+    planVersions: new Map(planVersions.map((v) => [v.id, v])),
     milestonesByVersion: new Map(
-      odysseyPlanVersions.map((v) => [v.id, new Map(odysseyMilestones.filter((m) => v.milestoneIds.includes(m.id)).map((m) => [m.id, m]))])
+      planVersions.map((v) => [v.id, new Map(allMilestones.filter((m) => v.milestoneIds.includes(m.id)).map((m) => [m.id, m]))])
     ),
-    actions: new Map(odysseyActions.map((a) => [a.id, a])),
-    evidenceRequirements: new Map(odysseyEvidenceRequirements.map((r) => [r.id, r])),
-    expectedImpacts: new Map(odysseyExpectedImpacts.map((i) => [i.id, i])),
-    recommendationFactors: new Map(odysseyRecommendationFactors.map((f) => [f.id, f])),
-    constraints: new Map(odysseyConstraints.map((c) => [c.id, c])),
-    blockers: new Map(odysseyBlockers.map((b) => [b.id, b])),
-    alternativeActions: new Map(odysseyAlternativeActions.map((a) => [a.id, a])),
+    actions: new Map(allActions.map((a) => [a.id, a])),
+    evidenceRequirements: new Map(allEvidenceRequirements.map((r) => [r.id, r])),
+    expectedImpacts: new Map(allExpectedImpacts.map((i) => [i.id, i])),
+    recommendationFactors: new Map(allRecommendationFactors.map((f) => [f.id, f])),
+    constraints: new Map(allConstraints.map((c) => [c.id, c])),
+    blockers: new Map(allBlockers.map((b) => [b.id, b])),
+    alternativeActions: new Map(allAlternativeActions.map((a) => [a.id, a])),
   }
 }
 
 function getStore(studentId: string): OdysseyStore {
   let store = stores.get(studentId)
   if (!store) {
-    store = createSeededStore()
+    store = createSeededStore(studentId)
     stores.set(studentId, store)
   }
   return store
@@ -196,8 +233,8 @@ export const mockOdysseyRepository: OdysseyRepository = {
     const set = new Set(milestoneIds)
     return Array.from(getStore(studentId).alternativeActions.values()).filter((a) => set.has(a.milestoneId))
   },
-  async listInstitutionalResources() {
-    return odysseyInstitutionalResources
+  async listInstitutionalResources(studentId) {
+    return studentId === UNIVERSITY_STAGE_REGRESSION_STUDENT_ID ? odysseyInstitutionalResources : class10InstitutionalResources
   },
   async commitPlanVersion(studentId, input) {
     const store = getStore(studentId)
