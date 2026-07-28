@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Badge } from '@/components/ui/Badge'
 import { DesmosLearningGraph } from './DesmosLearningGraph'
 import { getEconomicsRepaymentDesmosConfig } from '@/lib/services/learning/economics-desmos-config'
 
@@ -126,7 +125,11 @@ export function EconomicsCreditSimulator() {
             placeholder="Your recommendation and reasoning…"
             className="mt-2 w-full rounded-campus-sm border border-campus-border bg-campus-surface px-3 py-2 font-campus-sans text-campus-sm text-campus-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue-600"
           />
-          {transferResponse.trim().length > 20 && <Badge tone="green">Recorded — this response is part of your independent transfer for this interactive</Badge>}
+          {transferResponse.trim().length > 20 && (
+            <p className="font-campus-sans text-campus-xs text-campus-muted">
+              This exploratory interactive is not connected to the concept&rsquo;s own Evidence chain — complete the Test step below for a transfer attempt that counts toward Evidence.
+            </p>
+          )}
         </div>
       )}
     </div>
