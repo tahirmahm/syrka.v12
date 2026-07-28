@@ -20,6 +20,8 @@ export interface SemanticStage {
   proposition: string
   /** An allowlisted illustration id — never a remote URL or generated SVG. Undefined renders a plain labelled card. */
   illustrationId?: SyrkaIllustrationId
+  /** Set only when this stage belongs to one side of a two-sided comparison (see comparisonLabels on the model) — never inferred from a single keyword, only from a real structural comparison. */
+  comparisonSide?: 'a' | 'b'
 }
 
 export interface SemanticActor {
@@ -82,6 +84,8 @@ export interface SemanticConceptModel {
   relationships: SemanticRelationship[]
   misconception?: string
   generatedBy: 'deterministic' | 'deepseek_v4_pro'
+  /** The two sides' real labels ("Horizontal", "Vertical") — present only when stages carry comparisonSide, for the comparison_columns template. */
+  comparisonLabels?: { a: string; b: string }
 }
 
 export interface VisualCompositionCandidate {

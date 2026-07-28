@@ -12,7 +12,7 @@ const VALID_ILLUSTRATIONS: SyrkaIllustrationId[] = [
   'environment', 'government', 'evidence', 'claim', 'outcome_check',
 ]
 const INJECTION_PATTERN = /<script|javascript:|on\w+\s*=|<iframe/i
-const MIN_STAGES = 2
+const MIN_STAGES = 3
 const MAX_STAGES = 7
 const MIN_PROPOSITION_WORDS = 4
 const MAX_PROPOSITION_LENGTH = 220
@@ -56,7 +56,16 @@ export function validateSemanticModel(input: unknown): SemanticModelValidationRe
       if (stage.illustrationId !== undefined && !VALID_ILLUSTRATIONS.includes(stage.illustrationId as SyrkaIllustrationId)) {
         issues.push(`stage ${i} has an illustrationId outside the allowlist`)
       }
+      if (stage.comparisonSide !== undefined && stage.comparisonSide !== 'a' && stage.comparisonSide !== 'b') {
+        issues.push(`stage ${i} has a comparisonSide outside "a"/"b"`)
+      }
     })
+  }
+
+  if (model.comparisonLabels !== undefined) {
+    if (typeof model.comparisonLabels !== 'object' || typeof model.comparisonLabels.a !== 'string' || typeof model.comparisonLabels.b !== 'string') {
+      issues.push('comparisonLabels must be an object with string "a" and "b" labels')
+    }
   }
 
   if (model.actors !== undefined && !Array.isArray(model.actors)) issues.push('actors must be an array')
