@@ -37,3 +37,12 @@ next-env.d.ts
 
 # supabase
 supabase/.temp/
+
+# Authorised curriculum source material (NCERT and other supplied archives/PDFs).
+# Never committed: private source documents, only Syrka-authored derived content
+# and provenance metadata belong in the repository. See docs/curriculum/ for the
+# processing pipeline that consumes these paths locally.
+/curriculum-sources/
+**/*.ncert-source.zip
+/scripts/curriculum/tmp/
+*.source.pdf

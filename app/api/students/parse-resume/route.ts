@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { resolveDeepSeekModel } from '@/lib/deepseek'
 
 const EMPTY_RESULT = {
   summary: '', explicit_skills: [], inferred_skills: [],
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
     })
 
     const completion = await client.chat.completions.create({
-      model: 'deepseek-chat',
+      model: resolveDeepSeekModel().model,
       messages: [
         {
           role: 'user',

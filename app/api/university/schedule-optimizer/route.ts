@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { resolveDeepSeekModel } from '@/lib/deepseek'
 import { createClient } from '@/lib/supabase'
 import { logAudit } from '@/lib/audit'
 
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     const startTime = Date.now()
     const completion = await client.chat.completions.create({
-      model: 'deepseek-chat',
+      model: resolveDeepSeekModel().model,
       messages: [
         {
           role: 'user',
@@ -86,7 +87,7 @@ Return ONLY valid JSON.`,
       endpoint: '/api/university/schedule-optimizer',
       request_payload: { courseCount: courses.length, semester, country },
       response_payload: { optimization_score: schedule.optimization_score },
-      model_used: 'deepseek-chat', latency_ms: Date.now() - startTime,
+      model_used: resolveDeepSeekModel().model, latency_ms: Date.now() - startTime,
       tokens_used: completion.usage?.total_tokens || 0,
       country, track: 'university',
     })

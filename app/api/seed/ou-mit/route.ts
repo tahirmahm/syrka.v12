@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import OpenAI from 'openai'
+import { resolveDeepSeekModel } from '@/lib/deepseek'
 import fs from 'fs'
 import path from 'path'
 
@@ -40,7 +41,7 @@ async function extractSkillsFromSyllabus(
   ouName: string
 ): Promise<{ skills_taught: string[]; lecture_topics: string[]; description: string }> {
   const response = await getDeepSeek().chat.completions.create({
-    model: 'deepseek-chat',
+    model: resolveDeepSeekModel().model,
     messages: [{
       role: 'user',
       content: `Extract structured data from this MIT OpenCourseWare syllabus.

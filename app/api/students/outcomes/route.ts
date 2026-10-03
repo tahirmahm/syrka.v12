@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { resolveDeepSeekModel } from '@/lib/deepseek'
 import { createClient } from '@/lib/supabase'
 import { logAudit } from '@/lib/audit'
 
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
           apiKey: process.env.DEEPSEEK_API_KEY,
         })
         const completion = await client.chat.completions.create({
-          model: 'deepseek-chat',
+          model: resolveDeepSeekModel().model,
           messages: [{
             role: 'user',
             content: `A student applied for ${jobTitle} at ${company} and got ${status}.
@@ -75,7 +76,7 @@ Return ONLY the JSON.`,
           endpoint: '/api/students/outcomes',
           request_payload: { jobTitle, company, status },
           response_payload: { priority_skill: (learningSignal as Record<string, unknown>).priority_skill_to_learn },
-          model_used: 'deepseek-chat', latency_ms: Date.now() - outcomeStartTime,
+          model_used: resolveDeepSeekModel().model, latency_ms: Date.now() - outcomeStartTime,
           tokens_used: completion.usage?.total_tokens || 0,
           track: 'student',
         })

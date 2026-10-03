@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { resolveDeepSeekModel } from '@/lib/deepseek'
 import { createClient } from '@/lib/supabase'
 import { logAudit } from '@/lib/audit'
 
@@ -31,7 +32,7 @@ export async function GET() {
     for (const course of courses) {
       try {
         const completion = await client.chat.completions.create({
-          model: 'deepseek-chat',
+          model: resolveDeepSeekModel().model,
           messages: [
             {
               role: 'user',
@@ -73,7 +74,7 @@ Return ONLY a JSON array of 3 objects.`,
           freshness_score: freshnessScore,
           provenance_verified: false,
           generated_at: new Date().toISOString(),
-          model_version: 'deepseek-chat',
+          model_version: resolveDeepSeekModel().model,
         })
 
         evolved++
@@ -86,7 +87,7 @@ Return ONLY a JSON array of 3 objects.`,
       endpoint: '/api/university/evolve-curriculum',
       request_payload: { courseCount: courses.length },
       response_payload: { evolved },
-      model_used: 'deepseek-chat', latency_ms: 0,
+      model_used: resolveDeepSeekModel().model, latency_ms: 0,
       tokens_used: 0, track: 'university',
     })
 

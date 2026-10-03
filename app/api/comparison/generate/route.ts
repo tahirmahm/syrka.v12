@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createDeepSeekClient } from '@/lib/deepseek'
+import { createDeepSeekClient, resolveDeepSeekModel } from '@/lib/deepseek'
 import { createClient } from '@/lib/supabase'
 
 interface SimulationData {
@@ -72,7 +72,7 @@ Rules: Never use these phrases: it depends, both approaches, context matters, tr
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       const response = await client.chat.completions.create({
-        model: 'deepseek-chat',
+        model: resolveDeepSeekModel().model,
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 600,
         temperature: 0.7,

@@ -1,0 +1,239 @@
+/* Landing page only. Everything is scoped under .lx so dashboards keep their own look. */
+
+.lx {
+  --lx-bg: #050506;
+  --lx-ink: #ededed;
+  --lx-dim: #8a8a8f;
+  --lx-faint: #3a3a3f;
+  --lx-line: rgba(237, 237, 237, 0.12);
+  --lx-accent: #2b2bff;
+  --lx-accent-ink: #7a7aff;
+  --lx-dot: rgba(237, 237, 237, 0.09);
+  --lx-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --lx-serif: var(--font-lx-serif), Georgia, serif;
+  --lx-sans: var(--font-geist-sans), 'Inter', system-ui, sans-serif;
+
+  background: var(--lx-bg);
+  color: var(--lx-ink);
+  font-family: var(--lx-sans);
+  overflow-x: clip;
+}
+
+/* Section tones. Each re-points the tokens, so everything inside follows automatically. */
+.lx-tone-graphite { --lx-bg: #111114; background: var(--lx-bg); color: var(--lx-ink); }
+.lx-tone-paper {
+  --lx-bg: #eeede8;
+  --lx-ink: #0b0b0d;
+  --lx-dim: #5b5b62;
+  --lx-faint: #b9b8b2;
+  --lx-line: rgba(11, 11, 13, 0.14);
+  --lx-accent-ink: #2b2bff;
+  --lx-dot: rgba(11, 11, 13, 0.08);
+  background: var(--lx-bg);
+  color: var(--lx-ink);
+}
+
+.lx ::selection { background: var(--lx-accent); color: #fff; }
+
+.lx-mono {
+  font-family: var(--lx-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lx-serif {
+  font-family: var(--lx-serif);
+  font-style: italic;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+
+/* Dotted grid ground, like a terminal screen */
+.lx-dots {
+  background-image: radial-gradient(var(--lx-dot) 1px, transparent 1.2px);
+  background-size: 8px 8px;
+}
+
+/* Blinking block cursor */
+.lx-cursor::after {
+  content: '';
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 0.35em;
+  vertical-align: -0.15em;
+  background: currentColor;
+  animation: lx-blink 1.05s steps(1) infinite;
+}
+@keyframes lx-blink { 50% { opacity: 0; } }
+
+/* Focus ring for landing links */
+.lx a:focus-visible { outline: 1px solid var(--lx-accent-ink); outline-offset: 3px; }
+
+/* Giant display type */
+.lx-giant {
+  font-family: var(--lx-sans);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 0.92;
+}
+
+/* Palantir-style type on the landing page: Geist for headings too, medium weight, tight tracking. */
+.lx .font-headline { font-family: var(--lx-sans); }
+
+
+@media (prefers-reduced-motion: reduce) {
+  .lx-cursor::after { animation: none; }
+}
+
+/* Nav: larger, evenly spaced labels */
+.lx-navlink {
+  font-family: var(--lx-sans);
+  font-size: 15px;
+  letter-spacing: -0.005em;
+  color: var(--lx-dim);
+  text-decoration: none;
+  padding: 8px 0;
+  transition: color 0.15s;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.lx-navlink:hover, .lx-navlink[aria-expanded="true"] { color: var(--lx-ink); }
+
+/* Header: dark glass by default; over light (paper) sections SiteNav adds .lx-nav-light so it stays readable. */
+.lx-nav { transition: background 0.35s ease, border-color 0.35s ease, color 0.35s ease; }
+.lx-nav img { transition: filter 0.35s ease; }
+.lx-nav-menu { border-color: rgba(255, 255, 255, 0.25); }
+.lx-nav-menu:hover { border-color: rgba(255, 255, 255, 0.6); }
+.lx-nav-light {
+  --lx-ink: #0b0b0d;
+  --lx-dim: #4a4a52;
+  --lg-tint: rgba(250, 249, 245, 0.66);
+  border-color: rgba(11, 11, 13, 0.1);
+}
+.lx-nav-light img { filter: invert(1); }
+.lx-nav-light .lx-nav-menu { border-color: rgba(11, 11, 13, 0.25); }
+.lx-nav-light .lx-nav-menu:hover { border-color: rgba(11, 11, 13, 0.6); }
+/* The Software dropdown keeps its own dark panel. */
+.lx-nav-light #lx-software-menu { --lx-ink: #ededed; --lx-dim: #8a8a8f; }
+
+
+/* Big word swap in the steps scroller */
+@keyframes lx-swap { from { opacity: 0; transform: translateY(0.35em); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+.lx-swap { animation: lx-swap 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .lx-swap { animation: none; } }
+
+/* Bars in the audience panels grow in from the left each time a panel appears. */
+@keyframes lx-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.lx-grow { transform-origin: left; animation: lx-grow 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .lx-grow { animation: none; } }
+
+/* Career Passport sample card: brushed-black stripes, a slow 3D sway and a glare that sweeps across. */
+.lx-passport { perspective: 1200px; }
+.lx-passport-card {
+  background:
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 11px),
+    linear-gradient(160deg, #1b1b1f 0%, #0b0b0d 55%, #121216 100%);
+  transform-style: preserve-3d;
+  animation: lx-passport-sway 9s ease-in-out infinite;
+}
+.lx-passport-card::after {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.09) 50%, transparent 58%);
+  animation: lx-passport-glare 6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes lx-passport-sway {
+  0%, 100% { transform: rotateX(6deg) rotateY(-10deg) translateY(0); }
+  50% { transform: rotateX(-4deg) rotateY(8deg) translateY(-10px); }
+}
+@keyframes lx-passport-glare {
+  0% { transform: translateX(-60%); }
+  60%, 100% { transform: translateX(60%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lx-passport-card, .lx-passport-card::after { animation: none; }
+}
+
+/* Hero: the name's meaning, centred under the globe's Syrka symbol. Mirrors HERO_GLOBE / HERO_GLOBE_MOBILE in
+   app/page.tsx: centre (cx, cy) and radius r × min(viewport); the symbol's feet sit about 1.14r below the centre. */
+.lx-name { left: 50%; top: calc(24dvh + min(100vw, 100dvh) * 0.36 * 1.14 + 14px); transform: translateX(-50%); font-size: 10px; letter-spacing: 0.18em; }
+@media (min-width: 768px) {
+  .lx-name { left: 71%; top: calc(47.5dvh + min(100vw, 100dvh) * 0.33 * 1.14 + 18px); font-size: 11px; }
+}
+
+/* Five-systems spec sheet: SpecTable sets --p (0→1 scroll progress); each row reads its own share of it. */
+.lx-spec-row {
+  --q: clamp(0, calc(var(--p) * var(--n) * 1.15 - var(--i)), 1);
+  opacity: calc(0.12 + 0.88 * var(--q));
+  transform: translateX(calc((1 - var(--q)) * 48px));
+}
+.lx-spine-fill { height: calc(var(--q) * 100%); box-shadow: 0 0 10px rgba(122, 92, 255, 0.6); }
+.lx-spec-num { box-shadow: 0 0 calc(var(--q) * 16px) rgba(122, 92, 255, 0.55); }
+@keyframes lx-live { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); } 50% { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0); } }
+.lx-live-dot { animation: lx-live 1.8s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) { .lx-live-dot { animation: none; } }
+
+/* Marquee text styles */
+.lx-outline { color: transparent; -webkit-text-stroke: 1.5px rgba(237, 237, 237, 0.5); }
+.lx-grad-text {
+  background: linear-gradient(90deg, #f1eeff 0%, #b9a6ff 35%, #7a5cff 65%, #3b3bff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Stat cards: hidden until their group is in view, then pop up in a stagger (delay set inline). */
+.lx-pop { opacity: 0; transform: translateY(36px) scale(0.86); }
+.lx-pop-group[data-in] .lx-pop { animation: lx-pop 0.75s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+@keyframes lx-pop {
+  0% { opacity: 0; transform: translateY(36px) scale(0.86); }
+  60% { opacity: 1; transform: translateY(-6px) scale(1.03); }
+  100% { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .lx-pop { opacity: 1; transform: none; } .lx-pop-group[data-in] .lx-pop { animation: none; } }
+
+/* Audience panels: tilt towards the pointer (--mx/--my set by Panel), sway on their own, chips float in front. */
+.lx-float-stage { perspective: 1400px; --mx: 0; --my: 0; }
+.lx-float3d {
+  transform-style: preserve-3d;
+  transform: rotateY(calc(var(--mx) * 9deg)) rotateX(calc(var(--my) * -7deg));
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.lx-sway { position: relative; transform-style: preserve-3d; animation: lx-sway 10s ease-in-out infinite; }
+@keyframes lx-sway {
+  0%, 100% { transform: rotateX(5deg) rotateY(-9deg) translateY(0); }
+  50% { transform: rotateX(-3deg) rotateY(7deg) translateY(-14px); }
+}
+.lx-chip {
+  position: absolute;
+  z-index: 2;
+  white-space: nowrap;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 11px !important;
+  color: #ece8ff;
+  background: linear-gradient(135deg, rgba(122, 92, 255, 0.35), rgba(20, 16, 36, 0.85));
+  border: 1px solid rgba(201, 188, 255, 0.3);
+  box-shadow: 0 18px 40px -16px rgba(122, 92, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+.lx-chip-a { top: -22px; left: -34px; animation: lx-chip-a 6s ease-in-out infinite, lx-chip-in 0.7s 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.lx-chip-b { bottom: 54px; right: -40px; animation: lx-chip-b 7s ease-in-out infinite, lx-chip-in 0.7s 0.8s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+@keyframes lx-chip-a { 0%, 100% { transform: translateZ(90px) translateY(0); } 50% { transform: translateZ(90px) translateY(-10px); } }
+@keyframes lx-chip-b { 0%, 100% { transform: translateZ(60px) translateY(0); } 50% { transform: translateZ(60px) translateY(9px); } }
+@keyframes lx-chip-in { from { opacity: 0; scale: 0.7; } to { opacity: 1; scale: 1; } }
+.lx-rise { animation: lx-rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes lx-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (max-width: 767px) { .lx-chip-a { left: -6px; } .lx-chip-b { right: -6px; } }
+@media (prefers-reduced-motion: reduce) {
+  .lx-sway, .lx-chip-a, .lx-chip-b, .lx-rise { animation: none; }
+  .lx-float3d { transform: none; }
+}
+.lx-outline-dark { color: transparent; -webkit-text-stroke: 1.5px rgba(11, 11, 13, 0.55); }

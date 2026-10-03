@@ -1,0 +1,25 @@
+/**
+ * Mafs theme override — see SyrkaMafsGraph.tsx. Mafs exposes its whole
+ * palette as CSS custom properties; this maps every one of them to the
+ * same --campus-* tokens the rest of the product uses, scoped to
+ * .syrka-mafs-theme so it never leaks into any other Mafs instance.
+ */
+.syrka-mafs-theme {
+  --mafs-bg: var(--campus-surface);
+  --mafs-fg: var(--campus-text);
+  --mafs-origin-color: var(--campus-muted);
+  --mafs-line-color: var(--campus-border);
+  --mafs-axis-stroke-width: 1px;
+  --mafs-blue: var(--campus-blue);
+  --mafs-green: var(--campus-green);
+  --mafs-orange: var(--campus-amber);
+  --mafs-red: var(--campus-red);
+  --mafs-indigo: var(--campus-purple);
+  --mafs-violet: var(--campus-purple);
+  --mafs-pink: var(--campus-red);
+  --mafs-yellow: var(--campus-amber);
+}
+
+.syrka-mafs-theme .MafsView {
+  font-family: var(--font-campus-mono, monospace);
+}

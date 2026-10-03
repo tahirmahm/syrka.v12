@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase'
-import { createDeepSeekClient } from '@/lib/deepseek'
+import { createDeepSeekClient, resolveDeepSeekModel } from '@/lib/deepseek'
 
 export async function POST(req: NextRequest) {
   let debugInfo = ''
@@ -115,7 +115,7 @@ Provide a structured policy analysis in JSON format with these exact keys:
     console.log('[gap-analysis] Calling DeepSeek...')
 
     const response = await deepseek.chat.completions.create({
-      model: 'deepseek-chat',
+      model: resolveDeepSeekModel().model,
       messages: [{ role: 'user', content: prompt }],
       response_format: { type: 'json_object' },
       temperature: 0.3,
