@@ -33,6 +33,14 @@
     {
       "source": "/workspace/:path*",
       "destination": "https://syrka-workspace.vercel.app/workspace/:path*"
+    },
+    {
+      "source": "/cam",
+      "destination": "https://syrka-campus.vercel.app/cam"
+    },
+    {
+      "source": "/cam/:path*",
+      "destination": "https://syrka-campus.vercel.app/cam/:path*"
     }
   ]
 }
